@@ -317,12 +317,16 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .obback svg{width:14px;height:14px}
 .obback.hide{visibility:hidden}
 .field.hasgo input{padding-right:64px}
-.inline-go{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
-  display:grid;place-items:center;background:linear-gradient(120deg,var(--butter-2),var(--butter));color:#221904;
-  box-shadow:0 8px 22px -10px rgba(247,215,116,.7);transition:.24s var(--ease);z-index:2}
-.inline-go:hover{transform:translateY(-50%) scale(1.08)}
-.inline-go:disabled{opacity:.3;box-shadow:none;cursor:not-allowed;
-  background:rgba(238,242,255,.13);color:var(--tx-3);transform:translateY(-50%)}
+.inline-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:46px;height:46px;
+  border-radius:13px;                      /* 18px Boxradius minus 6px Abstand = konzentrisch */
+  display:grid;place-items:center;z-index:2;transition:.28s var(--ease);
+  background:linear-gradient(120deg,var(--butter-2),var(--butter));color:#221904;
+  border:1px solid transparent;box-shadow:0 8px 22px -10px rgba(247,215,116,.7)}
+.inline-go:hover{transform:translateY(-50%) scale(1.06)}
+/* solange die Zeile nicht stimmt: durchsichtig, nur eine feine Kontur */
+.inline-go:disabled{cursor:default;opacity:1;background:transparent;color:var(--tx-3);
+  border-color:var(--line-2);box-shadow:none;transform:translateY(-50%)}
+.inline-go:disabled:hover{transform:translateY(-50%)}
 .inline-go svg{width:21px;height:21px}
 .autonext{display:flex;align-items:center;gap:9px;margin-top:16px;font-size:12.5px;color:var(--butter)}
 .autonext .dots{display:inline-flex;gap:4px}
@@ -1551,7 +1555,17 @@ function dobIso(o){
   if(dt.getDate() !== d || dt.getMonth() !== m-1) return null;
   return y + '-' + p2(m) + '-' + p2(d);
 }
-let _autoT = null;
+let _autoT = null, _autoT2 = null;
+function clearAutos(){ clearTimeout(_autoT); _autoT = null; clearTimeout(_autoT2); _autoT2 = null; }
+/* Ein Sprung von mehr als drei Zeichen in einem Rutsch heißt: ausgefüllt
+   oder eingefügt, nicht getippt. Nur dann springen wir von selbst weiter. */
+function armAuto(step, go2){
+  clearTimeout(_autoT2);
+  _autoT2 = setTimeout(() => {
+    _autoT2 = null;
+    if(OB.step === step && stepValid(step)) obGo(go2);
+  }, 560);
+}
 /* Steht ein vollständiges Geburtsdatum, geht es von selbst weiter */
 function maybeAutoNext(){
   if(OB.step !== 1) return;
@@ -1597,7 +1611,7 @@ let _prevStep = 0;
 function obPaint(){
   const back = OB.step < _prevStep; _prevStep = OB.step;
   /* Nie automatisch weiterspringen, wenn man gerade zurückgegangen ist */
-  clearTimeout(_autoT); _autoT = null;
+  clearAutos();
   const da = $('#dob-auto'); if(da) da.style.display = 'none';
   $$('#track .slide').forEach((s,i) => {
     s.classList.toggle('active', i === OB.step);
@@ -1634,6 +1648,7 @@ function refreshNav(){
   $('#ob-nav').classList.toggle('hide', inField || auto);
   $('#ob-back').classList.toggle('hide', OB.step === 0);
   const gn = $('#go-name'); if(gn) gn.disabled = !stepValid(0);
+  const gm = $('#lg-send'); if(gm && CLOUD_ON) gm.disabled = !mailOk($('#lg-mail').value);
 }
 function obGo(step){
   OB.step = clamp(step, 0, STEPS-1);
@@ -1647,8 +1662,15 @@ $('#ob-next').addEventListener('click', () => {
 $('#ob-back').addEventListener('click', () => { if(OB.step > 0) obGo(OB.step - 1); });
 $('#go-name').addEventListener('click', () => { if(stepValid(0)) obGo(1); });
 $('#go-ort').addEventListener('click', () => obGo(3));
-$('#in-vn').addEventListener('input', refreshNav);
-$('#in-nn').addEventListener('input', refreshNav);
+const _nPrev = { 'in-vn':'', 'in-nn':'' };
+['in-vn','in-nn'].forEach(id => {
+  $('#'+id).addEventListener('input', e => {
+    const v = e.target.value, jump = v.length - _nPrev[id].length;
+    _nPrev[id] = v;
+    refreshNav();
+    if(OB.step === 0 && jump > 3 && stepValid(0)) armAuto(0, 1);
+  });
+});
 $$('#in-vn,#in-nn').forEach(i => i.addEventListener('keydown', e => {
   if(e.key === 'Enter' && stepValid(0)) obGo(1);
 }));
@@ -1751,14 +1773,28 @@ $('#lg-go').addEventListener('click', () => {
 $('#lg-new').addEventListener('click', () => { obInit(); go('v-onboard'); });
 $('#lg-send').addEventListener('click', sendLink);
 $('#lg-mail').addEventListener('keydown', e => { if(e.key === 'Enter') sendLink(); });
+const mailOk = v => /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(String(v).trim());
+let _mailPrev = '', _mailT = null;
+function mailPaint(){
+  const v = $('#lg-mail').value;
+  $('#f-mail').classList.toggle('filled', !!v);
+  $('#lg-send').disabled = !mailOk(v);
+}
 $('#lg-mail').addEventListener('input', () => {
-  $('#f-mail').classList.toggle('filled', !!$('#lg-mail').value);
+  const v = $('#lg-mail').value, jump = v.length - _mailPrev.length;
+  _mailPrev = v;
+  mailPaint();
+  clearTimeout(_mailT);
+  /* Adresse in einem Rutsch eingesetzt und gültig -> gleich abschicken */
+  if(jump > 3 && mailOk(v)){
+    _mailT = setTimeout(() => { _mailT = null; if(mailOk($('#lg-mail').value)) sendLink(); }, 600);
+  }
 });
+mailPaint();
 $('#lg-again').addEventListener('click', () => {
   $('#lg-sent').style.display = 'none';
   $('#lg-cloud').style.display = 'block';
-  $('#lg-mail').value = _lastMail;
-  $('#f-mail').classList.toggle('filled', !!_lastMail);
+  $('#lg-mail').value = _lastMail; _mailPrev = _lastMail; mailPaint();
 });
 $('#lg-vn').addEventListener('input', refreshNav);
 $('#lg-vn').addEventListener('keydown', e => { if(e.key === 'Enter') $('[data-dob="lg"] input[data-p="d"]').focus(); });
@@ -2415,7 +2451,7 @@ async function doLogout(){
   ME = null;
   $('#avatar').style.display = 'none';
   $('#sync').style.display = 'none';
-  $('#lg-mail').value = ''; $('#f-mail').classList.remove('filled');
+  $('#lg-mail').value = ''; _mailPrev = ''; mailPaint();
   loginScreen();
 }
 async function doDelete(){
