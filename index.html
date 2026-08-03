@@ -269,7 +269,7 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .dob .g small{display:block;text-align:center;margin-top:6px;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--tx-3)}
 
 /* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 24px;border-radius:999px;
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 24px;border-radius:14px;
   font-size:14px;font-weight:600;letter-spacing:.01em;transition:.24s var(--ease);white-space:nowrap}
 .btn-p{background:linear-gradient(120deg,var(--butter-2),var(--butter));color:#221904;
   box-shadow:0 12px 34px -12px rgba(247,215,116,.6)}
@@ -277,7 +277,7 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .btn-p:disabled{opacity:.32;transform:none;box-shadow:none;cursor:not-allowed}
 .btn-g{border:1px solid var(--line-2);color:var(--tx-2)}
 .btn-g:hover{border-color:var(--butter-dim);color:var(--butter)}
-.btn-sm{padding:10px 17px;font-size:12.5px}
+.btn-sm{padding:10px 17px;font-size:12.5px;border-radius:12px}
 .btn svg{width:17px;height:17px}
 
 /* Chips */
@@ -288,8 +288,8 @@ h1.dis i{font-style:italic;color:var(--butter)}
   font-weight:600;box-shadow:0 8px 22px -10px rgba(247,215,116,.6)}
 .chip:disabled{opacity:.3;cursor:not-allowed;transform:none}
 
-.seg{display:inline-flex;padding:4px;gap:3px;border-radius:999px;background:rgba(6,10,26,.6);border:1px solid var(--line-2)}
-.seg button{padding:9px 16px;border-radius:999px;font-size:12.5px;font-weight:500;color:var(--tx-3);transition:.2s}
+.seg{display:inline-flex;padding:4px;gap:3px;border-radius:14px;background:rgba(6,10,26,.6);border:1px solid var(--line-2)}
+.seg button{padding:9px 16px;border-radius:10px;font-size:12.5px;font-weight:500;color:var(--tx-3);transition:.2s}
 .seg button.on{background:var(--butter);color:#221904;font-weight:600}
 
 /* ============================================================
@@ -351,7 +351,7 @@ h1.dis i{font-style:italic;color:var(--butter)}
    ============================================================ */
 .wtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-top:14px;scrollbar-width:none}
 .wtabs::-webkit-scrollbar{display:none}
-.wtab{padding:10px 16px;border-radius:999px;border:1px solid var(--line-2);font-size:12.5px;font-weight:500;
+.wtab{padding:10px 16px;border-radius:12px;border:1px solid var(--line-2);font-size:12.5px;font-weight:500;
   white-space:nowrap;color:var(--tx-3);transition:.2s}
 .wtab.on{background:rgba(247,215,116,.14);border-color:rgba(247,215,116,.45);color:var(--butter);font-weight:600}
 .dayrow{display:grid;grid-template-columns:112px 1fr auto;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line-2)}
@@ -576,9 +576,9 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .toast svg{width:17px;height:17px;color:var(--butter)}
 
 .fabbar{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));translate:-50% 0;z-index:35;
-  display:flex;gap:8px;padding:8px;border-radius:999px;background:rgba(12,20,48,.92);border:1px solid var(--line);
+  display:flex;gap:8px;padding:8px;border-radius:18px;background:rgba(12,20,48,.92);border:1px solid var(--line);
   backdrop-filter:blur(20px);box-shadow:var(--shadow)}
-.fabbar button{display:flex;align-items:center;gap:8px;padding:11px 19px;border-radius:999px;font-size:13px;
+.fabbar button{display:flex;align-items:center;gap:8px;padding:11px 19px;border-radius:10px;font-size:13px;
   font-weight:500;color:var(--tx-2);transition:.22s}
 .fabbar button svg{width:16px;height:16px}
 .fabbar button.on{background:linear-gradient(120deg,var(--butter-2),var(--butter));color:#221904;font-weight:600}
