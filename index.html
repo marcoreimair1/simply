@@ -123,11 +123,6 @@ input,textarea{-webkit-appearance:none}
   .bg .b1 span,.bg .b3 span{animation-name:breathAM}
   .bg .b2 span{animation-name:breathGoldM}
   .bg .b4 span,.bg .b5 span{animation-name:breathSparkM}
-  .card{background:linear-gradient(165deg,rgba(27,40,86,.30),rgba(12,20,48,.18));
-    backdrop-filter:blur(9px) saturate(1.4);-webkit-backdrop-filter:blur(9px) saturate(1.4)}
-  .cell{background:rgba(6,10,26,.18)}
-  .stat{background:rgba(6,10,26,.16)}
-  .qcal{background:rgba(6,10,26,.14)}
 }
 @keyframes breathAM{0%,100%{transform:scale(1);opacity:.72}50%{transform:scale(1.14);opacity:.92}}
 @keyframes breathGoldM{0%,100%{transform:scale(.92);opacity:.48}50%{transform:scale(1.2);opacity:.88}}
@@ -593,6 +588,17 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::after,*::before{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* Dünneres Glas am Handy — muss am Ende stehen, sonst gewinnt die Basisregel.
+   Doppelte Weichzeichnung (90px Hintergrund + 18px Karte) macht sonst alles flach. */
+@media(max-width:640px){
+  .card{background:linear-gradient(165deg,rgba(27,40,86,.36),rgba(12,20,48,.24));
+    backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4)}
+  .cell{background:rgba(6,10,26,.20)}
+  .stat{background:rgba(6,10,26,.18)}
+  .qcal{background:rgba(6,10,26,.16)}
+  .topbar{background:linear-gradient(180deg,rgba(8,13,34,.66),rgba(8,13,34,.26))}
 }
 </style>
 </head>
