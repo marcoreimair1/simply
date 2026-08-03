@@ -186,7 +186,9 @@ input,textarea{-webkit-appearance:none}
    ============================================================ */
 #app{position:relative;z-index:2;opacity:0;transition:opacity .8s var(--ease-out)}
 #app.on{opacity:1}
-.wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 20px 120px}
+.wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 20px}
+/* Platz für die Tab-Leiste nur dort, wo sie auch steht */
+#v-cal, #v-export{padding-bottom:120px}
 
 .topbar{position:sticky;top:0;z-index:30;backdrop-filter:blur(22px);background:linear-gradient(180deg,rgba(8,13,34,.74),rgba(8,13,34,.34));
   border-bottom:1px solid var(--line-2)}
@@ -705,7 +707,8 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
 .mt{margin-top:22px}
 
 @media(max-width:520px){
-  .wrap{padding:0 14px 110px}
+  .wrap{padding:0 14px}
+  #v-cal, #v-export{padding-bottom:110px}
   .pt{padding-top:20px}
   .card{padding:17px;border-radius:20px}
   h1.dis{font-size:clamp(27px,7.6vw,40px)}
@@ -1814,7 +1817,10 @@ function obInit(){
 }
 let _prevStep = 0;
 function obPaint(){
+  const gewechselt = OB.step !== _prevStep;
   const back = OB.step < _prevStep; _prevStep = OB.step;
+  /* neuer Schritt fängt oben an, sonst hängt man in der Mitte des vorigen */
+  if(gewechselt) window.scrollTo({ top:0, behavior:'auto' });
   /* Nie automatisch weiterspringen, wenn man gerade zurückgegangen ist */
   clearAutos();
   const da = $('#dob-auto'); if(da) da.style.display = 'none';
