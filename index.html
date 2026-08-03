@@ -242,9 +242,9 @@ h1.dis i{font-style:italic;color:var(--butter)}
 @keyframes slideFwd{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
 @keyframes slideBack{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
 .navrow{display:flex;align-items:center;gap:12px;margin-top:24px}
-.navrow.sticky{position:sticky;bottom:0;z-index:20;margin-top:18px;
-  padding:16px 0 calc(16px + env(safe-area-inset-bottom));
-  background:linear-gradient(180deg,rgba(8,13,34,0),rgba(8,13,34,.94) 42%);backdrop-filter:blur(10px)}
+.navrow.sticky{position:sticky;bottom:0;z-index:20;margin:18px -20px 0;
+  padding:16px 20px calc(16px + env(safe-area-inset-bottom));transition:background .3s}
+.navrow.sticky.solid{background:linear-gradient(180deg,rgba(8,13,34,0),rgba(8,13,34,.94) 42%);backdrop-filter:blur(10px)}
 .stepno{font-size:11px;letter-spacing:.2em;color:var(--tx-3);font-variant-numeric:tabular-nums}
 
 /* Monatsgitter */
@@ -409,8 +409,12 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .stat small{display:block;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx-3);margin-bottom:6px}
 .stat b{font-family:var(--font-dis);font-size:25px;font-weight:400;font-variant-numeric:tabular-nums;line-height:1}
 .stat.w b{color:var(--butter)}.stat.u b{color:var(--c-urlaub)}.stat.k b{color:var(--c-krank)}.stat.f b{color:var(--c-feier)}
+.stat.total{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:linear-gradient(120deg,rgba(247,215,116,.13),rgba(247,215,116,.03));border-color:var(--butter-dim)}
+.stat.total small{margin-bottom:0;font-size:10.5px;letter-spacing:.22em}
+.stat.total b{font-size:29px;color:var(--butter)}
 
-.toast{position:fixed;left:50%;bottom:28px;translate:-50% 0;z-index:80;padding:14px 22px;border-radius:999px;
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));translate:-50% 0;z-index:80;padding:14px 22px;border-radius:999px;
   background:rgba(18,28,66,.98);border:1px solid var(--butter-dim);box-shadow:var(--shadow);font-size:13.5px;
   display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:.34s var(--ease-out)}
 .toast.on{opacity:1;transform:translateY(-6px)}
@@ -438,6 +442,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
   .lede{font-size:14.5px}
   .btn{padding:15px 22px}
   .topbar-in{padding:11px 14px}
+  .navrow.sticky{margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::after,*::before{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -1317,6 +1322,9 @@ function obPaint(){
     $('#done-text').textContent = 'Angemeldet als ' + vn + ' bei ' + EMPLOYER +
       '. Beim nächsten Besuch genügen Vorname und Geburtsdatum — Simply weiß dann wieder, wie du arbeitest.';
   }
+  const nav = $('#ob-nav');
+  requestAnimationFrame(() => nav.classList.toggle('solid',
+    document.documentElement.scrollHeight > window.innerHeight + 12));
   refreshNav();
 }
 function stepValid(s){
@@ -1446,7 +1454,7 @@ function renderCal(){
   sum += stat('k','Krankenstand', s.krank);
   sum += stat('f','Feiertag', s.feier);
   if(s.sonst > 0) sum += stat('','Sonstige', s.sonst);
-  sum += stat('','Gesamt', s.total);
+  sum += stat('total','Gesamt', s.total);
   $('#cal-sum').innerHTML = sum;
 }
 function stat(cls, label, v){
