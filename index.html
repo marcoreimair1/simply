@@ -288,7 +288,8 @@ h1.dis i{font-style:italic;color:var(--butter)}
 /* wartet, bis man unten war — soll zum Weiterscrollen einladen, nicht blockieren */
 .btn-p.btn-wait{background:transparent;color:var(--tx-3);border:1px solid var(--line-2);
   box-shadow:none;transition:.45s var(--ease)}
-.btn-p.btn-wait:hover{transform:none;color:var(--butter);border-color:var(--butter-dim)}
+.btn-p.btn-wait:hover{transform:none;color:var(--tx-2);border-color:var(--butter-dim)}
+.btn-p.btn-wait:active{transform:none}
 .btn-p.btn-wait svg{opacity:.5}
 .btn-g{border:1px solid var(--line-2);color:var(--tx-2)}
 .btn-g:hover{border-color:var(--butter-dim);color:var(--butter)}
@@ -2000,9 +2001,15 @@ function initFeatCarousel(){
    So sieht man die Karten — vor allem die zum Home-Bildschirm. */
 function checkDoneScroll(){
   const nx = $('#ob-next'); if(!nx) return;
-  if(OB.step !== STEPS-1){ nx.classList.remove('btn-wait'); return; }
+  if(OB.step !== STEPS-1){
+    nx.classList.remove('btn-wait'); nx.setAttribute('aria-disabled','false'); nx.title='';
+    return;
+  }
   const rest = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
-  nx.classList.toggle('btn-wait', rest > 80);
+  const wartet = rest > 80;
+  nx.classList.toggle('btn-wait', wartet);
+  nx.setAttribute('aria-disabled', wartet ? 'true' : 'false');
+  nx.title = wartet ? 'Erst noch bis zum Seitenende schauen' : '';
 }
 window.addEventListener('scroll', checkDoneScroll, { passive:true });
 window.addEventListener('resize', checkDoneScroll);
@@ -2038,10 +2045,16 @@ function refreshNav(){
 function obGo(step){
   OB.step = clamp(step, 0, STEPS-1);
   obPaint();
-  const nx = $('#ob-next'); if(nx && step !== STEPS-1) nx.classList.remove('btn-wait');
+  const nx = $('#ob-next');
+  if(nx && step !== STEPS-1){ nx.classList.remove('btn-wait'); nx.setAttribute('aria-disabled','false'); nx.title=''; }
 }
 $('#ob-next').addEventListener('click', () => {
   if(!stepValid(OB.step)) return;
+  /* Blass heißt gesperrt: erst die Seite zu Ende sehen. Der Tipp scrollt hin. */
+  if($('#ob-next').classList.contains('btn-wait')){
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior:'smooth' });
+    return;
+  }
   if(OB.step < STEPS-1){ OB.step++; obPaint(); }
   else finishOnboarding();
 });
