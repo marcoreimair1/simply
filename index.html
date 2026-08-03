@@ -465,6 +465,20 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .stat.total small{margin-bottom:0;font-size:10.5px;letter-spacing:.22em}
 .stat.total b{font-size:29px;color:var(--butter)}
 
+#ex-card{position:relative}
+.linkbtn{font-size:12.5px;color:var(--tx-3);text-decoration:underline;text-underline-offset:3px;
+  text-decoration-color:var(--line);transition:.2s;padding:4px 0}
+.linkbtn:hover{color:var(--butter);text-decoration-color:var(--butter-dim)}
+.linkbtn:disabled{opacity:.35;cursor:not-allowed}
+.exdone .qd-ring circle.track{fill:none;stroke:rgba(238,242,255,.13);stroke-width:3;animation:none;stroke-dasharray:none;stroke-dashoffset:0}
+.exdone .qd-ring circle.prog{fill:none;stroke:var(--butter);stroke-width:3;stroke-linecap:round;animation:none;
+  stroke-dasharray:220;stroke-dashoffset:220;transform:rotate(-90deg);transform-origin:center;
+  transition:stroke-dashoffset .45s var(--ease-out)}
+.exdone .qd-ring path.tick{animation:none}
+.exdone.done .qd-ring path.tick{animation:draw .42s var(--ease-out) forwards}
+.exdone.done .qd-ring .puls{animation:qpuls .95s var(--ease-out) forwards}
+.exdone .qd-in b{animation-delay:.05s}
+.exdone .qd-in small{animation-delay:.16s}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));translate:-50% 0;z-index:80;padding:14px 22px;border-radius:999px;
   background:rgba(18,28,66,.98);border:1px solid var(--butter-dim);box-shadow:var(--shadow);font-size:13.5px;
   display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:.34s var(--ease-out)}
@@ -734,40 +748,24 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
       <h1 class="dis">Arbeitsaufzeichnung <i>als PDF</i>.</h1>
       <p class="lede">Wähle die Monate. Jeder Monat wird eine perfekte A4-Seite, mit Pausen, getrennten Summen und beiden Unterschriften.</p>
 
-      <div class="card mt">
+      <div class="card mt" id="ex-card">
         <div class="yearnav">
           <button class="rnd" data-exyr="-1" aria-label="Jahr zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
           <b id="ex-year"></b>
           <button class="rnd" data-exyr="1" aria-label="Jahr vor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
         </div>
         <div class="mgrid" id="ex-months"></div>
-        <div class="sheet-actions" style="margin-top:20px">
+        <p class="hint" style="margin-top:16px" id="ex-note"></p>
+        <div style="margin-top:18px">
           <button class="btn btn-p" id="ex-go">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg>
             PDF erstellen
           </button>
-          <button class="btn btn-g" id="ex-single">Einzeldateien</button>
         </div>
-        <p class="hint" style="margin-top:12px" id="ex-note"></p>
-      </div>
-
-      <div class="card">
-        <h3>Unterschrift</h3>
-        <p class="hint">So erscheint deine Unterschrift auf dem Export — in Schreibschrift, darunter die Unterschrift des Dienstgebers.</p>
-        <div style="margin-top:18px;padding:20px;border-radius:var(--r-m);background:var(--paper);color:#1a1a1a">
-          <div style="display:flex;gap:26px;flex-wrap:wrap">
-            <div style="flex:1;min-width:180px">
-              <div style="font-family:var(--font-sig);font-size:31px;line-height:1;padding-bottom:8px" id="sig-a">—</div>
-              <div style="border-top:1px solid #9a9a9a;padding-top:5px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#666">Unterschrift Dienstnehmer/in</div>
-            </div>
-            <div style="flex:1;min-width:180px">
-              <div style="font-family:var(--font-sig);font-size:31px;line-height:1;padding-bottom:8px">Miller Optik</div>
-              <div style="border-top:1px solid #9a9a9a;padding-top:5px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#666">Unterschrift Dienstgeber</div>
-            </div>
-          </div>
+        <div style="margin-top:14px">
+          <button class="linkbtn" id="ex-single">Lieber pro Monat eine eigene Datei</button>
         </div>
       </div>
-    </section>
 
     <!-- ─────────── DIENSTZEITEN BEARBEITEN ─────────── -->
     <section class="view pt" id="v-hours">
@@ -1463,7 +1461,6 @@ function enterApp(){
   $('#avatar').textContent = (ME.vorname[0] || '?').toUpperCase() + (ME.nachname[0] || '').toUpperCase();
   $('#me-name').textContent = ME.vorname + ' ' + ME.nachname;
   $('#me-sub').textContent = EMPLOYER + ' · ' + fmtDate(ME.dob);
-  $('#sig-a').textContent = ME.vorname + ' ' + ME.nachname;
   EX.set = new Set((ME.months || []).map(o => o.y + '-' + o.m));
   EX.year = ME.months && ME.months.length ? ME.months[ME.months.length-1].y : PREV.getFullYear();
   const first = (ME.months || [])[0];
@@ -1979,6 +1976,37 @@ function pdfIcon(doc, type, x, y, r, c){
 }
 
 let _busy = false;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+/* Fortschrittsring über der Export-Karte */
+function exOverlay(){
+  const ov = document.createElement('div');
+  ov.className = 'qdone exdone';
+  ov.innerHTML = '<div class="qd-in"><div class="qd-ring">'
+    + '<svg viewBox="0 0 80 80" aria-hidden="true">'
+    + '<circle class="track" cx="40" cy="40" r="35"/>'
+    + '<circle class="prog" cx="40" cy="40" r="35"/>'
+    + '<path class="tick" d="M25 41l11 11 20-22"/></svg>'
+    + '<span class="puls"></span></div>'
+    + '<b id="ex-ov-t">Aufzeichnung wird gesetzt</b>'
+    + '<small id="ex-ov-s">Einen Moment …</small></div>';
+  $('#ex-card').appendChild(ov);
+  return {
+    el: ov,
+    step(done, total, title, sub){
+      $('.prog', ov).style.strokeDashoffset = (220 * (1 - done/total)).toFixed(1);
+      if(title) $('#ex-ov-t').textContent = title;
+      if(sub) $('#ex-ov-s').textContent = sub;
+    },
+    finish(title, sub){
+      $('.prog', ov).style.strokeDashoffset = '0';
+      ov.classList.add('done');
+      $('#ex-ov-t').textContent = title;
+      $('#ex-ov-s').textContent = sub;
+    }
+  };
+}
+
 async function buildPdf(list, separate){
   if(_busy) return;
   if(!list.length){ toast('Kein Monat gewählt'); return; }
@@ -1986,7 +2014,7 @@ async function buildPdf(list, separate){
   _busy = true;
   const btnA = $('#ex-go'), btnB = $('#ex-single');
   btnA.disabled = btnB.disabled = true;
-  toast('PDF wird erstellt …');
+  const ov = exOverlay(), t0 = performance.now();
   try{
     const sigs = {
       emp: await sigImage(ME.vorname + ' ' + ME.nachname),
@@ -1994,25 +2022,47 @@ async function buildPdf(list, separate){
     };
     const JSP = window.jspdf.jsPDF;
     const base = 'Arbeitsaufzeichnung_' + safe(ME.nachname) + '_' + safe(ME.vorname);
+    const total = list.length;
+    let name = '';
     if(separate){
-      for(const o of list){
+      for(let i = 0; i < total; i++){
+        const o = list[i];
+        ov.step(i, total, 'Seite ' + (i+1) + ' von ' + total, MONTHS[o.m] + ' ' + o.y + ' wird gesetzt …');
+        await wait(240);
         const doc = new JSP({ unit:'mm', format:'a4', orientation:'portrait', compress:true });
         drawPage(doc, ME, o.y, o.m, sigs);
         doc.save(base + '_' + o.y + '-' + p2(o.m+1) + '.pdf');
-        await new Promise(r => setTimeout(r, 320));
+        ov.step(i+1, total);
+        await wait(340);
       }
-      toast(list.length + ' PDF-Dateien erstellt');
+      name = total + (total === 1 ? ' Datei' : ' Dateien') + ' im Download-Ordner';
+      ov.finish(total + (total === 1 ? ' PDF erstellt' : ' PDFs erstellt'), name);
     } else {
       const doc = new JSP({ unit:'mm', format:'a4', orientation:'portrait', compress:true });
-      list.forEach((o, i) => { if(i) doc.addPage('a4','portrait'); drawPage(doc, ME, o.y, o.m, sigs); });
-      const suffix = list.length === 1
+      for(let i = 0; i < total; i++){
+        const o = list[i];
+        ov.step(i, total, total === 1 ? 'Aufzeichnung wird gesetzt' : 'Seite ' + (i+1) + ' von ' + total,
+                MONTHS[o.m] + ' ' + o.y);
+        await wait(total === 1 ? 420 : 260);
+        if(i) doc.addPage('a4','portrait');
+        drawPage(doc, ME, o.y, o.m, sigs);
+        ov.step(i+1, total);
+      }
+      const suffix = total === 1
         ? list[0].y + '-' + p2(list[0].m+1)
-        : list[0].y + '-' + p2(list[0].m+1) + '_bis_' + list[list.length-1].y + '-' + p2(list[list.length-1].m+1);
-      doc.save(base + '_' + suffix + '.pdf');
-      toast('PDF mit ' + list.length + (list.length === 1 ? ' Seite' : ' Seiten') + ' erstellt');
+        : list[0].y + '-' + p2(list[0].m+1) + '_bis_' + list[total-1].y + '-' + p2(list[total-1].m+1);
+      name = base + '_' + suffix + '.pdf';
+      const el = performance.now() - t0;
+      if(el < 900) await wait(900 - el);
+      doc.save(name);
+      ov.finish('PDF erstellt · ' + total + (total === 1 ? ' Seite' : ' Seiten'), name);
     }
+    await wait(1500);
+    ov.el.remove();
   }catch(err){
-    console.error(err); toast('Export fehlgeschlagen');
+    console.error(err);
+    if(ov && ov.el) ov.el.remove();
+    toast('Export fehlgeschlagen');
   }
   _busy = false; exYear();
 }
