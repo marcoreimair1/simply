@@ -406,24 +406,38 @@ h1.dis i{font-style:italic;color:var(--butter)}
 /* ============================================================
    SCHLUSSSEITE: drei Punkte und Vorschau der A4-Seite
    ============================================================ */
-.done-grid{display:grid;gap:22px;grid-template-columns:1fr;align-items:start}
-@media(min-width:860px){.done-grid{grid-template-columns:1fr auto;gap:36px}}
-.point{display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line-2)}
-.point:last-child{border-bottom:none}
-.point .pi{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;
-  background:rgba(247,215,116,.12);color:var(--butter)}
-.point .pi svg{width:17px;height:17px}
-.point b{display:block;font-size:14px;margin-bottom:3px}
-.point span{color:var(--tx-3);font-size:12.5px;line-height:1.45;display:block}
+.point .pi{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none;
+  background:rgba(247,215,116,.12);color:var(--butter);margin-bottom:13px}
+.point .pi svg{width:18px;height:18px}
 
-.pdfprev{perspective:900px;display:flex;justify-content:center}
-.pdfsheet{width:min(78vw,272px);aspect-ratio:1/1.414;background:#FBFAF7;color:#141a28;border-radius:6px;
+/* Karussell zum Ziehen */
+.feat{margin-top:26px}
+.feat-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:2px 4px 14px;margin:0 -4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  cursor:grab;user-select:none}
+.feat-track::-webkit-scrollbar{display:none}
+.feat-track.drag{cursor:grabbing;scroll-snap-type:none}
+.feat-card{flex:0 0 82%;max-width:320px;scroll-snap-align:center;box-sizing:border-box;
+  background:linear-gradient(165deg,rgba(27,40,86,.40),rgba(12,20,48,.28));
+  border:1px solid var(--line);border-radius:var(--r-l);padding:20px;
+  backdrop-filter:blur(18px) saturate(1.25);-webkit-backdrop-filter:blur(18px) saturate(1.25)}
+@media(min-width:640px){.feat-card{flex:0 0 290px}}
+.feat-card b{display:block;font-size:15px;margin-bottom:6px}
+.feat-card span{color:var(--tx-3);font-size:12.5px;line-height:1.5;display:block}
+.feat-dots{display:flex;gap:6px;justify-content:center;margin-top:2px}
+.feat-dots i{width:6px;height:6px;border-radius:50%;background:var(--line-2);transition:.32s var(--ease)}
+.feat-dots i.on{background:var(--butter);width:20px;border-radius:3px}
+.feat-hint{text-align:center;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--tx-3);margin:14px 0 0}
+
+.pdfprev{perspective:1000px;display:flex;justify-content:center;margin-top:24px}
+.pdfsheet{width:min(74vw,300px);aspect-ratio:1/1.414;background:#FBFAF7;color:#141a28;border-radius:6px;
   padding:13px 12px 11px;display:flex;flex-direction:column;font-size:5px;line-height:1.35;
   box-shadow:0 30px 60px -24px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.3);
-  transform:rotateY(-9deg) rotateX(2deg) rotate(-1deg);transition:transform .6s var(--ease-out);
+  transform:rotateX(6deg) rotate(-1.2deg);transition:transform .6s var(--ease-out);
   animation:sheetIn .85s .15s var(--ease-out) both}
 .pdfprev:hover .pdfsheet{transform:none}
-@keyframes sheetIn{from{opacity:0;transform:rotateY(-20deg) translateY(18px)}}
+@keyframes sheetIn{from{opacity:0;transform:rotateX(16deg) translateY(24px) scale(.94)}}
 .s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .s-head b{font-size:6.4px;letter-spacing:.02em;display:block}
 .s-head small{font-size:4.6px;color:#5a6070}
@@ -617,6 +631,11 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .fnote{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;
   background:rgba(169,155,255,.1);border:1px solid rgba(169,155,255,.32);margin-bottom:16px;font-size:12.5px}
 .fnote svg{width:17px;height:17px;color:var(--c-feier);flex:none}
+.warnnote{display:flex;gap:11px;text-align:left;padding:13px 14px;border-radius:14px;
+  background:rgba(247,215,116,.09);border:1px solid var(--butter-dim);margin:0 0 18px;
+  font-size:12.5px;line-height:1.5;color:var(--tx-2)}
+.warnnote svg{width:17px;height:17px;color:var(--butter);flex:none;margin-top:1px}
+.warnnote b{color:var(--butter);font-weight:600}
 
 /* Export */
 .sumrow{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:16px}
@@ -757,12 +776,16 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
             <span class="puls"></span>
           </div>
           <h3 style="font-family:var(--font-dis);font-size:23px;font-weight:400;margin:0 0 6px">Schau in dein Postfach</h3>
-          <p class="hint" id="lg-sent-t" style="margin:0 0 18px"></p>
+          <p class="hint" id="lg-sent-t" style="margin:0 0 16px"></p>
+          <div class="warnnote">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v5M12 17.5v.01"/><path d="M10.3 3.9 2.4 17a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+            <span><b>Schau bitte auch im Spam-Ordner.</b> Dort landet die Mail derzeit meistens — MARU steckt noch in der Alpha-Phase und der Absender ist bei den Anbietern noch nicht als vertrauenswürdig eingetragen. Einmal auf „Kein Spam" tippen, dann kommt sie künftig direkt an.</span>
+          </div>
           <div style="margin:4px 0 18px;padding-top:18px;border-top:1px solid var(--line-2);text-align:left">
             <small style="display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3);margin-bottom:10px">Oder Code aus der Mail</small>
             <div class="field hasgo" id="f-otp">
-              <input id="lg-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder=" ">
-              <label for="lg-otp">6-stelliger Code</label>
+              <input id="lg-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder=" ">
+              <label for="lg-otp">Code aus der Mail</label>
               <button class="inline-go" id="lg-otp-go" disabled aria-label="Code bestätigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
             </div>
             <p class="hint" style="margin-top:12px">Am Handy praktisch, wenn du MARU vom Home-Bildschirm öffnest — der Link aus der Mail landet dort sonst im Browser.</p>
@@ -872,26 +895,43 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
             <h1 class="dis">Das war's <i>schon</i>.</h1>
             <p class="lede" id="done-text"></p>
 
-            <div class="done-grid mt">
-              <div class="card" style="max-width:470px">
-                <div class="point">
-                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
-                  <span><b>Nur Ausnahmen antippen</b><span>Urlaub, Krankenstand oder ein eigener Vermerk. Längeres am Stück über „Zeitraum eintragen". Feiertage kennt MARU selbst.</span></span>
-                </div>
-                <div class="point">
-                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
-                  <span><b>Stunden rechnet MARU</b><span>Pause und Tagesstunden ergeben sich aus deinem Rhythmus, auf die Viertelstunde genau. Urlaub, Krankenstand und Feiertag zählen getrennt.</span></span>
-                </div>
-                <div class="point">
-                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg></span>
-                  <span><b>Am Monatsende ein Tipp</b><span>Ein Monat wird eine A4-Seite mit beiden Unterschriftsleisten — fertig zum Abgeben. So sieht deine aus:</span></span>
-                </div>
-                <div class="legend" style="margin-top:16px">
-                  <span class="lg" id="lg1"></span><span class="lg" id="lg2"></span><span class="lg" id="lg3"></span><span class="lg" id="lg4"></span>
-                </div>
-              </div>
+            <!-- zuerst das Dokument, danach die Funktionen zum Ziehen -->
+            <div class="pdfprev" id="pdfprev"></div>
 
-              <div class="pdfprev" id="pdfprev"></div>
+            <div class="feat">
+              <div class="feat-track" id="feat-track">
+                <article class="feat-card">
+                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+                  <b>Nur Ausnahmen antippen</b>
+                  <span>Urlaub, Krankenstand oder ein eigener Vermerk. Längeres am Stück über „Zeitraum eintragen". Feiertage kennt MARU selbst.</span>
+                </article>
+                <article class="feat-card">
+                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+                  <b>Stunden rechnet MARU</b>
+                  <span>Pause und Tagesstunden ergeben sich aus deinem Rhythmus, auf die Viertelstunde genau. Urlaub, Krankenstand und Feiertag zählen getrennt.</span>
+                </article>
+                <article class="feat-card">
+                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg></span>
+                  <b>Am Monatsende ein Tipp</b>
+                  <span>Ein Monat wird eine A4-Seite mit beiden Unterschriftsleisten — fertig zum Abgeben, oben siehst du deine.</span>
+                </article>
+                <article class="feat-card">
+                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 100 18 9 9 0 000-18M3.6 9h16.8M3.6 15h16.8M12 3c2.5 2.4 3.8 5.4 3.8 9s-1.3 6.6-3.8 9c-2.5-2.4-3.8-5.4-3.8-9S9.5 5.4 12 3"/></svg></span>
+                  <b>Auf jedem Gerät</b>
+                  <span>Deine Aufzeichnungen liegen gesichert. Am Handy, am Geschäfts-PC, auf einem neuen Telefon — deine E-Mail-Adresse genügt.</span>
+                </article>
+                <article class="feat-card">
+                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M5 5l1.8 1.8M17.2 17.2L19 19M19 5l-1.8 1.8M6.8 17.2L5 19"/></svg></span>
+                  <b>Farben und Zeichen</b>
+                  <span id="feat-legend-text">Im Kalender erkennst du jeden Tag auf einen Blick:</span>
+                  <div class="legend" style="margin-top:12px">
+                    <span class="lg" id="lg1"></span><span class="lg" id="lg2"></span><span class="lg" id="lg3"></span><span class="lg" id="lg4"></span>
+                  </div>
+                </article>
+              </div>
+              <div class="feat-dots" id="feat-dots"></div>
+              <p class="feat-hint">Zum Blättern ziehen</p>
+            </div>
             </div>
           </div>
 
@@ -1751,6 +1791,7 @@ function obPaint(){
       ? 'Alles steht, ' + vn + '. Deine Aufzeichnungen sind gesichert — mit deiner E-Mail-Adresse kommst du auf jedem Gerät heran.'
       : 'Alles steht, ' + vn + '. Beim nächsten Besuch genügen Vorname und Geburtsdatum.';
     try{ renderPdfPreview(vn, nn); }catch(e){ console.warn('Vorschau nicht möglich', e); }
+    try{ initFeatCarousel(); }catch(e){ console.warn(e); }
   }
   const nav = $('#ob-nav');
   requestAnimationFrame(() => nav.classList.toggle('solid',
@@ -1803,6 +1844,56 @@ function renderPdfPreview(vn, nn){
     + '<div><em>' + esc(name) + '</em><hr><small>UNTERSCHRIFT DIENSTNEHMER/IN</small></div>'
     + '<div><em>Miller Optik</em><hr><small>UNTERSCHRIFT DIENSTGEBER</small></div></div>'
     + '</div>';
+}
+
+/* Karussell: mit dem Finger wischen geht von selbst, mit der Maus ziehen nicht — das hier ergänzt es */
+let _featBereit = false;
+function initFeatCarousel(){
+  const tr = $('#feat-track'), dots = $('#feat-dots');
+  if(!tr || _featBereit) return;
+  _featBereit = true;
+  const karten = $$('.feat-card', tr);
+  dots.innerHTML = karten.map((_, i) => '<i' + (i === 0 ? ' class="on"' : '') + '></i>').join('');
+  const punkte = $$('i', dots);
+
+  const markiere = () => {
+    const mitte = tr.scrollLeft + tr.clientWidth / 2;
+    let beste = 0, dist = 1e9;
+    karten.forEach((k, i) => {
+      const km = k.offsetLeft + k.offsetWidth / 2, d = Math.abs(km - mitte);
+      if(d < dist){ dist = d; beste = i; }
+    });
+    punkte.forEach((p, i) => p.classList.toggle('on', i === beste));
+  };
+  tr.addEventListener('scroll', markiere, { passive:true });
+
+  let zieht = false, startX = 0, startL = 0, bewegt = 0;
+  tr.addEventListener('pointerdown', e => {
+    if(e.pointerType === 'touch') return;      /* Finger kann der Browser selbst */
+    zieht = true; bewegt = 0;
+    startX = e.clientX; startL = tr.scrollLeft;
+    tr.classList.add('drag'); tr.setPointerCapture(e.pointerId);
+  });
+  tr.addEventListener('pointermove', e => {
+    if(!zieht) return;
+    const d = e.clientX - startX;
+    bewegt = Math.max(bewegt, Math.abs(d));
+    tr.scrollLeft = startL - d;
+  });
+  const los = () => {
+    if(!zieht) return;
+    zieht = false; tr.classList.remove('drag');
+    /* auf die nächste Karte einrasten */
+    const karte = karten[0];
+    if(karte){
+      const schritt = karte.offsetWidth + 12;
+      tr.scrollTo({ left: Math.round(tr.scrollLeft / schritt) * schritt, behavior:'smooth' });
+    }
+  };
+  tr.addEventListener('pointerup', los);
+  tr.addEventListener('pointercancel', los);
+  tr.addEventListener('click', e => { if(bewegt > 6) e.preventDefault(); }, true);
+  markiere();
 }
 
 function stepValid(s){
@@ -1859,6 +1950,8 @@ function finishOnboarding(){
   ME = p;
   if(CLOUD_ON && UID){
     cloudQueue();
+    /* Vorname ins Konto, damit die Anmeldemail künftig grüßen kann */
+    try{ sb.auth.updateUser({ data:{ vorname: vn } }); }catch(e){ console.warn(e); }
   } else {
     DB.profiles.push(p); DB.activeId = p.id; save();
   }
@@ -1966,7 +2059,7 @@ mailPaint();
 async function verifyCode(){
   const token = $('#lg-otp').value.replace(/\D/g,'');
   const err = $('#lg-otp-err');
-  if(token.length !== 6 || !_lastMail) return;
+  if(token.length < 6 || !_lastMail) return;
   const btn = $('#lg-otp-go'); btn.disabled = true;
   err.style.display = 'none';
   try{
@@ -1980,11 +2073,13 @@ async function verifyCode(){
   }
 }
 $('#lg-otp').addEventListener('input', e => {
-  const v = e.target.value.replace(/\D/g,'').slice(0,6);
+  const v = e.target.value.replace(/\D/g,'').slice(0,10);
   e.target.value = v;
   $('#f-otp').classList.toggle('filled', !!v);
-  $('#lg-otp-go').disabled = v.length !== 6;
-  if(v.length === 6) verifyCode();          /* vollständig -> gleich prüfen */
+  $('#lg-otp-go').disabled = v.length < 6;
+  /* Supabase verschickt je nach Einstellung 6 oder 8 Stellen — bei 8 gleich prüfen,
+     sonst wartet der Pfeil auf dich, damit kein halber Code verbraucht wird */
+  if(v.length === 8) verifyCode();
 });
 $('#lg-otp').addEventListener('keydown', e => { if(e.key === 'Enter') verifyCode(); });
 $('#lg-otp-go').addEventListener('click', verifyCode);
