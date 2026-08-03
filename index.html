@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Simply — Arbeitszeitaufzeichnung</title>
 <meta name="theme-color" content="#0A1129">
 <meta name="description" content="Simply — Arbeitszeitaufzeichnung für Miller Optik GmbH">
@@ -55,8 +55,10 @@ body{
   color:var(--tx);
   font-family:var(--font-ui);
   font-size:15px;line-height:1.5;
-  overflow-x:hidden;
+  overflow-x:clip;
   -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+  touch-action:manipulation;
 }
 body.locked{overflow:hidden}
 button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
@@ -233,10 +235,16 @@ h1.dis i{font-style:italic;color:var(--butter)}
   transition:transform .5s var(--ease-out)}
 .rail i.done::after{transform:scaleX(1)}
 .viewport{overflow:hidden;padding:2px}
-.track{display:flex;transition:transform .62s var(--ease-out)}
-.slide{min-width:100%;padding:0 2px;opacity:.25;transform:scale(.97);transition:opacity .5s,transform .5s var(--ease-out)}
-.slide.active{opacity:1;transform:none}
+.track{position:relative}
+.slide{display:none;padding:0 2px}
+.slide.active{display:block;animation:slideFwd .48s var(--ease-out)}
+.slide.active.back{animation:slideBack .48s var(--ease-out)}
+@keyframes slideFwd{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes slideBack{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
 .navrow{display:flex;align-items:center;gap:12px;margin-top:24px}
+.navrow.sticky{position:sticky;bottom:0;z-index:20;margin-top:18px;
+  padding:16px 0 calc(16px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(8,13,34,0),rgba(8,13,34,.94) 42%);backdrop-filter:blur(10px)}
 .stepno{font-size:11px;letter-spacing:.2em;color:var(--tx-3);font-variant-numeric:tabular-nums}
 
 /* Monatsgitter */
@@ -263,8 +271,8 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .segs{display:flex;flex-direction:column;gap:8px;min-width:0}
 .segline{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .segline .tag{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx-3);width:26px;flex:none}
-.tfield{padding:9px 13px;border-radius:11px;border:1px solid var(--line-2);background:rgba(6,10,26,.6);
-  font-size:14.5px;font-weight:600;font-variant-numeric:tabular-nums;transition:.2s;min-width:70px}
+.tfield{padding:11px 14px;border-radius:11px;border:1px solid var(--line-2);background:rgba(6,10,26,.6);
+  font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;transition:.2s;min-width:76px}
 .tfield:hover{border-color:var(--butter-dim);color:var(--butter)}
 .tfield.act{border-color:var(--butter);background:rgba(247,215,116,.12);color:var(--butter)}
 .dash{color:var(--tx-3);font-size:13px}
@@ -343,8 +351,8 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .qrow{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
 .qf{flex:1;min-width:132px}
 .qf small{display:block;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-3);margin-bottom:6px}
-.qf input[type=date]{width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line-2);
-  background:rgba(6,10,26,.6);font-size:14px;outline:none;color-scheme:dark}
+.qf input[type=date]{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line-2);
+  background:rgba(6,10,26,.6);font-size:16px;outline:none;color-scheme:dark}
 .qf input[type=date]:focus{border-color:rgba(247,215,116,.5)}
 .tsel{display:flex;gap:7px;flex-wrap:wrap}
 .tpill{display:flex;align-items:center;gap:7px;padding:10px 14px;border-radius:12px;border:1px solid var(--line-2);
@@ -386,7 +394,7 @@ h1.dis i{font-style:italic;color:var(--butter)}
   color:var(--tx-3);transition:.2s}
 .scope button.on{background:rgba(247,215,116,.14);border-color:rgba(247,215,116,.45);color:var(--butter);font-weight:600}
 .sheet-card textarea{width:100%;padding:13px;border-radius:14px;border:1px solid var(--line-2);background:rgba(6,10,26,.6);
-  font-size:14px;outline:none;resize:vertical;min-height:64px;margin-bottom:14px}
+  font-size:16px;outline:none;resize:vertical;min-height:64px;margin-bottom:14px}
 .sheet-card textarea:focus{border-color:rgba(247,215,116,.5)}
 .sheet-actions{display:flex;gap:10px;margin-top:6px}
 .sheet-actions .btn{flex:1}
@@ -422,6 +430,15 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
 .pt{padding-top:34px}
 .mt{margin-top:22px}
 
+@media(max-width:520px){
+  .wrap{padding:0 14px 110px}
+  .pt{padding-top:20px}
+  .card{padding:17px;border-radius:20px}
+  h1.dis{font-size:clamp(27px,7.6vw,40px)}
+  .lede{font-size:14.5px}
+  .btn{padding:15px 22px}
+  .topbar-in{padding:11px 14px}
+}
 @media(prefers-reduced-motion:reduce){
   *,*::after,*::before{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
@@ -561,25 +578,9 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
             </div>
           </div>
 
-          <!-- 4 Monate -->
+          <!-- 4 Dienstzeiten -->
           <div class="slide">
-            <div class="eyebrow">Schritt 4 · Zeitraum</div>
-            <h1 class="dis">Welche Monate <i>schreibst</i> du?</h1>
-            <p class="lede">Standardmäßig ist der Vormonat gewählt. Du kannst beliebig viele Monate dazunehmen — auch später jederzeit.</p>
-            <div class="card mt">
-              <div class="yearnav">
-                <button class="rnd" data-yr="-1" aria-label="Jahr zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
-                <b id="ob-year"></b>
-                <button class="rnd" data-yr="1" aria-label="Jahr vor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
-              </div>
-              <div class="mgrid" id="ob-months"></div>
-              <p class="hint" style="margin-top:14px" id="ob-msel"></p>
-            </div>
-          </div>
-
-          <!-- 5 Dienstzeiten -->
-          <div class="slide">
-            <div class="eyebrow">Schritt 5 · Dienstzeiten</div>
+            <div class="eyebrow">Schritt 4 · Dienstzeiten</div>
             <h1 class="dis">Dein <i>Rhythmus</i>.</h1>
             <p class="lede">Montag bis Samstag, in 15-Minuten-Schritten. Pause und Stunden rechnet Simply automatisch. Arbeitest du im Wechsel, legst du bis zu vier Wochen an.</p>
             <div id="sched-onboard" class="mt"></div>
@@ -601,7 +602,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
 
         </div>
       </div>
-      <div class="navrow">
+      <div class="navrow sticky" id="ob-nav">
         <button class="btn btn-g" id="ob-back" style="display:none">Zurück</button>
         <button class="btn btn-p" id="ob-next">Weiter
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -638,7 +639,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
             </div>
           </div>
           <div class="qf" id="q-textwrap" style="display:none;margin-top:14px"><small>Vermerk</small>
-            <input type="text" id="q-text" placeholder="z. B. Schulung" style="width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line-2);background:rgba(6,10,26,.6);outline:none">
+            <input type="text" id="q-text" placeholder="z. B. Schulung" style="width:100%;padding:13px;border-radius:12px;border:1px solid var(--line-2);background:rgba(6,10,26,.6);outline:none;font-size:16px">
           </div>
           <div class="sheet-actions">
             <button class="btn btn-p" id="q-apply">Eintragen</button>
@@ -1067,7 +1068,7 @@ function startParticles(){
       p.x += p.vx; p.y += p.vy; p.vx *= .972; p.vy *= .972; p.life -= p.dec;
       cx.globalAlpha = Math.max(0, p.life);
       cx.fillStyle = p.c;
-      cx.beginPath(); cx.arc(p.x, p.y, p.r*p.life, 0, 6.2832); cx.fill();
+      cx.beginPath(); cx.arc(p.x, p.y, Math.max(0.01, p.r*p.life), 0, 6.2832); cx.fill();
     });
     cx.globalAlpha = 1;
     _pAnim = requestAnimationFrame(loop);
@@ -1125,13 +1126,16 @@ function renderSched(host, sched, onChange){
   html += '<div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center"><div class="seg" id="wc-seg">';
   [1,2,3,4].forEach(n => html += '<button data-wc="'+n+'"'+(n===wc?' class="on"':'')+'>'+n+(n===1?' Woche':' Wochen')+'</button>');
   html += '</div>';
-  if(wc > 1){
-    html += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11.5px;color:var(--tx-3)">Rotation</span>';
-    html += '<button class="rnd" data-off="-1" aria-label="Rotation zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>';
-    html += '<span class="hbadge" style="min-width:74px;text-align:center">KW '+isoWeek(new Date())+' → W'+((((isoWeek(new Date())-1+(sched.offset||0))%wc)+wc)%wc + 1)+'</span>';
-    html += '<button class="rnd" data-off="1" aria-label="Rotation vor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button></div>';
-  }
   html += '</div>';
+  if(wc > 1){
+    const kw = isoWeek(new Date());
+    const cur = (((kw - 1 + (sched.offset||0)) % wc) + wc) % wc;
+    html += '<div style="width:100%;margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)">';
+    html += '<p class="hint" style="margin-bottom:10px">Gerade läuft Kalenderwoche '+kw+'. Nach welcher deiner Wochen arbeitest du diese Woche?</p>';
+    html += '<div class="seg" id="rot-seg">';
+    for(let i = 0; i < wc; i++) html += '<button data-rot="'+i+'"'+(i===cur?' class="on"':'')+'>Woche '+(i+1)+'</button>';
+    html += '</div></div>';
+  }
   if(wc > 1){
     html += '<div class="wtabs">';
     for(let i = 0; i < wc; i++) html += '<button class="wtab'+(i===tab?' on':'')+'" data-tab="'+i+'">Woche '+(i+1)+' · '+fmtH(weekTotal(sched,i))+' h</button>';
@@ -1177,8 +1181,12 @@ function renderSched(host, sched, onChange){
     const t = e.target;
     const wcb = t.closest('[data-wc]');
     if(wcb){ sched.weekCount = +wcb.dataset.wc; sched.tab = 0; renderSched(host, sched, onChange); onChange && onChange(); return; }
-    const off = t.closest('[data-off]');
-    if(off){ sched.offset = ((sched.offset||0) + (+off.dataset.off) + 4) % 4; renderSched(host, sched, onChange); onChange && onChange(); return; }
+    const rot = t.closest('[data-rot]');
+    if(rot){
+      const want = +rot.dataset.rot, kw = isoWeek(new Date());
+      sched.offset = (((want - (kw - 1)) % wc) + wc) % wc;
+      renderSched(host, sched, onChange); onChange && onChange(); return;
+    }
     const tb = t.closest('[data-tab]');
     if(tb){ sched.tab = +tb.dataset.tab; renderSched(host, sched, onChange); return; }
     const tg = t.closest('[data-tg]');
@@ -1205,6 +1213,8 @@ function renderSched(host, sched, onChange){
         $('.hbadge', dr).classList.toggle('zero', (vm+nm) === 0);
         $('.dn small', dr).textContent = (vm+nm) > 0 ? (pause > 0 ? 'Pause '+fmtH(pause)+' h' : 'ohne Pause') : 'dienstfrei';
         const ws = $('.wsum b', host); if(ws) ws.textContent = fmtH(weekTotal(sched, sched.tab))+' h';
+        const tb = $('.wtab[data-tab="'+sched.tab+'"]', host);
+        if(tb) tb.textContent = 'Woche '+(sched.tab+1)+' · '+fmtH(weekTotal(sched, sched.tab))+' h';
         onChange && onChange();
       });
       return;
@@ -1273,7 +1283,7 @@ function echoDob(){
 const NOW = new Date();
 const PREV = new Date(NOW.getFullYear(), NOW.getMonth()-1, 1);
 const OB = { step:0, year:PREV.getFullYear(), months:new Set([PREV.getFullYear()+'-'+PREV.getMonth()]), sched:defaultSched(), edit:false };
-const STEPS = 6;
+const STEPS = 5;
 
 function obInit(){
   OB.step = 0; OB.year = PREV.getFullYear();
@@ -1281,26 +1291,20 @@ function obInit(){
   OB.sched = defaultSched();
   $('#in-vn').value = ''; $('#in-nn').value = '';
   $$('[data-dob="ob"] input').forEach(i => i.value = '');
-  echoDob(); obYear(); renderSched($('#sched-onboard'), OB.sched, refreshNav);
+  echoDob(); renderSched($('#sched-onboard'), OB.sched, refreshNav);
   obPaint();
   ['lg1','lg2','lg3','lg4'].forEach((id, i) => {
     const t = ['feier','urlaub','krank','eigen'][i];
     $('#'+id).innerHTML = '<span style="color:'+TYPES[t].color+'">'+ICONS[t]+'</span>'+TYPES[t].label;
   });
 }
-function obYear(){
-  $('#ob-year').textContent = OB.year;
-  $('#ob-months').innerHTML = MONTHS.map((n,i) =>
-    '<button class="chip'+(OB.months.has(OB.year+'-'+i)?' on':'')+'" data-m="'+i+'">'+MSHORT[i]+'</button>').join('');
-  const n = OB.months.size;
-  $('#ob-msel').textContent = n === 0 ? 'Noch kein Monat gewählt.' :
-    n + (n===1?' Monat':' Monate') + ' gewählt: ' + Array.from(OB.months).sort().map(s => {
-      const [y,m] = s.split('-'); return MSHORT[+m]+' '+y; }).join(', ');
-  refreshNav();
-}
+let _prevStep = 0;
 function obPaint(){
-  $('#track').style.transform = 'translateX(-'+(OB.step*100)+'%)';
-  $$('#track .slide').forEach((s,i) => s.classList.toggle('active', i === OB.step));
+  const back = OB.step < _prevStep; _prevStep = OB.step;
+  $$('#track .slide').forEach((s,i) => {
+    s.classList.toggle('active', i === OB.step);
+    s.classList.toggle('back', i === OB.step && back);
+  });
   $('#rail').innerHTML = Array.from({length:STEPS}, (_,i) => '<i class="'+(i<=OB.step?'done':'')+'"></i>').join('');
   $('#ob-step').textContent = (OB.step+1) + ' / ' + STEPS;
   $('#ob-back').style.display = OB.step === 0 ? 'none' : 'inline-flex';
@@ -1318,8 +1322,7 @@ function obPaint(){
 function stepValid(s){
   if(s === 0) return !!($('#in-vn').value.trim() && $('#in-nn').value.trim());
   if(s === 1) return !!dobIso(readDob('ob'));
-  if(s === 3) return OB.months.size > 0;
-  if(s === 4) return [0,1,2,3].slice(0, clamp(OB.sched.weekCount,1,4)).some(i => weekTotal(OB.sched, i) > 0);
+  if(s === 3) return [0,1,2,3].slice(0, clamp(OB.sched.weekCount,1,4)).some(i => weekTotal(OB.sched, i) > 0);
   return true;
 }
 function refreshNav(){
@@ -1336,13 +1339,6 @@ $('#ob-back').addEventListener('click', () => { if(OB.step > 0){ OB.step--; obPa
 $('#in-vn').addEventListener('input', refreshNav);
 $('#in-nn').addEventListener('input', refreshNav);
 $$('#in-vn,#in-nn').forEach(i => i.addEventListener('keydown', e => { if(e.key === 'Enter') $('#ob-next').click(); }));
-$('#ob-months').addEventListener('click', e => {
-  const b = e.target.closest('[data-m]'); if(!b) return;
-  const k = OB.year+'-'+b.dataset.m;
-  OB.months.has(k) ? OB.months.delete(k) : OB.months.add(k);
-  obYear();
-});
-$$('[data-yr]').forEach(b => b.addEventListener('click', () => { OB.year += +b.dataset.yr; obYear(); }));
 
 function finishOnboarding(){
   const vn = $('#in-vn').value.trim(), nn = $('#in-nn').value.trim();
@@ -1905,6 +1901,15 @@ $('#sh-textwrap').insertAdjacentHTML('beforeend',
   + '<button class="toggle" id="sh-aw" aria-label="Als Arbeitszeit zählen"></button>'
   + '<span style="font-size:12.5px;color:var(--tx-2)">Stunden als Arbeitszeit zählen</span></div>');
 $('#sh-aw').addEventListener('click', () => { SH.aw = !SH.aw; paintSheet(); });
+
+['gesturestart','gesturechange','gestureend'].forEach(ev =>
+  document.addEventListener(ev, e => e.preventDefault(), { passive:false }));
+let _lt = 0, _lx = 0, _ly = 0;
+document.addEventListener('touchend', e => {
+  const t = e.changedTouches[0], n = Date.now();
+  if(n - _lt < 340 && Math.abs(t.clientX - _lx) < 32 && Math.abs(t.clientY - _ly) < 32) e.preventDefault();
+  _lt = n; _lx = t.clientX; _ly = t.clientY;
+}, { passive:false });
 
 wireDob('ob'); wireDob('lg');
 try{ playIntro(); }catch(e){ console.warn(e); endIntro(); }
