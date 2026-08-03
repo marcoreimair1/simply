@@ -462,8 +462,25 @@ h1.dis i{font-style:italic;color:var(--butter)}
   display:grid;place-items:center;flex:none}
 .quick-head b{font-size:13.5px;display:block}
 .quick-head small{color:var(--tx-3);font-size:11.5px}
-.quick-body{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)}
-.quick.on .quick-body{display:block;animation:fadeUp .35s var(--ease-out)}
+.quick-body{overflow:hidden;height:0;opacity:0;pointer-events:none;
+  border-top:1px solid transparent;
+  transition:height .5s var(--ease-out), opacity .3s ease, margin-top .5s var(--ease-out),
+             padding-top .5s var(--ease-out), border-top-color .4s ease}
+.quick.on .quick-body{opacity:1;pointer-events:auto;margin-top:16px;padding-top:16px;
+  border-top-color:var(--line-2)}
+/* Inhalte laufen nacheinander ein, damit es fließt statt zu erscheinen */
+.quick.on .quick-body > *{animation:qIn .52s var(--ease-out) both}
+.quick.on .quick-body > *:nth-child(1){animation-delay:.05s}
+.quick.on .quick-body > *:nth-child(2){animation-delay:.11s}
+.quick.on .quick-body > *:nth-child(3){animation-delay:.17s}
+.quick.on .quick-body > *:nth-child(4){animation-delay:.23s}
+.quick.on .quick-body > *:nth-child(5){animation-delay:.29s}
+.quick.on .quick-body > *:nth-child(6){animation-delay:.35s}
+@keyframes qIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.quick-head > svg{transition:transform .45s var(--ease)}
+.quick.on .quick-head > svg{transform:rotate(180deg)}
+/* Luft vor der Knopfzeile — vorher klebte sie am Umfang darüber */
+#quick .sheet-actions{margin-top:26px}
 .qrow{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
 .qf{flex:1;min-width:132px}
 .qf small{display:block;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-3);margin-bottom:6px}
@@ -2018,12 +2035,33 @@ $('#qc-grid').addEventListener('click', e => {
 });
 $('#qc-prev').addEventListener('click', () => { Q.m--; if(Q.m < 0){ Q.m = 11; Q.y--; } renderQCal(); });
 $('#qc-next').addEventListener('click', () => { Q.m++; if(Q.m > 11){ Q.m = 0; Q.y++; } renderQCal(); });
+const qBody = $('#quick .quick-body');
+let _qAnim = null;
+function quickOpen(){
+  const card = $('#quick');
+  if(card.classList.contains('on')) return;
+  if(!Q.from){ Q.y = CAL.y; Q.m = CAL.m; }
+  renderQCal();                       /* erst füllen, dann messen */
+  card.classList.add('on');
+  qBody.style.height = 'auto';
+  const h = qBody.scrollHeight;
+  qBody.style.height = '0px';
+  void qBody.offsetHeight;
+  requestAnimationFrame(() => { qBody.style.height = h + 'px'; });
+  clearTimeout(_qAnim);
+  _qAnim = setTimeout(() => { if(card.classList.contains('on')) qBody.style.height = 'auto'; }, 560);
+}
+function quickClose(){
+  const card = $('#quick');
+  if(!card.classList.contains('on')) return;
+  clearTimeout(_qAnim);
+  qBody.style.height = qBody.scrollHeight + 'px';
+  void qBody.offsetHeight;
+  card.classList.remove('on');
+  requestAnimationFrame(() => { qBody.style.height = '0px'; });
+}
 $('#quick-t').addEventListener('click', () => {
-  const open = $('#quick').classList.toggle('on');
-  if(open){
-    if(!Q.from){ Q.y = CAL.y; Q.m = CAL.m; }
-    renderQCal();
-  }
+  $('#quick').classList.contains('on') ? quickClose() : quickOpen();
 });
 $('#q-type').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
@@ -2051,8 +2089,11 @@ function qFinish(title, sub, keys){
   setTimeout(() => {
     card.classList.add('closing');
     setTimeout(() => {
-      card.classList.remove('on'); card.classList.remove('closing');
+      card.classList.remove('closing');
       card.style.animation = ''; ov.remove();
+      qBody.style.height = qBody.scrollHeight + 'px';
+      card.classList.remove('on');
+      requestAnimationFrame(() => { qBody.style.height = '0px'; });
       Q.from = Q.to = null; renderQCal();
       renderCal();
       setTimeout(() => { FLASH = new Set(); FLASH_ORDER = []; }, 1400);
