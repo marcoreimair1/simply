@@ -2195,14 +2195,25 @@ function logoBlack(){
       const img = new Image();
       img.onload = () => {
         try{
-          const c = document.createElement('canvas');
-          c.width = img.width; c.height = img.height;
-          const x = c.getContext('2d');
-          x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, c.width, c.height);
-          x.filter = 'invert(1)';
-          x.drawImage(img, 0, 0);
-          fertig({ url:c.toDataURL('image/png'), ratio:img.width/img.height });
-        }catch(e){ fertig(null); }
+          /* Umkehr von Hand: ctx.filter ist nicht überall verlässlich,
+             und ein weißes Logo auf weißem Papier wäre unsichtbar. */
+          const a = document.createElement('canvas');
+          a.width = img.width; a.height = img.height;
+          const ax = a.getContext('2d');
+          ax.drawImage(img, 0, 0);
+          const d = ax.getImageData(0, 0, a.width, a.height), p = d.data;
+          for(let i = 0; i < p.length; i += 4){
+            p[i] = 255 - p[i]; p[i+1] = 255 - p[i+1]; p[i+2] = 255 - p[i+2];
+          }
+          ax.putImageData(d, 0, 0);
+          /* auf Papierweiß setzen, damit keine Transparenz im PDF nötig ist */
+          const b = document.createElement('canvas');
+          b.width = a.width; b.height = a.height;
+          const bx = b.getContext('2d');
+          bx.fillStyle = '#FFFFFF'; bx.fillRect(0, 0, b.width, b.height);
+          bx.drawImage(a, 0, 0);
+          fertig({ url:b.toDataURL('image/png'), ratio:img.width/img.height });
+        }catch(e){ console.warn(e); fertig(null); }
       };
       img.onerror = () => fertig(null);
       img.src = LOGO_WORD;
