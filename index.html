@@ -363,6 +363,30 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .tpill[data-t=krank].on{background:rgba(255,142,110,.18);border-color:var(--c-krank);color:var(--c-krank)}
 .tpill[data-t=eigen].on{background:rgba(121,232,198,.18);border-color:var(--c-eigen);color:var(--c-eigen)}
 
+/* Bereichskalender im Schnelleintrag */
+.qcal{border:1px solid var(--line-2);border-radius:var(--r-m);padding:14px;background:rgba(6,10,26,.35)}
+.qcal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.qcal-head b{font-family:var(--font-dis);font-size:20px;font-weight:400;letter-spacing:-.01em}
+.qcal-head .rnd{width:32px;height:32px}
+.qcal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px}
+.qcal-dow span{text-align:center;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-3)}
+.qcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px 0}
+.qc{aspect-ratio:1;border-radius:10px;font-size:13.5px;font-weight:500;font-variant-numeric:tabular-nums;
+  display:grid;place-items:center;color:var(--tx-2);transition:.14s;min-height:34px}
+.qc:hover{background:rgba(247,215,116,.14);color:var(--butter)}
+.qc.pad{visibility:hidden;pointer-events:none}
+.qc.off{color:var(--tx-3);opacity:.45}
+.qc.today{box-shadow:inset 0 0 0 1.5px var(--butter-dim)}
+.qc.mid{background:rgba(247,215,116,.15);border-radius:0;color:var(--butter)}
+.qc.edge{background:linear-gradient(130deg,var(--butter-2),var(--butter));color:#221904;font-weight:700;
+  box-shadow:0 6px 16px -8px rgba(247,215,116,.7)}
+.qc.start{border-radius:10px 0 0 10px}
+.qc.end{border-radius:0 10px 10px 0}
+.qc.solo{border-radius:10px}
+.qsum{margin:14px 0 0;font-size:12.5px;color:var(--tx-2);line-height:1.5}
+.qsum b{color:var(--butter);font-weight:600}
+.qhint{color:var(--tx-3)}
+
 /* Bottom-Sheet */
 .sheet{position:fixed;inset:0;z-index:50;display:none}
 .sheet.on{display:block}
@@ -622,16 +646,22 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
       <div class="card quick" id="quick">
         <button class="quick-head" id="quick-t">
           <span class="qi"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
-          <span><b>Zeitraum eintragen</b><small>Urlaub, Krankenstand oder eigener Vermerk — von / bis</small></span>
+          <span><b>Zeitraum eintragen</b><small>Ersten und letzten Tag antippen — Urlaub, Krankenstand oder eigener Vermerk</small></span>
           <span class="spacer"></span>
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:.5"><path d="M6 9l6 6 6-6"/></svg>
         </button>
         <div class="quick-body">
-          <div class="qrow">
-            <div class="qf"><small>Von</small><input type="date" id="q-from"></div>
-            <div class="qf"><small>Bis</small><input type="date" id="q-to"></div>
+          <div class="qcal">
+            <div class="qcal-head">
+              <button class="rnd" id="qc-prev" aria-label="Monat zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+              <b id="qc-title">—</b>
+              <button class="rnd" id="qc-next" aria-label="Monat vor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+            </div>
+            <div class="qcal-dow"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
+            <div class="qcal-grid" id="qc-grid"></div>
           </div>
-          <div class="qrow" style="margin-top:14px">
+          <p class="qsum" id="q-sum"></p>
+          <div class="qrow" style="margin-top:16px">
             <div class="qf" style="flex:2"><small>Art</small><div class="tsel" id="q-type"></div></div>
           </div>
           <div class="qrow" style="margin-top:14px">
@@ -648,7 +678,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
           </div>
           <div class="sheet-actions">
             <button class="btn btn-p" id="q-apply">Eintragen</button>
-            <button class="btn btn-g" id="q-clear">Zeitraum leeren</button>
+            <button class="btn btn-g" id="q-clear">Einträge entfernen</button>
           </div>
         </div>
       </div>
@@ -1412,7 +1442,8 @@ function enterApp(){
   const first = (ME.months || [])[0];
   CAL.y = first ? first.y : PREV.getFullYear();
   CAL.m = first ? first.m : PREV.getMonth();
-  exYear(); renderCal(); legend();
+  Q.from = Q.to = null; Q.y = CAL.y; Q.m = CAL.m;
+  exYear(); renderCal(); legend(); renderQCal();
   go('v-cal');
 }
 function legend(){
@@ -1536,10 +1567,87 @@ $('#sh-del').addEventListener('click', () => {
 /* ═══════════════════════════════════════════════════════════
    SCHNELLEINTRAG (Zeitraum)
    ═══════════════════════════════════════════════════════════ */
-const Q = { type:'urlaub', scope:'full' };
+const Q = { type:'urlaub', scope:'full', from:null, to:null, y:PREV.getFullYear(), m:PREV.getMonth() };
 $('#q-type').innerHTML = ['urlaub','krank','eigen'].map(t =>
   '<button class="tpill'+(t===Q.type?' on':'')+'" data-t="'+t+'">'+ICONS[t]+TYPES[t].label+'</button>').join('');
-$('#quick-t').addEventListener('click', () => $('#quick').classList.toggle('on'));
+
+function fmtDay(d){ return DOWSHORT[d.getDay()] + ', ' + d.getDate() + '. ' + MSHORT[d.getMonth()] + ' ' + d.getFullYear(); }
+
+/* Ein Tag ist betroffen, wenn er kein Sonntag, kein Feiertag und laut Dienstplan besetzt ist */
+function qTouched(d){
+  if(d.getDay() === 0) return false;
+  if(holidays(d.getFullYear())[key(d.getFullYear(), d.getMonth(), d.getDate())]) return false;
+  const pl = dayPlan(ME.sched, d);
+  return (pl.vm + pl.nm) > 0;
+}
+function qEach(fn){
+  const r = qRange(); if(!r) return 0;
+  let n = 0;
+  for(const d = new Date(r[0]); d <= r[1]; d.setDate(d.getDate()+1)) if(fn(new Date(d))) n++;
+  return n;
+}
+function renderQCal(){
+  if(!ME) return;
+  const y = Q.y, m = Q.m, n = dim(y, m);
+  const lead = (new Date(y, m, 1).getDay() + 6) % 7;
+  const hol = holidays(y), today = new Date();
+  const a = Q.from ? +Q.from : null, b = Q.to ? +Q.to : null;
+  $('#qc-title').textContent = MONTHS[m] + ' ' + y;
+  let h = '';
+  for(let i = 0; i < lead; i++) h += '<div class="qc pad"></div>';
+  for(let d = 1; d <= n; d++){
+    const dt = new Date(y, m, d), x = +dt;
+    let cls = 'qc';
+    if(!qTouched(dt)) cls += ' off';
+    if(a !== null && b !== null){
+      if(x === a && x === b) cls += ' edge solo';
+      else if(x === a) cls += ' edge start';
+      else if(x === b) cls += ' edge end';
+      else if(x > a && x < b) cls += ' mid';
+    } else if(a !== null && x === a) cls += ' edge solo';
+    if(today.getFullYear() === y && today.getMonth() === m && today.getDate() === d) cls += ' today';
+    const title = hol[key(y,m,d)] || (dt.getDay() === 0 ? 'Sonntag' : '');
+    h += '<button class="'+cls+'" data-qd="'+d+'"'+(title?' title="'+esc(title)+'"':'')+'>'+d+'</button>';
+  }
+  $('#qc-grid').innerHTML = h;
+  qSummary();
+}
+function qSummary(){
+  const el = $('#q-sum');
+  if(!Q.from){ el.innerHTML = '<span class="qhint">Tippe den ersten Tag an, dann den letzten. Ein einzelner Tag geht auch.</span>'; return; }
+  if(!Q.to){ el.innerHTML = '<b>' + fmtDay(Q.from) + '</b><br><span class="qhint">Jetzt den letzten Tag antippen — oder unten direkt eintragen.</span>'; return; }
+  let days = 0, taken = 0;
+  for(const d = new Date(Q.from); d <= Q.to; d.setDate(d.getDate()+1)){
+    if(!qTouched(d)) continue;
+    days++;
+    if(ME.events[key(d.getFullYear(), d.getMonth(), d.getDate())]) taken++;
+  }
+  el.innerHTML = '<b>' + fmtDay(Q.from) + ' &nbsp;–&nbsp; ' + fmtDay(Q.to) + '</b><br>'
+    + '<span class="qhint">' + days + (days === 1 ? ' Arbeitstag' : ' Arbeitstage') + ' betroffen'
+    + (taken ? ' · ' + taken + ' davon bereits belegt' : '')
+    + ' · Sonntage, Feiertage und dienstfreie Tage werden übersprungen.</span>';
+}
+function qRange(){
+  if(!Q.from) return null;
+  return [new Date(Q.from), new Date(Q.to || Q.from)];
+}
+$('#qc-grid').addEventListener('click', e => {
+  const b = e.target.closest('[data-qd]'); if(!b) return;
+  const dt = new Date(Q.y, Q.m, +b.dataset.qd);
+  if(!Q.from || (Q.from && Q.to)){ Q.from = dt; Q.to = null; }
+  else if(+dt < +Q.from){ Q.to = Q.from; Q.from = dt; }
+  else Q.to = dt;
+  renderQCal();
+});
+$('#qc-prev').addEventListener('click', () => { Q.m--; if(Q.m < 0){ Q.m = 11; Q.y--; } renderQCal(); });
+$('#qc-next').addEventListener('click', () => { Q.m++; if(Q.m > 11){ Q.m = 0; Q.y++; } renderQCal(); });
+$('#quick-t').addEventListener('click', () => {
+  const open = $('#quick').classList.toggle('on');
+  if(open){
+    if(!Q.from){ Q.y = CAL.y; Q.m = CAL.m; }
+    renderQCal();
+  }
+});
 $('#q-type').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
   Q.type = b.dataset.t;
@@ -1551,38 +1659,28 @@ $('#q-scope').addEventListener('click', e => {
   Q.scope = b.dataset.s;
   $$('#q-scope button').forEach(x => x.classList.toggle('on', x.dataset.s === Q.scope));
 });
-function qRange(){
-  const a = $('#q-from').value, b = $('#q-to').value;
-  if(!a) return null;
-  const from = new Date(a + 'T00:00:00');
-  const to = new Date((b || a) + 'T00:00:00');
-  if(isNaN(from) || isNaN(to) || to < from) return null;
-  return [from, to];
-}
 $('#q-apply').addEventListener('click', () => {
-  const r = qRange(); if(!r){ toast('Bitte gültigen Zeitraum wählen'); return; }
-  let n = 0;
-  for(const d = new Date(r[0]); d <= r[1]; d.setDate(d.getDate()+1)){
-    const k = key(d.getFullYear(), d.getMonth(), d.getDate());
-    if(holidays(d.getFullYear())[k]) continue;
-    if(d.getDay() === 0) continue;
-    const pl = dayPlan(ME.sched, d);
-    if(pl.vm + pl.nm === 0) continue;
-    ME.events[k] = { t:Q.type, s:Q.scope, text:Q.type === 'eigen' ? $('#q-text').value.trim() : '', aw:false };
-    n++;
-  }
-  save(); renderCal();
-  toast(n + (n === 1 ? ' Tag' : ' Tage') + ' eingetragen');
+  if(!qRange()){ toast('Zuerst Tage im Kalender antippen'); return; }
+  const n = qEach(d => {
+    if(!qTouched(d)) return false;
+    ME.events[key(d.getFullYear(), d.getMonth(), d.getDate())] =
+      { t:Q.type, s:Q.scope, text:Q.type === 'eigen' ? $('#q-text').value.trim() : '', aw:false };
+    return true;
+  });
+  save(); renderCal(); renderQCal();
+  toast(n === 0 ? 'In diesem Zeitraum liegt kein Arbeitstag'
+                : n + (n === 1 ? ' Tag eingetragen' : ' Tage eingetragen'));
 });
 $('#q-clear').addEventListener('click', () => {
-  const r = qRange(); if(!r){ toast('Bitte gültigen Zeitraum wählen'); return; }
-  let n = 0;
-  for(const d = new Date(r[0]); d <= r[1]; d.setDate(d.getDate()+1)){
+  if(!qRange()){ toast('Zuerst Tage im Kalender antippen'); return; }
+  const n = qEach(d => {
     const k = key(d.getFullYear(), d.getMonth(), d.getDate());
-    if(ME.events[k]){ delete ME.events[k]; n++; }
-  }
-  save(); renderCal();
-  toast(n + ' Einträge entfernt');
+    if(!ME.events[k]) return false;
+    delete ME.events[k]; return true;
+  });
+  save(); renderCal(); renderQCal();
+  toast(n === 0 ? 'In diesem Zeitraum war nichts eingetragen'
+                : n + (n === 1 ? ' Eintrag entfernt' : ' Einträge entfernt'));
 });
 
 /* ═══════════════════════════════════════════════════════════
