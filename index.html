@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Simply — Arbeitszeitaufzeichnung</title>
+<title>MARU — Arbeitszeitaufzeichnung</title>
 <meta name="theme-color" content="#0A1129">
-<meta name="description" content="Simply — Arbeitszeitaufzeichnung für Miller Optik GmbH">
+<meta name="description" content="MARU — Arbeitszeitaufzeichnung für Miller Optik GmbH">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230A1129'/%3E%3Cpath d='M42 20c-9-6-20-2-20 6 0 9 20 5 20 14 0 8-11 11-20 5' stroke='%23F7D774' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230A1129'/%3E%3Cpath d='M19 47V17l13 18 13-18v30' stroke='%23F7D774' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
 /* ============================================================
    SIMPLY — Design Tokens
@@ -155,7 +155,8 @@ input,textarea{-webkit-appearance:none}
 @keyframes markIn{from{opacity:0}to{opacity:1}}
 .mark .ring{fill:none;stroke:rgba(247,215,116,.32);stroke-width:2.5;stroke-dasharray:640;stroke-dashoffset:640;
   animation:draw 1.5s 1.05s var(--ease-out) forwards, spin 26s 2.6s linear infinite}
-.mark .ess{fill:none;stroke:url(#gEss);stroke-width:17;stroke-linecap:round;stroke-dasharray:520;stroke-dashoffset:520;
+.mark .ess{fill:none;stroke:url(#gEss);stroke-width:19;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:380;stroke-dashoffset:380;
   filter:url(#glow);animation:draw 1.5s .62s var(--ease-out) forwards}
 .mark .pip{fill:var(--butter-2);opacity:0;transform-origin:center;animation:pip .7s 2.02s var(--ease-out) forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
@@ -164,8 +165,8 @@ input,textarea{-webkit-appearance:none}
 .bloom{position:absolute;top:50%;left:50%;translate:-50% -50%;width:10px;height:10px;border-radius:50%;
   background:#fff;box-shadow:0 0 70px 34px rgba(247,215,116,.62);opacity:0;animation:bloom 1s 1.95s var(--ease-out) forwards}
 @keyframes bloom{0%{opacity:0;transform:scale(.2)}18%{opacity:.95;transform:scale(1)}100%{opacity:0;transform:scale(7)}}
-.wordmark{display:flex;margin-top:22px;font-family:var(--font-dis);font-weight:500;letter-spacing:-.035em;
-  font-size:clamp(46px,13vw,90px);line-height:1;color:var(--paper)}
+.wordmark{display:flex;margin-top:22px;font-family:var(--font-dis);font-weight:500;letter-spacing:.015em;
+  font-size:clamp(50px,14vw,96px);line-height:1;color:var(--paper)}
 .wordmark span{display:inline-block;opacity:0;transform:translateY(58%) rotate(6deg);filter:blur(9px);
   animation:letter .95s var(--ease-out) forwards}
 @keyframes letter{to{opacity:1;transform:none;filter:blur(0)}}
@@ -660,8 +661,8 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
         </filter>
       </defs>
       <circle class="ring" cx="120" cy="120" r="102" style="transform-origin:120px 120px"/>
-      <path class="ess" d="M162 68C162 68 78 44 78 84C78 122 162 112 162 156C162 200 76 184 76 184"/>
-      <circle class="pip" cx="181" cy="186" r="8.5"/>
+      <path class="ess" d="M72 178L72 76L120 142L168 76L168 178"/>
+      <circle class="pip" cx="192" cy="172" r="8.5"/>
     </svg>
     <div class="wordmark" id="wm"></div>
     <div class="byline">by Marco</div>
@@ -677,10 +678,10 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
       <div class="brand">
         <svg class="bm" viewBox="0 0 240 240" aria-hidden="true">
           <circle cx="120" cy="120" r="102" fill="none" stroke="rgba(247,215,116,.3)" stroke-width="7"/>
-          <path d="M162 68C162 68 78 44 78 84C78 122 162 112 162 156C162 200 76 184 76 184" fill="none" stroke="#F7D774" stroke-width="19" stroke-linecap="round"/>
-          <circle cx="181" cy="186" r="9" fill="#FDEBB4"/>
+          <path d="M72 178L72 76L120 142L168 76L168 178" fill="none" stroke="#F7D774" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="192" cy="172" r="9" fill="#FDEBB4"/>
         </svg>
-        <span class="bt">S<i>imply</i></span>
+        <span class="bt">M<i>ARU</i></span>
         <span class="bs">by Marco</span>
       </div>
       <div class="spacer"></div>
@@ -695,7 +696,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
     <section class="view pt" id="v-login">
       <div class="eyebrow" id="lg-eyebrow">Willkommen zurück</div>
       <h1 class="dis" id="lg-title">Schön, dich <i>wiederzusehen</i>.</h1>
-      <p class="lede" id="lg-lede">Vorname und Geburtsdatum — mehr braucht Simply nicht, um dich und deine Dienstzeiten zu erkennen.</p>
+      <p class="lede" id="lg-lede">Vorname und Geburtsdatum — mehr braucht MARU nicht, um dich und deine Dienstzeiten zu erkennen.</p>
 
       <!-- Cloud: Anmeldung per E-Mail-Link -->
       <div id="lg-cloud" style="display:none">
@@ -777,7 +778,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
           <div class="slide">
             <div class="eyebrow">Schritt 2 · Geburtsdatum</div>
             <h1 class="dis">Wann hat's <i>angefangen</i>?</h1>
-            <p class="lede">Dein Geburtsdatum ist gleichzeitig dein Schlüssel — damit erkennt dich Simply beim nächsten Besuch.</p>
+            <p class="lede">Dein Geburtsdatum ist gleichzeitig dein Schlüssel — damit erkennt dich MARU beim nächsten Besuch.</p>
             <div class="card mt" style="max-width:430px">
               <div class="dob" data-dob="ob" style="margin-top:2px">
                 <div class="g"><input inputmode="numeric" maxlength="2" data-p="d" placeholder="TT"><small>Tag</small></div>
@@ -813,7 +814,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
           <div class="slide">
             <div class="eyebrow">Schritt 4 · Dienstzeiten</div>
             <h1 class="dis">Dein <i>Rhythmus</i>.</h1>
-            <p class="lede">Montag bis Samstag, in 15-Minuten-Schritten. Pause und Stunden rechnet Simply automatisch. Arbeitest du im Wechsel, legst du bis zu vier Wochen an.</p>
+            <p class="lede">Montag bis Samstag, in 15-Minuten-Schritten. Pause und Stunden rechnet MARU automatisch. Arbeitest du im Wechsel, legst du bis zu vier Wochen an.</p>
             <div id="sched-onboard" class="mt"></div>
           </div>
 
@@ -824,7 +825,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
             <p class="lede" id="done-text"></p>
             <div class="card mt" style="max-width:470px">
               <h3>Was jetzt passiert</h3>
-              <p class="hint">Im Kalender tippst du nur noch Ausnahmen an — Urlaub, Krankenstand oder einen eigenen Vermerk. Feiertage kennt Simply selbst. Alles andere ergibt sich aus deinem Rhythmus.</p>
+              <p class="hint">Im Kalender tippst du nur noch Ausnahmen an — Urlaub, Krankenstand oder einen eigenen Vermerk. Feiertage kennt MARU selbst. Alles andere ergibt sich aus deinem Rhythmus.</p>
               <div class="legend">
                 <span class="lg" id="lg1"></span><span class="lg" id="lg2"></span><span class="lg" id="lg3"></span><span class="lg" id="lg4"></span>
               </div>
@@ -1003,7 +1004,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 /* ============================================================
-   SIMPLY · by Marco — Arbeitszeitaufzeichnung
+   MARU · by Marco — Arbeitszeitaufzeichnung
    Alles lokal im Browser. Kein Server, kein Tracking.
    ============================================================ */
 "use strict";
@@ -1020,7 +1021,7 @@ const STORE = 'simply.v1';
 /* ══════════════════════════════════════════════════════════════
    CLOUD — hier die zwei Werte aus Supabase eintragen
    (Project Settings → API). Der anon-Key ist öffentlich und darf
-   im Quelltext stehen. Bleiben beide leer, läuft Simply weiter
+   im Quelltext stehen. Bleiben beide leer, läuft MARU weiter
    rein lokal, so wie bisher.
    ══════════════════════════════════════════════════════════════ */
 const CLOUD = {
@@ -1311,7 +1312,7 @@ function playIntro(){
   document.body.classList.add('locked');
   $('#app').classList.remove('on');
   const wm = $('#wm');
-  'Simply'.split('').forEach((ch, i) => {
+  'MARU'.split('').forEach((ch, i) => {
     const s = document.createElement('span');
     s.style.animationDelay = (2.18 + i*0.075).toFixed(3) + 's';
     s.innerHTML = i === 0 ? ch : '<i>' + ch + '</i>';
@@ -1643,7 +1644,7 @@ function obPaint(){
   if(OB.step === STEPS-1){
     const vn = $('#in-vn').value.trim();
     $('#done-text').textContent = 'Angemeldet als ' + vn + ' bei ' + EMPLOYER +
-      '. Beim nächsten Besuch genügen Vorname und Geburtsdatum — Simply weiß dann wieder, wie du arbeitest.';
+      '. Beim nächsten Besuch genügen Vorname und Geburtsdatum — MARU weiß dann wieder, wie du arbeitest.';
   }
   const nav = $('#ob-nav');
   requestAnimationFrame(() => nav.classList.toggle('solid',
@@ -1735,7 +1736,7 @@ function loginScreen(){
     $('#known-list').innerHTML = list.map(p =>
       '<button class="chip" data-pid="'+p.id+'">'+esc(p.vorname)+' '+esc(p.nachname.charAt(0))+'.</button>').join('');
     $('#lg-title').innerHTML = 'Schön, dich <i>wiederzusehen</i>.';
-    $('#lg-lede').textContent = 'Vorname und Geburtsdatum — mehr braucht Simply nicht, um dich und deine Dienstzeiten zu erkennen.';
+    $('#lg-lede').textContent = 'Vorname und Geburtsdatum — mehr braucht MARU nicht, um dich und deine Dienstzeiten zu erkennen.';
     $('#lg-eyebrow').textContent = 'Willkommen zurück';
   }
   go('v-login');
@@ -2189,8 +2190,8 @@ function drawPage(doc, p, y, m, sigs){
   /* Kopf */
   doc.setFillColor(214,168,40);
   doc.roundedRect(L, 12.9, 10, 10, 2.4, 2.4, 'F');
-  doc.setTextColor(20,26,40); doc.setFont('times','bolditalic'); doc.setFontSize(12);
-  doc.text('S', L + 5, 20.1, { align:'center' });
+  doc.setTextColor(20,26,40); doc.setFont('helvetica','bold'); doc.setFontSize(12.5);
+  doc.text('M', L + 5, 20.4, { align:'center' });
 
   doc.setTextColor.apply(doc, DARK);
   doc.setFont('helvetica','bold'); doc.setFontSize(14.5);
@@ -2201,7 +2202,7 @@ function drawPage(doc, p, y, m, sigs){
 
   doc.setTextColor.apply(doc, DARK);
   doc.setFont('times','italic'); doc.setFontSize(15);
-  doc.text('Simply', R, 18.4, { align:'right' });
+  doc.text('MARU', R, 18.4, { align:'right' });
   doc.setFont('helvetica','normal'); doc.setFontSize(5.6);
   doc.setTextColor.apply(doc, GREY);
   doc.text('B Y   M A R C O', R, 22.4, { align:'right' });
@@ -2339,7 +2340,7 @@ function drawPage(doc, p, y, m, sigs){
   doc.setDrawColor(232,234,240); doc.setLineWidth(0.25);
   doc.line(L, 281, R, 281);
   doc.setFontSize(5.8); doc.setTextColor.apply(doc, GREY);
-  doc.text('Erstellt am ' + fmtDate(new Date().toISOString().slice(0,10)) + ' mit Simply · by Marco', L, 285.4);
+  doc.text('Erstellt am ' + fmtDate(new Date().toISOString().slice(0,10)) + ' mit MARU · by Marco', L, 285.4);
   doc.text(MONTHS[m] + ' ' + y + '  ·  ' + p.vorname + ' ' + p.nachname, R, 285.4, { align:'right' });
 }
 

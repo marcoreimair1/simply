@@ -1,39 +1,38 @@
-# Simply · by Marco
+# MARU · by Marco
 
-Arbeitszeitaufzeichnung für **Miller Optik GmbH**. Eine einzige Datei, kein Server, keine Datenbank, keine Kosten.
+Arbeitszeitaufzeichnung für **Miller Optik GmbH**. Eine einzige HTML-Datei, gehostet auf GitHub Pages, mit Supabase als Datenspeicher.
+
+**Live:** https://marcoreimair1.github.io/simply/
+
+> Die Adresse enthält noch den alten Projektnamen. Sie umzubenennen würde auch die Rückkehradresse in Supabase betreffen — sag Bescheid, wenn es dir wichtig ist.
 
 ---
 
-## Gratis hosten auf GitHub Pages
+## Anmelden
 
-1. Auf [github.com](https://github.com) einloggen → **New repository**
-   - Name z. B. `simply`
-   - **Public** wählen (Pages ist bei privaten Repos zahlungspflichtig)
-   - Erstellen
-2. Im leeren Repo auf **uploading an existing file** klicken und `index.html` hineinziehen → **Commit changes**
-3. **Settings** → links **Pages** → unter *Branch* `main` und `/ (root)` wählen → **Save**
-4. Nach ein bis zwei Minuten ist die App online:
-   `https://DEIN-BENUTZERNAME.github.io/simply/`
+Jede Person tippt ihre E-Mail-Adresse ein und bekommt eine Mail mit einem Link. Kein Passwort. Der Link funktioniert auf jedem Gerät — Handy, Geschäfts-PC, neues Telefon.
 
-Diese Adresse funktioniert auf Handy und Desktop. Am iPhone über *Teilen → Zum Home-Bildschirm* wird daraus eine App-Kachel.
-
-**Alternativen, wenn GitHub zu umständlich ist:** `index.html` auf [app.netlify.com/drop](https://app.netlify.com/drop) ziehen — fertig, ebenfalls gratis. Oder die Datei einfach lokal per Doppelklick öffnen.
+Beim ersten Mal läuft danach der Funnel: Vorname, Nachname, Geburtsdatum, Dienstzeiten. Alles Weitere liegt am Konto.
 
 ---
 
 ## Wo liegen die Daten?
 
-Ausschließlich im Browser des jeweiligen Geräts (`localStorage`). Es wird nichts hochgeladen, nichts protokolliert, nichts an Dritte übertragen.
+In einer Postgres-Datenbank bei **Supabase in Frankfurt**, eine Zeile pro Person. Row-Level-Security setzt in der Datenbank durch, dass jede Person ausschließlich ihre eigene Zeile sieht — auch wer den Quelltext liest und den öffentlichen Schlüssel kennt, kommt nicht an fremde Daten.
 
-Gespeichert werden: Vorname, Nachname, Geburtsdatum, Dienstzeiten, die gewählten Monate und die eingetragenen Ausnahmen (Urlaub, Krankenstand, eigene Vermerke).
+Im Browser liegt zusätzlich ein Zwischenspeicher, damit die App offline weiterläuft. Oben rechts zeigt eine Anzeige den Stand: **Gesichert**, **Sichere …**, **Offline · wird nachgeholt** oder **Nicht gesichert**.
 
-**Wichtig:** Jedes Gerät und jeder Browser hat seinen eigenen Speicher. Wer die App am Handy und am PC nutzt, legt zweimal an. Wer den Browser-Speicher löscht, verliert die Einträge.
+Warum überhaupt eine Datenbank: Safari löscht den Browserspeicher einer Website nach sieben Tagen ohne Besuch. Bei monatlichem Eintragen wären die Aufzeichnungen regelmäßig verschwunden.
+
+**Datenschutz:** Arbeitszeiten und besonders Krankenstände sind personenbezogene, teils Gesundheitsdaten. Für Miller Optik als Dienstgeber gehört das voraussichtlich ins Verzeichnis der Verarbeitungstätigkeiten, und ein Auftragsverarbeitungsvertrag mit Supabase wäre zu prüfen. Das ist keine Rechtsberatung — kurz mit der Datenschutzberatung abklopfen.
 
 ---
 
-## Wiedererkennung
+## Einrichtung
 
-Beim zweiten Besuch genügen **Vorname + Geburtsdatum** — die App kennt dann Judith wieder und weiß ihre Arbeitszeiten. Mehrere Personen können denselben Browser nutzen; die bekannten Profile erscheinen als Kacheln zum Antippen.
+Siehe **[EINRICHTUNG.md](EINRICHTUNG.md)** — Supabase-Projekt, SQL für Tabelle und Zugriffsregeln, Resend für den Mailversand.
+
+Die Zugangsdaten stehen oben in `index.html` im Block `CLOUD`. Bleiben sie leer, läuft MARU rein lokal weiter.
 
 ---
 
@@ -42,21 +41,21 @@ Beim zweiten Besuch genügen **Vorname + Geburtsdatum** — die App kennt dann J
 - Zeiten in **15-Minuten-Schritten**, Stunden auf **0,25 h** gerundet
 - **Pause** = Lücke zwischen Ende Vormittag und Beginn Nachmittag, automatisch erkannt
 - **Dienstzeiten** Montag bis Samstag, Vormittag und Nachmittag einzeln abschaltbar
-- **1 bis 4 Wochenintervalle** mit Rotation nach Kalenderwoche (Rotation verschiebbar)
-- **Feiertage Österreich** werden inklusive Ostertermin selbst berechnet und automatisch als Feiertag gezählt — sie überschreiben einen Urlaubseintrag am selben Tag
+- **1 bis 4 Wochenintervalle**; du tippst an, nach welcher Woche du gerade arbeitest
+- **Feiertage Österreich** werden inklusive Ostertermin selbst berechnet und überschreiben einen Urlaubseintrag am selben Tag
 - **Getrennte Summen**: Arbeitszeit, Urlaub, Krankenstand, Feiertag, Sonstige, Gesamt
-- Bei *Eigener Text* lässt sich pro Eintrag festlegen, ob die Stunden als Arbeitszeit zählen (z. B. Schulung) oder nicht (z. B. Zeitausgleich)
+- Bei *Eigener Text* lässt sich festlegen, ob die Stunden als Arbeitszeit zählen (Schulung) oder nicht (Zeitausgleich)
 
 ---
 
 ## PDF-Export
 
-Ein Monat = eine A4-Seite. Enthalten sind Name, Geburtsdatum, Dienstgeber, Zeitraum, alle Tage mit Vormittag, Nachmittag, Pause, Arbeitsstunden und Vermerk, die getrennten Summen sowie zwei Unterschriftsleisten in Schreibschrift (Dienstnehmer/in und Miller Optik).
+Ein Monat = eine A4-Seite: Name, Geburtsdatum, Dienstgeber, Zeitraum, alle Tage mit Vormittag, Nachmittag, Pause, Arbeitsstunden und Vermerk, die getrennten Summen, dazu zwei Unterschriftsleisten in Schreibschrift.
 
 - **PDF erstellen** → alle gewählten Monate in einer Datei, ein Monat pro Seite
-- **Einzeldateien** → pro Monat eine eigene PDF. Chrome fragt beim ersten Mal, ob mehrere Downloads erlaubt sind — bestätigen.
+- **Lieber pro Monat eine eigene Datei** → eine PDF je Monat. Chrome fragt beim ersten Mal, ob mehrere Downloads erlaubt sind
 
-Der Export braucht kurz Internet, weil die PDF-Bibliothek von einem CDN geladen wird. Alles andere läuft offline.
+Der Export lädt die PDF-Bibliothek von einem CDN, braucht also kurz Internet.
 
 ---
 
@@ -65,10 +64,16 @@ Der Export braucht kurz Internet, weil die PDF-Bibliothek von einem CDN geladen 
 | Aufgabe | Weg |
 |---|---|
 | Einzelnen Tag markieren | Im Kalender auf den Tag tippen |
-| Längeren Urlaub eintragen | Oben *Zeitraum eintragen* → von / bis → Art → *Eintragen* |
-| Halben Tag | Im Tages-Dialog oder im Zeitraum *Nur Vormittag* / *Nur Nachmittag* |
-| Eintrag entfernen | Tag antippen → *Zurücksetzen*, oder Zeitraum → *Zeitraum leeren* |
+| Längeren Urlaub eintragen | Oben *Zeitraum eintragen* → ersten und letzten Tag antippen → Art → *Eintragen* |
+| Halben Tag | Im Tagesdialog oder im Zeitraum *Nur Vormittag* / *Nur Nachmittag* |
+| Eintrag entfernen | Tag antippen → *Zurücksetzen*, oder Zeitraum → *Einträge entfernen* |
 | Dienstzeiten ändern | Avatar oben rechts → *Dienstzeiten bearbeiten* |
-| Intro nochmal | Avatar → *Intro nochmal ansehen* |
+| Abmelden | Avatar → *Abmelden* |
 
-Sonntage bleiben frei und werden nicht gezählt. Beim Zeitraum-Eintrag werden Sonntage, Feiertage und dienstfreie Tage automatisch übersprungen.
+Sonntage bleiben frei. Beim Zeitraum-Eintrag werden Sonntage, Feiertage und dienstfreie Tage automatisch übersprungen.
+
+---
+
+## Nach einem Update
+
+GitHub Pages liefert die Seite mit zehn Minuten Haltbarkeit aus. Kurz nach einer Änderung kann der Browser noch die alte Fassung zeigen — dann einmal hart neu laden oder `?x=1` an die Adresse hängen.

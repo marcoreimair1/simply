@@ -1,8 +1,14 @@
-# Simply — Cloud einrichten
+# MARU — Cloud einrichten
 
-Vier Schritte, etwa 20 Minuten. Alles gratis. Ich kann keine Konten anlegen und keine Passwörter eintragen, das musst du selbst machen — den Code baue ich parallel.
+> **Stand:** Schritt 1 ist erledigt — Projekt `simply` läuft in Frankfurt, Tabelle und
+> Zugriffsregeln sind angelegt, Project URL und öffentlicher Schlüssel stehen in
+> `index.html`, Site URL und Rückkehradresse sind gesetzt.
+>
+> **Offen: Schritt 2 und 3** — Resend-Konto und SMTP in Supabase eintragen. Erst danach
+> gehen Anmeldemails an beliebige Adressen. Solange nur an `marcoreimair1@gmail.com`,
+> maximal zwei pro Stunde.
 
-Am Ende brauche ich von dir **zwei Werte** (Punkt 1.3). Die sind öffentlich und dürfen im Quelltext stehen.
+Alles gratis. Konten anlegen und Passwörter eintragen kann ich nicht — das bleibt bei dir.
 
 ---
 
@@ -78,7 +84,7 @@ Zurück in Supabase → **Authentication** → **Emails** → Reiter **SMTP Sett
 | Feld | Wert |
 |---|---|
 | Sender email | `simply@miller.at` (oder die Resend-Adresse, falls du keine Domain hinterlegt hast) |
-| Sender name | `Simply · Miller Optik` |
+| Sender name | `MARU · Miller Optik` |
 | Host | `smtp.resend.com` |
 | Port | `465` |
 | Username | `resend` |
@@ -99,15 +105,15 @@ Ohne das landet der Klick auf den Anmeldelink im Nichts.
 
 **Authentication** → **Emails** → **Magic Link** — dort steht englischer Standardtext. Vorschlag:
 
-- Betreff: `Deine Anmeldung bei Simply`
+- Betreff: `Deine Anmeldung bei MARU`
 - Inhalt:
 
 ```html
-<h2>Anmeldung bei Simply</h2>
+<h2>Anmeldung bei MARU</h2>
 <p>Tippe auf den Link, dann bist du drin — es gibt kein Passwort zu merken.</p>
 <p><a href="{{ .ConfirmationURL }}">Jetzt anmelden</a></p>
 <p>Der Link gilt eine Stunde und funktioniert einmal. Hast du das nicht angefordert, ignoriere diese Mail einfach.</p>
-<p>Simply · Arbeitszeitaufzeichnung für Miller Optik GmbH</p>
+<p>MARU · Arbeitszeitaufzeichnung für Miller Optik GmbH</p>
 ```
 
 ---
