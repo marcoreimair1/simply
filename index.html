@@ -694,7 +694,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
             <label for="lg-mail">E-Mail-Adresse</label>
             <button class="inline-go" id="lg-send" aria-label="Anmeldelink senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
           </div>
-          <p class="hint" style="margin-top:14px">Du bekommst eine Mail mit einem Link. Es gibt kein Passwort zu merken — und deine Daten liegen sicher, egal auf welchem Gerät du arbeitest.</p>
+          <p class="hint" style="margin-top:14px">Kein Passwort. Der Link gilt eine Stunde.</p>
           <div id="lg-err2" style="display:none;margin-top:14px;font-size:12.5px;color:var(--coral)"></div>
         </div>
       </div>
@@ -1762,8 +1762,7 @@ function loginScreen(){
     $('#lg-local').style.display = 'none';
     $('#known').style.display = 'none';
     $('#lg-title').innerHTML = 'Deine Zeiten, <i>überall dabei</i>.';
-    $('#lg-lede').textContent = 'Tippe deine E-Mail-Adresse ein. Du bekommst einen Link, und schon bist du drin — '
-      + 'am Handy, am Geschäfts-PC, auf einem neuen Telefon. Deine Aufzeichnungen bleiben erhalten.';
+    $('#lg-lede').textContent = 'E-Mail eingeben, Link antippen, drin. Auf jedem Gerät.';
     $('#lg-eyebrow').textContent = 'Anmelden';
     $('#sync').style.display = 'none';
   } else {
