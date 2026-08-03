@@ -283,6 +283,11 @@ h1.dis i{font-style:italic;color:var(--butter)}
   box-shadow:0 12px 34px -12px rgba(247,215,116,.6)}
 .btn-p:hover{transform:translateY(-2px);box-shadow:0 18px 40px -12px rgba(247,215,116,.72)}
 .btn-p:disabled{opacity:.32;transform:none;box-shadow:none;cursor:not-allowed}
+/* wartet, bis man unten war — soll zum Weiterscrollen einladen, nicht blockieren */
+.btn-p.btn-wait{background:transparent;color:var(--tx-3);border:1px solid var(--line-2);
+  box-shadow:none;transition:.45s var(--ease)}
+.btn-p.btn-wait:hover{transform:none;color:var(--butter);border-color:var(--butter-dim)}
+.btn-p.btn-wait svg{opacity:.5}
 .btn-g{border:1px solid var(--line-2);color:var(--tx-2)}
 .btn-g:hover{border-color:var(--butter-dim);color:var(--butter)}
 .btn-sm{padding:10px 17px;font-size:12.5px;border-radius:12px}
@@ -1830,6 +1835,7 @@ function obPaint(){
       : 'Alles steht, ' + vn + '. Beim nächsten Besuch genügen Vorname und Geburtsdatum.';
     try{ renderPdfPreview(vn, nn); }catch(e){ console.warn('Vorschau nicht möglich', e); }
     try{ initFeatCarousel(); nudgeCarousel(); }catch(e){ console.warn(e); }
+    requestAnimationFrame(() => requestAnimationFrame(checkDoneScroll));
   }
   document.body.classList.toggle('nobar', OB.step === STEPS-1);
   const nav = $('#ob-nav');
@@ -1971,6 +1977,17 @@ function initFeatCarousel(){
   paintInstall();
 }
 
+/* Auf der Schlussseite bleibt der Knopf blass, bis man unten angekommen ist.
+   So sieht man die Karten — vor allem die zum Home-Bildschirm. */
+function checkDoneScroll(){
+  const nx = $('#ob-next'); if(!nx) return;
+  if(OB.step !== STEPS-1){ nx.classList.remove('btn-wait'); return; }
+  const rest = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
+  nx.classList.toggle('btn-wait', rest > 80);
+}
+window.addEventListener('scroll', checkDoneScroll, { passive:true });
+window.addEventListener('resize', checkDoneScroll);
+
 /* Kurzer Anstoß, damit man sieht, dass sich die Karten schieben lassen */
 function nudgeCarousel(){
   const tr = $('#feat-track'); if(!tr) return;
@@ -2002,6 +2019,7 @@ function refreshNav(){
 function obGo(step){
   OB.step = clamp(step, 0, STEPS-1);
   obPaint();
+  const nx = $('#ob-next'); if(nx && step !== STEPS-1) nx.classList.remove('btn-wait');
 }
 $('#ob-next').addEventListener('click', () => {
   if(!stepValid(OB.step)) return;
