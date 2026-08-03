@@ -109,6 +109,29 @@ input,textarea{-webkit-appearance:none}
   66%{transform:translate3d(-24vw,6vh,0)}
 }
 @keyframes breathA{0%,100%{transform:scale(1);opacity:.58}50%{transform:scale(1.16);opacity:.74}}
+
+/* Am Handy sind die Flächen in vw viel kleiner, die Weichzeichnung war aber
+   absolut — 90px Blur auf 244px Fläche ergibt Einheitsbrei. Also: Flächen
+   deutlich größer, Blur kleiner, Leuchten kräftiger, Glas dünner. */
+@media(max-width:640px){
+  .bg .blob span{filter:blur(44px);mix-blend-mode:normal}
+  .bg .b1{width:124vw;height:124vw;left:-36vw;top:-48vw}
+  .bg .b2{width:108vw;height:108vw;right:-34vw;top:0}
+  .bg .b3{width:100vw;height:100vw;left:-16vw;bottom:-42vw}
+  .bg .b4{width:78vw;height:78vw;left:-8vw;top:26vh}
+  .bg .b5{width:62vw;height:62vw;right:0;bottom:6vh}
+  .bg .b1 span,.bg .b3 span{animation-name:breathAM}
+  .bg .b2 span{animation-name:breathGoldM}
+  .bg .b4 span,.bg .b5 span{animation-name:breathSparkM}
+  .card{background:linear-gradient(165deg,rgba(27,40,86,.30),rgba(12,20,48,.18));
+    backdrop-filter:blur(9px) saturate(1.4);-webkit-backdrop-filter:blur(9px) saturate(1.4)}
+  .cell{background:rgba(6,10,26,.18)}
+  .stat{background:rgba(6,10,26,.16)}
+  .qcal{background:rgba(6,10,26,.14)}
+}
+@keyframes breathAM{0%,100%{transform:scale(1);opacity:.72}50%{transform:scale(1.14);opacity:.92}}
+@keyframes breathGoldM{0%,100%{transform:scale(.92);opacity:.48}50%{transform:scale(1.2);opacity:.88}}
+@keyframes breathSparkM{0%,100%{transform:scale(.82);opacity:.26}45%{transform:scale(1.28);opacity:.68}}
 @keyframes breathGold{0%,100%{transform:scale(.94);opacity:.36}50%{transform:scale(1.24);opacity:.7}}
 @keyframes breathSpark{0%,100%{transform:scale(.8);opacity:.18}45%{transform:scale(1.32);opacity:.52}}
 .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
