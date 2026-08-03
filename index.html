@@ -317,7 +317,7 @@ h1.dis i{font-style:italic;color:var(--butter)}
 @keyframes slideBack{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
 .navrow{display:flex;align-items:center;gap:12px;margin-top:24px}
 .navrow.sticky{position:sticky;bottom:0;z-index:20;margin:18px -20px 0;
-  padding:16px 20px calc(16px + env(safe-area-inset-bottom));transition:background .3s}
+  padding:16px 24px calc(16px + env(safe-area-inset-bottom));transition:background .3s}
 .navrow.hide{display:none}
 .obtop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;min-height:24px;max-width:420px}
 .obback{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--tx-3);transition:.2s;padding:4px 0}
@@ -444,7 +444,8 @@ body.nobar #v-onboard{padding-top:14px}
 .steps{margin:12px 0 0;padding-left:18px;color:var(--tx-3);font-size:12.5px;line-height:1.6}
 .steps li{margin-bottom:3px}
 .steps b{color:var(--butter);font-weight:600}
-@media(max-width:520px){.pdfsheet{width:min(64vw,244px)}}
+@media(max-width:520px){.pdfsheet{width:min(56vw,214px)}}
+@media(max-width:520px){.pdfprev{margin-top:16px}.feat{margin-top:18px}}
 
 .pdfprev{perspective:1000px;display:flex;justify-content:center;margin-top:24px}
 .pdfsheet{width:min(74vw,300px);aspect-ratio:1/1.414;background:#FBFAF7;color:#141a28;border-radius:6px;
@@ -707,7 +708,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
   .lede{font-size:14.5px}
   .btn{padding:15px 22px}
   .topbar-in{padding:11px 14px}
-  .navrow.sticky{margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}
+  .navrow.sticky{margin-left:-14px;margin-right:-14px;padding-left:18px;padding-right:18px}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::after,*::before{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
