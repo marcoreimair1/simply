@@ -141,38 +141,24 @@ input,textarea{-webkit-appearance:none}
 @keyframes splashOut{to{opacity:0;transform:scale(1.07);filter:blur(14px);visibility:hidden}}
 #pcanvas{position:absolute;inset:0;width:100%;height:100%}
 .sp-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0}
-.seam{position:absolute;top:50%;left:50%;translate:-50% -50%;height:2px;width:0;border-radius:2px;
-  background:linear-gradient(90deg,transparent,var(--butter),var(--butter-2),var(--butter),transparent);
-  box-shadow:0 0 24px rgba(247,215,116,.85);animation:seam 2.1s var(--ease-out) forwards}
-@keyframes seam{
-  0%{width:0;opacity:0}
-  12%{opacity:1}
-  46%{width:min(62vw,430px)}
-  70%{width:min(62vw,430px);opacity:1}
-  100%{width:0;opacity:0}
-}
 .mark-wrap{position:relative;display:grid;place-items:center}
-.mark-img{width:min(54vw,268px);height:auto;display:block;
-  filter:drop-shadow(0 0 26px rgba(247,215,116,.32));
-  animation:wipe 1.7s .5s var(--ease-out) both}
-/* von oben nach unten freigelegt, dazu ein weicher Lichtstreifen, der mitläuft */
-@keyframes wipe{
-  0%{clip-path:inset(0 0 100% 0);opacity:0;filter:blur(10px) drop-shadow(0 0 26px rgba(247,215,116,.32))}
-  10%{opacity:1}
-  100%{clip-path:inset(0 0 0 0);opacity:1;filter:blur(0) drop-shadow(0 0 26px rgba(247,215,116,.32))}
+.mark-img{width:min(70vw,310px);height:auto;display:block;position:relative;z-index:2;
+  animation:markIn 1.15s .3s var(--ease-out) both, shimmer 4.6s 1.6s ease-in-out infinite}
+@keyframes markIn{
+  0%{opacity:0;transform:scale(.82)}
+  55%{opacity:1}
+  100%{opacity:1;transform:scale(1)}
 }
-.mark-wrap::after{content:"";position:absolute;left:-10%;right:-10%;height:16%;pointer-events:none;
-  background:linear-gradient(180deg,transparent,rgba(253,235,180,.9),transparent);
-  filter:blur(7px);opacity:0;animation:sweep 1.7s .5s var(--ease-out) forwards}
-@keyframes sweep{
-  0%{top:-16%;opacity:0}
-  10%{opacity:1}
-  90%{opacity:.9}
-  100%{top:100%;opacity:0}
-}
+@keyframes shimmer{0%,100%{filter:brightness(1)}50%{filter:brightness(1.14)}}
+/* Glühen liegt HINTER dem Bild, nicht als Filter darauf — kein Kastenschleier */
+.mark-wrap::before{content:"";position:absolute;left:-22%;right:-22%;top:-22%;bottom:-22%;z-index:1;
+  border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(247,215,116,.34),rgba(247,215,116,.08) 46%,transparent 70%);
+  opacity:0;animation:halo 2.4s .35s var(--ease-out) forwards}
+@keyframes halo{0%{opacity:0;transform:scale(.6)}45%{opacity:1;transform:scale(1.06)}100%{opacity:.62;transform:scale(1)}}
 @keyframes draw{to{stroke-dashoffset:0}}
 .bloom{position:absolute;top:50%;left:50%;translate:-50% -50%;width:10px;height:10px;border-radius:50%;
-  background:#fff;box-shadow:0 0 70px 34px rgba(247,215,116,.62);opacity:0;animation:bloom 1s 1.95s var(--ease-out) forwards}
+  background:#fff;box-shadow:0 0 90px 46px rgba(247,215,116,.7);opacity:0;animation:bloom 1.1s 1.35s var(--ease-out) forwards}
 @keyframes bloom{0%{opacity:0;transform:scale(.2)}18%{opacity:.95;transform:scale(1)}100%{opacity:0;transform:scale(7)}}
 .wordmark{display:flex;margin-top:22px;font-family:var(--font-dis);font-weight:500;letter-spacing:.015em;
   font-size:clamp(50px,14vw,96px);line-height:1;color:var(--paper)}
@@ -181,9 +167,9 @@ input,textarea{-webkit-appearance:none}
 @keyframes letter{to{opacity:1;transform:none;filter:blur(0)}}
 .wordmark i{font-style:italic;color:var(--butter)}
 .byline{margin-top:24px;font-size:11px;letter-spacing:.44em;text-transform:uppercase;color:var(--tx-3);
-  opacity:0;animation:fadeUp .9s 2.35s var(--ease-out) forwards}
+  opacity:0;animation:fadeUp .9s 1.95s var(--ease-out) forwards}
 .subline{margin-top:26px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(247,215,116,.5);
-  opacity:0;animation:fadeUp .9s 2.75s var(--ease-out) forwards}
+  opacity:0;animation:fadeUp .9s 2.35s var(--ease-out) forwards}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .skip{position:absolute;left:0;right:0;margin:0 auto;width:max-content;
   bottom:calc(30px + env(safe-area-inset-bottom));z-index:3;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
@@ -656,7 +642,6 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
 <!-- ══════════════════════════ INTRO ══════════════════════════ -->
 <div id="splash">
   <canvas id="pcanvas"></canvas>
-  <div class="seam"></div>
   <div class="bloom"></div>
   <div class="sp-inner">
     <div class="mark-wrap">
@@ -1332,44 +1317,85 @@ function startParticles(){
     cv.width = W*dpr; cv.height = H*dpr; cx.setTransform(dpr,0,0,dpr,0,0); };
   resize(); window.addEventListener('resize', resize);
 
-  const dust = Array.from({length:70}, () => ({
-    x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.5+.3,
-    vx:(Math.random()-.5)*.16, vy:(Math.random()-.5)*.16, a:Math.random()*.4+.08
+  const GOLD = ['#FFFFFF','#FFF6DA','#FDEBB4','#F7D774','#E9B94E'];
+  const pick = () => GOLD[(Math.random()*GOLD.length)|0];
+
+  /* Grundflimmern: Anzahl an die Fläche gekoppelt, damit es am Handy nicht dünn wirkt */
+  const n = Math.round(Math.max(110, Math.min(240, W*H/7200)));
+  const dust = Array.from({length:n}, () => ({
+    x:Math.random()*W, y:Math.random()*H, r:Math.random()*2.4+.5,
+    vx:(Math.random()-.5)*.22, vy:(Math.random()-.5)*.22,
+    a:Math.random()*.5+.15, ph:Math.random()*6.28, sp:Math.random()*2.4+.9,
+    c:pick()
   }));
-  let burst = [], t0 = performance.now(), fired = false;
+
+  let burst = [], stars = [], t0 = performance.now(), fired = false;
+
+  /* vierstrahliger Funke — das eigentliche Glitzern */
+  function star(x, y, s, rot, alpha, col){
+    cx.save(); cx.translate(x,y); cx.rotate(rot); cx.globalAlpha = alpha;
+    let fill = col;
+    try{
+      const g = cx.createLinearGradient(-s,0,s,0);
+      g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(.5,col); g.addColorStop(1,'rgba(255,255,255,0)');
+      fill = g;
+    }catch(e){}
+    cx.fillStyle = fill;
+    cx.beginPath(); cx.moveTo(-s,0); cx.lineTo(0,-s*.16); cx.lineTo(s,0); cx.lineTo(0,s*.16); cx.closePath(); cx.fill();
+    cx.beginPath(); cx.moveTo(0,-s); cx.lineTo(s*.16,0); cx.lineTo(0,s); cx.lineTo(-s*.16,0); cx.closePath(); cx.fill();
+    cx.restore();
+  }
 
   const loop = (t) => {
     const el = t - t0;
     cx.clearRect(0,0,W,H);
+
     dust.forEach(p => {
       p.x += p.vx; p.y += p.vy;
       if(p.x < 0) p.x = W; if(p.x > W) p.x = 0; if(p.y < 0) p.y = H; if(p.y > H) p.y = 0;
-      cx.globalAlpha = p.a * Math.min(1, el/900);
-      cx.fillStyle = '#F7D774';
+      const tw = .55 + .45*Math.sin(el/1000*p.sp + p.ph);      /* Funkeln */
+      cx.globalAlpha = p.a * tw * Math.min(1, el/700);
+      cx.fillStyle = p.c;
       cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 6.2832); cx.fill();
     });
-    if(!fired && el > 1950){
+
+    if(!fired && el > 1320){
       fired = true;
-      const cxp = W/2, cyp = H/2 - Math.min(H*0.06, 40);
-      for(let i = 0; i < 160; i++){
-        const a = Math.random()*6.2832, sp = Math.random()*5.4 + 1.1;
+      const cxp = W/2, cyp = H/2 - Math.min(H*0.05, 34);
+      for(let i = 0; i < 320; i++){
+        const a = Math.random()*6.2832, sp = Math.pow(Math.random(),.6)*8.5 + 1.4;
         burst.push({ x:cxp, y:cyp, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
-          r:Math.random()*2.1+.5, life:1, dec:Math.random()*.012+.007,
-          c: Math.random() < .3 ? '#FFFFFF' : (Math.random() < .5 ? '#FDEBB4' : '#F7D774') });
+          r:Math.random()*4+1, life:1, dec:Math.random()*.008+.0042, c:pick() });
+      }
+      for(let i = 0; i < 26; i++){
+        const a = Math.random()*6.2832, sp = Math.pow(Math.random(),.5)*7 + 1.6;
+        stars.push({ x:cxp, y:cyp, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
+          s:Math.random()*26+14, rot:Math.random()*6.28, vr:(Math.random()-.5)*.05,
+          life:1, dec:Math.random()*.007+.0035, c:pick() });
       }
     }
+
     burst = burst.filter(p => p.life > 0);
     burst.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.vx *= .972; p.vy *= .972; p.life -= p.dec;
+      p.x += p.vx; p.y += p.vy; p.vx *= .977; p.vy *= .977; p.life -= p.dec;
       cx.globalAlpha = Math.max(0, p.life);
       cx.fillStyle = p.c;
       cx.beginPath(); cx.arc(p.x, p.y, Math.max(0.01, p.r*p.life), 0, 6.2832); cx.fill();
     });
+
+    stars = stars.filter(p => p.life > 0);
+    stars.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vx *= .972; p.vy *= .972; p.rot += p.vr; p.life -= p.dec;
+      const grow = Math.sin(Math.min(1,(1-p.life)*2.2) * Math.PI);   /* wächst und schrumpft wieder */
+      star(p.x, p.y, p.s * (0.35 + grow*0.9), p.rot, Math.max(0, p.life)*0.95, p.c);
+    });
+
     cx.globalAlpha = 1;
     _pAnim = requestAnimationFrame(loop);
   };
+  const safeLoop = t => { try{ loop(t); }catch(e){ console.warn('Partikel gestoppt', e); } };
   cancelAnimationFrame(_pAnim);
-  _pAnim = requestAnimationFrame(loop);
+  _pAnim = requestAnimationFrame(safeLoop);
 }
 function stopParticles(){ cancelAnimationFrame(_pAnim); _pAnim = null; }
 
