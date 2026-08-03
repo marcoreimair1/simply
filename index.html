@@ -340,7 +340,33 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .lg svg{width:14px;height:14px}
 
 /* Schnelleintrag */
-.quick{margin-bottom:14px}
+.quick{margin-bottom:14px;position:relative}
+.quick.closing{animation:quickOut .4s var(--ease-out) forwards;pointer-events:none}
+@keyframes quickOut{to{opacity:0;transform:scale(.975) translateY(-8px)}}
+.qdone{position:absolute;inset:0;z-index:6;display:grid;place-items:center;border-radius:inherit;
+  background:rgba(9,15,38,.9);backdrop-filter:blur(12px);animation:qdoneIn .28s var(--ease-out)}
+@keyframes qdoneIn{from{opacity:0}}
+.qd-in{display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center;padding:20px}
+.qd-ring{position:relative;width:76px;height:76px}
+.qd-ring svg{width:100%;height:100%;overflow:visible}
+.qd-ring circle{fill:none;stroke:rgba(247,215,116,.85);stroke-width:3;stroke-linecap:round;
+  stroke-dasharray:220;stroke-dashoffset:220;transform:rotate(-90deg);transform-origin:center;
+  animation:draw .58s var(--ease-out) forwards}
+.qd-ring path{fill:none;stroke:var(--butter-2);stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:48;stroke-dashoffset:48;animation:draw .38s .4s var(--ease-out) forwards}
+.qd-ring .puls{position:absolute;inset:0;border-radius:50%;border:2px solid var(--butter);opacity:0;
+  animation:qpuls .95s .46s var(--ease-out) forwards}
+@keyframes qpuls{0%{opacity:.75;transform:scale(1)}100%{opacity:0;transform:scale(2.2)}}
+.qd-in b{font-family:var(--font-dis);font-size:24px;font-weight:400;letter-spacing:-.01em;
+  opacity:0;animation:fadeUp .5s .5s var(--ease-out) forwards}
+.qd-in small{color:var(--tx-3);font-size:12.5px;max-width:34ch;
+  opacity:0;animation:fadeUp .5s .62s var(--ease-out) forwards}
+.cell.flash{animation:cellFlash .72s var(--ease-out) both}
+@keyframes cellFlash{
+  0%{transform:scale(.82);box-shadow:0 0 0 0 rgba(247,215,116,.5)}
+  50%{transform:scale(1.07)}
+  100%{transform:none;box-shadow:0 0 0 15px rgba(247,215,116,0)}
+}
 .quick-head{display:flex;align-items:center;gap:11px;width:100%;text-align:left}
 .quick-head .qi{width:34px;height:34px;border-radius:11px;background:rgba(247,215,116,.12);color:var(--butter);
   display:grid;place-items:center;flex:none}
@@ -1455,6 +1481,7 @@ function legend(){
 /* ═══════════════════════════════════════════════════════════
    KALENDER
    ═══════════════════════════════════════════════════════════ */
+let FLASH = new Set(), FLASH_ORDER = [];
 function renderCal(){
   const y = CAL.y, m = CAL.m;
   $('#cal-title').innerHTML = MONTHS[m] + ' ' + y + '<small>' + EMPLOYER + ' · ' + esc(ME.vorname) + ' ' + esc(ME.nachname) + '</small>';
@@ -1467,7 +1494,9 @@ function renderCal(){
   rows.forEach(r => {
     const isSun = r.dow === 0;
     const isToday = today.getFullYear() === y && today.getMonth() === m && today.getDate() === r.day;
-    html += '<button class="cell'+(isSun?' sun':'')+(isToday?' today':'')+'"'
+    const fl = FLASH.has(r.k);
+    html += '<button class="cell'+(isSun?' sun':'')+(isToday?' today':'')+(fl?' flash':'')+'"'
+      + (fl ? ' style="animation-delay:'+(FLASH_ORDER.indexOf(r.k)*55)+'ms"' : '')
       + (r.type ? ' data-t="'+r.type+'"' : '') + ' data-d="'+r.day+'">';
     html += '<span class="num">'+r.day+'</span>';
     if(r.type) html += '<span class="ico" style="color:'+TYPES[r.type].color+'">'+ICONS[r.type]+'</span>';
@@ -1660,28 +1689,62 @@ $('#q-scope').addEventListener('click', e => {
   Q.scope = b.dataset.s;
   $$('#q-scope button').forEach(x => x.classList.toggle('on', x.dataset.s === Q.scope));
 });
+let _qBusy = false;
+/* Erfolg zeigen, Fenster schliessen, betroffene Tage im Kalender aufblitzen lassen */
+function qFinish(title, sub, keys){
+  const card = $('#quick');
+  FLASH = new Set(keys); FLASH_ORDER = keys.slice();
+  const ov = document.createElement('div');
+  ov.className = 'qdone';
+  ov.innerHTML = '<div class="qd-in"><div class="qd-ring">'
+    + '<svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="35"/>'
+    + '<path d="M25 41l11 11 20-22"/></svg><span class="puls"></span></div>'
+    + '<b>' + esc(title) + '</b><small>' + esc(sub) + '</small></div>';
+  card.appendChild(ov);
+  setTimeout(() => {
+    card.classList.add('closing');
+    setTimeout(() => {
+      card.classList.remove('on'); card.classList.remove('closing');
+      card.style.animation = ''; ov.remove();
+      Q.from = Q.to = null; renderQCal();
+      renderCal();
+      setTimeout(() => { FLASH = new Set(); FLASH_ORDER = []; }, 1400);
+      _qBusy = false;
+    }, 410);
+  }, 1050);
+}
 $('#q-apply').addEventListener('click', () => {
+  if(_qBusy) return;
   if(!qRange()){ toast('Zuerst Tage im Kalender antippen'); return; }
-  const n = qEach(d => {
+  const hit = [];
+  qEach(d => {
     if(!qTouched(d)) return false;
-    ME.events[key(d.getFullYear(), d.getMonth(), d.getDate())] =
-      { t:Q.type, s:Q.scope, text:Q.type === 'eigen' ? $('#q-text').value.trim() : '', aw:false };
-    return true;
+    const k = key(d.getFullYear(), d.getMonth(), d.getDate());
+    ME.events[k] = { t:Q.type, s:Q.scope, text:Q.type === 'eigen' ? $('#q-text').value.trim() : '', aw:false };
+    hit.push(k); return true;
   });
-  save(); renderCal(); renderQCal();
-  toast(n === 0 ? 'In diesem Zeitraum liegt kein Arbeitstag'
-                : n + (n === 1 ? ' Tag eingetragen' : ' Tage eingetragen'));
+  if(!hit.length){ toast('In diesem Zeitraum liegt kein Arbeitstag'); return; }
+  save();
+  _qBusy = true;
+  const label = Q.type === 'eigen' ? ($('#q-text').value.trim() || 'Vermerk') : TYPES[Q.type].label;
+  qFinish(hit.length + (hit.length === 1 ? ' Tag eingetragen' : ' Tage eingetragen'),
+          label + ' · ' + fmtDay(Q.from) + (Q.to && +Q.to !== +Q.from ? ' bis ' + fmtDay(Q.to) : ''),
+          hit);
 });
 $('#q-clear').addEventListener('click', () => {
+  if(_qBusy) return;
   if(!qRange()){ toast('Zuerst Tage im Kalender antippen'); return; }
-  const n = qEach(d => {
+  const hit = [];
+  qEach(d => {
     const k = key(d.getFullYear(), d.getMonth(), d.getDate());
     if(!ME.events[k]) return false;
-    delete ME.events[k]; return true;
+    delete ME.events[k]; hit.push(k); return true;
   });
-  save(); renderCal(); renderQCal();
-  toast(n === 0 ? 'In diesem Zeitraum war nichts eingetragen'
-                : n + (n === 1 ? ' Eintrag entfernt' : ' Einträge entfernt'));
+  if(!hit.length){ toast('In diesem Zeitraum war nichts eingetragen'); return; }
+  save();
+  _qBusy = true;
+  qFinish(hit.length + (hit.length === 1 ? ' Eintrag entfernt' : ' Einträge entfernt'),
+          'Diese Tage zählen wieder als normale Arbeitstage.', hit);
 });
 
 /* ═══════════════════════════════════════════════════════════
