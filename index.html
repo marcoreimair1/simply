@@ -81,7 +81,8 @@ input,textarea{-webkit-appearance:none}
 /* ============================================================
    INTRO
    ============================================================ */
-#splash{position:fixed;inset:0;z-index:60;background:#05081A;display:grid;place-items:center;overflow:hidden}
+#splash{position:fixed;inset:0;z-index:60;background:#05081A;display:grid;place-items:center;overflow:hidden;
+  cursor:pointer;-webkit-tap-highlight-color:transparent}
 #splash.done{animation:splashOut .9s var(--ease-out) forwards}
 @keyframes splashOut{to{opacity:0;transform:scale(1.07);filter:blur(14px);visibility:hidden}}
 #pcanvas{position:absolute;inset:0;width:100%;height:100%}
@@ -120,8 +121,9 @@ input,textarea{-webkit-appearance:none}
 .subline{margin-top:26px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(247,215,116,.5);
   opacity:0;animation:fadeUp .9s 3.35s var(--ease-out) forwards}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.skip{position:absolute;bottom:26px;right:24px;z-index:3;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--tx-3);padding:10px 16px;border:1px solid var(--line-2);border-radius:999px;opacity:0;
+.skip{position:absolute;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);
+  z-index:3;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--tx-3);padding:14px 26px;border:1px solid var(--line-2);border-radius:999px;opacity:0;
   animation:fadeUp .6s 1.2s var(--ease-out) forwards;transition:.25s}
 .skip:hover{color:var(--butter);border-color:var(--butter-dim)}
 
@@ -244,6 +246,26 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .navrow{display:flex;align-items:center;gap:12px;margin-top:24px}
 .navrow.sticky{position:sticky;bottom:0;z-index:20;margin:18px -20px 0;
   padding:16px 20px calc(16px + env(safe-area-inset-bottom));transition:background .3s}
+.navrow.hide{display:none}
+.obtop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;min-height:24px}
+.obback{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--tx-3);transition:.2s;padding:4px 0}
+.obback:hover{color:var(--butter)}
+.obback svg{width:14px;height:14px}
+.obback.hide{visibility:hidden}
+.field.hasgo input{padding-right:64px}
+.inline-go{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
+  display:grid;place-items:center;background:linear-gradient(120deg,var(--butter-2),var(--butter));color:#221904;
+  box-shadow:0 8px 22px -10px rgba(247,215,116,.7);transition:.24s var(--ease);z-index:2}
+.inline-go:hover{transform:translateY(-50%) scale(1.08)}
+.inline-go:disabled{opacity:.3;box-shadow:none;cursor:not-allowed;
+  background:rgba(238,242,255,.13);color:var(--tx-3);transform:translateY(-50%)}
+.inline-go svg{width:21px;height:21px}
+.autonext{display:flex;align-items:center;gap:9px;margin-top:16px;font-size:12.5px;color:var(--butter)}
+.autonext .dots{display:inline-flex;gap:4px}
+.autonext .dots i{width:5px;height:5px;border-radius:50%;background:var(--butter);animation:blink 1.1s infinite}
+.autonext .dots i:nth-child(2){animation-delay:.16s}
+.autonext .dots i:nth-child(3){animation-delay:.32s}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
 .navrow.sticky.solid{background:linear-gradient(180deg,rgba(8,13,34,0),rgba(8,13,34,.94) 42%);backdrop-filter:blur(10px)}
 .stepno{font-size:11px;letter-spacing:.2em;color:var(--tx-3);font-variant-numeric:tabular-nums}
 
@@ -543,7 +565,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
     <div class="byline">by Marco</div>
     <div class="subline">Arbeitszeit · ohne Aufwand</div>
   </div>
-  <button class="skip" id="skip">Überspringen</button>
+  <button class="skip" id="skip">Tippen zum Überspringen</button>
 </div>
 
 <!-- ══════════════════════════ APP ══════════════════════════ -->
@@ -601,6 +623,10 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
 
     <!-- ─────────── ONBOARDING ─────────── -->
     <section class="view pt" id="v-onboard">
+      <div class="obtop">
+        <button class="obback hide" id="ob-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Zurück</button>
+        <span class="stepno" id="ob-step"></span>
+      </div>
       <div class="rail" id="rail"></div>
       <div class="viewport">
         <div class="track" id="track">
@@ -612,7 +638,9 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
             <p class="lede">Der Name steht später auf jedem Export — also gern so, wie er im Dienstvertrag steht.</p>
             <div class="card mt" style="max-width:430px">
               <div class="field" id="f-vn"><input id="in-vn" autocomplete="given-name" placeholder=" "><label for="in-vn">Vorname</label></div>
-              <div class="field" id="f-nn"><input id="in-nn" autocomplete="family-name" placeholder=" "><label for="in-nn">Nachname</label></div>
+              <div class="field hasgo" id="f-nn"><input id="in-nn" autocomplete="family-name" placeholder=" "><label for="in-nn">Nachname</label>
+                <button class="inline-go" id="go-name" aria-label="Weiter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
+              </div>
             </div>
           </div>
 
@@ -630,6 +658,9 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
                 <div class="g y"><input inputmode="numeric" maxlength="4" data-p="y" placeholder="JJJJ"><small>Jahr</small></div>
               </div>
               <p class="hint" style="margin-top:14px" id="dob-echo"></p>
+              <div class="autonext" id="dob-auto" style="display:none">
+                <span class="dots"><i></i><i></i><i></i></span> geht automatisch weiter
+              </div>
             </div>
           </div>
 
@@ -639,11 +670,12 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
             <h1 class="dis">Dein <i>Arbeitsort</i>.</h1>
             <p class="lede">Steht schon fest und lässt sich nicht ändern.</p>
             <div class="card mt" style="max-width:430px">
-              <div class="locked-field">
+              <div class="locked-field" style="position:relative;padding-right:66px">
                 <div class="lf-i">
                   <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M14 9h1M9 13h1M14 13h1M9 17h6"/></svg>
                 </div>
                 <div><b>Miller Optik GmbH</b><small>Arbeitsort · fix</small></div>
+                <button class="inline-go" id="go-ort" aria-label="Weiter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
               </div>
             </div>
           </div>
@@ -673,12 +705,9 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
         </div>
       </div>
       <div class="navrow sticky" id="ob-nav">
-        <button class="btn btn-g" id="ob-back" style="display:none">Zurück</button>
         <button class="btn btn-p" id="ob-next">Weiter
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
-        <div class="spacer"></div>
-        <span class="stepno" id="ob-step"></span>
       </div>
     </section>
 
@@ -1304,8 +1333,7 @@ function wireDob(scope){
     inp.addEventListener('input', () => {
       inp.value = inp.value.replace(/\D/g,'');
       if(inp.value.length >= (+inp.maxLength) && i < ins.length-1) ins[i+1].focus();
-      if(scope === 'ob') echoDob();
-      if(scope === 'ob') refreshNav();
+      if(scope === 'ob'){ echoDob(); refreshNav(); maybeAutoNext(); }
     });
     inp.addEventListener('keydown', e => {
       if(e.key === 'Backspace' && !inp.value && i > 0) ins[i-1].focus();
@@ -1330,6 +1358,19 @@ function dobIso(o){
   if(dt.getDate() !== d || dt.getMonth() !== m-1) return null;
   return y + '-' + p2(m) + '-' + p2(d);
 }
+let _autoT = null;
+/* Steht ein vollständiges Geburtsdatum, geht es von selbst weiter */
+function maybeAutoNext(){
+  if(OB.step !== 1) return;
+  clearTimeout(_autoT); _autoT = null;
+  const ok = !!dobIso(readDob('ob'));
+  $('#dob-auto').style.display = ok ? 'flex' : 'none';
+  if(!ok) return;
+  _autoT = setTimeout(() => {
+    _autoT = null;
+    if(OB.step === 1 && stepValid(1)){ obGo(2); }
+  }, 620);
+}
 function echoDob(){
   const iso = dobIso(readDob('ob'));
   $('#dob-echo').textContent = iso
@@ -1351,7 +1392,8 @@ function obInit(){
   OB.sched = defaultSched();
   $('#in-vn').value = ''; $('#in-nn').value = '';
   $$('[data-dob="ob"] input').forEach(i => i.value = '');
-  echoDob(); renderSched($('#sched-onboard'), OB.sched, refreshNav);
+  echoDob(); $('#dob-auto').style.display = 'none';
+  renderSched($('#sched-onboard'), OB.sched, refreshNav);
   obPaint();
   ['lg1','lg2','lg3','lg4'].forEach((id, i) => {
     const t = ['feier','urlaub','krank','eigen'][i];
@@ -1361,13 +1403,15 @@ function obInit(){
 let _prevStep = 0;
 function obPaint(){
   const back = OB.step < _prevStep; _prevStep = OB.step;
+  /* Nie automatisch weiterspringen, wenn man gerade zurückgegangen ist */
+  clearTimeout(_autoT); _autoT = null;
+  const da = $('#dob-auto'); if(da) da.style.display = 'none';
   $$('#track .slide').forEach((s,i) => {
     s.classList.toggle('active', i === OB.step);
     s.classList.toggle('back', i === OB.step && back);
   });
   $('#rail').innerHTML = Array.from({length:STEPS}, (_,i) => '<i class="'+(i<=OB.step?'done':'')+'"></i>').join('');
   $('#ob-step').textContent = (OB.step+1) + ' / ' + STEPS;
-  $('#ob-back').style.display = OB.step === 0 ? 'none' : 'inline-flex';
   const last = OB.step === STEPS-1;
   $('#ob-next').innerHTML = last
     ? 'Los geht\'s <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
@@ -1392,16 +1436,29 @@ function refreshNav(){
   const nx = $('#ob-next'); if(!nx) return;
   nx.disabled = !stepValid(OB.step);
   $$('.field').forEach(f => { const i = $('input', f); if(i) f.classList.toggle('filled', !!i.value); });
+  /* Schritt 1 und 3 führen über den Pfeil im Feld, Schritt 2 geht von selbst weiter */
+  const inField = OB.step === 0 || OB.step === 2, auto = OB.step === 1;
+  $('#ob-nav').classList.toggle('hide', inField || auto);
+  $('#ob-back').classList.toggle('hide', OB.step === 0);
+  const gn = $('#go-name'); if(gn) gn.disabled = !stepValid(0);
+}
+function obGo(step){
+  OB.step = clamp(step, 0, STEPS-1);
+  obPaint();
 }
 $('#ob-next').addEventListener('click', () => {
   if(!stepValid(OB.step)) return;
   if(OB.step < STEPS-1){ OB.step++; obPaint(); }
   else finishOnboarding();
 });
-$('#ob-back').addEventListener('click', () => { if(OB.step > 0){ OB.step--; obPaint(); } });
+$('#ob-back').addEventListener('click', () => { if(OB.step > 0) obGo(OB.step - 1); });
+$('#go-name').addEventListener('click', () => { if(stepValid(0)) obGo(1); });
+$('#go-ort').addEventListener('click', () => obGo(3));
 $('#in-vn').addEventListener('input', refreshNav);
 $('#in-nn').addEventListener('input', refreshNav);
-$$('#in-vn,#in-nn').forEach(i => i.addEventListener('keydown', e => { if(e.key === 'Enter') $('#ob-next').click(); }));
+$$('#in-vn,#in-nn').forEach(i => i.addEventListener('keydown', e => {
+  if(e.key === 'Enter' && stepValid(0)) obGo(1);
+}));
 
 function finishOnboarding(){
   const vn = $('#in-vn').value.trim(), nn = $('#in-nn').value.trim();
@@ -2111,7 +2168,9 @@ $('#sheet').addEventListener('click', e => { if(e.target.dataset.close === 'shee
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape'){ closeSheet(); closeTime(); $('#menu').classList.remove('on'); }
 });
-document.addEventListener('click', e => { if(e.target.closest('#skip')) endIntro(); });
+/* Überall antippen beendet das Intro — nicht nur die Pille */
+$('#splash').addEventListener('click', endIntro);
+$('#splash').addEventListener('touchend', e => { e.preventDefault(); endIntro(); }, { passive:false });
 
 /* ═══════════════════════════════════════════════════════════
    START
