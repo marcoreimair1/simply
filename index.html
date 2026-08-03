@@ -166,9 +166,7 @@ input,textarea{-webkit-appearance:none}
   animation:letter .95s var(--ease-out) forwards}
 @keyframes letter{to{opacity:1;transform:none;filter:blur(0)}}
 .wordmark i{font-style:italic;color:var(--butter)}
-.byline{margin-top:24px;font-size:11px;letter-spacing:.44em;text-transform:uppercase;color:var(--tx-3);
-  opacity:0;animation:fadeUp .9s 1.95s var(--ease-out) forwards}
-.subline{margin-top:26px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(247,215,116,.5);
+.subline{margin-top:30px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(247,215,116,.5);
   opacity:0;animation:fadeUp .9s 2.35s var(--ease-out) forwards}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .skip{position:absolute;left:0;right:0;margin:0 auto;width:max-content;
@@ -188,10 +186,17 @@ input,textarea{-webkit-appearance:none}
   border-bottom:1px solid var(--line-2)}
 .topbar-in{max-width:1080px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:14px}
 .brand{display:flex;align-items:baseline;gap:9px;text-decoration:none;color:inherit}
-.brand{align-items:center;gap:11px}
+.brand{align-items:flex-end;gap:12px}
 .brand .bword{height:23px;width:auto;display:block;flex:none}
-.brand .bs{font-size:8.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--tx-3);align-self:center}
-@media(max-width:520px){.brand .bword{height:20px}.brand{gap:9px}}
+/* unten bündig mit dem Logo: gleiche Grundlinie, kein Zentrieren */
+.brand .bs{font-size:8.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--tx-3);
+  line-height:1;align-self:flex-end;position:relative;bottom:2px;white-space:nowrap}
+@media(max-width:560px){
+  .brand{gap:9px}
+  .brand .bword{height:20px}
+  .brand .bs{font-size:7.5px;letter-spacing:.13em;bottom:1px}
+}
+@media(max-width:400px){.brand .bs{font-size:7px;letter-spacing:.08em}}
 .spacer{flex:1}
 .sync{display:none;align-items:center;gap:7px;font-size:11px;padding:6px 12px;border-radius:999px;
   border:1px solid var(--line-2);color:var(--tx-3);white-space:nowrap;transition:.3s}
@@ -647,7 +652,6 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
     <div class="mark-wrap">
       <img class="mark-img" id="mark-img" alt="MARU">
     </div>
-    <div class="byline">by Marco</div>
     <div class="subline">Arbeitszeit · ohne Aufwand</div>
   </div>
   <button class="skip" id="skip">Tippen zum Überspringen</button>
@@ -659,7 +663,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
     <div class="topbar-in">
       <div class="brand">
         <img class="bword" id="brand-word" alt="MARU">
-        <span class="bs">by Marco</span>
+        <span class="bs">Mehr Zeit fürs Wesentliche.</span>
       </div>
       <div class="spacer"></div>
       <span class="sync" id="sync" title="Sicherungsstand"></span>
@@ -2256,9 +2260,7 @@ function drawPage(doc, p, y, m, sigs){
     doc.setFont('helvetica','bold'); doc.setFontSize(14);
     doc.text('MARU', R, 19.4, { align:'right' });
   }
-  doc.setFont('helvetica','normal'); doc.setFontSize(5.6);
-  doc.setTextColor.apply(doc, GREY);
-  doc.text('B Y   M A R C O', R, 24.2, { align:'right' });
+
 
   doc.setDrawColor(214,168,40); doc.setLineWidth(0.5);
   doc.line(L, 28.4, R, 28.4);
@@ -2393,7 +2395,8 @@ function drawPage(doc, p, y, m, sigs){
   doc.setDrawColor(232,234,240); doc.setLineWidth(0.25);
   doc.line(L, 281, R, 281);
   doc.setFontSize(5.8); doc.setTextColor.apply(doc, GREY);
-  doc.text('Erstellt am ' + fmtDate(new Date().toISOString().slice(0,10)) + ' mit MARU · by Marco', L, 285.4);
+  doc.text('Erstellt am ' + fmtDate(new Date().toISOString().slice(0,10))
+    + ' mit MARU — Mehr Zeit fürs Wesentliche.   ·   by Marco Reimair', L, 285.4);
   doc.text(MONTHS[m] + ' ' + y + '  ·  ' + p.vorname + ' ' + p.nachname, R, 285.4, { align:'right' });
 }
 
