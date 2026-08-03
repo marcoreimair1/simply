@@ -197,6 +197,15 @@ input,textarea{-webkit-appearance:none}
 .brand .bt i{font-style:italic;color:var(--butter)}
 .brand .bs{font-size:8.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--tx-3);align-self:center;margin-left:2px}
 .spacer{flex:1}
+.sync{display:none;align-items:center;gap:7px;font-size:11px;padding:6px 12px;border-radius:999px;
+  border:1px solid var(--line-2);color:var(--tx-3);white-space:nowrap;transition:.3s}
+.sync::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.sync.ok{color:var(--mint);border-color:rgba(121,232,198,.32)}
+.sync.saving{color:var(--butter);border-color:var(--butter-dim)}
+.sync.saving::before{animation:blink 1s infinite}
+.sync.warn{color:var(--butter);border-color:var(--butter-dim)}
+.sync.bad{color:var(--coral);border-color:rgba(255,142,110,.38)}
+@media(max-width:560px){.sync{font-size:0;padding:7px;gap:0}.sync::before{width:8px;height:8px}}
 .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:13px;
   background:linear-gradient(140deg,var(--butter),#E0A93C);color:#20180A;border:1px solid rgba(255,255,255,.2);
   transition:.25s var(--ease)}
@@ -654,6 +663,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
         <span class="bs">by Marco</span>
       </div>
       <div class="spacer"></div>
+      <span class="sync" id="sync" title="Sicherungsstand"></span>
       <button class="avatar" id="avatar" style="display:none" aria-label="Menü"></button>
     </div>
   </header>
@@ -662,16 +672,42 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
 
     <!-- ─────────── ANMELDEN ─────────── -->
     <section class="view pt" id="v-login">
-      <div class="eyebrow">Willkommen zurück</div>
-      <h1 class="dis">Schön, dich <i>wiederzusehen</i>.</h1>
-      <p class="lede">Vorname und Geburtsdatum — mehr braucht Simply nicht, um dich und deine Dienstzeiten zu erkennen.</p>
+      <div class="eyebrow" id="lg-eyebrow">Willkommen zurück</div>
+      <h1 class="dis" id="lg-title">Schön, dich <i>wiederzusehen</i>.</h1>
+      <p class="lede" id="lg-lede">Vorname und Geburtsdatum — mehr braucht Simply nicht, um dich und deine Dienstzeiten zu erkennen.</p>
+
+      <!-- Cloud: Anmeldung per E-Mail-Link -->
+      <div id="lg-cloud" style="display:none">
+        <div class="card mt" style="max-width:430px">
+          <div class="field hasgo" id="f-mail">
+            <input id="lg-mail" type="email" inputmode="email" autocomplete="email" placeholder=" ">
+            <label for="lg-mail">E-Mail-Adresse</label>
+            <button class="inline-go" id="lg-send" aria-label="Anmeldelink senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
+          </div>
+          <p class="hint" style="margin-top:14px">Du bekommst eine Mail mit einem Link. Es gibt kein Passwort zu merken — und deine Daten liegen sicher, egal auf welchem Gerät du arbeitest.</p>
+          <div id="lg-err2" style="display:none;margin-top:14px;font-size:12.5px;color:var(--coral)"></div>
+        </div>
+      </div>
+
+      <!-- Cloud: Mail ist unterwegs -->
+      <div id="lg-sent" style="display:none">
+        <div class="card mt" style="max-width:430px;text-align:center;padding:34px 22px">
+          <div class="qd-ring" style="margin:0 auto 18px">
+            <svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="35"/><path d="M25 41l11 11 20-22"/></svg>
+            <span class="puls"></span>
+          </div>
+          <h3 style="font-family:var(--font-dis);font-size:23px;font-weight:400;margin:0 0 6px">Schau in dein Postfach</h3>
+          <p class="hint" id="lg-sent-t" style="margin:0 0 18px"></p>
+          <button class="linkbtn" id="lg-again">Keine Mail bekommen? Nochmal senden</button>
+        </div>
+      </div>
 
       <div id="known" class="mt" style="display:none">
         <div class="eyebrow" style="margin-bottom:9px">Bekannte Profile</div>
         <div id="known-list" style="display:flex;flex-wrap:wrap;gap:9px"></div>
       </div>
 
-      <div class="card mt" style="max-width:430px">
+      <div class="card mt" style="max-width:430px" id="lg-local">
         <div class="field" id="f-lg-vn"><input id="lg-vn" autocomplete="given-name" placeholder=" "><label for="lg-vn">Vorname</label></div>
         <div style="margin-top:16px">
           <small style="display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3)">Geburtsdatum</small>
@@ -892,7 +928,7 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
 <div class="menu" id="menu">
   <div class="menu-bd" data-close="menu"></div>
   <div class="menu-card">
-    <div class="mh"><b id="me-name">—</b><small id="me-sub">Miller Optik GmbH</small></div>
+    <div class="mh"><b id="me-name">—</b><small id="me-sub">Miller Optik GmbH</small><small id="me-mail" style="display:block"></small></div>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
     <button class="mi" data-act="intro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12a8 8 0 108-8"/><path d="M4 4v5h5"/></svg>Intro nochmal ansehen</button>
     <button class="mi" data-act="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12H4M8 8l-4 4 4 4M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/></svg>Abmelden</button>
@@ -958,6 +994,20 @@ const DOWSHORT = ['So','Mo','Di','Mi','Do','Fr','Sa'];
 const WORKDAYS = [1,2,3,4,5,6];
 const EMPLOYER = 'Miller Optik GmbH';
 const STORE = 'simply.v1';
+
+/* ══════════════════════════════════════════════════════════════
+   CLOUD — hier die zwei Werte aus Supabase eintragen
+   (Project Settings → API). Der anon-Key ist öffentlich und darf
+   im Quelltext stehen. Bleiben beide leer, läuft Simply weiter
+   rein lokal, so wie bisher.
+   ══════════════════════════════════════════════════════════════ */
+const CLOUD = {
+  url: '',   // z. B. https://abcdefgh.supabase.co
+  key: ''    // anon public key, beginnt mit eyJ...
+};
+/* ═══════════════════════════════════════════════════════════ */
+
+let sb = null, UID = null, MAIL = '', CLOUD_ON = false;
 
 const TYPES = {
   urlaub: { label:'Urlaub',       color:'#F7D774', pdf:[214,168,40],  desc:'Urlaubstag' },
@@ -1140,7 +1190,10 @@ function load(){
   try{ const raw = localStorage.getItem(STORE); if(raw) return JSON.parse(raw); }catch(e){}
   return { profiles:[], activeId:null };
 }
-function save(){ try{ localStorage.setItem(STORE, JSON.stringify(DB)); }catch(e){ toast('Speichern nicht möglich'); } }
+function save(){
+  try{ localStorage.setItem(STORE, JSON.stringify(DB)); }catch(e){ toast('Speichern nicht möglich'); }
+  cloudQueue();
+}
 let DB = load();
 let ME = null;
 
@@ -1157,6 +1210,73 @@ function normalize(p){
   p.ort = EMPLOYER;
   return p;
 }
+
+/* ─── Cloud: Anmeldung und Abgleich ────────────────────────── */
+function cacheKey(){ return 'simply.cloud.' + UID; }
+
+function setSync(state, note){
+  const el = $('#sync'); if(!el) return;
+  const map = {
+    ok:      ['Gesichert', 'ok'],
+    saving:  ['Sichere …', 'saving'],
+    offline: ['Offline · wird nachgeholt', 'warn'],
+    error:   ['Nicht gesichert', 'bad'],
+    local:   ['Nur dieses Gerät', 'warn']
+  };
+  const m = map[state] || map.local;
+  el.className = 'sync ' + m[1];
+  el.textContent = note || m[0];
+  el.title = note || m[0];
+  el.style.display = 'inline-flex';
+}
+
+async function cloudBoot(){
+  if(!CLOUD.url || !CLOUD.key) return false;
+  try{
+    const m = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    sb = m.createClient(CLOUD.url, CLOUD.key, {
+      auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+    });
+    CLOUD_ON = true;
+    return true;
+  }catch(e){
+    console.warn('Cloud nicht erreichbar, arbeite lokal weiter', e);
+    return false;
+  }
+}
+
+async function cloudLoad(){
+  const r = await sb.from('records').select('data').eq('user_id', UID).maybeSingle();
+  if(r.error) throw r.error;
+  return r.data ? r.data.data : null;
+}
+
+let _saveT = null, _dirty = false;
+function cloudQueue(){
+  if(!CLOUD_ON || !UID || !ME) return;
+  ME.updated = Date.now();
+  try{ localStorage.setItem(cacheKey(), JSON.stringify(ME)); }catch(e){}
+  _dirty = true; setSync('saving');
+  clearTimeout(_saveT);
+  _saveT = setTimeout(cloudFlush, 700);
+}
+async function cloudFlush(){
+  if(!CLOUD_ON || !UID || !ME) return;
+  try{
+    const r = await sb.from('records').upsert({
+      user_id: UID, data: ME, updated_at: new Date().toISOString()
+    });
+    if(r.error) throw r.error;
+    _dirty = false; setSync('ok');
+  }catch(e){
+    console.warn('Sichern fehlgeschlagen', e);
+    setSync(navigator.onLine ? 'error' : 'offline');
+  }
+}
+window.addEventListener('online', () => { if(_dirty) cloudFlush(); });
+window.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && _dirty) cloudFlush();
+});
 
 /* ─── Intro ────────────────────────────────────────────────── */
 const INTRO_HTML = $('#splash').innerHTML;
@@ -1541,8 +1661,12 @@ function finishOnboarding(){
     vorname: vn, nachname: nn, dob: dob, ort: EMPLOYER,
     sched: JSON.parse(JSON.stringify(OB.sched)), months: months, events: {}, created: new Date().toISOString()
   });
-  DB.profiles.push(p); DB.activeId = p.id; save();
   ME = p;
+  if(CLOUD_ON && UID){
+    cloudQueue();
+  } else {
+    DB.profiles.push(p); DB.activeId = p.id; save();
+  }
   enterApp();
   toast('Willkommen, ' + vn + '!');
 }
@@ -1551,12 +1675,59 @@ function finishOnboarding(){
    ANMELDEN
    ═══════════════════════════════════════════════════════════ */
 function loginScreen(){
-  const list = DB.profiles;
-  $('#known').style.display = list.length ? 'block' : 'none';
-  $('#known-list').innerHTML = list.map(p =>
-    '<button class="chip" data-pid="'+p.id+'">'+esc(p.vorname)+' '+esc(p.nachname.charAt(0))+'.</button>').join('');
   $('#lg-err').style.display = 'none';
+  $('#lg-err2').style.display = 'none';
+  $('#lg-sent').style.display = 'none';
+  if(CLOUD_ON){
+    $('#lg-cloud').style.display = 'block';
+    $('#lg-local').style.display = 'none';
+    $('#known').style.display = 'none';
+    $('#lg-title').innerHTML = 'Deine Zeiten, <i>überall dabei</i>.';
+    $('#lg-lede').textContent = 'Tippe deine E-Mail-Adresse ein. Du bekommst einen Link, und schon bist du drin — '
+      + 'am Handy, am Geschäfts-PC, auf einem neuen Telefon. Deine Aufzeichnungen bleiben erhalten.';
+    $('#lg-eyebrow').textContent = 'Anmelden';
+    $('#sync').style.display = 'none';
+  } else {
+    const list = DB.profiles;
+    $('#lg-cloud').style.display = 'none';
+    $('#lg-local').style.display = 'block';
+    $('#known').style.display = list.length ? 'block' : 'none';
+    $('#known-list').innerHTML = list.map(p =>
+      '<button class="chip" data-pid="'+p.id+'">'+esc(p.vorname)+' '+esc(p.nachname.charAt(0))+'.</button>').join('');
+    $('#lg-title').innerHTML = 'Schön, dich <i>wiederzusehen</i>.';
+    $('#lg-lede').textContent = 'Vorname und Geburtsdatum — mehr braucht Simply nicht, um dich und deine Dienstzeiten zu erkennen.';
+    $('#lg-eyebrow').textContent = 'Willkommen zurück';
+  }
   go('v-login');
+}
+
+/* ─── Anmeldelink verschicken ─── */
+let _lastMail = '';
+async function sendLink(){
+  const mail = $('#lg-mail').value.trim();
+  const err = $('#lg-err2');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(mail)){
+    err.textContent = 'Das sieht nicht wie eine E-Mail-Adresse aus.';
+    err.style.display = 'block'; return;
+  }
+  err.style.display = 'none';
+  const btn = $('#lg-send'); btn.disabled = true;
+  try{
+    const r = await sb.auth.signInWithOtp({
+      email: mail,
+      options: { emailRedirectTo: location.origin + location.pathname }
+    });
+    if(r.error) throw r.error;
+    _lastMail = mail;
+    $('#lg-cloud').style.display = 'none';
+    $('#lg-sent').style.display = 'block';
+    $('#lg-sent-t').textContent = 'Wir haben einen Anmeldelink an ' + mail
+      + ' geschickt. Der Link gilt eine Stunde. Du kannst ihn auch auf einem anderen Gerät öffnen.';
+  }catch(e){
+    err.textContent = 'Konnte nicht senden: ' + (e.message || 'unbekannter Fehler');
+    err.style.display = 'block';
+  }
+  btn.disabled = false;
 }
 $('#known-list').addEventListener('click', e => {
   const b = e.target.closest('[data-pid]'); if(!b) return;
@@ -1577,6 +1748,17 @@ $('#lg-go').addEventListener('click', () => {
   toast('Hallo ' + p.vorname + '!');
 });
 $('#lg-new').addEventListener('click', () => { obInit(); go('v-onboard'); });
+$('#lg-send').addEventListener('click', sendLink);
+$('#lg-mail').addEventListener('keydown', e => { if(e.key === 'Enter') sendLink(); });
+$('#lg-mail').addEventListener('input', () => {
+  $('#f-mail').classList.toggle('filled', !!$('#lg-mail').value);
+});
+$('#lg-again').addEventListener('click', () => {
+  $('#lg-sent').style.display = 'none';
+  $('#lg-cloud').style.display = 'block';
+  $('#lg-mail').value = _lastMail;
+  $('#f-mail').classList.toggle('filled', !!_lastMail);
+});
 $('#lg-vn').addEventListener('input', refreshNav);
 $('#lg-vn').addEventListener('keydown', e => { if(e.key === 'Enter') $('[data-dob="lg"] input[data-p="d"]').focus(); });
 
@@ -1590,6 +1772,8 @@ function enterApp(){
   $('#avatar').textContent = (ME.vorname[0] || '?').toUpperCase() + (ME.nachname[0] || '').toUpperCase();
   $('#me-name').textContent = ME.vorname + ' ' + ME.nachname;
   $('#me-sub').textContent = EMPLOYER + ' · ' + fmtDate(ME.dob);
+  $('#me-mail').textContent = MAIL || '';
+  if(!CLOUD_ON) setSync('local');
   EX.set = new Set((ME.months || []).map(o => o.y + '-' + o.m));
   EX.year = ME.months && ME.months.length ? ME.months[ME.months.length-1].y : PREV.getFullYear();
   const first = (ME.months || [])[0];
@@ -2216,15 +2400,40 @@ $('#menu').addEventListener('click', e => {
     go('v-hours');
   }
   if(a === 'intro') playIntro();
-  if(a === 'logout'){ ME = null; DB.activeId = null; save(); $('#avatar').style.display = 'none'; loginScreen(); }
-  if(a === 'delete'){
-    if(!confirm('Profil und alle Einträge endgültig löschen?')) return;
-    DB.profiles = DB.profiles.filter(p => p.id !== ME.id); DB.activeId = null; save();
-    ME = null; $('#avatar').style.display = 'none';
-    if(DB.profiles.length) loginScreen(); else { obInit(); go('v-onboard'); }
-    toast('Profil gelöscht');
-  }
+  if(a === 'logout') doLogout();
+  if(a === 'delete') doDelete();
 });
+async function doLogout(){
+  if(CLOUD_ON){
+    if(_dirty) await cloudFlush();
+    try{ await sb.auth.signOut(); }catch(e){}
+    UID = null; MAIL = '';
+  } else {
+    DB.activeId = null; save();
+  }
+  ME = null;
+  $('#avatar').style.display = 'none';
+  $('#sync').style.display = 'none';
+  $('#lg-mail').value = ''; $('#f-mail').classList.remove('filled');
+  loginScreen();
+}
+async function doDelete(){
+  if(!confirm('Profil und alle Einträge endgültig löschen? Das lässt sich nicht rückgängig machen.')) return;
+  if(CLOUD_ON && UID){
+    try{ await sb.from('records').delete().eq('user_id', UID); }catch(e){ toast('Löschen in der Cloud fehlgeschlagen'); return; }
+    try{ localStorage.removeItem(cacheKey()); }catch(e){}
+    try{ await sb.auth.signOut(); }catch(e){}
+    UID = null; MAIL = ''; ME = null;
+    $('#avatar').style.display = 'none'; $('#sync').style.display = 'none';
+    loginScreen(); toast('Profil gelöscht');
+    return;
+  }
+  DB.profiles = DB.profiles.filter(p => p.id !== ME.id); DB.activeId = null;
+  ME = null; save();
+  $('#avatar').style.display = 'none';
+  if(DB.profiles.length) loginScreen(); else { obInit(); go('v-onboard'); }
+  toast('Profil gelöscht');
+}
 $('#hr-save').addEventListener('click', () => {
   if(!DRAFT) return;
   ME.sched = JSON.parse(JSON.stringify(DRAFT)); save();
@@ -2253,6 +2462,10 @@ $('#sh-textwrap').insertAdjacentHTML('beforeend',
   + '<span style="font-size:12.5px;color:var(--tx-2)">Stunden als Arbeitszeit zählen</span></div>');
 $('#sh-aw').addEventListener('click', () => { SH.aw = !SH.aw; paintSheet(); });
 
+window.addEventListener('unhandledrejection', e => {
+  console.error('Unbehandelter Fehler:', e.reason);
+  toast('Etwas ist schiefgelaufen');
+});
 ['gesturestart','gesturechange','gestureend'].forEach(ev =>
   document.addEventListener(ev, e => e.preventDefault(), { passive:false }));
 let _lt = 0, _lx = 0, _ly = 0;
@@ -2265,10 +2478,67 @@ document.addEventListener('touchend', e => {
 wireDob('ob'); wireDob('lg');
 try{ playIntro(); }catch(e){ console.warn(e); endIntro(); }
 DB.profiles.forEach(normalize);
-const act = DB.profiles.find(p => p.id === DB.activeId);
-if(act){ ME = act; enterApp(); }
-else if(DB.profiles.length) loginScreen();
-else { obInit(); go('v-onboard'); }
+
+/* ─── Start ─── */
+function bootLocal(){
+  setSync('local');
+  const act = DB.profiles.find(p => p.id === DB.activeId);
+  if(act){ ME = normalize(act); enterApp(); }
+  else if(DB.profiles.length) loginScreen();
+  else { obInit(); go('v-onboard'); }
+}
+
+async function afterLogin(session){
+  UID = session.user.id;
+  MAIL = session.user.email || '';
+  /* Adresszeile aufräumen, damit der Anmeldelink nicht sichtbar bleibt */
+  try{ history.replaceState({}, '', location.pathname); }catch(e){}
+
+  let rec = null, offline = false;
+  try{ rec = await cloudLoad(); }
+  catch(e){ console.warn(e); offline = true; }
+
+  let cached = null;
+  try{ const raw = localStorage.getItem(cacheKey()); if(raw) cached = JSON.parse(raw); }catch(e){}
+
+  /* Ungesendete Änderungen von diesem Gerät haben Vorrang */
+  let push = false;
+  if(offline && cached){ rec = cached; }
+  else if(cached && rec && (cached.updated || 0) > (rec.updated || 0)){ rec = cached; push = true; }
+
+  if(!rec){
+    /* Erstes Anmelden: liegt hier noch ein lokales Profil, wandert es mit hoch */
+    const local = DB.profiles[0];
+    if(local){
+      ME = normalize(JSON.parse(JSON.stringify(local)));
+      cloudQueue();
+      enterApp();
+      toast('Deine Daten sind jetzt gesichert');
+      return;
+    }
+    setSync(offline ? 'offline' : 'ok');
+    obInit(); go('v-onboard');
+    return;
+  }
+
+  ME = normalize(rec);
+  setSync(offline ? 'offline' : 'ok');
+  if(push) cloudQueue();
+  enterApp();
+}
+
+(async function boot(){
+  const ok = await cloudBoot();
+  if(!ok){ bootLocal(); return; }
+  sb.auth.onAuthStateChange((evt, session) => {
+    if(evt === 'SIGNED_IN' && session && !UID) afterLogin(session);
+    if(evt === 'SIGNED_OUT' && ME){ ME = null; UID = null; loginScreen(); }
+  });
+  let session = null;
+  try{ const r = await sb.auth.getSession(); session = r.data.session; }catch(e){ console.warn(e); }
+  if(session) await afterLogin(session);
+  else loginScreen();
+})();
 </script>
 </body>
 </html>
