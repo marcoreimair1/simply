@@ -417,7 +417,7 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .point span{color:var(--tx-3);font-size:12.5px;line-height:1.45;display:block}
 
 .pdfprev{perspective:900px;display:flex;justify-content:center}
-.pdfsheet{width:min(80vw,296px);aspect-ratio:1/1.414;background:#FBFAF7;color:#141a28;border-radius:6px;
+.pdfsheet{width:min(78vw,272px);aspect-ratio:1/1.414;background:#FBFAF7;color:#141a28;border-radius:6px;
   padding:13px 12px 11px;display:flex;flex-direction:column;font-size:5px;line-height:1.35;
   box-shadow:0 30px 60px -24px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.3);
   transform:rotateY(-9deg) rotateX(2deg) rotate(-1deg);transition:transform .6s var(--ease-out);
@@ -435,7 +435,7 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .s-info span{font-size:4.8px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 .s-tab{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
 .s-tab th{background:#181e30;color:#fff;font-size:3.4px;letter-spacing:.06em;text-align:left;padding:2.6px 3px;font-weight:700}
-.s-tab td{font-size:4.2px;padding:2.5px 3px;border-bottom:.5px solid #E4E6EC}
+.s-tab td{font-size:4px;padding:2.1px 3px;border-bottom:.5px solid #E4E6EC}
 .s-tab td.c{text-align:center}
 .s-tab tr.so td{background:#F2F3F6;color:#9096a4}
 .s-tab tr.ur td{background:#FDF4E0}
@@ -1767,7 +1767,7 @@ function renderPdfPreview(vn, nn){
     sched: JSON.parse(JSON.stringify(OB.sched)), months: [], events: {}
   });
   const rows = monthRows(probe, yy, mm), sum = monthSums(rows);
-  const zeige = rows.slice(0, 9);
+  const zeige = rows.slice(0, 18);   /* so viele, dass die Seite gefüllt wirkt */
   const name = ((vn || 'Vorname') + ' ' + (nn || 'Nachname')).trim();
 
   let tr = '';
