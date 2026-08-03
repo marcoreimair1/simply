@@ -702,6 +702,8 @@ body.nobar #v-onboard{padding-top:14px}
 
 section.view{display:none}
 section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
+section#v-onboard.on{display:flex;flex-direction:column}
+section#v-onboard.on > #ob-nav{margin-top:auto}
 @keyframes viewIn{from{opacity:0;transform:translateY(14px)}}
 .pt{padding-top:34px}
 .mt{margin-top:22px}
@@ -1815,6 +1817,16 @@ function obInit(){
     $('#'+id).innerHTML = '<span style="color:'+TYPES[t].color+'">'+ICONS[t]+'</span>'+TYPES[t].label;
   });
 }
+/* Der Funnel soll genau bis zum unteren Bildschirmrand reichen. Sonst klebt
+   die Leiste am Ende eines kurzen Schrittes und darunter bleibt Leerraum. */
+function fitOnboard(){
+  const ob = $('#v-onboard'); if(!ob || !ob.classList.contains('on')) return;
+  ob.style.minHeight = '0px';
+  const oben = ob.getBoundingClientRect().top + window.scrollY;
+  ob.style.minHeight = Math.max(0, Math.round(window.innerHeight - oben)) + 'px';
+}
+window.addEventListener('resize', fitOnboard);
+
 let _prevStep = 0;
 function obPaint(){
   const gewechselt = OB.step !== _prevStep;
@@ -1844,9 +1856,10 @@ function obPaint(){
     requestAnimationFrame(() => requestAnimationFrame(checkDoneScroll));
   }
   document.body.classList.toggle('nobar', OB.step === STEPS-1);
+  fitOnboard();                       /* erst jetzt — die obere Leiste steht fest */
   const nav = $('#ob-nav');
-  requestAnimationFrame(() => nav.classList.toggle('solid',
-    document.documentElement.scrollHeight > window.innerHeight + 12));
+  requestAnimationFrame(() => { fitOnboard(); nav.classList.toggle('solid',
+    document.documentElement.scrollHeight > window.innerHeight + 12); });
   refreshNav();
 }
 /* Miniatur der A4-Seite — aus den echten Dienstzeiten, die gerade eingetragen wurden */
