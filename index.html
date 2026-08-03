@@ -404,6 +404,56 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .tp-sep{height:1px;background:var(--line-2);margin:10px 0}
 
 /* ============================================================
+   SCHLUSSSEITE: drei Punkte und Vorschau der A4-Seite
+   ============================================================ */
+.done-grid{display:grid;gap:22px;grid-template-columns:1fr;align-items:start}
+@media(min-width:860px){.done-grid{grid-template-columns:1fr auto;gap:36px}}
+.point{display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--line-2)}
+.point:last-child{border-bottom:none}
+.point .pi{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;
+  background:rgba(247,215,116,.12);color:var(--butter)}
+.point .pi svg{width:17px;height:17px}
+.point b{display:block;font-size:14px;margin-bottom:3px}
+.point span{color:var(--tx-3);font-size:12.5px;line-height:1.45;display:block}
+
+.pdfprev{perspective:900px;display:flex;justify-content:center}
+.sheet{width:min(80vw,296px);aspect-ratio:1/1.414;background:#FBFAF7;color:#141a28;border-radius:6px;
+  padding:13px 12px 11px;display:flex;flex-direction:column;font-size:5px;line-height:1.35;
+  box-shadow:0 30px 60px -24px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.3);
+  transform:rotateY(-9deg) rotateX(2deg) rotate(-1deg);transition:transform .6s var(--ease-out);
+  animation:sheetIn .85s .15s var(--ease-out) both}
+.pdfprev:hover .sheet{transform:none}
+@keyframes sheetIn{from{opacity:0;transform:rotateY(-20deg) translateY(18px)}}
+.s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.s-head b{font-size:6.4px;letter-spacing:.02em;display:block}
+.s-head small{font-size:4.6px;color:#5a6070}
+.s-logo{font-size:7.5px;font-weight:800;letter-spacing:.04em}
+.s-rule{height:1px;background:#D6A828;margin:5px 0 6px}
+.s-info{display:flex;gap:8px;background:#F1F1F4;border-radius:2px;padding:4px 5px;margin-bottom:6px}
+.s-info div{flex:1;min-width:0}
+.s-info u{display:block;font-size:3.5px;letter-spacing:.1em;color:#8a90a0;text-decoration:none}
+.s-info span{font-size:4.8px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.s-tab{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.s-tab th{background:#181e30;color:#fff;font-size:3.4px;letter-spacing:.06em;text-align:left;padding:2.6px 3px;font-weight:700}
+.s-tab td{font-size:4.2px;padding:2.5px 3px;border-bottom:.5px solid #E4E6EC}
+.s-tab td.c{text-align:center}
+.s-tab tr.so td{background:#F2F3F6;color:#9096a4}
+.s-tab tr.ur td{background:#FDF4E0}
+.s-more{font-size:3.9px;color:#9096a4;padding:3px 3px 0}
+.s-sum{display:flex;gap:3px;margin-top:auto;padding-top:7px}
+.s-sum i{flex:1;border:.5px solid #E4E6EC;border-radius:2px;padding:3px 2px;text-align:center;font-style:normal}
+.s-sum i u{display:block;font-size:3.1px;letter-spacing:.05em;color:#8a90a0;text-decoration:none}
+.s-sum i b{font-size:6px}
+.s-sum i.t{background:#181e30;color:#fff;border-color:#181e30}
+.s-sum i.t u{color:#c9cede}
+.s-sig{display:flex;gap:9px;margin-top:9px}
+.s-sig div{flex:1;min-width:0}
+.s-sig em{display:block;font-family:var(--font-sig);font-size:9.5px;line-height:1.05;margin-bottom:1px;
+  white-space:nowrap;overflow:hidden}
+.s-sig hr{border:none;border-top:.5px solid #9a9ea8;margin:0 0 1.5px}
+.s-sig small{font-size:3.1px;letter-spacing:.06em;color:#8a90a0;display:block}
+
+/* ============================================================
    KALENDER
    ============================================================ */
 .calhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}
@@ -821,12 +871,27 @@ section.view.on{display:block;animation:viewIn .5s var(--ease-out)}
             <div class="eyebrow">Fertig</div>
             <h1 class="dis">Das war's <i>schon</i>.</h1>
             <p class="lede" id="done-text"></p>
-            <div class="card mt" style="max-width:470px">
-              <h3>Was jetzt passiert</h3>
-              <p class="hint">Im Kalender tippst du nur noch Ausnahmen an — Urlaub, Krankenstand oder einen eigenen Vermerk. Feiertage kennt MARU selbst. Alles andere ergibt sich aus deinem Rhythmus.</p>
-              <div class="legend">
-                <span class="lg" id="lg1"></span><span class="lg" id="lg2"></span><span class="lg" id="lg3"></span><span class="lg" id="lg4"></span>
+
+            <div class="done-grid mt">
+              <div class="card" style="max-width:470px">
+                <div class="point">
+                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+                  <span><b>Nur Ausnahmen antippen</b><span>Urlaub, Krankenstand oder ein eigener Vermerk. Längeres am Stück über „Zeitraum eintragen". Feiertage kennt MARU selbst.</span></span>
+                </div>
+                <div class="point">
+                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+                  <span><b>Stunden rechnet MARU</b><span>Pause und Tagesstunden ergeben sich aus deinem Rhythmus, auf die Viertelstunde genau. Urlaub, Krankenstand und Feiertag zählen getrennt.</span></span>
+                </div>
+                <div class="point">
+                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg></span>
+                  <span><b>Am Monatsende ein Tipp</b><span>Ein Monat wird eine A4-Seite mit beiden Unterschriftsleisten — fertig zum Abgeben. So sieht deine aus:</span></span>
+                </div>
+                <div class="legend" style="margin-top:16px">
+                  <span class="lg" id="lg1"></span><span class="lg" id="lg2"></span><span class="lg" id="lg3"></span><span class="lg" id="lg4"></span>
+                </div>
               </div>
+
+              <div class="pdfprev" id="pdfprev"></div>
             </div>
           </div>
 
@@ -1656,6 +1721,7 @@ function obInit(){
   $('#in-vn').value = ''; $('#in-nn').value = '';
   $$('[data-dob="ob"] input').forEach(i => i.value = '');
   echoDob(); $('#dob-auto').style.display = 'none';
+  $('#pdfprev').innerHTML = '';
   renderSched($('#sched-onboard'), OB.sched, refreshNav);
   obPaint();
   ['lg1','lg2','lg3','lg4'].forEach((id, i) => {
@@ -1680,15 +1746,65 @@ function obPaint(){
     ? 'Los geht\'s <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
     : 'Weiter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   if(OB.step === STEPS-1){
-    const vn = $('#in-vn').value.trim();
-    $('#done-text').textContent = 'Angemeldet als ' + vn + ' bei ' + EMPLOYER +
-      '. Beim nächsten Besuch genügen Vorname und Geburtsdatum — MARU weiß dann wieder, wie du arbeitest.';
+    const vn = $('#in-vn').value.trim(), nn = $('#in-nn').value.trim();
+    $('#done-text').textContent = CLOUD_ON
+      ? 'Alles steht, ' + vn + '. Deine Aufzeichnungen sind gesichert — mit deiner E-Mail-Adresse kommst du auf jedem Gerät heran.'
+      : 'Alles steht, ' + vn + '. Beim nächsten Besuch genügen Vorname und Geburtsdatum.';
+    try{ renderPdfPreview(vn, nn); }catch(e){ console.warn('Vorschau nicht möglich', e); }
   }
   const nav = $('#ob-nav');
   requestAnimationFrame(() => nav.classList.toggle('solid',
     document.documentElement.scrollHeight > window.innerHeight + 12));
   refreshNav();
 }
+/* Miniatur der A4-Seite — aus den echten Dienstzeiten, die gerade eingetragen wurden */
+function renderPdfPreview(vn, nn){
+  const host = $('#pdfprev'); if(!host) return;
+  const erste = Array.from(OB.months).sort()[0] || (PREV.getFullYear() + '-' + PREV.getMonth());
+  const teile = erste.split('-'), yy = +teile[0], mm = +teile[1];
+  const probe = normalize({
+    vorname: vn || 'Vorname', nachname: nn || 'Nachname', dob: '2000-01-01',
+    sched: JSON.parse(JSON.stringify(OB.sched)), months: [], events: {}
+  });
+  const rows = monthRows(probe, yy, mm), sum = monthSums(rows);
+  const zeige = rows.slice(0, 9);
+  const name = ((vn || 'Vorname') + ' ' + (nn || 'Nachname')).trim();
+
+  let tr = '';
+  zeige.forEach(r => {
+    const cls = r.dow === 0 ? ' class="so"' : (r.type ? ' class="ur"' : '');
+    tr += '<tr' + cls + '>'
+      + '<td>' + p2(r.day) + '.' + p2(mm+1) + '.</td>'
+      + '<td>' + DOWSHORT[r.dow] + '</td>'
+      + '<td class="c">' + (r.vmFrom ? r.vmFrom + '–' + r.vmTo : '—') + '</td>'
+      + '<td class="c">' + (r.nmFrom ? r.nmFrom + '–' + r.nmTo : '—') + '</td>'
+      + '<td class="c">' + (r.pause > 0 ? fmtH(r.pause) : '—') + '</td>'
+      + '<td class="c"><b>' + (r.work > 0 ? fmtH(r.work) : '—') + '</b></td>'
+      + '</tr>';
+  });
+
+  host.innerHTML =
+    '<div class="sheet" role="img" aria-label="Vorschau der Arbeitsaufzeichnung als A4-Seite">'
+    + '<div class="s-head"><div><b>ARBEITSZEITAUFZEICHNUNG</b>'
+    + '<small>' + MONTHS[mm] + ' ' + yy + '</small></div><span class="s-logo">MARU</span></div>'
+    + '<div class="s-rule"></div>'
+    + '<div class="s-info">'
+    + '<div><u>DIENSTNEHMER/IN</u><span>' + esc(name) + '</span></div>'
+    + '<div><u>DIENSTGEBER</u><span>' + EMPLOYER + '</span></div></div>'
+    + '<table class="s-tab"><tr><th>DATUM</th><th>TAG</th><th>VORMITTAG</th><th>NACHMITTAG</th>'
+    + '<th>PAUSE</th><th>STD.</th></tr>' + tr + '</table>'
+    + '<div class="s-more">… und ' + (rows.length - zeige.length) + ' weitere Tage</div>'
+    + '<div class="s-sum">'
+    + '<i><u>ARBEITSZEIT</u><b>' + fmtH(sum.work) + '</b></i>'
+    + '<i><u>URLAUB</u><b>' + fmtH(sum.urlaub) + '</b></i>'
+    + '<i><u>KRANK</u><b>' + fmtH(sum.krank) + '</b></i>'
+    + '<i class="t"><u>GESAMT</u><b>' + fmtH(sum.total) + '</b></i></div>'
+    + '<div class="s-sig">'
+    + '<div><em>' + esc(name) + '</em><hr><small>UNTERSCHRIFT DIENSTNEHMER/IN</small></div>'
+    + '<div><em>Miller Optik</em><hr><small>UNTERSCHRIFT DIENSTGEBER</small></div></div>'
+    + '</div>';
+}
+
 function stepValid(s){
   if(s === 0) return !!($('#in-vn').value.trim() && $('#in-nn').value.trim());
   if(s === 1) return !!dobIso(readDob('ob'));
