@@ -3747,24 +3747,58 @@ $('#brand-word').src = LOGO_WORD;
    also Computer. Die Breite allein wäre kein Maß: ein schmales Fenster am
    Schreibtisch ist kein Handy. Mit ?desktop=1 lässt sich die Sperre umgehen,
    das braucht man zum Prüfen. */
-const AM_HANDY = (function(){
+/* ─── Nur fürs Handy ───
+   Die Fensterbreite entscheidet, und zwar über die kurze Seite: die ist auch
+   beim gedrehten Telefon klein, bei jedem Bildschirm am Schreibtisch aber groß.
+   Danach kommt die zweite Schranke — eine Maus heißt Computer, egal wie schmal
+   das Fenster gezogen ist. Mit ?desktop=1 lässt sich beides umgehen, das braucht
+   man zum Prüfen.                                                            */
+const HANDY_MAX = 560;
+function kurzeSeite(){
+  return Math.min(window.innerWidth || 9999, window.innerHeight || 9999);
+}
+function darfRein(){
   if(/[?&]desktop=1/.test(location.search)) return true;
+  if(kurzeSeite() > HANDY_MAX) return false;
   const mq = q => !!(window.matchMedia && window.matchMedia(q).matches);
   const ua = navigator.userAgent || '';
   const handyUA = /iPhone|iPod|IEMobile|Opera Mini|Silk|Kindle|Android.*Mobile|Mobile.*Android/i.test(ua);
-  const tabletUA = /iPad|Tablet|PlayBook/i.test(ua)
-                || /Android/i.test(ua) && !/Mobile/i.test(ua)
-                || (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
-  if(handyUA || tabletUA) return true;
-  /* Wer einen feinen Zeiger hat oder überfahren kann, sitzt an einem Computer —
-     auch mit Touchscreen am Notebook. Die Fensterbreite sagt darüber nichts,
-     darum kommt sie hier nicht mehr vor. */
+  if(handyUA) return true;
   if(mq('(pointer:fine)') || mq('(hover:hover)')) return false;
   return mq('(pointer:coarse)');
-})();
+}
+let AM_HANDY = darfRein(), GEBOOTET = false;
+
+function zeigeSperre(an){
+  document.body.classList.toggle('nurhandy', an);
+  if(an){
+    document.body.classList.remove('locked');
+    const w = document.getElementById('dg-word');
+    if(w && !w.getAttribute('src')) w.src = LOGO_WORD;
+  }
+}
+/* Zieht jemand das Fenster größer oder dreht das Gerät, muss die Sperre
+   mitgehen — sonst bleibt die App in einem Fenster offen, das sie nicht mehr
+   haben darf. */
+function pruefeGeraet(){
+  const jetzt = darfRein();
+  if(jetzt === AM_HANDY) return;
+  AM_HANDY = jetzt;
+  if(!jetzt){ zeigeSperre(true); return; }
+  /* Umgekehrt: aufs Handymaß verkleinert. Ist die App nie gestartet, braucht
+     sie einen echten Start — sonst wäre sie leer. */
+  if(!GEBOOTET){ location.reload(); return; }
+  zeigeSperre(false);
+}
+window.addEventListener('resize', pruefeGeraet);
+window.addEventListener('orientationchange', pruefeGeraet);
+
 /* Damit du mir sagen kannst, was dein Gerät meldet, falls es doch durchkommt */
 try{ console.info('[MARU] Gerät:', JSON.stringify({
   amHandy: AM_HANDY,
+  kurzeSeite: kurzeSeite(),
+  grenze: HANDY_MAX,
+  fenster: window.innerWidth + 'x' + window.innerHeight,
   feinerZeiger: matchMedia('(pointer:fine)').matches,
   groberZeiger: matchMedia('(pointer:coarse)').matches,
   ueberfahrbar: matchMedia('(hover:hover)').matches,
@@ -3773,11 +3807,7 @@ try{ console.info('[MARU] Gerät:', JSON.stringify({
   kennung: navigator.userAgent
 })); }catch(e){}
 
-if(!AM_HANDY){
-  document.body.classList.add('nurhandy');
-  document.body.classList.remove('locked');
-  const w = document.getElementById('dg-word'); if(w) w.src = LOGO_WORD;
-}
+if(!AM_HANDY) zeigeSperre(true);
 
 wireDob('ob'); wireDob('lg');
 if(AM_HANDY){ try{ playIntro(); }catch(e){ console.warn(e); endIntro(); } }
@@ -3873,6 +3903,7 @@ $('#pk-ask-skip').addEventListener('click', () => {
 
 (async function boot(){
   if(!AM_HANDY) return;          /* am Computer wird nichts geladen und nichts angemeldet */
+  GEBOOTET = true;
   const ok = await cloudBoot();
   if(!ok){ bootLocal(); return; }
   sb.auth.onAuthStateChange((evt, session) => {
