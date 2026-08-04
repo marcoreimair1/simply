@@ -620,12 +620,82 @@ body.nobar #v-onboard{padding-top:14px}
 .mi .miico{display:grid;place-items:center;width:24px;height:24px;flex:none}
 .mi .miico svg{width:24px;height:24px}
 #mi-pkreset svg{opacity:.6}
-/* Weiche: anmelden oder registrieren */
-.opt.pick{padding:16px 15px;border-radius:var(--r-m);margin-bottom:11px}
-.opt.pick .oi{background:rgba(247,215,116,.14);color:var(--butter)}
-.opt.pick[data-lg=signup] .oi{background:rgba(238,242,255,.07);color:var(--tx-2)}
-.opt.pick:hover{border-color:var(--butter-dim);transform:translateX(3px)}
-.opt.pick .spacer{flex:1}
+/* ─── Begrüßungsseite ─────────────────────────────────────
+   Drei Merkmale, jedes mit einem Musterbild. Die Bilder sind aus Formen
+   gebaut statt aus Dateien — nichts lädt nach, nichts blitzt auf. */
+.wfeat{max-width:430px;margin:0 0 26px}
+.wfeat > b{display:block;font-size:16px;margin:16px 0 5px}
+.wfeat > span{display:block;color:var(--tx-3);font-size:13px;line-height:1.62}
+.wmock{position:relative;border-radius:var(--r-m);padding:14px;overflow:hidden;
+  background:linear-gradient(165deg,rgba(27,40,86,.4),rgba(12,20,48,.26));
+  border:1px solid var(--line-2);box-shadow:0 14px 34px rgba(0,0,0,.28)}
+.wmock.light{background:#F6F7FB;border-color:rgba(0,0,0,.07)}
+.wtag{position:absolute;right:10px;top:10px;z-index:2;font-size:8px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--tx-3);background:rgba(6,10,26,.5);
+  border:1px solid var(--line-2);border-radius:6px;padding:3px 6px}
+.wtag.dark{color:#8a90a0;background:rgba(255,255,255,.7);border-color:rgba(0,0,0,.08)}
+
+/* Musterkalender */
+.mk-head{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.mk-head b{font-family:var(--font-dis);font-size:15px;font-weight:400}
+.mk-head small{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-3)}
+.mk-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+.mk-dow u{text-decoration:none;font-size:7.5px;text-align:center;color:var(--tx-3)}
+.mk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mk-grid i{display:block;aspect-ratio:1;border-radius:5px;background:rgba(238,242,255,.07)}
+.mk-grid i.so{background:transparent;border:1px dashed var(--line-2)}
+.mk-grid i.u{background:rgba(247,215,116,.42)}
+.mk-grid i.k{background:rgba(255,142,110,.42)}
+.mk-grid i.f{background:rgba(167,139,250,.42)}
+.mk-leg{display:flex;align-items:center;gap:5px;margin-top:10px;font-size:8px;color:var(--tx-3)}
+.mk-leg s{text-decoration:none;width:8px;height:8px;border-radius:3px;display:inline-block}
+.mk-leg s + *{margin-right:6px}
+.mk-leg s.u{background:rgba(247,215,116,.6)}
+.mk-leg s.k{background:rgba(255,142,110,.6)}
+.mk-leg s.f{background:rgba(167,139,250,.6)}
+
+/* Musterdokument */
+.mb-head{display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(0,0,0,.1);padding-bottom:6px;margin-bottom:8px}
+.mb-head b{font-size:6.5px;letter-spacing:.14em;color:#3a4050}
+.mb-head i{font-style:normal;font-size:8px;font-weight:800;letter-spacing:.06em;color:#0A1129}
+.mb-rows p{display:flex;gap:6px;align-items:center;margin:0 0 5px;padding-bottom:4px;
+  border-bottom:1px solid rgba(0,0,0,.055)}
+.mb-rows p.hl{background:rgba(247,215,116,.22);border-radius:3px;padding:2px 3px 4px}
+.mb-rows s{text-decoration:none;height:3px;border-radius:2px;background:rgba(0,0,0,.14);flex:1}
+.mb-rows s.w{flex:0 0 22%;background:rgba(0,0,0,.22)}
+.mb-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
+.mb-sum span{font-size:7px;text-align:center;color:#3a4050;background:rgba(0,0,0,.05);
+  border-radius:4px;padding:4px 0}
+.mb-sum span.t{background:#0A1129;color:#F7D774}
+.mb-sig{margin-top:10px}
+.mb-sig em{display:block;font-family:var(--font-sig);font-size:15px;color:#1a1f2e;line-height:1}
+.mb-sig hr{border:none;border-top:.5px solid #9a9ea8;margin:1px 0 2px}
+.mb-sig u{text-decoration:none;font-size:5.5px;letter-spacing:.1em;text-transform:uppercase;color:#8a90a0}
+
+/* Musterbild Passkey */
+.mp-pill{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;
+  color:var(--butter);background:rgba(247,215,116,.09);border:1px solid var(--butter-dim);
+  border-radius:var(--r-s);padding:11px 14px}
+.mp-pill svg{width:16px;height:16px;flex:none}
+.mp-ok{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;
+  font-size:12px;color:var(--c-eigen)}
+.mp-hak{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;
+  background:rgba(121,232,198,.16)}
+.mp-hak svg{width:12px;height:12px}
+.mp-note{text-align:center;margin-top:8px;font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--tx-3)}
+
+/* Die zwei Wege: einer gefüllt, einer umrandet — beide gleich groß und breit */
+#lg-bar{max-width:430px;gap:10px}
+#lg-bar .btn{flex:1;justify-content:center;padding:16px 14px;font-size:14px}
+#lg-bar .btn svg{width:17px;height:17px}
+.btn-out{background:rgba(238,242,255,.05);border:1px solid rgba(238,242,255,.18);color:var(--tx-1)}
+.btn-out:hover{background:rgba(238,242,255,.09);border-color:var(--butter-dim);color:var(--butter)}
+@media(max-width:400px){
+  #lg-bar{flex-direction:column}
+  #lg-bar .btn{width:100%}
+}
 
 /* Zeilen auf der Passkey-Frage */
 .pkrow{display:flex;align-items:flex-start;gap:13px}
@@ -983,17 +1053,57 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <div id="lg-cloud" style="display:none">
 
         <!-- Erst die Weiche -->
-        <div id="lg-choice" class="mt" style="max-width:430px">
-          <button class="opt pick" data-lg="login">
-            <span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span>
-            <span><b>Anmelden</b><small>Ich arbeite schon mit MARU</small></span>
-            <span class="spacer"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:17px;height:17px;opacity:.45;flex:none"><path d="M9 6l6 6-6 6"/></svg>
-          </button>
-          <button class="opt pick" data-lg="signup">
-            <span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
-            <span><b>Registrieren</b><small>Zum ersten Mal hier</small></span>
-            <span class="spacer"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:17px;height:17px;opacity:.45;flex:none"><path d="M9 6l6 6-6 6"/></svg>
-          </button>
+        <div id="lg-choice">
+
+          <!-- Musterbilder: alles aus Formen gebaut, es lädt nichts nach -->
+          <div class="wfeat">
+            <div class="wmock">
+              <span class="wtag">Beispiel</span>
+              <div class="mk-head"><b>Juli 2026</b><small>Miller Optik GmbH</small></div>
+              <div class="mk-dow"><u>M</u><u>D</u><u>M</u><u>D</u><u>F</u><u>S</u><u>S</u></div>
+              <div class="mk-grid"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="u"></i><i class="so u"></i><i class="u"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class="k"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class="f"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i></div>
+              <div class="mk-leg"><s class="u"></s>Urlaub<s class="k"></s>Krank<s class="f"></s>Feiertag</div>
+            </div>
+            <b>Nur antippen, was abweicht</b>
+            <span>Deine Dienstzeiten stehen einmal fest. Danach tippst du im Kalender nur
+              Urlaub, Krankenstand oder einen eigenen Vermerk an. Feiertage kennt MARU selbst.</span>
+          </div>
+
+          <div class="wfeat">
+            <div class="wmock light">
+              <span class="wtag dark">Beispiel</span>
+              <div class="mb-head"><b>ARBEITSZEITAUFZEICHNUNG</b><i>MARU</i></div>
+              <div class="mb-rows">
+                <p><s></s><s></s><s class="w"></s></p>
+                <p><s></s><s></s><s class="w"></s></p>
+                <p class="hl"><s></s><s></s><s class="w"></s></p>
+                <p><s></s><s></s><s class="w"></s></p>
+                <p><s></s><s></s><s class="w"></s></p>
+              </div>
+              <div class="mb-sum"><span>223,00</span><span>13,00</span><span>9,00</span><span class="t">245,00</span></div>
+              <div class="mb-sig"><em>Judith Berger</em><hr><u>Unterschrift Dienstnehmer/in</u></div>
+            </div>
+            <b>Am Monatsende ein Tipp</b>
+            <span>Ein Monat wird eine fertige A4-Seite: jeder Tag mit Vormittag, Nachmittag,
+              Pause und Stunden, die Summen getrennt ausgewiesen, deine Unterschriftsleiste darunter.</span>
+          </div>
+
+          <div class="wfeat">
+            <div class="wmock">
+              <span class="wtag">Beispiel</span>
+              <div class="mp-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>Mit Passkey anmelden</div>
+              <div class="mp-ok"><span class="mp-hak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg></span>Face ID erkannt</div>
+              <div class="mp-note">Kein Passwort, kein Code aus dem Postfach</div>
+            </div>
+            <b>Anmelden ohne Code</b>
+            <span>Beim ersten Mal bekommst du eine E-Mail. Danach genügt Face ID oder dein
+              Fingerabdruck — und deine Aufzeichnungen liegen sicher auf jedem deiner Geräte.</span>
+          </div>
+
+          <div class="navrow sticky solid" id="lg-bar">
+            <button class="btn btn-p" data-lg="login"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>Anmelden</button>
+            <button class="btn btn-out" data-lg="signup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Registrieren</button>
+          </div>
         </div>
 
         <!-- Dann die E-Mail-Zeile, für beide Wege dieselbe -->
@@ -2551,8 +2661,9 @@ function lgMode(m){
   $('#lg-err2').style.display   = 'none';
   if(wahl){
     $('#lg-eyebrow').textContent = 'Willkommen';
-    $('#lg-title').innerHTML     = 'Deine Zeiten, <i>überall dabei</i>.';
-    $('#lg-lede').textContent    = 'Neu bei MARU oder schon dabei?';
+    $('#lg-title').innerHTML     = 'Arbeitszeit, <i>ohne Aufwand</i>.';
+    $('#lg-lede').textContent    = 'Antippen was abweicht, am Monatsende eine fertige A4-Seite. '
+                                 + 'So sieht das aus:';
   }else if(m === 'login'){
     $('#lg-eyebrow').textContent = 'Anmelden';
     $('#lg-title').innerHTML     = 'Schön, dich <i>wiederzusehen</i>.';
