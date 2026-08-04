@@ -957,11 +957,16 @@ body.nobar #v-onboard{padding-top:14px}
   box-shadow:inset 0 2px 18px rgba(0,0,0,.6),0 12px 34px rgba(0,0,0,.35)}
 .exfluid{position:absolute;left:0;right:0;bottom:0;height:0;
   background:linear-gradient(180deg,#F7D774 0%,#E4B84B 45%,#C1902A 100%)}
-.exwelle{position:absolute;top:-15px;left:-62%;width:224%;height:34px;border-radius:44%;
-  background:#F7D774;animation:exwave 2.3s linear infinite;will-change:transform}
-.exwelle.w2{top:-11px;opacity:.5;background:#FFF0BE;animation-duration:3.3s;
+.exwelle{position:absolute;top:-9px;left:-70%;width:240%;height:19px;border-radius:50%;
+  background:#F7D774;animation:exwave 2.6s ease-in-out infinite;will-change:transform}
+.exwelle.w2{top:-6px;opacity:.45;background:#FFF3CC;animation-duration:3.7s;
   animation-direction:reverse}
-@keyframes exwave{from{transform:translateX(-9%) rotate(0)}to{transform:translateX(9%) rotate(360deg)}}
+/* Drehen sah nach Keil aus — schieben und leicht wippen sieht nach Wasser aus. */
+@keyframes exwave{
+  0%{transform:translateX(-5%) translateY(0)}
+  50%{transform:translateX(5%) translateY(-2.5px)}
+  100%{transform:translateX(-5%) translateY(0)}
+}
 .exblase{position:absolute;border-radius:50%;background:rgba(255,255,255,.4);
   animation:exbub 2.8s linear infinite}
 .exblase.b1{left:24%;width:5px;height:5px}
@@ -3648,8 +3653,14 @@ async function buildPdf(list, separate){
      länger braucht. Die letzten fünf Prozent gehören dem fertigen Dokument —
      so ist der Balken nie voll, bevor die Datei wirklich da ist. */
   const MIN_MS = 3600;
+  let feinschliff = false;
   const takt = setInterval(() => {
-    ov.setz(Math.min(95, (performance.now() - t0) / MIN_MS * 95));
+    const zeit = (performance.now() - t0) / MIN_MS;
+    ov.setz(Math.min(96, zeit * 96));
+    if(zeit > .62 && !feinschliff){
+      feinschliff = true;
+      ov.step(0, 1, 'Letzter Feinschliff', 'Ränder, Summen, Unterschrift');
+    }
   }, 60);
 
   try{
@@ -3672,9 +3683,11 @@ async function buildPdf(list, separate){
         drawPage(doc, ME, o.y, o.m, sigs);
         fertig.push([doc, base + '_' + o.y + '-' + p2(o.m+1) + '.pdf']);
       }
-      clearInterval(takt);
+      /* Der Balken läuft weiter, während wir auf die Mindestzeit warten —
+         sonst stünde er die ganze Zeit auf zwei Prozent. */
       const rest = MIN_MS - (performance.now() - t0);
-      if(rest > 0){ ov.step(0, 1, 'Letzter Feinschliff', 'Ränder, Summen, Unterschrift'); await wait(rest); }
+      if(rest > 0) await wait(rest);
+      clearInterval(takt);
       fertig.forEach(p => p[0].save(p[1]));
       name = total + (total === 1 ? ' Datei' : ' Dateien') + ' im Download-Ordner';
       ov.finish(total + (total === 1 ? ' PDF erstellt' : ' PDFs erstellt'), name);
@@ -3692,9 +3705,9 @@ async function buildPdf(list, separate){
         ? list[0].y + '-' + p2(list[0].m+1)
         : list[0].y + '-' + p2(list[0].m+1) + '_bis_' + list[total-1].y + '-' + p2(list[total-1].m+1);
       name = base + '_' + suffix + '.pdf';
-      clearInterval(takt);
       const rest = MIN_MS - (performance.now() - t0);
-      if(rest > 0){ ov.step(0, 1, 'Letzter Feinschliff', 'Ränder, Summen, Unterschrift'); await wait(rest); }
+      if(rest > 0) await wait(rest);
+      clearInterval(takt);
       doc.save(name);
       ov.finish('PDF erstellt · ' + total + (total === 1 ? ' Seite' : ' Seiten'), name);
     }
