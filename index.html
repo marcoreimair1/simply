@@ -163,15 +163,34 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 .dg-tip b{color:var(--tx-2);font-weight:600}
 @media(max-width:520px){.dg-qr{width:200px;height:200px}}
 
-#splash{position:fixed;inset:0;z-index:60;background:#05081A;display:grid;place-items:center;overflow:hidden;
-  cursor:pointer;-webkit-tap-highlight-color:transparent}
+#splash{position:fixed;inset:0;z-index:60;background:#02040C;display:grid;place-items:center;overflow:hidden;
+  cursor:default;-webkit-tap-highlight-color:transparent}
+/* Der Film füllt den Schirm und wird dabei beschnitten — bei Wolken fällt das nicht auf.
+   Die langsame Vergrößerung gibt dem Standbildgefühl den Rest. */
+.sp-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
+  pointer-events:none;animation:spZoom 9s linear both;will-change:transform}
+@keyframes spZoom{from{transform:scale(1.04)}to{transform:scale(1.2)}}
+/* Dunkler Schleier: in der Mitte fast schwarz, damit die Kachel steht,
+   an den Rändern durchlässig, damit man die Bewegung sieht. */
+.sp-veil{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(115% 78% at 50% 44%,rgba(2,4,12,.93) 0%,rgba(2,4,12,.78) 40%,rgba(2,4,12,.52) 100%),
+             linear-gradient(180deg,rgba(4,7,20,.6),rgba(4,7,20,.86));
+  opacity:0;animation:veilIn 1.1s var(--ease-out) forwards}
+@keyframes veilIn{from{opacity:.4}to{opacity:1}}
 #splash.done{animation:splashOut .9s var(--ease-out) forwards}
 @keyframes splashOut{to{opacity:0;transform:scale(1.07);filter:blur(14px);visibility:hidden}}
 #pcanvas{position:absolute;inset:0;width:100%;height:100%}
 .sp-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0}
 .mark-wrap{position:relative;display:grid;place-items:center}
-.mark-img{width:min(70vw,310px);height:auto;display:block;position:relative;z-index:2;
-  animation:markIn 1.15s .3s var(--ease-out) both, shimmer 4.6s 1.6s ease-in-out infinite}
+/* Das App-Symbol selbst: schwarze Kachel, weiße Schrift — so wie es
+   später am Home-Bildschirm liegt. */
+.mark-tile{position:relative;z-index:2;display:grid;place-items:center;
+  width:min(52vw,208px);aspect-ratio:1;border-radius:23%;background:#05070F;
+  border:1px solid rgba(238,242,255,.09);
+  box-shadow:0 30px 70px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);
+  animation:markIn 1.15s .25s var(--ease-out) both}
+.mark-img{width:64%;height:auto;display:block;
+  animation:shimmer 4.6s 1.4s ease-in-out infinite}
 @keyframes markIn{
   0%{opacity:0;transform:scale(.82)}
   55%{opacity:1}
@@ -181,12 +200,12 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 /* Glühen liegt HINTER dem Bild, nicht als Filter darauf — kein Kastenschleier */
 .mark-wrap::before{content:"";position:absolute;left:-22%;right:-22%;top:-22%;bottom:-22%;z-index:1;
   border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle,rgba(247,215,116,.34),rgba(247,215,116,.08) 46%,transparent 70%);
-  opacity:0;animation:halo 2.4s .35s var(--ease-out) forwards}
+  background:radial-gradient(circle,rgba(247,215,116,.26),rgba(247,215,116,.06) 46%,transparent 70%);
+  opacity:0;animation:halo 2.4s .3s var(--ease-out) forwards}
 @keyframes halo{0%{opacity:0;transform:scale(.6)}45%{opacity:1;transform:scale(1.06)}100%{opacity:.62;transform:scale(1)}}
 @keyframes draw{to{stroke-dashoffset:0}}
 .bloom{position:absolute;top:50%;left:50%;translate:-50% -50%;width:10px;height:10px;border-radius:50%;
-  background:#fff;box-shadow:0 0 90px 46px rgba(247,215,116,.7);opacity:0;animation:bloom 1.1s 1.35s var(--ease-out) forwards}
+  background:#fff;box-shadow:0 0 90px 46px rgba(247,215,116,.7);opacity:0;animation:bloom 1.1s 1.05s var(--ease-out) forwards}
 @keyframes bloom{0%{opacity:0;transform:scale(.2)}18%{opacity:.95;transform:scale(1)}100%{opacity:0;transform:scale(7)}}
 .wordmark{display:flex;margin-top:22px;font-family:var(--font-dis);font-weight:500;letter-spacing:.015em;
   font-size:clamp(50px,14vw,96px);line-height:1;color:var(--paper)}
@@ -194,14 +213,16 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
   animation:letter .95s var(--ease-out) forwards}
 @keyframes letter{to{opacity:1;transform:none;filter:blur(0)}}
 .wordmark i{font-style:italic;color:var(--butter)}
-.subline{margin-top:30px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(247,215,116,.5);
-  opacity:0;animation:fadeUp .9s 2.35s var(--ease-out) forwards}
+.subline{margin-top:28px;opacity:0;animation:fadeUp .9s 1.85s var(--ease-out) forwards}
+/* Über hellen Wolken bräuchte blasses Gelb Mut. Also volle Farbe und eine
+   unscharfe Kachel darunter, damit die Schrift immer trägt. */
+.subline span{display:inline-block;font-size:11px;letter-spacing:.26em;text-transform:uppercase;
+  color:#FFE9A3;padding:9px 18px;border-radius:999px;
+  background:rgba(4,7,20,.5);border:1px solid rgba(255,233,163,.22);
+  backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
+  text-shadow:0 1px 10px rgba(0,0,0,.55)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.skip{position:absolute;left:0;right:0;margin:0 auto;width:max-content;
-  bottom:calc(30px + env(safe-area-inset-bottom));z-index:3;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--tx-3);padding:14px 26px;border:1px solid var(--line-2);border-radius:999px;opacity:0;
-  animation:fadeUp .6s 1.2s var(--ease-out) forwards;transition:.25s}
-.skip:hover{color:var(--butter);border-color:var(--butter-dim)}
+#pcanvas{z-index:2}
 
 /* ============================================================
    SHELL
@@ -848,15 +869,23 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
 <!-- ══════════════════════════ INTRO ══════════════════════════ -->
 <div id="splash">
+  <!-- Wolken im Hintergrund. Stumm und inline, sonst spielt iOS nicht von selbst.
+       Das Poster ist eingebettet, damit in der ersten Zehntelsekunde kein
+       schwarzes Loch klafft. -->
+  <video id="spvid" class="sp-vid" autoplay muted loop playsinline webkit-playsinline
+         preload="auto" disablepictureinpicture tabindex="-1" aria-hidden="true"
+         poster="data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAEwAS/AAD//gARTGF2YzU4LjEzNC4xMDAA/9sAQwAIBAQEBAQFBQUFBQUGBgYGBgYGBgYGBgYGBwcHCAgIBwcHBgYHBwgICAgJCQkICAgICQkKCgoMDAsLDg4OEREU/8QAcgAAAgMBAQAAAAAAAAAAAAAAAwIFAQQGAAEBAQEBAQAAAAAAAAAAAAAAAAECAwQQAAEDAgQFAwUBAQEAAAAAAAEAAwIRBDEFEiEVE1FBFGFioUJxUzJSgUMiEQEBAQEBAQAAAAAAAAAAAAAAARESAhP/wAARCABgADYDASIAAhEAAxEA/9oADAMBAAIRAxEAPwDlMus4nFS1vlkZDBDbs+S6KYVU1YxhoGC9HuuEiAzPKKxNIqFfy0xJ2XfXVu1KH61UJe5dEknSnj2eo5U2JQp2lDgp97L6dlmnYknBa1mxCytT0VeKeimDl5/le4ef5Qdg9YRHbdNbNzbKlZZeZbqvBp2XLtvGeMajeKDcWQc+lSbVuAE0mB0U6yrjnX8rJ+lBOVexdIbMSOCvh3on0OXM8J9vwvcK9vwul4Z6L3DB0V+qcJXxgFfjNnsjSJ6JTVcuq3gPiwqllaxV3FzyP+c5fYIUswH4516UTbTBmbaAxRC02EJl4uCtJR+6uc/VLq4uQgqpBB1kkq9SJiRoKJSAEpcp3QnLkDdRRJNtzS8lkHAJIuxlvgrlHVvUhB6ZjGJpRYH3LgT2lGi0XMKD9isL0ag0MlYHk+632jKv3VeY7+MfKBF+A2Mtwm57f9BXA8ZZtKmsj/FI2tv/AOBrNSsovWySKp2swEe6lG/lwAwCWekBA88EJJXlVAz51AhR9zKcK0WqThKyXrkYxKsGMtSnIyqvePLqs8r8QkaFVxL1VG6xaOqsiZLfFiEuyA0YtClEdt0FQF5cYjBJIAJpOCiC46mBXHKAqPvIuuE77LS86srzpSCMuraUZbEoXIc9VuccBO4Va4dFrR//2Q==">
+    <source src="wolken.mp4" type="video/mp4">
+  </video>
+  <div class="sp-veil"></div>
   <canvas id="pcanvas"></canvas>
   <div class="bloom"></div>
   <div class="sp-inner">
     <div class="mark-wrap">
-      <img class="mark-img" id="mark-img" alt="MARU">
+      <span class="mark-tile"><img class="mark-img" id="mark-img" alt="MARU"></span>
     </div>
-    <div class="subline">Arbeitszeit · ohne Aufwand</div>
+    <div class="subline"><span>Mehr Zeit fürs Wesentliche.</span></div>
   </div>
-  <button class="skip" id="skip">Tippen zum Überspringen</button>
 </div>
 
 <!-- ══════════════════════════ APP ══════════════════════════ -->
@@ -1788,8 +1817,13 @@ function playIntro(){
   document.body.classList.add('locked');
   $('#app').classList.remove('on');
   $('#mark-img').src = LOGO_MARK;
+  /* Nach dem Neusetzen des Markups ist es ein frisches Element — die
+     Autoplay-Angabe allein reicht dann nicht überall. */
+  const v = $('#spvid');
+  if(v){ v.muted = true; v.defaultMuted = true;
+         const p = v.play(); if(p && p.catch) p.catch(() => {}); }
   try{ startParticles(); }catch(e){ console.warn('Partikel nicht verfügbar', e); }
-  playIntro._a = setTimeout(endIntro, 5000);
+  playIntro._a = setTimeout(endIntro, 4000);
 }
 function endIntro(){
   const sp = $('#splash');
@@ -1798,7 +1832,10 @@ function endIntro(){
   sp.classList.add('done');
   $('#app').classList.add('on');
   document.body.classList.remove('locked');
-  playIntro._b = setTimeout(() => { sp.style.display = 'none'; stopParticles(); }, 950);
+  playIntro._b = setTimeout(() => {
+    sp.style.display = 'none'; stopParticles();
+    const v = $('#spvid'); if(v){ try{ v.pause(); }catch(e){} }
+  }, 950);
 }
 let _pAnim = null;
 function startParticles(){
@@ -3409,8 +3446,7 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Escape'){ closeSheet(); closeTime(); $('#menu').classList.remove('on'); }
 });
 /* Überall antippen beendet das Intro — nicht nur die Pille */
-$('#splash').addEventListener('click', endIntro);
-$('#splash').addEventListener('touchend', e => { e.preventDefault(); endIntro(); }, { passive:false });
+/* Kein Überspringen: die vier Sekunden gehören der Marke. */
 
 /* ═══════════════════════════════════════════════════════════
    START
