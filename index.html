@@ -1929,18 +1929,18 @@ function startParticles(){
   if(!flecken.length) return;
   /* Kühl überwiegt, warm blitzt nur selten auf */
   const waehle = () => { const w = Math.random();
-    return flecken[w < .42 ? 0 : w < .72 ? 1 : w < .9 ? 2 : w < .97 ? 3 : 4] || flecken[0]; };
+    return flecken[w < .34 ? 0 : w < .58 ? 1 : w < .78 ? 2 : w < .93 ? 3 : 4] || flecken[0]; };
 
   const n = Math.round(Math.max(55, Math.min(120, W*H/11500)));
   const punkte = Array.from({length:n}, () => ({
     x: Math.random()*W,
     y: Math.random()*H,
-    r: Math.pow(Math.random(),1.6)*7 + 1.8,     /* wenige große, viele kleine */
+    r: Math.pow(Math.random(),1.6)*9 + 2.2,     /* wenige große, viele kleine */
     vy: -(Math.random()*.15 + .035),            /* langsam nach oben */
     weite: Math.random()*16 + 5,                /* Ausschlag des Pendelns */
     tempo: Math.random()*.42 + .12,             /* eigenes Tempo */
     ph: Math.random()*6.2832,
-    a: Math.random()*.3 + .08,
+    a: Math.random()*.4 + .17,                  /* über hellen Wolken braucht es etwas mehr */
     bl: Math.random()*.55 + .16,                /* eigener Blinktakt */
     f: waehle()
   }));
