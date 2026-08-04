@@ -1027,10 +1027,15 @@ body.nobar #v-onboard{padding-top:14px}
    eine Zeile hoch. Gefragt wird nach Tagen, also stehen die groß; die
    Stunden begleiten sie klein rechts. Der Farbpunkt je Art erklärt
    gleichzeitig den Kalender und ersetzt die frühere Chipzeile. */
-.mx{margin-top:12px;border:1px solid var(--line-2);border-radius:18px;
-  background:rgba(6,10,26,.3);overflow:hidden}
+/* Der Auszug klappt nach OBEN auf, über den Kalender. Nach unten ist
+   nichts frei — die Seite endet dort genau an der Knopfleiste. Würde der
+   Auszug nach unten wachsen, schöbe sich alles nach oben weg. So bleibt
+   jede Zahl im Kalender an ihrem Platz, egal wie oft man auf- und zuklappt. */
+.mx{position:relative;margin-top:12px}
 .mx-head{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 14px;
-  transition:background .22s var(--ease)}
+  border:1px solid var(--line-2);border-radius:18px;background:rgba(6,10,26,.3);
+  transition:background .22s var(--ease),border-radius .34s var(--ease)}
+.mx.on .mx-head{background:rgba(247,215,116,.07);border-radius:0 0 18px 18px}
 .mx-head:hover{background:rgba(247,215,116,.05)}
 .mx-head .mi2{width:28px;height:28px;border-radius:9px;background:rgba(247,215,116,.11);
   color:var(--butter);display:grid;place-items:center;flex:none}
@@ -1039,7 +1044,14 @@ body.nobar #v-onboard{padding-top:14px}
 .mx-head > svg:last-child{width:17px;height:17px;opacity:.45;margin-left:auto;flex:none;
   transition:transform .42s var(--ease)}
 .mx.on .mx-head > svg:last-child{transform:rotate(180deg)}
-.mx-body{height:0;overflow:hidden;transition:height .42s var(--ease-out)}
+.mx-body{position:absolute;left:0;right:0;bottom:100%;z-index:6;
+  height:0;overflow:hidden;
+  border:1px solid var(--line-2);border-bottom:none;border-radius:18px 18px 0 0;
+  background:linear-gradient(180deg,rgba(19,29,68,.97),rgba(11,18,44,.97));
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 -20px 44px -22px rgba(0,0,0,.66);
+  transition:height .42s var(--ease-out)}
+.mx-body .mxr:first-child{border-top:none}
 .mxr{display:flex;align-items:center;gap:11px;padding:7px 14px;border-top:1px solid var(--line-2)}
 .mxr .dot{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;flex:none}
 .mxr .dot svg{width:13px;height:13px}
@@ -3250,12 +3262,11 @@ function mxRow(art, label, stunden, tage, gesamt){
    alles hinein, sieht man nichts von der Grenze; auf sehr kleinen
    Geräten rollt der Auszug in sich, die Seite bleibt stehen.            */
 function mxFrei(){
-  const koerper = $('#mx-body');
-  const leiste = $('#fabbar');
-  const lh = (leiste && leiste.style.display !== 'none')
-    ? leiste.getBoundingClientRect().height : 0;
-  const oben = koerper.getBoundingClientRect().top;
-  return Math.max(96, Math.round(window.innerHeight - lh - oben - 12));
+  /* Luft zwischen der Unterkante der Kopfleiste und der Auszugszeile. */
+  const zeile = $('#mx-t').getBoundingClientRect().top;
+  const kopf = document.querySelector('.topbar');
+  const ko = kopf ? kopf.getBoundingClientRect().bottom : 0;
+  return Math.max(120, Math.round(zeile - ko - 10));
 }
 function mxHoehe(){
   const karte = $('#mx'), koerper = $('#mx-body');
