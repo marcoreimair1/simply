@@ -1014,9 +1014,32 @@ body.nobar #v-onboard{padding-top:14px}
   50%{transform:scale(1.07)}
   100%{transform:none;box-shadow:0 0 0 15px rgba(247,215,116,0)}
 }
-/* Luft vor der Knopfzeile im Blatt */
-#qsheet .sheet-actions{margin-top:24px}
-#qsheet .qcal{margin-top:4px}
+/* Dieses Blatt rollt nicht. Es ist so hoch wie sein Inhalt und wird nur
+   noch am Griff nach unten geschoben — vorher stritten Rollen und Ziehen
+   um denselben Wisch, das ruckelte. Damit der Inhalt sicher hineinpasst,
+   sind die Abstände hier enger als sonst und der Monat wird bei kurzen
+   Bildschirmen flacher. */
+#qcard{overflow:hidden;max-height:94vh;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+#qsheet .sheet-actions{margin-top:18px}
+#qsheet .qcal{margin-top:2px;padding:12px}
+#qsheet h3{margin-bottom:10px}
+#qsheet .qrow{margin-top:12px !important}
+#qsheet .qsum{margin-top:11px;font-size:12px}
+/* Kurze Bildschirme: der Monat wird flacher, die Zellen bleiben tippbar. */
+@media(max-height:760px){
+  #qsheet .qcal{padding:10px}
+  #qsheet .qcal-head{margin-bottom:8px}
+  #qsheet .qcal-head b{font-size:18px}
+  #qsheet .qcal-head .rnd{width:29px;height:29px}
+  #qsheet .qc{aspect-ratio:auto;height:34px}
+  #qsheet .qsum{margin-top:9px}
+  #qsheet .sheet-actions{margin-top:14px}
+  #qsheet .qf small{margin-bottom:4px}
+}
+@media(max-height:670px){
+  #qsheet .qc{height:30px;font-size:12.5px}
+  #qsheet h3{font-size:21px;margin-bottom:7px}
+}
 /* Das Blatt fährt herein, die Teile darin folgen leicht versetzt nach.
    Der Griff bleibt ausgenommen, er soll sofort greifbar sein. */
 #qsheet.on .sheet-card > *:not(.sheet-grab){animation:qIn .5s var(--ease-out) both}
@@ -1921,7 +1944,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   <div class="sheet-card" id="qcard">
     <div class="sheet-grab" id="q-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
     <h3>Zeitraum eintragen</h3>
-    <p class="sd">Ersten und letzten Tag antippen</p>
     <div class="qcal">
       <div class="qcal-head">
         <button class="rnd" id="qc-prev" aria-label="Monat zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
@@ -3880,7 +3902,8 @@ function renderQCal(){
 }
 function qSummary(){
   const el = $('#q-sum');
-  if(!Q.from){ el.innerHTML = '<span class="qhint">Tippe den ersten Tag an, dann den letzten. Ein einzelner Tag geht auch.</span>'; return; }
+  /* Eine Zeile statt zwei — das Blatt soll ohne Rollen auskommen. */
+  if(!Q.from){ el.innerHTML = '<span class="qhint">Ersten und letzten Tag antippen.</span>'; return; }
   if(!Q.to){ el.innerHTML = '<b>' + fmtDay(Q.from) + '</b><br><span class="qhint">Jetzt den letzten Tag antippen — oder unten direkt eintragen.</span>'; return; }
   let days = 0, taken = 0;
   for(const d = new Date(Q.from); d <= Q.to; d.setDate(d.getDate()+1)){
