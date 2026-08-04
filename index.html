@@ -662,10 +662,11 @@ body.nobar #v-onboard{padding-top:14px}
   60%{opacity:1;transform:translateY(0) scale(1.06)}
   100%{opacity:1;transform:none}
 }
-.geb-age{margin-top:12px;font-size:14.5px;color:var(--tx-2);
+.geb-age{margin-top:14px;font-size:15px;color:var(--tx-2);
   opacity:0;animation:fadeUp .6s 1.3s var(--ease-out) forwards}
-.geb-note{margin-top:8px;font-size:12.5px;color:var(--tx-3);
-  opacity:0;animation:fadeUp .6s 1.5s var(--ease-out) forwards}
+.geb-wish{margin-top:10px;font-family:var(--font-dis);font-style:italic;
+  font-size:clamp(19px,5.2vw,24px);line-height:1.25;color:var(--butter-2,#FFE9A3);
+  opacity:0;animation:fadeUp .7s 1.62s var(--ease-out) forwards}
 #geb-close{margin-top:26px;opacity:0;animation:fadeUp .6s 2.1s var(--ease-out) forwards}
 
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
@@ -1711,7 +1712,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <h2 class="geb-h">Alles Gute zum <i>Geburtstag</i></h2>
     <div class="geb-name" id="geb-name">—</div>
     <div class="geb-age" id="geb-age">—</div>
-    <div class="geb-note">Auf die nächsten Runden — und auf pünktliches Heimgehen.</div>
+    <div class="geb-wish">Schön, dass es dich gibt.</div>
     <button class="btn btn-p btn-sm" id="geb-close">Danke!</button>
   </div>
 </div>
@@ -3142,7 +3143,7 @@ function feiern(tag){
   $('#geb-box').innerHTML = PK_GESCHENK;
   $('#geb-name').textContent = ME.vorname + (ME.nachname ? ' ' + ME.nachname : '') + '!';
   $('#geb-age').textContent = alter > 0 && alter < 130
-    ? 'Heute werden es ' + alter + ' Jahre. Der ' + tag + '. ' + MONTHS[CAL.m] + ' gehört dir.'
+    ? 'Heute werden es ' + alter + ' Jahre — der ' + tag + '. ' + MONTHS[CAL.m] + ' gehört dir.'
     : 'Der ' + tag + '. ' + MONTHS[CAL.m] + ' gehört dir.';
   const ov = $('#geb');
   ov.classList.remove('on');
@@ -3150,8 +3151,7 @@ function feiern(tag){
   ov.classList.add('on');
   document.body.classList.add('locked');
   try{ konfetti(); }catch(err){ console.warn('Konfetti nicht möglich', err); }
-  clearTimeout(_gTimer);
-  _gTimer = setTimeout(schliesseFeier, 8000);
+  /* Kein Zeitschloss: das Fenster bleibt, bis jemand „Danke!" drückt. */
 }
 function schliesseFeier(){
   clearTimeout(_gTimer);
@@ -3160,7 +3160,6 @@ function schliesseFeier(){
   cancelAnimationFrame(_gAnim); _gAnim = null;
 }
 $('#geb-close').addEventListener('click', schliesseFeier);
-$('#geb').addEventListener('click', e => { if(e.target.id === 'geb') schliesseFeier(); });
 
 /* Raketen steigen, platzen, und es regnet Papier. Alles auf einem Canvas —
    kein Bild, keine Bibliothek. */
@@ -3696,10 +3695,14 @@ function drawPage(doc, p, y, m, sigs){
     const ry = startY + i * rowH;
     const isSun = r.dow === 0;
     if(r.type){ const c = TYPES[r.type].pdf;
-      doc.setFillColor(Math.round(255-(255-c[0])*0.16), Math.round(255-(255-c[1])*0.16), Math.round(255-(255-c[2])*0.16));
+      /* Nur ein Hauch Farbe in der Zeile, dafür ein kräftiger Balken an der
+         linken Kante — das liest sich ruhiger als eine flächig bunte Zeile. */
+      doc.setFillColor(Math.round(255-(255-c[0])*0.11), Math.round(255-(255-c[1])*0.11), Math.round(255-(255-c[2])*0.11));
       doc.rect(L, ry, W, rowH, 'F');
-    } else if(isSun){ doc.setFillColor(242,243,246); doc.rect(L, ry, W, rowH, 'F'); }
-    else if(i % 2){ doc.setFillColor(250,250,252); doc.rect(L, ry, W, rowH, 'F'); }
+      doc.setFillColor.apply(doc, c);
+      doc.rect(L, ry + 0.35, 0.9, rowH - 0.7, 'F');
+    } else if(isSun){ doc.setFillColor(243,244,247); doc.rect(L, ry, W, rowH, 'F'); }
+    else if(i % 2){ doc.setFillColor(250,251,253); doc.rect(L, ry, W, rowH, 'F'); }
 
     doc.setDrawColor(224,226,232); doc.setLineWidth(0.13);
     doc.line(L, ry + rowH, R, ry + rowH);
@@ -3741,29 +3744,55 @@ function drawPage(doc, p, y, m, sigs){
     lx += 5 + doc.getTextWidth(TYPES[t].label) + 7;
   });
 
-  /* Summen */
-  const boxes = [['Arbeitszeit', s.work, [24,30,48]], ['Urlaub', s.urlaub, TYPES.urlaub.pdf],
-                 ['Krankenstand', s.krank, TYPES.krank.pdf], ['Feiertag', s.feier, TYPES.feier.pdf]];
-  if(s.sonst > 0) boxes.push(['Sonstige', s.sonst, TYPES.eigen.pdf]);
-  boxes.push(['Gesamt', s.total, [214,168,40]]);
-  const by = tEnd + 9.5, bh = 14, bw = W / boxes.length;
+  /* ─── Summen ───
+     Vorher stand die Zahl in der Farbe ihrer Kategorie — Buttergelb auf Weiß
+     war kaum zu lesen und wirkte unruhig. Jetzt trägt jedes Feld einen
+     farbigen Streifen an der Kante, die Zahl selbst bleibt dunkel. */
+  const boxes = [['Arbeitszeit', s.work, s.dWork,  [40,52,96]],
+                 ['Urlaub',      s.urlaub, s.dUrlaub, TYPES.urlaub.pdf],
+                 ['Krankenstand',s.krank,  s.dKrank,  TYPES.krank.pdf],
+                 ['Feiertag',    s.feier,  s.dFeier,  TYPES.feier.pdf]];
+  if(s.sonst > 0) boxes.push(['Sonstige', s.sonst, s.dSonst, TYPES.eigen.pdf]);
+  boxes.push(['Gesamt', s.total, s.dTotal, [214,168,40]]);
+  const by = tEnd + 9.5, bh = 18.4, bw = W / boxes.length;
   boxes.forEach((b, i) => {
-    const x = L + i * bw;
+    const x = L + i * bw, bx = x + 0.7, bwi = bw - 1.4;
     const isLast = i === boxes.length - 1;
     if(isLast){ doc.setFillColor(24,30,48); doc.setDrawColor(24,30,48); }
-    else { doc.setFillColor(250,250,252); doc.setDrawColor(226,228,234); }
+    else { doc.setFillColor(250,251,253); doc.setDrawColor(224,227,233); }
     doc.setLineWidth(0.25);
-    doc.roundedRect(x + 0.8, by, bw - 1.6, bh, 1.6, 1.6, 'FD');
-    doc.setFont('helvetica','normal'); doc.setFontSize(5.7);
-    doc.setTextColor.apply(doc, isLast ? [255,255,255] : GREY);
-    doc.text(b[0].toUpperCase(), x + bw/2, by + 5, { align:'center' });
-    doc.setFont('helvetica','bold'); doc.setFontSize(11.5);
-    doc.setTextColor.apply(doc, isLast ? [255,255,255] : b[2]);
-    doc.text(fmtH(b[1]), x + bw/2, by + 11.4, { align:'center' });
+    doc.roundedRect(bx, by, bwi, bh, 1.8, 1.8, 'FD');
+    /* Farbstreifen oben — die Kategorie erkennt man daran, nicht an der Zahl */
+    doc.setFillColor.apply(doc, b[3]);
+    doc.roundedRect(bx + 2.6, by + 2.4, bwi - 5.2, 0.9, 0.45, 0.45, 'F');
+
+    doc.setFont('helvetica','normal'); doc.setFontSize(5.6);
+    doc.setTextColor.apply(doc, isLast ? [206,210,224] : GREY);
+    doc.text(b[0].toUpperCase(), bx + bwi/2, by + 7.1, { align:'center' });
+
+    /* Zahl mit Einheit: die Stunden waren vorher nirgends benannt */
+    const zahl = fmtH(b[1]);
+    doc.setFont('helvetica','bold'); doc.setFontSize(11.2);
+    doc.setTextColor.apply(doc, isLast ? [247,215,116] : DARK);
+    const zb = doc.getTextWidth(zahl);
+    doc.setFont('helvetica','normal'); doc.setFontSize(6.4);
+    const eb = doc.getTextWidth(' h');
+    const startX = bx + bwi/2 - (zb + eb)/2;
+    doc.setFont('helvetica','bold'); doc.setFontSize(11.2);
+    doc.text(zahl, startX, by + 13.4);
+    doc.setFont('helvetica','normal'); doc.setFontSize(6.4);
+    doc.setTextColor.apply(doc, isLast ? [176,182,200] : MID);
+    doc.text(' h', startX + zb, by + 13.4);
+
+    /* Und dieselbe Summe in Tagen — anteilig, ein halber Tag zählt 0,5 */
+    doc.setFontSize(5.9);
+    doc.setTextColor.apply(doc, isLast ? [176,182,200] : GREY);
+    doc.text(fmtT(b[2]), bx + bwi/2, by + 16.6, { align:'center' });
   });
   doc.setFont('helvetica','normal'); doc.setFontSize(6.3); doc.setTextColor.apply(doc, GREY);
   doc.text('Arbeitsstunden = tatsächlich geleistete Arbeitszeit ohne Pausen. Urlaub, Krankenstand, Feiertag und Sonstige sind im Vermerk und in den Summen getrennt ausgewiesen.', L, by + bh + 4.4);
-  doc.text('Alle Werte in Stunden, gerundet auf 0,25 h  ·  Pausen gesamt: ' + fmtH(s.pause) + ' h', L, by + bh + 8);
+  doc.text('Stunden gerundet auf 0,25 h  ·  Tage anteilig, ein halber Tag zählt 0,5  ·  Pausen gesamt: '
+    + fmtH(s.pause) + ' h', L, by + bh + 8);
 
   /* Unterschrift — nur die der Person, der Dienstgeber zeichnet nicht mit */
   const sy = 268, sw = 78;
