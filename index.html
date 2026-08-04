@@ -172,11 +172,13 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 @keyframes spZoom{from{transform:scale(1.04)}to{transform:scale(1.2)}}
 /* Dunkler Schleier: in der Mitte fast schwarz, damit die Kachel steht,
    an den Rändern durchlässig, damit man die Bewegung sieht. */
+/* Nur eine Schicht. Zwei übereinander multiplizieren sich und machen den
+   Film unsichtbar — das hatte ich beim ersten Versuch übersehen. */
 .sp-veil{position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(115% 78% at 50% 44%,rgba(2,4,12,.93) 0%,rgba(2,4,12,.78) 40%,rgba(2,4,12,.52) 100%),
-             linear-gradient(180deg,rgba(4,7,20,.6),rgba(4,7,20,.86));
-  opacity:0;animation:veilIn 1.1s var(--ease-out) forwards}
-@keyframes veilIn{from{opacity:.4}to{opacity:1}}
+  background:radial-gradient(125% 82% at 50% 44%,
+    rgba(2,4,12,.88) 0%,rgba(2,4,12,.66) 40%,rgba(3,6,18,.3) 100%);
+  animation:veilIn 1.6s var(--ease-out) both}
+@keyframes veilIn{from{opacity:.55}to{opacity:1}}
 #splash.done{animation:splashOut .9s var(--ease-out) forwards}
 @keyframes splashOut{to{opacity:0;transform:scale(1.07);filter:blur(14px);visibility:hidden}}
 #pcanvas{position:absolute;inset:0;width:100%;height:100%}
