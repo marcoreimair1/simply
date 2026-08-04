@@ -175,8 +175,8 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 /* Nur eine Schicht. Zwei übereinander multiplizieren sich und machen den
    Film unsichtbar — das hatte ich beim ersten Versuch übersehen. */
 .sp-veil{position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(125% 82% at 50% 44%,
-    rgba(2,4,12,.88) 0%,rgba(2,4,12,.66) 40%,rgba(3,6,18,.3) 100%);
+  background:radial-gradient(130% 86% at 50% 44%,
+    rgba(2,4,12,.72) 0%,rgba(2,4,12,.46) 42%,rgba(3,6,18,.14) 100%);
   animation:veilIn 1.6s var(--ease-out) both}
 @keyframes veilIn{from{opacity:.55}to{opacity:1}}
 #splash.done{animation:splashOut .9s var(--ease-out) forwards}
@@ -841,6 +841,25 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   .qcal{background:rgba(6,10,26,.16)}
   .topbar{background:linear-gradient(180deg,rgba(8,13,34,.66),rgba(8,13,34,.26))}
 }
+
+/* ─── Hintergrund am Handy ───
+   Die Flecken sind in vw angegeben, die Weichzeichnung in Pixeln. Am Schreibtisch
+   ist ein Fleck rund 870 px breit und 90 px Unschärfe wirken als sanftes Leuchten.
+   Am Handy sind dieselben 62vw nur ~250 px — dieselbe Unschärfe verschmiert ihn
+   dann zu Brei. Also: Flecken größer, Unschärfe kleiner, gleiches Verhältnis. */
+@media(max-width:640px){
+  .bg .blob span{filter:blur(44px)}
+  .bg .b1{width:104vw;height:104vw;left:-30vw;top:-34vw}
+  .bg .b2{width:88vw;height:88vw;right:-26vw;top:1vh}
+  .bg .b3{width:78vw;height:78vw;left:4vw;bottom:-40vw}
+  .bg .b4{width:58vw;height:58vw;left:0;top:30vh}
+  .bg .b5{width:44vw;height:44vw;right:4vw;bottom:7vh}
+  /* Etwas zurückhaltender, weil die Fläche pro Auge größer wirkt */
+  .bg .b1 span{opacity:.86}
+  .bg .b2 span{opacity:.8}
+  .bg .b4 span{opacity:.78}
+  .bg .b5 span{opacity:.72}
+}
 </style>
 </head>
 <body>
@@ -876,7 +895,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
        schwarzes Loch klafft. -->
   <video id="spvid" class="sp-vid" autoplay muted loop playsinline webkit-playsinline
          preload="auto" disablepictureinpicture tabindex="-1" aria-hidden="true"
-         poster="data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAEwAS/AAD//gARTGF2YzU4LjEzNC4xMDAA/9sAQwAIBAQEBAQFBQUFBQUGBgYGBgYGBgYGBgYGBwcHCAgIBwcHBgYHBwgICAgJCQkICAgICQkKCgoMDAsLDg4OEREU/8QAcgAAAgMBAQAAAAAAAAAAAAAAAwIFAQQGAAEBAQEBAQAAAAAAAAAAAAAAAAECAwQQAAEDAgQFAwUBAQEAAAAAAAEAAwIRBDEFEiEVE1FBFGFioUJxUzJSgUMiEQEBAQEBAQAAAAAAAAAAAAAAARESAhP/wAARCABgADYDASIAAhEAAxEA/9oADAMBAAIRAxEAPwDlMus4nFS1vlkZDBDbs+S6KYVU1YxhoGC9HuuEiAzPKKxNIqFfy0xJ2XfXVu1KH61UJe5dEknSnj2eo5U2JQp2lDgp97L6dlmnYknBa1mxCytT0VeKeimDl5/le4ef5Qdg9YRHbdNbNzbKlZZeZbqvBp2XLtvGeMajeKDcWQc+lSbVuAE0mB0U6yrjnX8rJ+lBOVexdIbMSOCvh3on0OXM8J9vwvcK9vwul4Z6L3DB0V+qcJXxgFfjNnsjSJ6JTVcuq3gPiwqllaxV3FzyP+c5fYIUswH4516UTbTBmbaAxRC02EJl4uCtJR+6uc/VLq4uQgqpBB1kkq9SJiRoKJSAEpcp3QnLkDdRRJNtzS8lkHAJIuxlvgrlHVvUhB6ZjGJpRYH3LgT2lGi0XMKD9isL0ag0MlYHk+632jKv3VeY7+MfKBF+A2Mtwm57f9BXA8ZZtKmsj/FI2tv/AOBrNSsovWySKp2swEe6lG/lwAwCWekBA88EJJXlVAz51AhR9zKcK0WqThKyXrkYxKsGMtSnIyqvePLqs8r8QkaFVxL1VG6xaOqsiZLfFiEuyA0YtClEdt0FQF5cYjBJIAJpOCiC46mBXHKAqPvIuuE77LS86srzpSCMuraUZbEoXIc9VuccBO4Va4dFrR//2Q==">
+         poster="data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAEwAS/AAD//gARTGF2YzU4LjEzNC4xMDAA/9sAQwAIBAQEBAQFBQUFBQUGBgYGBgYGBgYGBgYGBwcHCAgIBwcHBgYHBwgICAgJCQkICAgICQkKCgoMDAsLDg4OEREU/8QAdwAAAQUBAAAAAAAAAAAAAAAAAwQFAAECBgEBAQEBAQAAAAAAAAAAAAAAAAEDAgQQAAEDAgMGBgEFAQAAAAAAAAEAAwIRBEEFIVEVMRQSE2KhQnEyYVJDgZFjIlMRAQEBAAMBAQEAAAAAAAAAAAABERITAgNBIf/AABEIAGAANgMBIgACEQADEQD/2gAMAwEAAhEDEQA/ABZdZRPFO1vlkSPiht2XZdFOCe7GEOkVXr+nr9eeRz+Z5PWJpFMr+WSiTou/urZmUPjVMl7l0ZEkRop8/oevLlDYoU7Oif3su6cEmlYEngtJ6jOwyStTsVcqdieTlx2KbuP4+SuxHYvWERhqtW7c2zRO0svM9aLPIU9K83Z/G2AQjWOsUC4sQ56U6NWwA1VyYGxTnlXHOP5UT6UI5T4PJdKbMSPBTd315K9qXxK5ndPhU3T4V0pysHBTdY2J3J1nblgFOWbOCMajBVqseVa8YBysK8FmVqFq4uSx+nOXsEGWYf1uV2UV2nEdm3gEQtQCCy8XBXplH3Wpz04qXTEkIKqQQjMknip1HYhhypVZIAWC5TFDcuQNSorcm25quy0MAsRdjLXgrkK4kIJMwjE0okFw5cCeko0rij3MKD5FIXokjSUlYCSuHW8Iyr7rPOu/8x/JQIvwGhlqFfMN/kqCiWbGnWR+ycbW3/wOvUpIL5skioRGsxEcVKF/bgBwCzPpCT8+Csyu6qC35dQom+5M4VolUnSUkvXIxiSrAj7MnJGVVOVntSeV+ISNCq3l9rrAusGjUSkTKqcIsNypok7Ri0KUShp0FcgnbiAsSAC1KeiC68gpxzpGibr2LrhOuiUuupK+6UgbLm1kJaVQuXd+0unMEquqOxdaP//Z">
     <source src="wolken.mp4" type="video/mp4">
   </video>
   <div class="sp-veil"></div>
@@ -1856,7 +1875,7 @@ function startParticles(){
   /* Grundflimmern: Anzahl an die Fläche gekoppelt, damit es am Handy nicht dünn wirkt */
   const n = Math.round(Math.max(110, Math.min(240, W*H/7200)));
   const dust = Array.from({length:n}, () => ({
-    x:Math.random()*W, y:Math.random()*H, r:Math.random()*2.4+.5,
+    x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.35+.3,
     vx:(Math.random()-.5)*.22, vy:(Math.random()-.5)*.22,
     a:Math.random()*.5+.15, ph:Math.random()*6.28, sp:Math.random()*2.4+.9,
     c:pick()
@@ -1898,12 +1917,12 @@ function startParticles(){
       for(let i = 0; i < 320; i++){
         const a = Math.random()*6.2832, sp = Math.pow(Math.random(),.6)*8.5 + 1.4;
         burst.push({ x:cxp, y:cyp, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
-          r:Math.random()*4+1, life:1, dec:Math.random()*.008+.0042, c:pick() });
+          r:Math.random()*2.1+.6, life:1, dec:Math.random()*.008+.0042, c:pick() });
       }
       for(let i = 0; i < 26; i++){
         const a = Math.random()*6.2832, sp = Math.pow(Math.random(),.5)*7 + 1.6;
         stars.push({ x:cxp, y:cyp, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
-          s:Math.random()*26+14, rot:Math.random()*6.28, vr:(Math.random()-.5)*.05,
+          s:Math.random()*11+6, rot:Math.random()*6.28, vr:(Math.random()-.5)*.05,
           life:1, dec:Math.random()*.007+.0035, c:pick() });
       }
     }
@@ -3505,11 +3524,29 @@ $('#brand-word').src = LOGO_WORD;
    das braucht man zum Prüfen. */
 const AM_HANDY = (function(){
   if(/[?&]desktop=1/.test(location.search)) return true;
-  const grob = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
-  const ua   = /iPhone|iPad|iPod|Android|Mobile|Silk|Kindle|Opera Mini/i.test(navigator.userAgent);
-  const tipp = (navigator.maxTouchPoints || 0) > 0;
-  return grob || ua || (tipp && window.innerWidth <= 1024);
+  const mq = q => !!(window.matchMedia && window.matchMedia(q).matches);
+  const ua = navigator.userAgent || '';
+  const handyUA = /iPhone|iPod|IEMobile|Opera Mini|Silk|Kindle|Android.*Mobile|Mobile.*Android/i.test(ua);
+  const tabletUA = /iPad|Tablet|PlayBook/i.test(ua)
+                || /Android/i.test(ua) && !/Mobile/i.test(ua)
+                || (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
+  if(handyUA || tabletUA) return true;
+  /* Wer einen feinen Zeiger hat oder überfahren kann, sitzt an einem Computer —
+     auch mit Touchscreen am Notebook. Die Fensterbreite sagt darüber nichts,
+     darum kommt sie hier nicht mehr vor. */
+  if(mq('(pointer:fine)') || mq('(hover:hover)')) return false;
+  return mq('(pointer:coarse)');
 })();
+/* Damit du mir sagen kannst, was dein Gerät meldet, falls es doch durchkommt */
+try{ console.info('[MARU] Gerät:', JSON.stringify({
+  amHandy: AM_HANDY,
+  feinerZeiger: matchMedia('(pointer:fine)').matches,
+  groberZeiger: matchMedia('(pointer:coarse)').matches,
+  ueberfahrbar: matchMedia('(hover:hover)').matches,
+  tippPunkte: navigator.maxTouchPoints,
+  plattform: navigator.platform,
+  kennung: navigator.userAgent
+})); }catch(e){}
 
 if(!AM_HANDY){
   document.body.classList.add('nurhandy');
