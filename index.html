@@ -351,7 +351,7 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 /* Der Ursprung liegt in der rechten oberen Ecke — das Menü wächst aus dem
    Profilbild heraus und fährt beim Schließen dorthin zurück. Vorher war es
    beim Zumachen einfach weg, das riss. */
-.menu-card{position:absolute;top:64px;right:16px;width:min(300px,calc(100vw - 32px));background:rgba(18,28,66,.97);border:1px solid var(--line);
+.menu-card{position:absolute;top:64px;right:14px;width:min(344px,calc(100vw - 28px));background:rgba(18,28,66,.97);border:1px solid var(--line);
   border-radius:var(--r-m);padding:8px;box-shadow:var(--shadow);
   transform-origin:100% 0;animation:pop .34s var(--ease-out)}
 @keyframes fade{from{opacity:0}}
@@ -377,10 +377,16 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 body.menuauf #avatar{transform:scale(.92)}
 /* Kopf des Menüs: großes Bild, darunter Name und die Angaben zum Profil.
    Ein Tipp auf das Bild öffnet das Gitter mit den anderen Motiven. */
-.menu-card .mh{padding:6px 12px 13px;border-bottom:1px solid var(--line-2);margin-bottom:6px;text-align:center}
-.menu-card .mh b{display:block;font-size:16.5px;margin-top:13px}
-.menu-card .mh small{display:block;color:var(--tx-3);font-size:12px;margin-top:3px}
-.avbig{position:relative;width:108px;height:108px;margin:0 auto;border-radius:31px;overflow:hidden;
+/* Angaben links, Bild rechts. Dadurch wird der Kopf breiter statt höher,
+   und das Bild darf höher als breit sein — hochkant sieht bei diesen
+   Figuren besser aus, weil sie unten angeschnitten sind. */
+.menu-card .mh{padding:11px 13px 14px;border-bottom:1px solid var(--line-2);margin-bottom:6px;text-align:left}
+.mhtop{display:flex;align-items:center;gap:14px}
+.mhtext{flex:1;min-width:0}
+.menu-card .mh b{display:block;font-size:17.5px;line-height:1.2}
+.menu-card .mh small{display:block;color:var(--tx-3);font-size:12px;margin-top:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.avbig{position:relative;width:96px;height:114px;flex:none;border-radius:29px;overflow:hidden;
   background:#fff;border:1px solid rgba(255,255,255,.22);display:grid;place-items:center;
   font-family:var(--font-dis);font-size:36px;color:#20180A;
   transition:transform .34s var(--ease),border-radius .34s var(--ease),box-shadow .3s}
@@ -397,7 +403,10 @@ body.menuauf #avatar{transform:scale(.92)}
   transition:height .42s var(--ease-out),margin-top .42s var(--ease-out),opacity .3s ease;
   opacity:0}
 .avwahl.auf .avgrid{opacity:1;margin-top:9px}
-.avopt{position:relative;aspect-ratio:1;border-radius:15px;overflow:hidden;background:#fff;
+/* Dieselbe Rundung im Verhältnis wie beim kleinen Bild oben rechts —
+   34 % der Kante. So sind die Pastellecken gleich weit weggenommen und
+   die Kachel wirkt in jeder Größe wie dieselbe Form. */
+.avopt{position:relative;aspect-ratio:1;border-radius:34%;overflow:hidden;background:#fff;
   border:0;transition:box-shadow .24s var(--ease),transform .24s var(--ease)}
 .avopt img{width:100%;height:100%;object-fit:cover;display:block}
 .avopt:hover{transform:scale(1.05)}
@@ -1866,10 +1875,14 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   <div class="menu-bd" data-close="menu"></div>
   <div class="menu-card">
     <div class="mh avwahl" id="avwahl">
-      <button class="avbig" id="avbig" aria-label="Profilbild ändern" aria-expanded="false"></button>
-      <b id="me-name">—</b>
-      <small id="me-sub">Miller Optik GmbH</small>
-      <small id="me-mail"></small>
+      <div class="mhtop">
+        <div class="mhtext">
+          <b id="me-name">—</b>
+          <small id="me-sub">Miller Optik GmbH</small>
+          <small id="me-mail"></small>
+        </div>
+        <button class="avbig" id="avbig" aria-label="Profilbild ändern" aria-expanded="false"></button>
+      </div>
       <div class="avgrid" id="avgrid"></div>
     </div>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
