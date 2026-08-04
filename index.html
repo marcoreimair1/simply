@@ -525,7 +525,20 @@ body.nobar #v-onboard{padding-top:14px}
 /* Trenner zwischen Passkey und E-Mail */
 .mi.done{color:var(--tx-3)}
 .mi.done svg{color:var(--butter);opacity:.85}
-.orline{display:flex;align-items:center;gap:12px;margin:20px 0 16px;max-width:430px}
+/* Weiche: anmelden oder registrieren */
+.opt.pick{padding:16px 15px;border-radius:var(--r-m);margin-bottom:11px}
+.opt.pick .oi{background:rgba(247,215,116,.14);color:var(--butter)}
+.opt.pick[data-lg=signup] .oi{background:rgba(238,242,255,.07);color:var(--tx-2)}
+.opt.pick:hover{border-color:var(--butter-dim);transform:translateX(3px)}
+.opt.pick .spacer{flex:1}
+
+/* Passkey: einladend, aber die E-Mail bleibt der verlässliche Weg */
+.btn-pk{width:100%;justify-content:center;background:rgba(247,215,116,.09);
+  border:1px solid var(--butter-dim);color:var(--butter)}
+.btn-pk:hover{background:rgba(247,215,116,.16);transform:translateY(-1px)}
+.btn-pk:disabled{opacity:.5;transform:none}
+
+.orline{display:flex;align-items:center;gap:12px;margin:26px 0 18px;max-width:430px}
 .orline::before,.orline::after{content:"";flex:1;height:1px;background:var(--line-2)}
 .orline span{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3)}
 .lg{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--tx-2);padding:7px 11px;
@@ -815,21 +828,44 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
       <!-- Cloud: Anmeldung per E-Mail-Link -->
       <div id="lg-cloud" style="display:none">
-        <div id="lg-pk" style="display:none;max-width:430px">
-          <button class="btn btn-p" id="lg-pk-go" style="width:100%;justify-content:center">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.5" r="4.2"/><path d="M11 12.5 20 3.5M16.6 6.9l3 3M14 9.5l3 3"/></svg>Mit Passkey anmelden
+
+        <!-- Erst die Weiche -->
+        <div id="lg-choice" class="mt" style="max-width:430px">
+          <button class="opt pick" data-lg="login">
+            <span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span>
+            <span><b>Anmelden</b><small>Ich arbeite schon mit MARU</small></span>
+            <span class="spacer"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:17px;height:17px;opacity:.45;flex:none"><path d="M9 6l6 6-6 6"/></svg>
           </button>
-          <div id="lg-pk-err" style="display:none;margin-top:12px;font-size:12.5px;color:var(--coral)"></div>
-          <div class="orline"><span>oder per E-Mail</span></div>
+          <button class="opt pick" data-lg="signup">
+            <span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
+            <span><b>Registrieren</b><small>Zum ersten Mal hier</small></span>
+            <span class="spacer"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:17px;height:17px;opacity:.45;flex:none"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
         </div>
-        <div class="card mt" style="max-width:430px">
-          <div class="field hasgo" id="f-mail">
-            <input id="lg-mail" type="email" inputmode="email" autocomplete="email" placeholder=" ">
-            <label for="lg-mail">E-Mail-Adresse</label>
-            <button class="inline-go" id="lg-send" aria-label="Anmeldelink senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
+
+        <!-- Dann die E-Mail-Zeile, für beide Wege dieselbe -->
+        <div id="lg-form" style="display:none">
+          <div class="card mt" style="max-width:430px">
+            <div class="field hasgo" id="f-mail">
+              <input id="lg-mail" type="email" inputmode="email" autocomplete="email" placeholder=" ">
+              <label for="lg-mail">E-Mail-Adresse</label>
+              <button class="inline-go" id="lg-send" aria-label="Anmeldelink senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
+            </div>
+            <p class="hint" id="lg-hint" style="margin-top:14px">Kein Passwort. Der Link gilt eine Stunde.</p>
+            <div id="lg-err2" style="display:none;margin-top:14px;font-size:12.5px;color:var(--coral)"></div>
           </div>
-          <p class="hint" style="margin-top:14px">Kein Passwort. Der Link gilt eine Stunde.</p>
-          <div id="lg-err2" style="display:none;margin-top:14px;font-size:12.5px;color:var(--coral)"></div>
+
+          <!-- Der schnelle Weg, bewusst unter der E-Mail-Zeile -->
+          <div id="lg-pk" style="display:none;max-width:430px">
+            <div class="orline"><span>oder ohne Code</span></div>
+            <button class="btn btn-pk" id="lg-pk-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>Mit Passkey anmelden</button>
+            <p class="hint" style="margin-top:12px">Geht, sobald du auf diesem Gerät einmal einen Passkey angelegt hast.</p>
+            <div id="lg-pk-err" style="display:none;margin-top:12px;font-size:12.5px;color:var(--coral)"></div>
+          </div>
+
+          <div style="margin-top:26px">
+            <button class="linkbtn" id="lg-back">Zurück zur Auswahl</button>
+          </div>
         </div>
       </div>
 
@@ -984,12 +1020,12 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
             <div class="feat">
               <div class="feat-track" id="feat-track">
                 <article class="feat-card install" id="pk-card" style="display:none">
-                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a2.5 2.5 0 012.5 2.5c0 1.6-.3 3.2-.9 4.7"/><path d="M8.6 19.4A9.5 9.5 0 007 13.5a5 5 0 0110 0c0 1.2-.1 2.4-.4 3.6"/><path d="M5.2 17.6A13 13 0 014 13.5a8 8 0 0116 0c0 1-.1 2-.3 3"/><path d="M4.6 8.2A9.6 9.6 0 0112 4c2.9 0 5.5 1.3 7.3 3.3"/></svg></span>
+                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span>
                   <b id="pk-card-b">Ohne Code anmelden</b>
                   <span id="pk-card-t">Ein Passkey merkt sich die Anmeldung im Gerät. Beim nächsten
                     Besuch genügt Face ID oder Fingerabdruck — keine E-Mail, kein Code aus dem Postfach.</span>
                   <button class="btn btn-p btn-sm" id="pk-card-go" style="margin-top:14px">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.5" r="4.2"/><path d="M11 12.5 20 3.5M16.6 6.9l3 3M14 9.5l3 3"/></svg>Passkey einrichten
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>Passkey einrichten
                   </button>
                 </article>
                 <article class="feat-card install">
@@ -1160,7 +1196,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   <div class="menu-card">
     <div class="mh"><b id="me-name">—</b><small id="me-sub">Miller Optik GmbH</small><small id="me-mail" style="display:block"></small></div>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
-    <button class="mi" data-act="passkey" id="mi-pk" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.5" r="4.2"/><path d="M11 12.5 20 3.5M16.6 6.9l3 3M14 9.5l3 3"/></svg><span id="mi-pk-t">Passkey anlegen</span></button>
+    <button class="mi" data-act="passkey" id="mi-pk" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg><span id="mi-pk-t">Passkey anlegen</span></button>
     <button class="mi" data-act="intro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12a8 8 0 108-8"/><path d="M4 4v5h5"/></svg>Intro nochmal ansehen</button>
     <button class="mi" data-act="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12H4M8 8l-4 4 4 4M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/></svg>Abmelden</button>
     <button class="mi danger" data-act="delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Profil löschen</button>
@@ -2265,16 +2301,12 @@ function loginScreen(){
   $('#lg-err').style.display = 'none';
   $('#lg-err2').style.display = 'none';
   $('#lg-sent').style.display = 'none';
-  $('#lg-pk-err').style.display = 'none';
-  $('#lg-pk').style.display = (CLOUD_ON && PASSKEY) ? 'block' : 'none';
   if(CLOUD_ON){
     $('#lg-cloud').style.display = 'block';
     $('#lg-local').style.display = 'none';
     $('#known').style.display = 'none';
-    $('#lg-title').innerHTML = 'Deine Zeiten, <i>überall dabei</i>.';
-    $('#lg-lede').textContent = 'E-Mail eingeben, Link antippen, drin. Auf jedem Gerät.';
-    $('#lg-eyebrow').textContent = 'Anmelden';
     $('#sync').style.display = 'none';
+    lgMode('choice');
   } else {
     const list = DB.profiles;
     $('#lg-cloud').style.display = 'none';
@@ -2288,6 +2320,47 @@ function loginScreen(){
   }
   go('v-login');
 }
+
+/* ─── Weiche: anmelden oder registrieren ─────────────────────
+   Beide Wege schicken dieselbe Mail — Supabase legt beim ersten Mal
+   selbst ein Konto an. Getrennt sind sie nur, weil niemand raten soll,
+   welcher Knopf für ihn gilt. Der Passkey erscheint nur beim Anmelden:
+   wer neu ist, kann noch keinen haben.                                 */
+let LG_MODE = 'choice';
+function lgMode(m){
+  LG_MODE = m;
+  const wahl = (m === 'choice');
+  $('#lg-choice').style.display = wahl ? 'block' : 'none';
+  $('#lg-form').style.display   = wahl ? 'none'  : 'block';
+  $('#lg-pk').style.display     = (!wahl && m === 'login' && PASSKEY) ? 'block' : 'none';
+  $('#lg-pk-err').style.display = 'none';
+  $('#lg-err2').style.display   = 'none';
+  if(wahl){
+    $('#lg-eyebrow').textContent = 'Willkommen';
+    $('#lg-title').innerHTML     = 'Deine Zeiten, <i>überall dabei</i>.';
+    $('#lg-lede').textContent    = 'Neu bei MARU oder schon dabei?';
+  }else if(m === 'login'){
+    $('#lg-eyebrow').textContent = 'Anmelden';
+    $('#lg-title').innerHTML     = 'Schön, dich <i>wiederzusehen</i>.';
+    $('#lg-lede').textContent    = 'E-Mail-Adresse eingeben — du bekommst Link und Code zugeschickt.';
+    $('#lg-hint').textContent    = 'Kein Passwort. Der Link gilt eine Stunde.';
+  }else{
+    $('#lg-eyebrow').textContent = 'Registrieren';
+    $('#lg-title').innerHTML     = 'Willkommen bei <i>MARU</i>.';
+    $('#lg-lede').textContent    = 'E-Mail-Adresse eingeben — danach richten wir deine Dienstzeiten gemeinsam ein.';
+    $('#lg-hint').textContent    = 'Kein Passwort. Der Link gilt eine Stunde, den Code findest du im Betreff der Mail.';
+  }
+  fitAll();
+}
+$$('[data-lg]').forEach(b => b.addEventListener('click', () => {
+  lgMode(b.dataset.lg);
+  /* Noch im Fingertipp fokussieren, sonst öffnet iOS die Tastatur nicht */
+  try{ $('#lg-mail').focus({ preventScroll:true }); }catch(e){}
+}));
+$('#lg-back').addEventListener('click', () => {
+  $('#lg-mail').value = ''; _mailPrev = ''; mailPaint();
+  lgMode('choice');
+});
 
 /* ─── Anmeldelink verschicken ─── */
 let _lastMail = '';
