@@ -1216,6 +1216,36 @@ body.nobar #v-onboard{padding-top:14px}
 .mbbar span:nth-child(5){animation-delay:.28s}
 .mbbar .leer{flex:1;background:rgba(238,242,255,.06);animation:none}
 
+/* ─── Begrüßung nach dem Anmelden ──────────────────────────────────────
+   Kurz, aber mit Anlauf: das Bild federt herein, dann der Name, dann der
+   Satz. Nach rund zweieinhalb Sekunden löst sich alles auf und der
+   Kalender liegt schon darunter. Nicht antippbar, damit niemand
+   versehentlich etwas im Kalender trifft. */
+.hallo{position:fixed;inset:0;z-index:60;display:none;place-items:center;
+  background:radial-gradient(circle at 50% 42%,rgba(23,36,84,.97),rgba(6,10,26,.99) 68%);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);pointer-events:none}
+.hallo.on{display:grid;animation:halloRein .5s var(--ease-out)}
+.hallo.weg{animation:halloWeg .55s var(--ease) forwards}
+@keyframes halloRein{from{opacity:0}}
+@keyframes halloWeg{to{opacity:0}}
+.hallo-in{text-align:center;padding:24px}
+.hallo-bild{width:min(62vw,212px);aspect-ratio:1;margin:0 auto 26px;border-radius:30%;
+  overflow:hidden;background:#fff;border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 34px 70px -26px rgba(0,0,0,.8),0 0 60px -18px rgba(80,122,236,.4);
+  animation:halloBild .82s var(--ease-out) both}
+.hallo-bild img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block}
+@keyframes halloBild{
+  0%{opacity:0;transform:scale(.7) rotate(-5deg)}
+  62%{opacity:1;transform:scale(1.05) rotate(1.5deg)}
+  100%{opacity:1;transform:none}
+}
+.hallo-in b{display:block;font-family:var(--font-dis);font-weight:400;
+  font-size:clamp(27px,7.6vw,40px);letter-spacing:-.015em;line-height:1.1;
+  animation:fadeUp .6s .34s var(--ease-out) both}
+.hallo-in b i{font-style:normal;color:var(--butter)}
+.hallo-s{display:block;margin-top:10px;font-size:clamp(14px,4vw,16px);color:var(--tx-2);
+  animation:fadeUp .6s .5s var(--ease-out) both}
+
 /* ─── Postfach ────────────────────────────────────────────────────────
    Eine Nachricht je Karte. Ungelesene tragen links einen goldenen
    Streifen und den Knopf zum Abhaken; gelesene treten zurück. */
@@ -2003,6 +2033,16 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <button class="btn btn-p" id="sh-save">Übernehmen</button>
       <button class="btn btn-g" id="sh-del">Zurücksetzen</button>
     </div>
+  </div>
+</div>
+
+<!-- Begrüßung nach dem Anmelden. Hier darf der Charakter groß und
+     unbeschnitten auftreten — 3:4 Feld auf 3:4 Motiv. -->
+<div class="hallo" id="hallo" aria-hidden="true">
+  <div class="hallo-in">
+    <div class="hallo-bild"><img id="hallo-img" alt=""></div>
+    <b id="hallo-t">Hallo</b>
+    <span class="hallo-s">schön dich wieder zu sehen!</span>
   </div>
 </div>
 
@@ -3335,7 +3375,7 @@ $('#lg-go').addEventListener('click', () => {
   if(!p){ err.textContent = 'Kein Profil gefunden. Prüfe Vorname und Geburtsdatum — oder melde dich neu an.'; err.style.display = 'block'; return; }
   ME = normalize(p); DB.activeId = p.id; save();
   enterApp();
-  toast('Hallo ' + p.vorname + '!');
+  zeigeHallo();
 });
 $('#lg-new').addEventListener('click', () => { obInit(); go('v-onboard'); });
 $('#lg-send').addEventListener('click', sendLink);
@@ -3373,7 +3413,7 @@ async function verifyCode(){
     let r = await sb.auth.verifyOtp({ email:_lastMail, token, type:'email' });
     if(r.error) r = await sb.auth.verifyOtp({ email:_lastMail, token, type:'signup' });
     if(r.error) throw r.error;
-    if(r.data && r.data.session && !UID) await afterLogin(r.data.session);
+    if(r.data && r.data.session && !UID) await afterLogin(r.data.session, true);
   }catch(e){
     err.textContent = 'Der Code passt nicht oder ist abgelaufen. Lass dir einen neuen schicken.';
     err.style.display = 'block';
@@ -3423,6 +3463,28 @@ function enterApp(){
   Q.from = Q.to = null; Q.y = CAL.y; Q.m = CAL.m;
   exYear(); renderCal(); renderQCal();
   go('v-cal');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BEGRÜSSUNG
+   Läuft nach jeder Anmeldung — Passkey, Code oder örtlich. Der
+   Kalender steht darunter bereits fertig, die Begrüßung liegt nur
+   davor und löst sich von selbst auf.
+   ═══════════════════════════════════════════════════════════ */
+let _halloT = null;
+function zeigeHallo(){
+  if(!ME || !ME.vorname) return;
+  const el = $('#hallo');
+  clearTimeout(_halloT);
+  $('#hallo-img').src = avDatei(avNummer());
+  $('#hallo-t').innerHTML = 'Hallo <i>' + esc(ME.vorname) + '</i>,';
+  el.classList.remove('weg');
+  void el.offsetWidth;                       /* Animationen neu anstoßen */
+  el.classList.add('on');
+  _halloT = setTimeout(() => {
+    el.classList.add('weg');
+    _halloT = setTimeout(() => { el.classList.remove('on','weg'); }, 560);
+  }, 2350);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3527,7 +3589,7 @@ const AVATARE = 12;
 /* Die Versionsangabe hängt am Namen, damit ein überarbeitetes Motiv auch
    bei Geräten ankommt, die die alte Datei schon im Zwischenspeicher haben.
    Bei jeder Änderung an den Bildern wird die Zahl erhöht. */
-const AV_STAND = 5;
+const AV_STAND = 6;
 function avDatei(n){ return 'av-' + n + '.png?v=' + AV_STAND; }
 function avZufall(){
   /* Aus Vorname und Geburtsdatum eine Zahl bilden — gleicher Mensch,
@@ -4920,7 +4982,10 @@ function bootLocal(){
   else { obInit(); go('v-onboard'); }
 }
 
-async function afterLogin(session){
+/* frisch === true heißt: hier hat sich gerade jemand angemeldet — Passkey
+   oder Code. Nur dann wird begrüßt. Eine bloß wiederhergestellte Sitzung
+   beim Öffnen der App bekommt keine zweite Animation nach dem Vorspann. */
+async function afterLogin(session, frisch){
   UID = session.user.id;
   MAIL = session.user.email || '';
   /* Passkey-Stand holen, sonst bleiben die Menüeinträge auf display:none
@@ -4948,7 +5013,7 @@ async function afterLogin(session){
       ME = normalize(JSON.parse(JSON.stringify(local)));
       cloudQueue();
       toast('Deine Daten sind jetzt gesichert');
-      await askPasskey(() => enterApp());
+      await askPasskey(() => { enterApp(); if(frisch) zeigeHallo(); });
       return;
     }
     /* Kein Datensatz UND keine Verbindung: das kann auch eine Person mit
@@ -4965,8 +5030,8 @@ async function afterLogin(session){
   ME = normalize(rec);
   setSync(offline ? 'offline' : 'ok');
   if(push) cloudQueue();
-  if(offline){ enterApp(); return; }
-  await askPasskey(() => enterApp());
+  if(offline){ enterApp(); if(frisch) zeigeHallo(); return; }
+  await askPasskey(() => { enterApp(); if(frisch) zeigeHallo(); });
 }
 
 $('#wt-retry').addEventListener('click', () => location.reload());
@@ -5008,7 +5073,7 @@ $('#pk-ask-skip').addEventListener('click', () => {
   const ok = await cloudBoot();
   if(!ok){ bootLocal(); return; }
   sb.auth.onAuthStateChange((evt, session) => {
-    if(evt === 'SIGNED_IN' && session && !UID) afterLogin(session);
+    if(evt === 'SIGNED_IN' && session && !UID) afterLogin(session, true);
     if(evt === 'SIGNED_OUT' && ME){ ME = null; UID = null; loginScreen(); }
   });
   let session = null;
