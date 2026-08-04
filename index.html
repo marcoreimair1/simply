@@ -626,7 +626,18 @@ body.nobar #v-onboard{padding-top:14px}
    Drei Merkmale, jedes mit einem Musterbild. Die Bilder sind aus Formen
    gebaut statt aus Dateien — nichts lädt nach, nichts blitzt auf. */
 #lg-choice{margin-top:30px}
-.wfeat{max-width:430px;margin:0 0 42px}
+/* Beim Scrollen einblenden. Ohne die Klasse .sicht bleibt alles verborgen —
+   darum setzt sie der Beobachter unten auch dann, wenn er nicht arbeiten kann. */
+.wfeat{max-width:430px;margin:0 0 42px;opacity:0;transform:translateY(30px);
+  transition:opacity .75s var(--ease-out),transform .75s var(--ease-out)}
+.wfeat.sicht{opacity:1;transform:none}
+.wfeat .wmock{transform:scale(.965);transition:transform .8s .08s var(--ease-out)}
+.wfeat.sicht .wmock{transform:none}
+.wfeat > b,.wfeat > span{opacity:0;transition:opacity .6s .18s var(--ease-out)}
+.wfeat.sicht > b,.wfeat.sicht > span{opacity:1}
+@media(prefers-reduced-motion:reduce){
+  .wfeat,.wfeat .wmock,.wfeat > b,.wfeat > span{transition:none;opacity:1;transform:none}
+}
 .wfeat:last-of-type{margin-bottom:20px}
 .wfeat > b{display:block;font-size:16px;margin:22px 0 8px}
 .wfeat > span{display:block;color:var(--tx-3);font-size:13px;line-height:1.66}
@@ -937,6 +948,43 @@ body.nobar #v-onboard{padding-top:14px}
   text-decoration-color:var(--line);transition:.2s;padding:4px 0}
 .linkbtn:hover{color:var(--butter);text-decoration-color:var(--butter-dim)}
 .linkbtn:disabled{opacity:.35;cursor:not-allowed}
+/* ─── Wasserglas beim Export ───
+   Ein Gefäß, das sich mit goldener Flüssigkeit füllt. Die Wellen sind zwei sehr
+   breite Ellipsen, die sich drehen — das gibt das Schwappen, ohne eine einzige
+   Zeile Canvas. */
+.exglas{position:relative;width:98px;height:152px;margin:2px auto 4px;border-radius:26px;
+  overflow:hidden;background:rgba(4,8,22,.62);border:1px solid var(--butter-dim);
+  box-shadow:inset 0 2px 18px rgba(0,0,0,.6),0 12px 34px rgba(0,0,0,.35)}
+.exfluid{position:absolute;left:0;right:0;bottom:0;height:0;
+  background:linear-gradient(180deg,#F7D774 0%,#E4B84B 45%,#C1902A 100%)}
+.exwelle{position:absolute;top:-15px;left:-62%;width:224%;height:34px;border-radius:44%;
+  background:#F7D774;animation:exwave 2.3s linear infinite;will-change:transform}
+.exwelle.w2{top:-11px;opacity:.5;background:#FFF0BE;animation-duration:3.3s;
+  animation-direction:reverse}
+@keyframes exwave{from{transform:translateX(-9%) rotate(0)}to{transform:translateX(9%) rotate(360deg)}}
+.exblase{position:absolute;border-radius:50%;background:rgba(255,255,255,.4);
+  animation:exbub 2.8s linear infinite}
+.exblase.b1{left:24%;width:5px;height:5px}
+.exblase.b2{left:56%;width:7px;height:7px;animation-duration:3.6s;animation-delay:.7s}
+.exblase.b3{left:76%;width:4px;height:4px;animation-duration:2.2s;animation-delay:1.4s}
+@keyframes exbub{
+  0%{bottom:-8px;opacity:0;transform:translateX(0)}
+  15%{opacity:.55}
+  80%{opacity:.35}
+  100%{bottom:100%;opacity:0;transform:translateX(6px)}
+}
+.exglanz{position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(115deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 42%),
+             linear-gradient(0deg,rgba(4,8,22,.25),transparent 40%)}
+.expct{position:absolute;left:0;right:0;top:50%;translate:0 -50%;text-align:center;
+  font-family:var(--font-dis);font-size:23px;color:var(--paper);
+  text-shadow:0 2px 10px rgba(0,0,0,.6);font-variant-numeric:tabular-nums;
+  transition:opacity .3s}
+.exok{position:absolute;left:50%;top:50%;translate:-50% -50%;width:44px;height:44px;
+  fill:none;stroke:#0A1129;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:40;stroke-dashoffset:40}
+.exdone.done .expct{opacity:0}
+.exdone.done .exok{animation:draw .44s .1s var(--ease-out) forwards}
 .exdone .qd-ring circle.track{fill:none;stroke:rgba(238,242,255,.13);stroke-width:3;animation:none;stroke-dasharray:none;stroke-dashoffset:0}
 .exdone .qd-ring circle.prog{fill:none;stroke:var(--butter);stroke-width:3;stroke-linecap:round;animation:none;
   stroke-dasharray:220;stroke-dashoffset:220;transform:rotate(-90deg);transform-origin:center;
@@ -2749,6 +2797,7 @@ function lgMode(m){
     $('#lg-title').innerHTML     = 'Arbeitszeit, <i>ohne Aufwand</i>.';
     $('#lg-lede').textContent    = 'Antippen was abweicht, am Monatsende eine fertige A4-Seite. '
                                  + 'So sieht das aus:';
+    requestAnimationFrame(zeigeFeatures);
   }else if(m === 'login'){
     $('#lg-eyebrow').textContent = 'Anmelden';
     $('#lg-title').innerHTML     = 'Schön, dich <i>wiederzusehen</i>.';
@@ -2765,6 +2814,20 @@ function lgMode(m){
 /* Bewusst kein Fokus: die Tastatur würde hochfahren und den Passkey-Knopf
    verdecken. Wer die Adresse tippen will, tippt zuerst ins Feld. */
 $$('[data-lg]').forEach(b => b.addEventListener('click', () => lgMode(b.dataset.lg)));
+
+/* Merkmale erscheinen, sobald sie ins Bild kommen */
+let _beo = null;
+function zeigeFeatures(){
+  const ziele = $$('#lg-choice .wfeat');
+  if(!ziele.length) return;
+  if(!('IntersectionObserver' in window)){ ziele.forEach(z => z.classList.add('sicht')); return; }
+  if(!_beo){
+    _beo = new IntersectionObserver(list => {
+      list.forEach(e => { if(e.isIntersecting){ e.target.classList.add('sicht'); _beo.unobserve(e.target); } });
+    }, { threshold:.15, rootMargin:'0px 0px -10% 0px' });
+  }
+  ziele.forEach(z => { if(!z.classList.contains('sicht')) _beo.observe(z); });
+}
 $('#lg-back').addEventListener('click', () => {
   $('#lg-mail').value = ''; _mailPrev = ''; mailPaint();
   lgMode('choice');
@@ -3528,28 +3591,47 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 function exOverlay(){
   const ov = document.createElement('div');
   ov.className = 'qdone exdone';
-  ov.innerHTML = '<div class="qd-in"><div class="qd-ring">'
-    + '<svg viewBox="0 0 80 80" aria-hidden="true">'
-    + '<circle class="track" cx="40" cy="40" r="35"/>'
-    + '<circle class="prog" cx="40" cy="40" r="35"/>'
-    + '<path class="tick" d="M25 41l11 11 20-22"/></svg>'
-    + '<span class="puls"></span></div>'
+  ov.innerHTML = '<div class="qd-in">'
+    + '<div class="exglas">'
+    +   '<div class="exfluid"><div class="exwelle"></div><div class="exwelle w2"></div>'
+    +     '<i class="exblase b1"></i><i class="exblase b2"></i><i class="exblase b3"></i></div>'
+    +   '<span class="exglanz"></span>'
+    +   '<span class="expct">0 %</span>'
+    +   '<svg class="exok" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6.5 9.6 17 4 11.4"/></svg>'
+    + '</div>'
     + '<b id="ex-ov-t">Aufzeichnung wird gesetzt</b>'
     + '<small id="ex-ov-s">Einen Moment …</small></div>';
   $('#ex-card').appendChild(ov);
+
+  const fluid = $('.exfluid', ov), pct = $('.expct', ov);
+  /* Das Ziel wird gesetzt, der Stand läuft weich hinterher — dadurch schwappt
+     die Flüssigkeit nach, statt zu springen. */
+  let ziel = 0, stand = 0, raf = null;
+  const mal = () => {
+    const tempo = ziel >= 100 ? .16 : .07;
+    stand += (ziel - stand) * tempo;
+    if(ziel - stand < .3) stand = ziel;
+    fluid.style.height = stand.toFixed(2) + '%';
+    pct.textContent = Math.round(stand) + ' %';
+    raf = requestAnimationFrame(mal);
+  };
+  raf = requestAnimationFrame(mal);
+
   return {
     el: ov,
+    setz(p){ ziel = Math.max(ziel, Math.min(100, p)); },
     step(done, total, title, sub){
-      $('.prog', ov).style.strokeDashoffset = (220 * (1 - done/total)).toFixed(1);
       if(title) $('#ex-ov-t').textContent = title;
       if(sub) $('#ex-ov-s').textContent = sub;
     },
     finish(title, sub){
-      $('.prog', ov).style.strokeDashoffset = '0';
+      ziel = 100;
       ov.classList.add('done');
       $('#ex-ov-t').textContent = title;
       $('#ex-ov-s').textContent = sub;
-    }
+      setTimeout(() => cancelAnimationFrame(raf), 1400);
+    },
+    stop(){ cancelAnimationFrame(raf); }
   };
 }
 
@@ -3561,6 +3643,15 @@ async function buildPdf(list, separate){
   const btnA = $('#ex-go'), btnB = $('#ex-single');
   btnA.disabled = btnB.disabled = true;
   const ov = exOverlay(), t0 = performance.now();
+
+  /* Der Balken läuft nach der Zeit bis 95 % und wartet dort, falls das Setzen
+     länger braucht. Die letzten fünf Prozent gehören dem fertigen Dokument —
+     so ist der Balken nie voll, bevor die Datei wirklich da ist. */
+  const MIN_MS = 3600;
+  const takt = setInterval(() => {
+    ov.setz(Math.min(95, (performance.now() - t0) / MIN_MS * 95));
+  }, 60);
+
   try{
     const sigs = {
       emp: await sigImage(ME.vorname + ' ' + ME.nachname),
@@ -3570,17 +3661,21 @@ async function buildPdf(list, separate){
     const base = 'Arbeitsaufzeichnung_' + safe(ME.nachname) + '_' + safe(ME.vorname);
     const total = list.length;
     let name = '';
+
     if(separate){
+      const fertig = [];
       for(let i = 0; i < total; i++){
         const o = list[i];
         ov.step(i, total, 'Seite ' + (i+1) + ' von ' + total, MONTHS[o.m] + ' ' + o.y + ' wird gesetzt …');
-        await wait(240);
+        await wait(60);
         const doc = new JSP({ unit:'mm', format:'a4', orientation:'portrait', compress:true });
         drawPage(doc, ME, o.y, o.m, sigs);
-        doc.save(base + '_' + o.y + '-' + p2(o.m+1) + '.pdf');
-        ov.step(i+1, total);
-        await wait(340);
+        fertig.push([doc, base + '_' + o.y + '-' + p2(o.m+1) + '.pdf']);
       }
+      clearInterval(takt);
+      const rest = MIN_MS - (performance.now() - t0);
+      if(rest > 0){ ov.step(0, 1, 'Letzter Feinschliff', 'Ränder, Summen, Unterschrift'); await wait(rest); }
+      fertig.forEach(p => p[0].save(p[1]));
       name = total + (total === 1 ? ' Datei' : ' Dateien') + ' im Download-Ordner';
       ov.finish(total + (total === 1 ? ' PDF erstellt' : ' PDFs erstellt'), name);
     } else {
@@ -3589,25 +3684,27 @@ async function buildPdf(list, separate){
         const o = list[i];
         ov.step(i, total, total === 1 ? 'Aufzeichnung wird gesetzt' : 'Seite ' + (i+1) + ' von ' + total,
                 MONTHS[o.m] + ' ' + o.y);
-        await wait(total === 1 ? 420 : 260);
+        await wait(60);
         if(i) doc.addPage('a4','portrait');
         drawPage(doc, ME, o.y, o.m, sigs);
-        ov.step(i+1, total);
       }
       const suffix = total === 1
         ? list[0].y + '-' + p2(list[0].m+1)
         : list[0].y + '-' + p2(list[0].m+1) + '_bis_' + list[total-1].y + '-' + p2(list[total-1].m+1);
       name = base + '_' + suffix + '.pdf';
-      const el = performance.now() - t0;
-      if(el < 900) await wait(900 - el);
+      clearInterval(takt);
+      const rest = MIN_MS - (performance.now() - t0);
+      if(rest > 0){ ov.step(0, 1, 'Letzter Feinschliff', 'Ränder, Summen, Unterschrift'); await wait(rest); }
       doc.save(name);
       ov.finish('PDF erstellt · ' + total + (total === 1 ? ' Seite' : ' Seiten'), name);
     }
+    await wait(1700);
     await wait(1500);
     ov.el.remove();
   }catch(err){
     console.error(err);
-    if(ov && ov.el) ov.el.remove();
+    clearInterval(takt);
+    if(ov){ ov.stop(); if(ov.el) ov.el.remove(); }
     toast('Export fehlgeschlagen');
   }
   _busy = false; exYear();
@@ -3753,7 +3850,8 @@ $('#brand-word').src = LOGO_WORD;
    Danach kommt die zweite Schranke — eine Maus heißt Computer, egal wie schmal
    das Fenster gezogen ist. Mit ?desktop=1 lässt sich beides umgehen, das braucht
    man zum Prüfen.                                                            */
-const HANDY_MAX = 900;              /* kurze Seite; ein iPad Pro 11" hat 834 */
+const HANDY_MAX  = 620;             /* kurze Seite: ab hier kommt der QR-Code */
+const TABLET_MAX = 1024;            /* Berührungsgeräte ohne Maus dürfen breiter sein */
 function kurzeSeite(){
   return Math.min(window.innerWidth || 9999, window.innerHeight || 9999);
 }
@@ -3763,23 +3861,21 @@ function darfRein(){
   const ua = navigator.userAgent || '';
   const tippPunkte = navigator.maxTouchPoints || 0;
 
-  /* 1 · Sagt die Kennung selbst, dass es ein Telefon oder Tablet ist, dann
-         reicht das — auch beim großen iPad, dessen kurze Seite über der
-         Grenze liegt. iPadOS gibt sich als Mac aus, verrät sich aber über
-         die Zahl der Berührungspunkte. */
+  /* Echte Telefone und Tablets sagen es selbst — die dürfen immer, auch das
+     große iPad. iPadOS gibt sich als Mac aus, verrät sich aber über die
+     Berührungspunkte. */
   if(/iPhone|iPod|iPad|Android|IEMobile|Opera Mini|Silk|Kindle|Tablet|PlayBook/i.test(ua)) return true;
   if(navigator.platform === 'MacIntel' && tippPunkte > 1) return true;
 
-  /* 2 · Sonst muss das Fenster in Tablet-Maß passen. Die kurze Seite, weil
-         die auch beim gedrehten Gerät klein bleibt. */
-  if(kurzeSeite() > HANDY_MAX) return false;
-
-  /* 3 · Und es braucht einen echten Hinweis auf Berührung ohne Maus. Ein
-         Rechner hat null Berührungspunkte und einen feinen Zeiger — der
-         kommt hier auch im kleinsten Fenster nicht durch. */
+  const kurz = kurzeSeite();
+  /* Ein ganz schmal gezogenes Fenster am Rechner bleibt offen — praktisch zum
+     Nachsehen. Alles darüber bekommt den QR-Code. */
+  if(kurz <= HANDY_MAX) return true;
+  /* Berührungsgerät ohne Maus darf bis Tabletmaß, etwa ein Surface im
+     Tablet-Modus. */
   const maus = mq('(pointer:fine)') || mq('(hover:hover)');
   const finger = mq('(pointer:coarse)') || tippPunkte > 0;
-  return finger && !maus;
+  return kurz <= TABLET_MAX && finger && !maus;
 }
 let AM_HANDY = darfRein(), GEBOOTET = false;
 
@@ -3812,6 +3908,7 @@ try{ console.info('[MARU] Gerät:', JSON.stringify({
   amHandy: AM_HANDY,
   kurzeSeite: kurzeSeite(),
   grenze: HANDY_MAX,
+  tabletGrenze: TABLET_MAX,
   fenster: window.innerWidth + 'x' + window.innerHeight,
   feinerZeiger: matchMedia('(pointer:fine)').matches,
   groberZeiger: matchMedia('(pointer:coarse)').matches,
