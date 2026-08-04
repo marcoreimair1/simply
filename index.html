@@ -343,11 +343,13 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
   background:linear-gradient(140deg,var(--butter),#E0A93C);color:#20180A;border:1px solid rgba(255,255,255,.2);
   transition:.25s var(--ease);overflow:hidden;padding:0}
 .avatar:hover{transform:scale(1.07) rotate(-3deg)}
-/* Die Motive sind 3:4 hochkant, mit Pastell über dem Kopf. In quadratischen
-   Feldern wird am unteren Rand ausgerichtet — dann fällt nur die leere Luft
-   oben weg, links und rechts wird nichts beschnitten. Genau das hatte die
-   Ohren gekostet, als das große Feld hochkant und das Motiv quadratisch war. */
-.avatar img{width:100%;height:100%;object-fit:cover;object-position:center bottom;display:block}
+/* Die Motive sind 3:4 hochkant, mit Pastell über dem Kopf. Der Ausschnitt
+   sitzt bei 86 % der Höhe: ganz unten ausgerichtet ist die Figur zu knapp im
+   Bild, ganz oben wird der Körper abgeschnitten. Derselbe Wert gilt für alle
+   drei Größen, damit der Ausschnitt überall gleich aussieht — links und
+   rechts wird ohnehin nichts beschnitten, das hatte vorher die Ohren
+   gekostet, als das große Feld hochkant und das Motiv quadratisch war. */
+.avatar img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block}
 .avwrap{position:relative;display:grid;flex:none}
 
 /* Roter Kreis mit Zahl, wie am Homescreen. Er sitzt an der Ecke und darf
@@ -421,7 +423,7 @@ body.menuauf #avatar{transform:scale(.92)}
   background:#fff;border:1px solid rgba(255,255,255,.22);display:grid;place-items:center;
   font-family:var(--font-dis);font-size:36px;color:#20180A;
   transition:transform .34s var(--ease),border-radius .34s var(--ease),box-shadow .3s}
-.avbig img{width:100%;height:100%;object-fit:cover;object-position:center bottom;display:block}
+.avbig img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block}
 .avbig:hover{transform:scale(1.04);box-shadow:0 12px 30px -14px rgba(0,0,0,.7)}
 .avbig:active{transform:scale(.98)}
 /* Gitter mit den Motiven — vier je Reihe, wächst nach unten auf. */
@@ -439,7 +441,7 @@ body.menuauf #avatar{transform:scale(.92)}
    die Kachel wirkt in jeder Größe wie dieselbe Form. */
 .avopt{position:relative;aspect-ratio:1;border-radius:34%;overflow:hidden;background:#fff;
   border:0;transition:box-shadow .24s var(--ease),transform .24s var(--ease)}
-.avopt img{width:100%;height:100%;object-fit:cover;object-position:center bottom;display:block}
+.avopt img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block}
 .avopt:hover{transform:scale(1.05)}
 /* Gewählt: erst ein dunkler Spalt, dann der goldene Ring. Der Spalt hält
    das Gold von den Pastelltönen fern — direkt daneben streiten die beiden.
