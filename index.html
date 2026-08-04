@@ -370,6 +370,9 @@ body.menuauf #avatar{transform:scale(.92)}
 .mi:hover{background:rgba(247,215,116,.1);color:var(--butter)}
 .mi.danger:hover{background:rgba(255,142,110,.12);color:var(--coral)}
 .mi svg{width:16px;height:16px;flex:none;opacity:.8}
+/* Zweizeiliger Eintrag: oben die Sache, darunter ihr Zustand. */
+.mi small{display:block;font-size:10.5px;color:var(--tx-3);margin-top:1px;letter-spacing:0}
+.mi.done small{color:var(--c-eigen)}
 
 /* ============================================================
    BAUSTEINE
@@ -715,7 +718,7 @@ body.nobar #v-onboard{padding-top:14px}
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 /* Trenner zwischen Passkey und E-Mail */
 .mi.done svg{color:var(--c-eigen)}
-.mfoot{margin:10px 2px 4px;padding-top:11px;border-top:1px solid var(--line-2);
+.mfoot{margin:11px 2px 2px;padding-top:12px;border-top:1px solid var(--line-2);
   font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-3);text-align:center}
 .mfoot b{color:var(--butter);font-weight:600;letter-spacing:.08em}
 .mi .miico{display:grid;place-items:center;width:24px;height:24px;flex:none}
@@ -888,7 +891,7 @@ body.nobar #v-onboard{padding-top:14px}
    entfallen, weil der Inhalt jetzt im Blatt liegt und dort ohnehin
    von unten hereinfährt. */
 /* Eine flache Pille, keine Karte. Der volle Rundungsradius unterscheidet sie
-   deutlich vom Monatsauszug darunter, der eine 20-px-Karte ist — dasselbe
+   deutlich von den Monatsdetails darunter, die eine 20-px-Karte sind — dasselbe
    Mittel wie bei den Knöpfen. Nur halb so hoch wie die alte Zeile, weil der
    erklärende Satz jetzt im Blatt steht, wo er gebraucht wird. */
 .qbar{position:relative;display:inline-flex;align-items:center;gap:8px;
@@ -999,7 +1002,8 @@ body.nobar #v-onboard{padding-top:14px}
 .sheet-card{position:absolute;left:50%;bottom:0;translate:-50% 0;width:min(520px,100%);
   background:linear-gradient(175deg,rgba(27,40,86,.99),rgba(10,17,41,.99));border:1px solid var(--line);
   border-bottom:none;border-radius:var(--r-xl) var(--r-xl) 0 0;padding:10px 22px calc(26px + env(safe-area-inset-bottom));
-  animation:slideUp .44s var(--ease-out);max-height:88vh;overflow-y:auto}
+  animation:slideUp .44s var(--ease-out);max-height:88vh;overflow-y:auto;
+  overscroll-behavior:contain}
 @keyframes slideUp{from{transform:translateY(100%)}}
 /* Der Griff ist auch die Zugfläche — bewusst hoch genug für den Daumen. */
 .sheet-grab{display:block;width:100%;padding:9px 0 13px;margin:-3px 0 5px;
@@ -1046,7 +1050,7 @@ body.nobar #v-onboard{padding-top:14px}
 .warnnote svg{width:17px;height:17px;color:var(--butter);flex:none;margin-top:1px}
 .warnnote b{color:var(--butter);font-weight:600}
 
-/* ─── Monatsauszug ──────────────────────────────────────────────────────
+/* ─── Monatsdetails ──────────────────────────────────────────────────────
    Ein Balken zeigt die Anteile des Monats, rechts daneben die Summe. Er
    sitzt in der Kalenderkarte, weil er den Monat beschreibt, den man sieht.
    Ein Tipp öffnet die Zahlen in einem Blatt — dieselbe Bewegung wie beim
@@ -1703,9 +1707,9 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         </div>
 
         <!-- Der Auszug gehört zum Monat, also steht er in dessen Karte. -->
-        <button class="mbar" id="mbar" aria-label="Monatsauszug öffnen">
+        <button class="mbar" id="mbar" aria-label="Monatsdetails öffnen">
           <div class="mbtop">
-            <span class="mbl">Monatsauszug</span>
+            <span class="mbl">Monatsdetails</span>
             <span class="mbv" id="mb-v"></span>
           </div>
           <div class="mbbar" id="mb-bar"></div>
@@ -1768,8 +1772,9 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <button class="mi" data-act="passkey" id="mi-pk" style="display:none"><span class="miico" id="mi-pk-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span><span id="mi-pk-t">Passkey anlegen</span></button>
     <button class="mi" data-act="pkreset" id="mi-pkreset" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Passkey zurücksetzen</button>
         <button class="mi" data-act="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12H4M8 8l-4 4 4 4M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/></svg>Abmelden</button>
-    <div class="mfoot">Eine App von <b>Studio MARU 丸</b></div>
+    
     <button class="mi danger" data-act="delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Profil löschen</button>
+    <div class="mfoot">Eine App von <b>Studio MARU 丸</b></div>
   </div>
 </div>
 
@@ -1818,13 +1823,13 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   </div>
 </div>
 
-<!-- Monatsauszug — die Zahlen liegen im Blatt, nicht auf der Seite -->
+<!-- Monatsdetails — die Zahlen liegen im Blatt, nicht auf der Seite -->
 <div class="sheet" id="msheet">
   <div class="sheet-bd" data-close="msheet"></div>
   <div class="sheet-card" id="mcard">
     <div class="sheet-grab" id="m-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
     <h3 id="ms-title">—</h3>
-    <p class="sd">Monatsauszug · Tage und Stunden</p>
+    <p class="sd">Monatsdetails · Tage und Stunden</p>
     <div id="ms-rows"></div>
   </div>
 </div>
@@ -2271,7 +2276,9 @@ function paintPasskey(){
   const mi = $('#mi-pk'), mr = $('#mi-pkreset');
   if(mi){
     mi.style.display = (PASSKEY && UID) ? 'flex' : 'none';
-    $('#mi-pk-t').textContent = hat ? 'Passkey eingerichtet' : 'Passkey anlegen';
+    $('#mi-pk-t').innerHTML = hat
+      ? 'Passkey <small>aktiv auf diesem Konto</small>'
+      : 'Passkey anlegen <small>Anmelden ohne Code</small>';
     $('#mi-pk-i').innerHTML = hat ? PK_HAKEN : PK_KEY;
     mi.classList.toggle('done', hat);
   }
@@ -3270,7 +3277,7 @@ const MX_FARBE = {
   feier:  ['var(--c-feier)',  'rgba(169,155,255,.14)'],
   eigen:  ['var(--c-eigen)',  'rgba(121,232,198,.14)']
 };
-/* ─── Monatsauszug ────────────────────────────────────────────────────
+/* ─── Monatsdetails ────────────────────────────────────────────────────
    Der Balken zeigt die Anteile, das Blatt die Zahlen. MSUM hält die
    Summen des gerade gezeichneten Monats, damit das Blatt nichts neu
    rechnen muss. */
@@ -3515,40 +3522,64 @@ function paintSheet(){
 }
 function closeSheet(){ $('#sheet').classList.remove('on'); document.body.classList.remove('locked'); }
 
-/* ─── Nach unten schieben zum Schließen ──────────────────────
-   Der Griff verspricht, dass sich das Fenster wegschieben lässt — also
-   soll er es auch können. Ein kurzer Wisch genügt, ein zaghafter Zug
-   federt zurück.                                                       */
+/* ─── Nach unten schieben zum Schließen ──────────────────────────────────
+   Ziehen geht überall auf der Karte, nicht nur am Griff. Damit das
+   Rollen im Inneren nicht darunter leidet, gilt eine Bedingung: der
+   Zug beginnt nur, wenn die Karte schon oben steht und der Finger nach
+   unten geht. Rollt man nach unten oder ist mitten im Inhalt, bleibt
+   es normales Rollen. Knöpfe und Eingaben sind ausgenommen, sonst
+   ließe sich nichts mehr antippen.                                     */
 function wireSheetDrag(griffId, blattId, zu){
   const blatt = document.getElementById(blattId);
   const griff = document.getElementById(griffId);
   const karte = blatt && blatt.querySelector('.sheet-card');
   const grund = blatt && blatt.querySelector('.sheet-bd');
-  if(!griff || !karte) return () => {};
-  let start = 0, weg = 0, zeit = 0, zieht = false;
+  if(!karte) return () => {};
+  let start = 0, weg = 0, zeit = 0, zieht = false, offen = false, vomGriff = false;
 
   const auf = () => {
     karte.classList.remove('zieht','zurueck','weg');
     karte.style.transform = '';
     if(grund) grund.style.opacity = '';
+    zieht = offen = vomGriff = false; weg = 0;
   };
 
-  griff.addEventListener('pointerdown', e => {
-    zieht = true; start = e.clientY; weg = 0; zeit = performance.now();
-    karte.classList.add('zieht'); karte.classList.remove('zurueck','weg');
-    try{ griff.setPointerCapture(e.pointerId); }catch(err){}
-  });
+  /* Finger liegt auf etwas Bedienbarem? Dann nicht ziehen. */
+  const tabu = el => !!(el && el.closest &&
+    el.closest('button, a, input, textarea, select, [data-qd], [contenteditable]'));
 
-  griff.addEventListener('pointermove', e => {
+  function ab(e, vomGriffHer){
+    if(e.pointerType === 'mouse' && e.button !== 0) return;
+    if(!vomGriffHer && tabu(e.target)) return;
+    zieht = true; offen = vomGriffHer; vomGriff = vomGriffHer;
+    start = e.clientY; weg = 0; zeit = performance.now();
+    if(vomGriffHer){
+      karte.classList.add('zieht'); karte.classList.remove('zurueck','weg');
+      try{ if(e.pointerId != null) e.currentTarget.setPointerCapture(e.pointerId); }catch(err){}
+    }
+  }
+
+  function zug(e){
     if(!zieht) return;
-    weg = Math.max(0, e.clientY - start);
-    /* Nach oben gibt es nichts zu holen — leichter Widerstand statt Sprung. */
+    const dy = e.clientY - start;
+    if(!offen){
+      /* Erst ab acht Pixeln entscheiden, wohin die Bewegung will. */
+      if(Math.abs(dy) < 8) return;
+      if(dy < 0 || karte.scrollTop > 1){ zieht = false; return; }
+      offen = true;
+      karte.classList.add('zieht'); karte.classList.remove('zurueck','weg');
+      try{ if(e.pointerId != null) e.currentTarget.setPointerCapture(e.pointerId); }catch(err){}
+    }
+    weg = Math.max(0, dy);
+    if(e.cancelable) e.preventDefault();
     karte.style.transform = 'translateY(' + weg + 'px)';
     if(grund) grund.style.opacity = String(Math.max(.15, 1 - weg / 420));
-  });
+  }
 
   const ende = () => {
-    if(!zieht) return; zieht = false;
+    if(!zieht){ vomGriff = false; return; }
+    zieht = false;
+    if(!offen){ vomGriff = false; return; }
     karte.classList.remove('zieht');
     const hoch = karte.getBoundingClientRect().height || 400;
     const dauer = Math.max(1, performance.now() - zeit);
@@ -3562,17 +3593,43 @@ function wireSheetDrag(griffId, blattId, zu){
       karte.classList.add('zurueck');
       karte.style.transform = 'translateY(0)';
       if(grund) grund.style.opacity = '';
-      setTimeout(() => karte.classList.remove('zurueck'), 340);
+      setTimeout(() => { karte.classList.remove('zurueck'); }, 340);
     }
+    offen = false; vomGriff = false;
   };
-  griff.addEventListener('pointerup', ende);
-  griff.addEventListener('pointercancel', ende);
-  /* Beim nächsten Öffnen wieder unverschoben beginnen. */
-  griff.addEventListener('dblclick', e => e.preventDefault());
+
+  if(griff){
+    griff.addEventListener('pointerdown', e => ab(e, true));
+    griff.addEventListener('pointermove', zug);
+    griff.addEventListener('pointerup', ende);
+    griff.addEventListener('pointercancel', ende);
+    griff.addEventListener('dblclick', e => e.preventDefault());
+  }
+  /* Auf der Karte selbst: Maus über Pointer, Finger über Touch. Grund dafür
+     ist, dass ein Pointer-Ereignis nicht mehr abbrechbar ist, sobald der
+     Browser das Rollen übernommen hat — preventDefault käme zu spät.
+     touchmove mit passive:false darf dagegen jederzeit abbrechen. */
+  const ausGriff = el => el === griff || (griff && griff.contains(el));
+  karte.addEventListener('pointerdown', e => {
+    if(e.pointerType !== 'mouse' || vomGriff || ausGriff(e.target)) return;
+    ab(e, false);
+  });
+  karte.addEventListener('pointermove', e => { if(e.pointerType === 'mouse') zug(e); });
+  karte.addEventListener('pointerup', e => { if(e.pointerType === 'mouse') ende(); });
+
+  karte.addEventListener('touchstart', e => {
+    if(e.touches.length !== 1 || vomGriff || ausGriff(e.target)) return;
+    ab({ clientY: e.touches[0].clientY, target: e.target, pointerType:'touch' }, false);
+  }, { passive:true });
+  karte.addEventListener('touchmove', e => {
+    if(!zieht || e.touches.length !== 1) return;
+    zug({ clientY: e.touches[0].clientY, cancelable: e.cancelable,
+          preventDefault: () => e.preventDefault(), currentTarget: karte });
+  }, { passive:false });
+  karte.addEventListener('touchend', ende);
+  karte.addEventListener('touchcancel', ende);
   return auf;
 }
-/* Beide Blätter bekommen denselben Griff — Funktionsdeklarationen sind
-   hochgezogen, quickClose darf also weiter unten stehen. */
 window.__sheetReset = wireSheetDrag('sh-grab', 'sheet', closeSheet);
 window.__qReset     = wireSheetDrag('q-grab',  'qsheet', quickClose);
 window.__mReset     = wireSheetDrag('m-grab',  'msheet', msZu);
@@ -4211,6 +4268,10 @@ let DRAFT = null;
 let _menuZu = null;
 function menuAuf(){
   clearTimeout(_menuZu);
+  /* Erst mit dem bekannten Stand zeichnen, dann im Hintergrund nachfragen —
+     so steht sofort etwas da und ist gleich darauf auf dem neuesten Stand. */
+  try{ paintPasskey(); }catch(e){}
+  if(PASSKEY && UID) pkRefresh().catch(() => {});
   const m = $('#menu');
   m.classList.remove('zu');
   m.classList.add('on');
@@ -4455,6 +4516,9 @@ function bootLocal(){
 async function afterLogin(session){
   UID = session.user.id;
   MAIL = session.user.email || '';
+  /* Passkey-Stand holen, sonst bleiben die Menüeinträge auf display:none
+     stehen — paintPasskey lief vorher nur im Funnel und beim Abmelden. */
+  pkRefresh().catch(e => console.warn('[MOJI] Passkey-Stand offen:', e));
   /* Adresszeile aufräumen, damit der Anmeldelink nicht sichtbar bleibt */
   try{ history.replaceState({}, '', location.pathname); }catch(e){}
 
