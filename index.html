@@ -873,6 +873,24 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       </div>
     </section>
 
+    <!-- ─────────── KEINE VERBINDUNG ─────────── -->
+    <section class="view pt" id="v-wait">
+      <div class="eyebrow">Kurz Geduld</div>
+      <h1 class="dis">Deine Daten sind <i>da</i> — nur gerade nicht erreichbar.</h1>
+      <p class="lede">Du bist angemeldet, aber MARU kommt im Moment nicht an den Server. Deine
+        Aufzeichnungen liegen unverändert dort. Sobald die Verbindung steht, sind sie wieder da.</p>
+      <div class="card mt" style="max-width:460px">
+        <p class="hint" style="margin:0">Damit nichts überschrieben wird, legt MARU jetzt bewusst
+          nichts Neues an. Prüfe kurz WLAN oder Mobilfunk und versuche es erneut.</p>
+      </div>
+      <div class="navrow">
+        <button class="btn btn-p" id="wt-retry">Erneut versuchen
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/></svg>
+        </button>
+        <button class="btn btn-g" id="wt-out">Abmelden</button>
+      </div>
+    </section>
+
     <!-- ─────────── ONBOARDING ─────────── -->
     <section class="view pt" id="v-onboard">
       <div class="obtop">
@@ -3169,7 +3187,12 @@ async function afterLogin(session){
       toast('Deine Daten sind jetzt gesichert');
       return;
     }
-    setSync(offline ? 'offline' : 'ok');
+    /* Kein Datensatz UND keine Verbindung: das kann auch eine Person mit
+       vollen Aufzeichnungen sein, die MARU gerade nicht laden kann. Hier darf
+       kein neuer Funnel starten — sein Abschluss würde den echten Datensatz
+       überschreiben. Also lieber warten lassen. */
+    if(offline){ setSync('offline'); go('v-wait'); return; }
+    setSync('ok');
     obInit(); go('v-onboard');
     return;
   }
@@ -3179,6 +3202,12 @@ async function afterLogin(session){
   if(push) cloudQueue();
   enterApp();
 }
+
+$('#wt-retry').addEventListener('click', () => location.reload());
+$('#wt-out').addEventListener('click', async () => {
+  try{ if(sb) await sb.auth.signOut(); }catch(e){}
+  location.reload();
+});
 
 (async function boot(){
   const ok = await cloudBoot();
