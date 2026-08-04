@@ -2598,9 +2598,11 @@ function obPaint(){
     : 'Weiter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   if(OB.step === STEPS-1){
     const vn = $('#in-vn').value.trim(), nn = $('#in-nn').value.trim();
+    /* Hier ist alles beisammen — also jetzt speichern, nicht erst beim Knopf */
+    try{ sichereProfil(); }catch(e){ console.warn('Sichern nicht möglich', e); }
     $('#done-text').textContent = CLOUD_ON
-      ? 'Alles steht, ' + vn + '. Deine Aufzeichnungen sind gesichert — mit deiner E-Mail-Adresse kommst du auf jedem Gerät heran.'
-      : 'Alles steht, ' + vn + '. Beim nächsten Besuch genügen Vorname und Geburtsdatum.';
+      ? 'Alles steht, ' + vn + '. Dein Profil ist schon gespeichert — auch wenn du MARU jetzt gleich auf den Home-Bildschirm legst.'
+      : 'Alles steht, ' + vn + '. Dein Profil ist schon gespeichert. Beim nächsten Besuch genügen Vorname und Geburtsdatum.';
     try{ renderPdfPreview(vn, nn); }catch(e){ console.warn('Vorschau nicht möglich', e); }
     try{ paintPasskey(); }catch(e){ console.warn(e); }
     try{ initFeatCarousel(); nudgeCarousel(); }catch(e){ console.warn(e); }
@@ -2824,26 +2826,50 @@ $$('#in-vn,#in-nn').forEach(i => i.addEventListener('keydown', e => {
   if(e.key === 'Enter' && stepValid(0)) obGo(1);
 }));
 
-function finishOnboarding(){
+/* ─── Profil sichern ───
+   Wird schon beim Erreichen der letzten Funnelseite aufgerufen, nicht erst bei
+   „Los geht's". Sonst wären die Daten weg, wenn jemand von dort direkt in die
+   Homescreen-App wechselt, ohne den Knopf zu drücken. Mehrfaches Aufrufen legt
+   kein zweites Profil an, sondern zieht das bestehende nach. */
+let _funnelId = null;
+function sichereProfil(){
   const vn = $('#in-vn').value.trim(), nn = $('#in-nn').value.trim();
   const dob = dobIso(readDob('ob'));
+  if(!vn || !dob) return null;
   const months = Array.from(OB.months).map(s => { const [y,m] = s.split('-'); return { y:+y, m:+m }; });
-  const p = normalize({
-    id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
-    vorname: vn, nachname: nn, dob: dob, ort: EMPLOYER,
-    sched: JSON.parse(JSON.stringify(OB.sched)), months: months, events: {}, created: new Date().toISOString()
-  });
-  ME = p;
+  const sched = JSON.parse(JSON.stringify(OB.sched));
+
+  if(_funnelId && ME && ME.id === _funnelId){
+    ME.vorname = vn; ME.nachname = nn; ME.dob = dob;
+    ME.sched = sched; ME.months = months;
+    normalize(ME);
+  } else {
+    ME = normalize({
+      id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+      vorname: vn, nachname: nn, dob: dob, ort: EMPLOYER,
+      sched: sched, months: months, events: (ME && ME.events) || {},
+      created: new Date().toISOString()
+    });
+    _funnelId = ME.id;
+  }
+
   if(CLOUD_ON && UID){
     cloudQueue();
-    pkRefresh();
     /* Vorname ins Konto, damit die Anmeldemail künftig grüßen kann */
     try{ sb.auth.updateUser({ data:{ vorname: vn } }); }catch(e){ console.warn(e); }
   } else {
-    DB.profiles.push(p); DB.activeId = p.id; save();
+    if(!DB.profiles.some(x => x.id === ME.id)) DB.profiles.push(ME);
+    DB.activeId = ME.id; save();
   }
+  return ME;
+}
+
+function finishOnboarding(){
+  const p = sichereProfil();
+  if(!p) return;
+  _funnelId = null;
   enterApp();
-  toast('Willkommen, ' + vn + '!');
+  toast('Willkommen, ' + p.vorname + '!');
 }
 
 /* ═══════════════════════════════════════════════════════════
