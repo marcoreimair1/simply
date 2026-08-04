@@ -657,20 +657,47 @@ body.nobar #v-onboard{padding-top:14px}
 .mk-leg s.k{background:rgba(255,142,110,.6)}
 .mk-leg s.f{background:rgba(167,139,250,.6)}
 
+/* Musterbild Dienstzeiten */
+.mz-tabs{display:flex;gap:5px;margin-bottom:9px}
+.mz-tabs i{font-style:normal;font-size:8px;letter-spacing:.06em;color:var(--tx-3);
+  border:1px solid var(--line-2);border-radius:6px;padding:4px 8px}
+.mz-tabs i.on{color:var(--butter);border-color:var(--butter-dim);background:rgba(247,215,116,.1)}
+.mz-tabs i.add{color:var(--tx-3);padding:4px 7px;border-style:dashed}
+.mz-rows p{display:flex;align-items:center;gap:5px;margin:0 0 5px}
+.mz-rows u{text-decoration:none;font-size:8px;color:var(--tx-3);flex:0 0 15px}
+.mz-rows s{text-decoration:none;font-size:8px;color:var(--tx-2);flex:1;text-align:center;
+  background:rgba(238,242,255,.07);border-radius:5px;padding:4px 0;
+  font-variant-numeric:tabular-nums}
+.mz-rows s.off{color:var(--tx-3);background:transparent;border:1px dashed var(--line-2)}
+.mz-rows b{font-size:8px;color:var(--butter);flex:0 0 26px;text-align:right;
+  font-variant-numeric:tabular-nums}
+.mz-note{margin-top:9px;font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--tx-3)}
+
 /* Musterdokument */
 .mb-head{display:flex;align-items:center;justify-content:space-between;
   border-bottom:1px solid rgba(0,0,0,.1);padding-bottom:6px;margin-bottom:8px}
 .mb-head b{font-size:6.5px;letter-spacing:.14em;color:#3a4050}
 .mb-head i{font-style:normal;font-size:8px;font-weight:800;letter-spacing:.06em;color:#0A1129}
-.mb-rows p{display:flex;gap:6px;align-items:center;margin:0 0 5px;padding-bottom:4px;
+.mb-rows p{display:flex;gap:5px;align-items:center;margin:0 0 4px;padding-bottom:3px;
   border-bottom:1px solid rgba(0,0,0,.055)}
-.mb-rows p.hl{background:rgba(247,215,116,.22);border-radius:3px;padding:2px 3px 4px}
+.mb-rows p.hl{background:rgba(247,215,116,.22);border-radius:3px;padding:2px 3px 3px}
+.mb-rows p.frei{opacity:.5}
+.mb-rows u{text-decoration:none;font-size:6px;color:#3a4050;flex:0 0 26px;
+  font-variant-numeric:tabular-nums}
+.mb-rows i{font-style:normal;font-size:6px;color:#8a90a0;flex:0 0 13px}
 .mb-rows s{text-decoration:none;height:3px;border-radius:2px;background:rgba(0,0,0,.14);flex:1}
-.mb-rows s.w{flex:0 0 22%;background:rgba(0,0,0,.22)}
+.mb-rows s.v{background:rgba(160,120,20,.3)}
+.mb-rows s.off{background:rgba(0,0,0,.06)}
+.mb-rows b{font-size:6px;font-weight:600;color:#1a1f2e;flex:0 0 27px;text-align:right;
+  font-variant-numeric:tabular-nums}
 .mb-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
-.mb-sum span{font-size:7px;text-align:center;color:#3a4050;background:rgba(0,0,0,.05);
-  border-radius:4px;padding:4px 0}
+.mb-sum span{font-size:7.5px;text-align:center;color:#1a1f2e;background:rgba(0,0,0,.05);
+  border-radius:4px;padding:4px 0;font-variant-numeric:tabular-nums}
+.mb-sum span u{display:block;text-decoration:none;font-size:5px;letter-spacing:.1em;
+  text-transform:uppercase;color:#8a90a0;margin-bottom:2px}
 .mb-sum span.t{background:#0A1129;color:#F7D774}
+.mb-sum span.t u{color:rgba(247,215,116,.7)}
 .mb-sig{margin-top:10px}
 .mb-sig em{display:block;font-family:var(--font-sig);font-size:15px;color:#1a1f2e;line-height:1}
 .mb-sig hr{border:none;border-top:.5px solid #9a9ea8;margin:1px 0 2px}
@@ -1062,6 +1089,26 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <div class="wfeat">
             <div class="wmock">
               <span class="wtag">Beispiel</span>
+              <div class="mk-head"><b>Dienstzeiten</b><small>Vormittag · Nachmittag</small></div>
+              <div class="mz-tabs"><i class="on">Woche 1</i><i>Woche 2</i><i class="add">+</i></div>
+              <div class="mz-rows">
+                <p><u>Mo</u><s>08:00–12:00</s><s>13:00–18:00</s><b>9,00</b></p>
+                <p><u>Di</u><s>08:00–12:00</s><s>13:00–18:00</s><b>9,00</b></p>
+                <p><u>Fr</u><s>09:00–12:00</s><s>13:00–17:00</s><b>7,00</b></p>
+                <p><u>Sa</u><s>08:00–12:00</s><s class="off">frei</s><b>4,00</b></p>
+              </div>
+              <div class="mz-note">Pause und Tagesstunden rechnet MARU daraus</div>
+            </div>
+            <b>Einmal den Rhythmus hinterlegen</b>
+            <span>Montag bis Samstag, Vormittag und Nachmittag getrennt, in Viertelstunden.
+              Wer im Wechsel arbeitet, legt bis zu vier Wochen an und tippt an, in welcher er
+              gerade steckt — MARU führt den Turnus danach von selbst weiter. Die Pause ergibt
+              sich aus der Lücke zwischen Vormittag und Nachmittag.</span>
+          </div>
+
+          <div class="wfeat">
+            <div class="wmock">
+              <span class="wtag">Beispiel</span>
               <div class="mk-head"><b>Juli 2026</b><small>Miller Optik GmbH</small></div>
               <div class="mk-dow"><u>M</u><u>D</u><u>M</u><u>D</u><u>F</u><u>S</u><u>S</u></div>
               <div class="mk-grid"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class="u"></i><i class="u"></i><i class="u"></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class="k"></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="f"></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i></div>
@@ -1077,14 +1124,17 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
               <span class="wtag dark">Beispiel</span>
               <div class="mb-head"><b>ARBEITSZEITAUFZEICHNUNG</b><i>MARU</i></div>
               <div class="mb-rows">
-                <p><s></s><s></s><s class="w"></s></p>
-                <p><s></s><s></s><s class="w"></s></p>
-                <p class="hl"><s></s><s></s><s class="w"></s></p>
-                <p><s></s><s></s><s class="w"></s></p>
-                <p><s></s><s></s><s class="w"></s></p>
+                <p><u>01.07.</u><i>Mi</i><s></s><s></s><b>9,00</b></p>
+                <p><u>02.07.</u><i>Do</i><s></s><s></s><b>9,00</b></p>
+                <p class="hl"><u>03.07.</u><i>Fr</i><s class="v"></s><s class="v"></s><b>Urlaub</b></p>
+                <p><u>04.07.</u><i>Sa</i><s></s><s class="off"></s><b>4,00</b></p>
+                <p class="frei"><u>05.07.</u><i>So</i><s class="off"></s><s class="off"></s><b>—</b></p>
               </div>
-              <div class="mb-sum"><span>223,00</span><span>13,00</span><span>9,00</span><span class="t">245,00</span></div>
-              <div class="mb-sig"><em>Judith Berger</em><hr><u>Unterschrift Dienstnehmer/in</u></div>
+              <div class="mb-sum">
+                <span><u>Arbeit</u>223,00</span><span><u>Urlaub</u>13,00</span>
+                <span><u>Krank</u>9,00</span><span class="t"><u>Gesamt</u>245,00</span>
+              </div>
+              <div class="mb-sig"><em>Marco Reimair</em><hr><u>Unterschrift Dienstnehmer/in</u></div>
             </div>
             <b>Am Monatsende ein Tipp</b>
             <span>Ein Monat wird eine fertige A4-Seite: jeder Tag mit Vormittag, Nachmittag,
