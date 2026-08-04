@@ -192,6 +192,7 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
   border:1px solid rgba(112,142,235,.15);
   box-shadow:0 30px 70px rgba(0,0,0,.66),0 0 52px rgba(38,70,180,.2),
              inset 0 1px 0 rgba(170,196,255,.1);
+  isolation:isolate;transform:translateZ(0);
   animation:markIn 1.15s .25s var(--ease-out) both}
 
 /* Zwei blaue Lichtflecken. Wandern und Atmen laufen absichtlich auf
@@ -199,9 +200,13 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
    erst nach über drei Minuten und wirkt nie mechanisch. Genau so macht es
    der Hintergrund der App. */
 .mark-tile::before{content:"";position:absolute;left:-26%;top:-26%;width:152%;height:152%;z-index:1;
-  background:radial-gradient(circle at 32% 28%,rgba(84,128,238,.3),transparent 58%),
-             radial-gradient(circle at 74% 80%,rgba(52,76,190,.24),transparent 60%);
-  filter:blur(14px);
+  border-radius:inherit;
+  background:radial-gradient(circle at 32% 28%,
+               rgba(84,128,238,.3) 0%,rgba(80,120,230,.17) 26%,
+               rgba(70,104,210,.06) 44%,transparent 60%),
+             radial-gradient(circle at 74% 80%,
+               rgba(52,76,190,.24) 0%,rgba(50,72,180,.13) 28%,
+               rgba(46,66,165,.05) 46%,transparent 62%);
   animation:tileDrift 17s var(--ease) infinite alternate,
             tileBreath 11s ease-in-out infinite;
   will-change:transform,opacity}
@@ -216,12 +221,15 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 .mark-tile::after{content:"";position:absolute;inset:-42%;z-index:2;
   background:conic-gradient(from 0deg,
     rgba(140,176,250,0) 0deg,
-    rgba(140,176,250,.1) 26deg,
+    rgba(140,176,250,.03) 14deg,
+    rgba(150,184,252,.09) 24deg,
+    rgba(168,196,255,.16) 34deg,
     rgba(176,202,255,.19) 42deg,
-    rgba(140,176,250,.08) 58deg,
-    rgba(140,176,250,0) 92deg,
+    rgba(164,192,254,.14) 50deg,
+    rgba(148,182,251,.07) 62deg,
+    rgba(140,176,250,.02) 78deg,
+    rgba(140,176,250,0) 96deg,
     rgba(140,176,250,0) 360deg);
-  filter:blur(9px);mix-blend-mode:screen;
   animation:cone 23s var(--ease) infinite alternate,
             coneBreath 14.5s ease-in-out infinite;
   will-change:transform,opacity}
@@ -253,13 +261,15 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 @keyframes letter{to{opacity:1;transform:none;filter:blur(0)}}
 .wordmark i{font-style:italic;color:var(--butter)}
 .subline{margin-top:28px;opacity:0;animation:fadeUp .9s 1.85s var(--ease-out) forwards}
-/* Über hellen Wolken bräuchte blasses Gelb Mut. Also volle Farbe und eine
-   unscharfe Kachel darunter, damit die Schrift immer trägt. */
+/* Dieselbe Handschrift wie das Symbol darüber: tiefes Blau, weiße Schrift,
+   und der Radius aus dem System der App statt einer Pille. */
 .subline span{display:inline-block;font-size:11px;letter-spacing:.26em;text-transform:uppercase;
-  color:#FFE9A3;padding:9px 18px;border-radius:999px;
-  background:rgba(4,7,20,.5);border:1px solid rgba(255,233,163,.22);
-  backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
-  text-shadow:0 1px 10px rgba(0,0,0,.55)}
+  color:#F2F5FF;padding:10px 18px;border-radius:var(--r-s);
+  background:linear-gradient(158deg,rgba(15,25,64,.62),rgba(8,15,42,.7));
+  border:1px solid rgba(128,158,240,.2);
+  backdrop-filter:blur(16px) saturate(1.1);-webkit-backdrop-filter:blur(16px) saturate(1.1);
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  text-shadow:0 1px 8px rgba(0,0,0,.5)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 #pcanvas{z-index:2}
 
