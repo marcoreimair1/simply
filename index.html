@@ -545,14 +545,32 @@ body.nobar #v-onboard{padding-top:14px}
 
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 /* Trenner zwischen Passkey und E-Mail */
-.mi.done{color:var(--tx-3)}
-.mi.done svg{color:var(--butter);opacity:.85}
+.mi.done svg{color:var(--c-eigen)}
+.mi .miico{display:grid;place-items:center;width:24px;height:24px;flex:none}
+.mi .miico svg{width:24px;height:24px}
+#mi-pkreset svg{opacity:.6}
 /* Weiche: anmelden oder registrieren */
 .opt.pick{padding:16px 15px;border-radius:var(--r-m);margin-bottom:11px}
 .opt.pick .oi{background:rgba(247,215,116,.14);color:var(--butter)}
 .opt.pick[data-lg=signup] .oi{background:rgba(238,242,255,.07);color:var(--tx-2)}
 .opt.pick:hover{border-color:var(--butter-dim);transform:translateX(3px)}
 .opt.pick .spacer{flex:1}
+
+/* Zeilen auf der Passkey-Frage */
+.pkrow{display:flex;align-items:flex-start;gap:13px}
+.pkrow + .pkrow{margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)}
+.pkrow .oi{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none;
+  background:rgba(247,215,116,.14);color:var(--butter)}
+.pkrow .oi svg{width:18px;height:18px}
+.pkrow b{display:block;font-size:14px;margin-bottom:3px}
+.pkrow small{color:var(--tx-3);font-size:12px;line-height:1.55;display:block}
+
+/* Erledigt-Zeichen auf der Funnel-Karte */
+.feat-card .pi.fertig{background:rgba(121,232,198,.16);color:var(--c-eigen)}
+.feat-card .tagok{display:inline-flex;align-items:center;gap:5px;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--c-eigen);line-height:1;
+  background:rgba(121,232,198,.12);border-radius:999px;padding:5px 10px;margin-bottom:10px}
+.feat-card .tagok svg{width:11px;height:11px;flex:none}
 
 /* Passkey: einladend, aber die E-Mail bleibt der verlässliche Weg */
 .btn-pk{width:100%;justify-content:center;background:rgba(247,215,116,.09);
@@ -978,6 +996,28 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       </div>
     </section>
 
+    <!-- ─────────── PASSKEY GLEICH ANLEGEN ─────────── -->
+    <section class="view pt" id="v-pkask">
+      <div class="eyebrow">Ein Schritt noch</div>
+      <h1 class="dis">Nie wieder einen <i>Code</i> eintippen.</h1>
+      <p class="lede">Du bist drin. Wenn du jetzt einen Passkey anlegst, genügt beim nächsten
+        Mal Face ID oder dein Fingerabdruck — keine Mail, kein Code, kein Warten aufs Postfach.</p>
+      <div class="card mt" style="max-width:440px">
+        <div class="pkrow"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span>
+          <span><b>Bleibt auf diesem Gerät</b><small>Der Schlüssel liegt im Gerät bzw. in deinem
+            Schlüsselbund — MARU sieht ihn nie.</small></span></div>
+        <div class="pkrow"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg></span>
+          <span><b>Jederzeit widerrufbar</b><small>Im Menü kannst du den Passkey zurücksetzen und
+            wieder mit E-Mail arbeiten.</small></span></div>
+      </div>
+      <div class="navrow">
+        <button class="btn btn-p" id="pk-ask-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>Passkey einrichten</button>
+      </div>
+      <div style="margin-top:18px">
+        <button class="linkbtn" id="pk-ask-skip">Später, erst mal ohne</button>
+      </div>
+    </section>
+
     <!-- ─────────── ONBOARDING ─────────── -->
     <section class="view pt" id="v-onboard">
       <div class="obtop">
@@ -1058,6 +1098,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
               <div class="feat-track" id="feat-track">
                 <article class="feat-card install" id="pk-card" style="display:none">
                   <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span>
+                  <span class="tagok" id="pk-card-ok" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>Erledigt</span>
                   <b id="pk-card-b">Ohne Code anmelden</b>
                   <span id="pk-card-t">Ein Passkey merkt sich die Anmeldung im Gerät. Beim nächsten
                     Besuch genügt Face ID oder Fingerabdruck — keine E-Mail, kein Code aus dem Postfach.</span>
@@ -1233,7 +1274,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   <div class="menu-card">
     <div class="mh"><b id="me-name">—</b><small id="me-sub">Miller Optik GmbH</small><small id="me-mail" style="display:block"></small></div>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
-    <button class="mi" data-act="passkey" id="mi-pk" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg><span id="mi-pk-t">Passkey anlegen</span></button>
+    <button class="mi" data-act="passkey" id="mi-pk" style="display:none"><span class="miico" id="mi-pk-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span><span id="mi-pk-t">Passkey anlegen</span></button>
+    <button class="mi" data-act="pkreset" id="mi-pkreset" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Passkey zurücksetzen</button>
     <button class="mi" data-act="intro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12a8 8 0 108-8"/><path d="M4 4v5h5"/></svg>Intro nochmal ansehen</button>
     <button class="mi" data-act="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12H4M8 8l-4 4 4 4M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/></svg>Abmelden</button>
     <button class="mi danger" data-act="delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Profil löschen</button>
@@ -1586,6 +1628,8 @@ async function cloudBoot(){
    Ein Passkey liegt im Gerät bzw. im Schlüsselbund und ersetzt Code und Link.
    Anlegen geht nur angemeldet — die erste Anmeldung bleibt die E-Mail.     */
 let PK_LISTE = null;                       /* null = noch nicht nachgesehen */
+const PK_KEY   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>';
+const PK_HAKEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>';
 
 async function pkRefresh(){
   if(!PASSKEY || !UID){ PK_LISTE = null; return null; }
@@ -1616,6 +1660,43 @@ async function pkAdd(knopf){
   }
 }
 
+/* Passkey wieder loswerden. Der Eintrag im Schlüsselbund des Geräts bleibt —
+   den räumt man dort auf, MARU kommt nicht daran. */
+async function pkReset(){
+  if(!Array.isArray(PK_LISTE) || !PK_LISTE.length) return;
+  if(!confirm('Passkey zurücksetzen? Danach meldest du dich wieder per E-Mail an. '
+            + 'Einen neuen kannst du jederzeit anlegen.')) return;
+  try{
+    for(const p of PK_LISTE.slice()){
+      const r = await sb.auth.passkey.delete({ passkeyId: p.id });
+      if(r && r.error) throw r.error;
+    }
+    try{ localStorage.removeItem('maru.pkask.' + UID); }catch(e){}
+    await pkRefresh();
+    toast('Passkey zurückgesetzt');
+  }catch(e){ toast('Zurücksetzen nicht möglich'); }
+}
+
+/* ─── Gleich nach der ersten Anmeldung fragen ───
+   Wer eben einen Code eingetippt hat, weiß gerade am besten, wozu ein Passkey
+   gut ist. Später fragt niemand mehr freiwillig. Einmal abgelehnt heißt aber
+   auch abgelehnt — auf diesem Gerät wird nicht wieder gefragt. */
+let NACH_PK = null;
+function pkAbgelehnt(){
+  try{ return localStorage.getItem('maru.pkask.' + UID) === '1'; }catch(e){ return false; }
+}
+async function askPasskey(weiter){
+  if(!PASSKEY || !UID || pkAbgelehnt()){ weiter(); return; }
+  if(PK_LISTE === null) await pkRefresh();
+  if(Array.isArray(PK_LISTE) && PK_LISTE.length){ weiter(); return; }
+  NACH_PK = weiter;
+  go('v-pkask');
+}
+function pkAskWeiter(){
+  const w = NACH_PK; NACH_PK = null;
+  if(w) w(); else go('v-cal');
+}
+
 /* Fehler in etwas Verständliches übersetzen. */
 function pkText(e){
   const t = ((e && e.code) || '') + ' ' + ((e && e.name) || '') + ' ' + ((e && e.message) || '');
@@ -1631,21 +1712,30 @@ function pkText(e){
 /* Knöpfe und Texte an den Stand anpassen — Menü und Funnel-Karte. */
 function paintPasskey(){
   const hat = Array.isArray(PK_LISTE) && PK_LISTE.length > 0;
-  const mi = $('#mi-pk');
+  const mi = $('#mi-pk'), mr = $('#mi-pkreset');
   if(mi){
     mi.style.display = (PASSKEY && UID) ? 'flex' : 'none';
-    $('#mi-pk-t').textContent = hat ? 'Passkey vorhanden' : 'Passkey anlegen';
+    $('#mi-pk-t').textContent = hat ? 'Passkey eingerichtet' : 'Passkey anlegen';
+    $('#mi-pk-i').innerHTML = hat ? PK_HAKEN : PK_KEY;
     mi.classList.toggle('done', hat);
   }
+  /* Zurücksetzen nur zeigen, wenn es auch etwas zurückzusetzen gibt */
+  if(mr) mr.style.display = (PASSKEY && UID && hat) ? 'flex' : 'none';
+
   const karte = $('#pk-card'), knopf = $('#pk-card-go'), txt = $('#pk-card-t');
   if(karte){
     karte.style.display = PASSKEY ? '' : 'none';
+    const pi = $('#pk-card .pi'), tag = $('#pk-card-ok');
     if(hat){
-      $('#pk-card-b').textContent = 'Anmelden ohne Code steht';
+      if(tag) tag.style.display = 'inline-flex';
+      if(pi){ pi.classList.add('fertig'); pi.innerHTML = PK_HAKEN; }
+      $('#pk-card-b').textContent = 'Anmelden ohne Code';
       txt.textContent = 'Steht. Beim nächsten Anmelden genügt Face ID oder Fingerabdruck — '
                       + 'keine E-Mail, kein Code.';
       knopf.style.display = 'none';
     }else{
+      if(tag) tag.style.display = 'none';
+      if(pi){ pi.classList.remove('fertig'); pi.innerHTML = PK_KEY; }
       $('#pk-card-b').textContent = 'Ohne Code anmelden';
       txt.textContent = 'Ein Passkey merkt sich die Anmeldung im Gerät. Beim nächsten Besuch '
                       + 'genügt Face ID oder Fingerabdruck — keine E-Mail, kein Code aus dem Postfach.';
@@ -2389,11 +2479,9 @@ function lgMode(m){
   }
   fitAll();
 }
-$$('[data-lg]').forEach(b => b.addEventListener('click', () => {
-  lgMode(b.dataset.lg);
-  /* Noch im Fingertipp fokussieren, sonst öffnet iOS die Tastatur nicht */
-  try{ $('#lg-mail').focus({ preventScroll:true }); }catch(e){}
-}));
+/* Bewusst kein Fokus: die Tastatur würde hochfahren und den Passkey-Knopf
+   verdecken. Wer die Adresse tippen will, tippt zuerst ins Feld. */
+$$('[data-lg]').forEach(b => b.addEventListener('click', () => lgMode(b.dataset.lg)));
 $('#lg-back').addEventListener('click', () => {
   $('#lg-mail').value = ''; _mailPrev = ''; mailPaint();
   lgMode('choice');
@@ -3269,6 +3357,7 @@ $('#menu').addEventListener('click', e => {
       pkAdd(null);
     }
   }
+  if(a === 'pkreset') pkReset();
   if(a === 'intro') playIntro();
   if(a === 'logout') doLogout();
   if(a === 'delete') doDelete();
@@ -3427,8 +3516,8 @@ async function afterLogin(session){
     if(local){
       ME = normalize(JSON.parse(JSON.stringify(local)));
       cloudQueue();
-      enterApp();
       toast('Deine Daten sind jetzt gesichert');
+      await askPasskey(() => enterApp());
       return;
     }
     /* Kein Datensatz UND keine Verbindung: das kann auch eine Person mit
@@ -3437,15 +3526,16 @@ async function afterLogin(session){
        überschreiben. Also lieber warten lassen. */
     if(offline){ setSync('offline'); go('v-wait'); return; }
     setSync('ok');
-    obInit(); go('v-onboard');
+    /* Erst der Passkey, dann der Funnel — jetzt weiß die Person, wofür er gut ist */
+    await askPasskey(() => { obInit(); go('v-onboard'); });
     return;
   }
 
   ME = normalize(rec);
   setSync(offline ? 'offline' : 'ok');
   if(push) cloudQueue();
-  enterApp();
-  if(!offline) pkRefresh();
+  if(offline){ enterApp(); return; }
+  await askPasskey(() => enterApp());
 }
 
 $('#wt-retry').addEventListener('click', () => location.reload());
@@ -3472,6 +3562,14 @@ $('#lg-pk-go').addEventListener('click', async () => {
   }finally{ b.disabled = false; }
 });
 $('#pk-card-go').addEventListener('click', () => pkAdd($('#pk-card-go')));
+$('#pk-ask-go').addEventListener('click', async () => {
+  const ok = await pkAdd($('#pk-ask-go'));
+  if(ok) pkAskWeiter();
+});
+$('#pk-ask-skip').addEventListener('click', () => {
+  try{ localStorage.setItem('maru.pkask.' + UID, '1'); }catch(e){}
+  pkAskWeiter();
+});
 
 (async function boot(){
   if(!AM_HANDY) return;          /* am Computer wird nichts geladen und nichts angemeldet */
