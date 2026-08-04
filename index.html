@@ -54,6 +54,8 @@
   --tx-2:rgba(238,242,255,.68);
   --tx-3:rgba(238,242,255,.42);
 
+  --c-arbeit:#BFD0F2;         /* Arbeitszeit — lag vorher auf demselben Gelb
+                                 wie Urlaub und war im Balken nicht zu trennen */
   --c-urlaub:#F7D774;
   --c-krank:#FF8E6E;
   --c-feier:#A99BFF;
@@ -894,8 +896,14 @@ body.nobar #v-onboard{padding-top:14px}
    deutlich von den Monatsdetails darunter, die eine 20-px-Karte sind — dasselbe
    Mittel wie bei den Knöpfen. Nur halb so hoch wie die alte Zeile, weil der
    erklärende Satz jetzt im Blatt steht, wo er gebraucht wird. */
+/* Kopfzeile im Export — gleiche Bauhöhe wie die Pille daneben. */
+.exhead{display:flex;align-items:center;height:36px;margin:0 0 11px}
+.exh{font-family:var(--font-dis);font-size:23px;font-weight:400;letter-spacing:-.01em;
+  line-height:1;white-space:nowrap;margin:0}
+.exh i{font-style:normal;color:var(--butter)}
+
 .qbar{position:relative;display:inline-flex;align-items:center;gap:8px;
-  padding:6px 15px 6px 7px;margin:0 0 11px;border-radius:999px;
+  padding:6px 15px 6px 7px;margin:0 0 11px;height:36px;box-sizing:border-box;border-radius:999px;
   border:1px solid var(--butter-dim);background:rgba(247,215,116,.08);
   color:var(--butter);font-size:12.5px;font-weight:600;letter-spacing:.01em;
   transition:.24s var(--ease)}
@@ -1719,11 +1727,12 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
     <!-- ─────────── EXPORT ─────────── -->
     <section class="view pt" id="v-export">
-      <div class="eyebrow">Export</div>
-      <h1 class="dis">Arbeitsaufzeichnung <i>als PDF</i>.</h1>
-      <p class="lede">Wähle die Monate. Jeder Monat wird eine perfekte A4-Seite, mit Pausen, getrennten Summen und deiner Unterschriftsleiste.</p>
+      <!-- Der Kopf ist genau so hoch wie die Pille im Kalender. Dadurch
+           beginnt die Karte in beiden Ansichten auf derselben Höhe und das
+           Bild springt beim Wechseln unten nicht mehr. -->
+      <div class="exhead"><h1 class="exh">Export <i>als PDF</i></h1></div>
 
-      <div class="card mt" id="ex-card">
+      <div class="card" id="ex-card">
         <div class="yearnav">
           <button class="rnd" data-exyr="-1" aria-label="Jahr zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
           <b id="ex-year"></b>
@@ -3271,7 +3280,7 @@ function nurT(d){
 /* Farbe und leicht getoenter Grund je Art. Ausgeschrieben, weil aeltere
    iPhones die Mischfunktion von CSS nicht kennen — dort bliebe der Grund leer. */
 const MX_FARBE = {
-  arbeit: ['var(--butter)',   'rgba(247,215,116,.13)'],
+  arbeit: ['var(--c-arbeit)', 'rgba(191,208,242,.15)'],
   urlaub: ['var(--c-urlaub)', 'rgba(247,215,116,.13)'],
   krank:  ['var(--c-krank)',  'rgba(255,142,110,.14)'],
   feier:  ['var(--c-feier)',  'rgba(169,155,255,.14)'],
@@ -4220,9 +4229,13 @@ async function buildPdf(list, separate){
       const rest = MIN_MS - (performance.now() - t0);
       if(rest > 0) await wait(rest);
       clearInterval(takt);
-      fertig.forEach(p => p[0].save(p[1]));
       name = total + (total === 1 ? ' Datei' : ' Dateien') + ' im Download-Ordner';
+      /* Erst das Glas vollmachen und Prost zeigen, dann speichern. Vorher
+         legte sich die PDF-Anzeige des Browsers sofort darüber und man sah
+         das Prost nie. */
       ov.finish(total + (total === 1 ? ' PDF erstellt' : ' PDFs erstellt'), name);
+      await wait(1250);
+      fertig.forEach(p => p[0].save(p[1]));
     } else {
       const doc = new JSP({ unit:'mm', format:'a4', orientation:'portrait', compress:true });
       for(let i = 0; i < total; i++){
@@ -4240,11 +4253,13 @@ async function buildPdf(list, separate){
       const rest = MIN_MS - (performance.now() - t0);
       if(rest > 0) await wait(rest);
       clearInterval(takt);
-      doc.save(name);
+      /* Reihenfolge zählt: Glas voll, Prost, kurz stehen lassen — und erst
+         dann das Dokument. Sonst verdeckt die PDF-Anzeige den Schluss. */
       ov.finish('PDF erstellt · ' + total + (total === 1 ? ' Seite' : ' Seiten'), name);
+      await wait(1250);
+      doc.save(name);
     }
-    await wait(1700);
-    await wait(1500);
+    await wait(1100);
     ov.el.remove();
   }catch(err){
     console.error(err);
