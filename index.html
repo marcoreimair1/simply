@@ -3003,7 +3003,12 @@ async function verifyCode(){
   const btn = $('#lg-otp-go'); btn.disabled = true;
   err.style.display = 'none';
   try{
-    const r = await sb.auth.verifyOtp({ email:_lastMail, token, type:'email' });
+    /* Bei einer neuen Adresse verschickt Supabase eine Bestätigungsmail, und
+       deren Code will als 'signup' geprüft werden — bei bekannten Adressen als
+       'email'. Von außen ist nicht zu sehen, welcher Fall vorliegt, also
+       probieren wir beides. */
+    let r = await sb.auth.verifyOtp({ email:_lastMail, token, type:'email' });
+    if(r.error) r = await sb.auth.verifyOtp({ email:_lastMail, token, type:'signup' });
     if(r.error) throw r.error;
     if(r.data && r.data.session && !UID) await afterLogin(r.data.session);
   }catch(e){
