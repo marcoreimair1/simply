@@ -521,8 +521,8 @@ body.nobar #v-onboard{padding-top:14px}
 @media(max-width:520px){.cell{border-radius:11px;padding:5px 3px 4px}.cell .num{font-size:12px}.cell .hrs{font-size:8.5px}.cell .ico{width:13px;height:13px}}
 
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-.lg{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--tx-2);padding:6px 11px;border-radius:999px;
-  border:1px solid var(--line-2)}
+.lg{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--tx-2);padding:7px 11px;
+  border-radius:var(--r-s);border:1px solid var(--line-2)}
 .lg svg{width:14px;height:14px}
 
 /* Schnelleintrag */
@@ -626,7 +626,17 @@ body.nobar #v-onboard{padding-top:14px}
   border-bottom:none;border-radius:var(--r-xl) var(--r-xl) 0 0;padding:10px 22px calc(26px + env(safe-area-inset-bottom));
   animation:slideUp .44s var(--ease-out);max-height:88vh;overflow-y:auto}
 @keyframes slideUp{from{transform:translateY(100%)}}
-.grip{width:42px;height:4px;border-radius:4px;background:var(--line-2);margin:6px auto 18px}
+/* Der Griff ist auch die Zugfläche — bewusst hoch genug für den Daumen. */
+.sheet-grab{display:block;width:100%;padding:9px 0 13px;margin:-3px 0 5px;
+  cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
+.sheet-grab:active{cursor:grabbing}
+.grip{width:42px;height:4px;border-radius:4px;background:var(--line-2);margin:0 auto;
+  transition:background .2s,width .2s}
+.sheet-grab:hover .grip{background:var(--tx-3)}
+.sheet-card.zieht .grip{background:var(--butter);width:56px}
+.sheet-card.zieht{animation:none;transition:none}
+.sheet-card.zurueck{transition:transform .34s var(--ease-out)}
+.sheet-card.weg{transition:transform .26s ease-out}
 .sheet-card h3{font-family:var(--font-dis);font-size:25px;font-weight:400;margin:0 0 2px}
 .sheet-card .sd{color:var(--tx-3);font-size:12.5px;margin:0 0 18px}
 .opt{display:flex;align-items:center;gap:13px;width:100%;padding:14px;border-radius:16px;border:1px solid var(--line-2);
@@ -670,8 +680,13 @@ body.nobar #v-onboard{padding-top:14px}
 .stat.w b{color:var(--butter)}.stat.u b{color:var(--c-urlaub)}.stat.k b{color:var(--c-krank)}.stat.f b{color:var(--c-feier)}
 .stat.total{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;
   background:linear-gradient(120deg,rgba(247,215,116,.13),rgba(247,215,116,.03));border-color:var(--butter-dim)}
+.stat b u{font-size:12.5px;text-decoration:none;color:var(--tx-3);margin-left:3px;font-family:var(--font)}
+.stat .dtag{display:block;font-style:normal;font-size:11px;color:var(--tx-3);margin-top:5px;
+  font-variant-numeric:tabular-nums}
 .stat.total small{margin-bottom:0;font-size:10.5px;letter-spacing:.22em}
 .stat.total b{font-size:29px;color:var(--butter)}
+.stat.total .sv{text-align:right}
+.stat.total .dtag{margin-top:2px}
 
 #ex-card{position:relative}
 .linkbtn{font-size:12.5px;color:var(--tx-3);text-decoration:underline;text-underline-offset:3px;
@@ -1114,7 +1129,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 <div class="sheet" id="sheet">
   <div class="sheet-bd" data-close="sheet"></div>
   <div class="sheet-card">
-    <div class="grip"></div>
+    <div class="sheet-grab" id="sh-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
     <h3 id="sh-title">—</h3>
     <p class="sd" id="sh-sub">—</p>
     <div id="sh-holiday" class="fnote" style="display:none">
@@ -1357,11 +1372,32 @@ function monthRows(profile, y, m){
   return rows;
 }
 function monthSums(rows){
-  const s = { work:0, urlaub:0, krank:0, feier:0, sonst:0, pause:0 };
-  rows.forEach(r => { s.work += r.work; s.urlaub += r.urlaub; s.krank += r.krank;
-                      s.feier += r.feier; s.sonst += r.sonst; s.pause += r.pause; });
+  const s = { work:0, urlaub:0, krank:0, feier:0, sonst:0, pause:0,
+              dWork:0, dUrlaub:0, dKrank:0, dFeier:0, dSonst:0, dTotal:0 };
+  rows.forEach(r => {
+    s.work += r.work; s.urlaub += r.urlaub; s.krank += r.krank;
+    s.feier += r.feier; s.sonst += r.sonst; s.pause += r.pause;
+    /* Tage anteilig: ein halber Urlaubstag zählt 0,5. Der Anteil ergibt sich
+       aus den Stunden gegenüber dem, was an diesem Tag geplant war. */
+    const tag = r.work + r.urlaub + r.krank + r.feier + r.sonst;
+    if(tag > 0){
+      s.dWork   += r.work   / tag;
+      s.dUrlaub += r.urlaub / tag;
+      s.dKrank  += r.krank  / tag;
+      s.dFeier  += r.feier  / tag;
+      s.dSonst  += r.sonst  / tag;
+      s.dTotal  += 1;
+    }
+  });
   s.total = s.work + s.urlaub + s.krank + s.feier + s.sonst;
   return s;
+}
+/* 1 -> "1 Tag", 4 -> "4 Tage", 3,5 -> "3,5 Tage" */
+function fmtT(d){
+  const r = Math.round(d * 2) / 2;
+  if(r === 0) return 'keine Tage';
+  const txt = (r % 1 === 0) ? String(r) : String(r).replace('.', ',');
+  return txt + (r === 1 ? ' Tag' : ' Tage');
 }
 
 /* ─── Speicher ─────────────────────────────────────────────── */
@@ -1728,6 +1764,7 @@ function go(id){
   $$('#fabbar button').forEach(b => b.classList.toggle('on', b.dataset.go === id));
   $('#avatar').style.display = ME ? 'grid' : 'none';
   window.scrollTo({ top:0, behavior:'smooth' });
+  requestAnimationFrame(() => { fitAll(); requestAnimationFrame(fitAll); });
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1818,15 +1855,18 @@ function obInit(){
     $('#'+id).innerHTML = '<span style="color:'+TYPES[t].color+'">'+ICONS[t]+'</span>'+TYPES[t].label;
   });
 }
-/* Der Funnel soll genau bis zum unteren Bildschirmrand reichen. Sonst klebt
-   die Leiste am Ende eines kurzen Schrittes und darunter bleibt Leerraum. */
-function fitOnboard(){
-  const ob = $('#v-onboard'); if(!ob || !ob.classList.contains('on')) return;
-  ob.style.minHeight = '0px';
-  const oben = ob.getBoundingClientRect().top + window.scrollY;
-  ob.style.minHeight = Math.max(0, Math.round(window.innerHeight - oben)) + 'px';
+/* Eine Ansicht reicht genau bis zum unteren Bildschirmrand — nicht weiter.
+   Sonst klebt die Knopfleiste mitten im Bild oder es erscheint ein Rollbalken,
+   obwohl der Inhalt längst auf den Schirm passt. */
+function fitScreen(el){
+  if(!el || !el.classList.contains('on')) return;
+  el.style.minHeight = '0px';
+  const oben = el.getBoundingClientRect().top + window.scrollY;
+  el.style.minHeight = Math.max(0, Math.round(window.innerHeight - oben)) + 'px';
 }
-window.addEventListener('resize', fitOnboard);
+function fitAll(){ $$('.view.on').forEach(fitScreen); }
+function fitOnboard(){ fitScreen($('#v-onboard')); }
+window.addEventListener('resize', fitAll);
 
 let _prevStep = 0;
 function obPaint(){
@@ -2288,16 +2328,19 @@ function renderCal(){
 
   const s = monthSums(rows);
   let sum = '';
-  sum += stat('w','Arbeitszeit', s.work);
-  sum += stat('u','Urlaub', s.urlaub);
-  sum += stat('k','Krankenstand', s.krank);
-  sum += stat('f','Feiertag', s.feier);
-  if(s.sonst > 0) sum += stat('','Sonstige', s.sonst);
-  sum += stat('total','Gesamt', s.total);
+  sum += stat('w','Arbeitszeit', s.work, s.dWork);
+  sum += stat('u','Urlaub', s.urlaub, s.dUrlaub);
+  sum += stat('k','Krankenstand', s.krank, s.dKrank);
+  sum += stat('f','Feiertag', s.feier, s.dFeier);
+  if(s.sonst > 0) sum += stat('','Sonstige', s.sonst, s.dSonst);
+  sum += stat('total','Gesamt', s.total, s.dTotal);
   $('#cal-sum').innerHTML = sum;
+  fitAll();
 }
-function stat(cls, label, v){
-  return '<div class="stat '+cls+'"><small>'+label+'</small><b>'+fmtH(v)+'</b></div>';
+function stat(cls, label, v, tage){
+  const t = (tage === undefined) ? '' : '<i class="dtag">' + fmtT(tage) + '</i>';
+  return '<div class="stat '+cls+'"><small>'+label+'</small>'
+       + '<span class="sv"><b>'+fmtH(v)+'<u>h</u></b>'+t+'</span></div>';
 }
 $('#cal-prev').addEventListener('click', () => { CAL.m--; if(CAL.m < 0){ CAL.m = 11; CAL.y--; } renderCal(); });
 $('#cal-next').addEventListener('click', () => { CAL.m++; if(CAL.m > 11){ CAL.m = 0; CAL.y++; } renderCal(); });
@@ -2336,6 +2379,7 @@ function openSheet(y, m, d){
     + '<span class="oi">'+ICONS[t]+'</span>'
     + '<span><b>'+TYPES[t].label+'</b><small>'+TYPES[t].desc+'</small></span></button>').join('');
   paintSheet();
+  if(window.__sheetReset) window.__sheetReset();   /* unverschoben beginnen */
   $('#sheet').classList.add('on');
   document.body.classList.add('locked');
 }
@@ -2348,6 +2392,60 @@ function paintSheet(){
   $('#sh-save').disabled = !SH.type;
 }
 function closeSheet(){ $('#sheet').classList.remove('on'); document.body.classList.remove('locked'); }
+
+/* ─── Nach unten schieben zum Schließen ──────────────────────
+   Der Griff verspricht, dass sich das Fenster wegschieben lässt — also
+   soll er es auch können. Ein kurzer Wisch genügt, ein zaghafter Zug
+   federt zurück.                                                       */
+(function wireSheetDrag(){
+  const griff = $('#sh-grab'), karte = $('.sheet-card'), grund = $('.sheet-bd');
+  if(!griff || !karte) return;
+  let start = 0, weg = 0, zeit = 0, zieht = false;
+
+  const auf = () => {
+    karte.classList.remove('zieht','zurueck','weg');
+    karte.style.transform = '';
+    if(grund) grund.style.opacity = '';
+  };
+
+  griff.addEventListener('pointerdown', e => {
+    zieht = true; start = e.clientY; weg = 0; zeit = performance.now();
+    karte.classList.add('zieht'); karte.classList.remove('zurueck','weg');
+    try{ griff.setPointerCapture(e.pointerId); }catch(err){}
+  });
+
+  griff.addEventListener('pointermove', e => {
+    if(!zieht) return;
+    weg = Math.max(0, e.clientY - start);
+    /* Nach oben gibt es nichts zu holen — leichter Widerstand statt Sprung. */
+    karte.style.transform = 'translateY(' + weg + 'px)';
+    if(grund) grund.style.opacity = String(Math.max(.15, 1 - weg / 420));
+  });
+
+  const ende = () => {
+    if(!zieht) return; zieht = false;
+    karte.classList.remove('zieht');
+    const hoch = karte.getBoundingClientRect().height || 400;
+    const dauer = Math.max(1, performance.now() - zeit);
+    const schwung = weg / dauer;                      /* px pro ms */
+    /* Entweder weit genug gezogen oder schnell genug gewischt. */
+    if(weg > Math.min(150, hoch * .3) || (schwung > .55 && weg > 30)){
+      karte.classList.add('weg');
+      karte.style.transform = 'translateY(' + (hoch + 40) + 'px)';
+      setTimeout(() => { closeSheet(); auf(); }, 250);
+    } else {
+      karte.classList.add('zurueck');
+      karte.style.transform = 'translateY(0)';
+      if(grund) grund.style.opacity = '';
+      setTimeout(() => karte.classList.remove('zurueck'), 340);
+    }
+  };
+  griff.addEventListener('pointerup', ende);
+  griff.addEventListener('pointercancel', ende);
+  /* Beim nächsten Öffnen wieder unverschoben beginnen. */
+  griff.addEventListener('dblclick', e => e.preventDefault());
+  window.__sheetReset = auf;
+})();
 $('#sh-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
   SH.type = SH.type === b.dataset.t ? null : b.dataset.t;
@@ -2563,6 +2661,7 @@ function exYear(){
     : 'Wähle mindestens einen Monat.';
   $('#ex-go').disabled = !list.length;
   $('#ex-single').disabled = !list.length;
+  fitAll();
 }
 function exList(){
   return Array.from(EX.set).map(s => { const [y,m] = s.split('-'); return { y:+y, m:+m }; })
