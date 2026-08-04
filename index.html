@@ -579,6 +579,7 @@ body.nobar #v-onboard{padding-top:14px}
 .s-sum i.t u{color:#c9cede}
 .s-sig{display:flex;gap:9px;margin-top:9px}
 .s-sig div{flex:1;min-width:0}
+.s-sig .leer{visibility:hidden}
 .s-sig em{display:block;font-family:var(--font-sig);font-size:9.5px;line-height:1.05;margin-bottom:1px;
   white-space:nowrap;overflow:hidden}
 .s-sig hr{border:none;border-top:.5px solid #9a9ea8;margin:0 0 1.5px}
@@ -1229,7 +1230,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
                 <article class="feat-card">
                   <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg></span>
                   <b>Am Monatsende ein Tipp</b>
-                  <span>Ein Monat wird eine A4-Seite mit beiden Unterschriftsleisten — fertig zum Abgeben, oben siehst du deine.</span>
+                  <span>Ein Monat wird eine A4-Seite mit deiner Unterschriftsleiste — fertig zum Abgeben, oben siehst du sie.</span>
                 </article>
                 <article class="feat-card">
                   <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 100 18 9 9 0 000-18M3.6 9h16.8M3.6 15h16.8M12 3c2.5 2.4 3.8 5.4 3.8 9s-1.3 6.6-3.8 9c-2.5-2.4-3.8-5.4-3.8-9S9.5 5.4 12 3"/></svg></span>
@@ -1323,7 +1324,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <section class="view pt" id="v-export">
       <div class="eyebrow">Export</div>
       <h1 class="dis">Arbeitsaufzeichnung <i>als PDF</i>.</h1>
-      <p class="lede">Wähle die Monate. Jeder Monat wird eine perfekte A4-Seite, mit Pausen, getrennten Summen und beiden Unterschriften.</p>
+      <p class="lede">Wähle die Monate. Jeder Monat wird eine perfekte A4-Seite, mit Pausen, getrennten Summen und deiner Unterschriftsleiste.</p>
 
       <div class="card mt" id="ex-card">
         <div class="yearnav">
@@ -2318,7 +2319,7 @@ function renderPdfPreview(vn, nn){
     + '<i class="t"><u>GESAMT</u><b>' + fmtH(sum.total) + '</b></i></div>'
     + '<div class="s-sig">'
     + '<div><em>' + esc(name) + '</em><hr><small>UNTERSCHRIFT DIENSTNEHMER/IN</small></div>'
-    + '<div><em>Miller Optik</em><hr><small>UNTERSCHRIFT DIENSTGEBER</small></div></div>'
+    + '<div class="leer"></div></div>'
     + '</div>';
 }
 
@@ -3273,11 +3274,10 @@ function drawPage(doc, p, y, m, sigs){
   doc.text('Arbeitsstunden = tatsächlich geleistete Arbeitszeit ohne Pausen. Urlaub, Krankenstand, Feiertag und Sonstige sind im Vermerk und in den Summen getrennt ausgewiesen.', L, by + bh + 4.4);
   doc.text('Alle Werte in Stunden, gerundet auf 0,25 h  ·  Pausen gesamt: ' + fmtH(s.pause) + ' h', L, by + bh + 8);
 
-  /* Unterschriften */
+  /* Unterschrift — nur die der Person, der Dienstgeber zeichnet nicht mit */
   const sy = 268, sw = 78;
   const pairs = [
-    [L, sigs.emp, p.vorname + ' ' + p.nachname, 'Unterschrift Dienstnehmer/in'],
-    [R - sw, sigs.company, EMPLOYER, 'Unterschrift Dienstgeber']
+    [L, sigs.emp, p.vorname + ' ' + p.nachname, 'Unterschrift Dienstnehmer/in']
   ];
   pairs.forEach(pr => {
     const x = pr[0];
@@ -3366,7 +3366,6 @@ async function buildPdf(list, separate){
   try{
     const sigs = {
       emp: await sigImage(ME.vorname + ' ' + ME.nachname),
-      company: await sigImage('Miller Optik'),
       logo: await logoBlack()
     };
     const JSP = window.jspdf.jsPDF;
