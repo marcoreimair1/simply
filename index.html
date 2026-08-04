@@ -3753,19 +3753,33 @@ $('#brand-word').src = LOGO_WORD;
    Danach kommt die zweite Schranke — eine Maus heißt Computer, egal wie schmal
    das Fenster gezogen ist. Mit ?desktop=1 lässt sich beides umgehen, das braucht
    man zum Prüfen.                                                            */
-const HANDY_MAX = 560;
+const HANDY_MAX = 900;              /* kurze Seite; ein iPad Pro 11" hat 834 */
 function kurzeSeite(){
   return Math.min(window.innerWidth || 9999, window.innerHeight || 9999);
 }
 function darfRein(){
   if(/[?&]desktop=1/.test(location.search)) return true;
-  if(kurzeSeite() > HANDY_MAX) return false;
   const mq = q => !!(window.matchMedia && window.matchMedia(q).matches);
   const ua = navigator.userAgent || '';
-  const handyUA = /iPhone|iPod|IEMobile|Opera Mini|Silk|Kindle|Android.*Mobile|Mobile.*Android/i.test(ua);
-  if(handyUA) return true;
-  if(mq('(pointer:fine)') || mq('(hover:hover)')) return false;
-  return mq('(pointer:coarse)');
+  const tippPunkte = navigator.maxTouchPoints || 0;
+
+  /* 1 · Sagt die Kennung selbst, dass es ein Telefon oder Tablet ist, dann
+         reicht das — auch beim großen iPad, dessen kurze Seite über der
+         Grenze liegt. iPadOS gibt sich als Mac aus, verrät sich aber über
+         die Zahl der Berührungspunkte. */
+  if(/iPhone|iPod|iPad|Android|IEMobile|Opera Mini|Silk|Kindle|Tablet|PlayBook/i.test(ua)) return true;
+  if(navigator.platform === 'MacIntel' && tippPunkte > 1) return true;
+
+  /* 2 · Sonst muss das Fenster in Tablet-Maß passen. Die kurze Seite, weil
+         die auch beim gedrehten Gerät klein bleibt. */
+  if(kurzeSeite() > HANDY_MAX) return false;
+
+  /* 3 · Und es braucht einen echten Hinweis auf Berührung ohne Maus. Ein
+         Rechner hat null Berührungspunkte und einen feinen Zeiger — der
+         kommt hier auch im kleinsten Fenster nicht durch. */
+  const maus = mq('(pointer:fine)') || mq('(hover:hover)');
+  const finger = mq('(pointer:coarse)') || tippPunkte > 0;
+  return finger && !maus;
 }
 let AM_HANDY = darfRein(), GEBOOTET = false;
 
