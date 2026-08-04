@@ -342,6 +342,18 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
   transition:.25s var(--ease);overflow:hidden;padding:0}
 .avatar:hover{transform:scale(1.07) rotate(-3deg)}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avwrap{position:relative;display:grid;flex:none}
+
+/* Roter Kreis mit Zahl, wie am Homescreen. Er sitzt an der Ecke und darf
+   ein Stück hinausragen, deshalb liegt er ausserhalb des beschnittenen
+   Bildes. Bei zweistelligen Zahlen wird er zur Pille. */
+.zaehler{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;
+  border-radius:999px;background:#FF453A;color:#fff;font-size:11px;font-weight:700;
+  display:grid;place-items:center;line-height:1;box-sizing:border-box;
+  border:2px solid rgba(8,13,34,.95);font-variant-numeric:tabular-nums;
+  animation:zaehlerRein .42s var(--ease-out) both}
+@keyframes zaehlerRein{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+.zaehler[hidden]{display:none}
 .avatar.hatbild{background:#fff;border-color:rgba(255,255,255,.28)}
 
 /* Menü */
@@ -383,6 +395,15 @@ body.menuauf #avatar{transform:scale(.92)}
 .menu-card .mh{padding:11px 13px 14px;border-bottom:1px solid var(--line-2);margin-bottom:6px;text-align:left}
 .mhtop{display:flex;align-items:center;gap:14px}
 .mhtext{flex:1;min-width:0}
+/* Postfach und Status stehen zusammen unter den Angaben. */
+.mhrow{display:flex;align-items:center;gap:9px;margin-top:12px}
+.mtile{position:relative;width:38px;height:38px;flex:none;border-radius:13px;
+  display:grid;place-items:center;border:1px solid var(--line-2);
+  background:rgba(6,10,26,.42);color:var(--tx-2);transition:.22s var(--ease)}
+.mtile:hover{border-color:var(--butter-dim);color:var(--butter);background:rgba(247,215,116,.07)}
+.mtile:active{transform:scale(.95)}
+.mtile svg{width:19px;height:19px}
+.mhrow .sync{display:inline-flex}
 .menu-card .mh b{display:block;font-size:17.5px;line-height:1.2}
 .menu-card .mh small{display:block;color:var(--tx-3);font-size:12px;margin-top:4px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1183,6 +1204,28 @@ body.nobar #v-onboard{padding-top:14px}
 .mbbar span:nth-child(5){animation-delay:.28s}
 .mbbar .leer{flex:1;background:rgba(238,242,255,.06);animation:none}
 
+/* ─── Postfach ────────────────────────────────────────────────────────
+   Eine Nachricht je Karte. Ungelesene tragen links einen goldenen
+   Streifen und den Knopf zum Abhaken; gelesene treten zurück. */
+.pfm{border:1px solid var(--line-2);border-radius:16px;padding:14px 15px;margin-bottom:10px;
+  background:rgba(6,10,26,.3);transition:.3s var(--ease)}
+.pfm.neu{border-color:var(--butter-dim);background:rgba(247,215,116,.06);
+  box-shadow:inset 3px 0 0 var(--butter)}
+.pfm.gelesen{opacity:.62}
+.pfm-kopf{display:flex;align-items:baseline;gap:10px;margin-bottom:7px}
+.pfm-kopf b{font-size:14px;flex:1}
+.pfm-kopf i{font-style:normal;font-size:11px;color:var(--tx-3);flex:none;
+  font-variant-numeric:tabular-nums}
+.pfm p{margin:0;font-size:13px;line-height:1.6;color:var(--tx-2)}
+.pfm .von{display:block;margin-top:9px;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--tx-3)}
+.pfm .haken{margin-top:11px}
+.pfm .fertig{display:inline-flex;align-items:center;gap:6px;margin-top:11px;
+  font-size:11.5px;color:var(--c-eigen)}
+.pfm .fertig svg{width:13px;height:13px}
+.pfleer{text-align:center;color:var(--tx-3);font-size:13px;padding:22px 0 8px}
+#pfcard{max-height:88vh}
+
 /* Die Zahlen im Blatt: eine Zeile je Art, Tage groß, Stunden klein. */
 .msr{display:flex;align-items:center;gap:11px;padding:11px 0;border-top:1px solid var(--line-2)}
 .msr:first-child{border-top:none}
@@ -1412,8 +1455,12 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         <span class="bs">Mehr Zeit fürs Wesentliche.</span>
       </div>
       <div class="spacer"></div>
-      <span class="sync" id="sync" title="Sicherungsstand"></span>
-      <button class="avatar" id="avatar" style="display:none" aria-label="Menü"></button>
+      <!-- Der Zähler kann nicht im Bild selbst liegen, das schneidet für den
+           runden Ausschnitt ab. Deshalb eine Hülle darum. -->
+      <span class="avwrap" id="avwrap" style="display:none">
+        <button class="avatar" id="avatar" aria-label="Menü"></button>
+        <span class="zaehler" id="av-zaehler" hidden></span>
+      </span>
     </div>
   </header>
 
@@ -1880,6 +1927,13 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <b id="me-name">—</b>
           <small id="me-sub">Miller Optik GmbH</small>
           <small id="me-mail"></small>
+          <div class="mhrow">
+            <button class="mtile" id="postfach" aria-label="Postfach öffnen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.4 12 14l9-5.6"/><rect x="3" y="5" width="18" height="14" rx="2.6"/></svg>
+              <span class="zaehler" id="pf-zaehler" hidden></span>
+            </button>
+            <span class="sync" id="sync" title="Sicherungsstand"></span>
+          </div>
         </div>
         <button class="avbig" id="avbig" aria-label="Profilbild ändern" aria-expanded="false"></button>
       </div>
@@ -1936,6 +1990,20 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <div class="sheet-actions">
       <button class="btn btn-p" id="sh-save">Übernehmen</button>
       <button class="btn btn-g" id="sh-del">Zurücksetzen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Postfach — Ankündigungen, gelesen wird pro Nachricht gemerkt -->
+<div class="sheet" id="pfsheet">
+  <div class="sheet-bd" data-close="pfsheet"></div>
+  <div class="sheet-card" id="pfcard">
+    <div class="sheet-grab" id="pf-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
+    <h3>Postfach</h3>
+    <p class="sd" id="pf-sub">—</p>
+    <div id="pf-liste"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-g" id="pf-alle">Alle gelesen</button>
     </div>
   </div>
 </div>
@@ -2258,6 +2326,7 @@ function normalize(p){
   /* Nur die Nummer des Motivs, kein Bild — die Zeile in der Cloud bleibt klein. */
   const av = +p.avatar;
   if(!(av >= 1 && av <= 12)) delete p.avatar;
+  if(!Array.isArray(p.gelesen)) p.gelesen = [];
   p.ort = EMPLOYER;
   return p;
 }
@@ -2724,7 +2793,7 @@ function go(id){
     b.classList.toggle('btn-p', an);
     b.classList.toggle('btn-out', !an);
   });
-  $('#avatar').style.display = ME ? 'grid' : 'none';
+  $('#avwrap').style.display = ME ? 'grid' : 'none';
   window.scrollTo({ top:0, behavior:'smooth' });
   requestAnimationFrame(() => { fitAll(); requestAnimationFrame(fitAll); });
 }
@@ -3329,6 +3398,7 @@ const EX  = { year:PREV.getFullYear(), set:new Set() };
 
 function enterApp(){
   malAvatar();
+  malZaehler();
   $('#me-name').textContent = ME.vorname + ' ' + ME.nachname;
   $('#me-sub').textContent = EMPLOYER + ' · ' + fmtDate(ME.dob);
   $('#me-mail').textContent = MAIL || '';
@@ -3342,6 +3412,95 @@ function enterApp(){
   exYear(); renderCal(); renderQCal();
   go('v-cal');
 }
+
+/* ═══════════════════════════════════════════════════════════
+   POSTFACH
+   Ankündigungen stehen fest im Quelltext — so braucht es keine
+   Tabelle und keine Abfrage. Gemerkt wird nur, welche Kennungen
+   gelesen wurden; das wandert im Profil mit in die Cloud, also
+   ist eine Nachricht auf allen Geräten derselben Person weg.
+   Neue Nachricht anlegen: einen Eintrag oben ergänzen, die
+   Kennung nie wiederverwenden.
+   ═══════════════════════════════════════════════════════════ */
+const NACHRICHTEN = [
+  {
+    id: 'willkommen-1',
+    datum: '2026-08-04',
+    titel: 'Willkommen bei MOJI',
+    text: 'Schön, dass du da bist. Deine Dienstzeiten liegen hinterlegt — '
+        + 'eintragen musst du nur, was davon abweicht: Urlaub, Krankenstand '
+        + 'oder einen eigenen Vermerk. Am Monatsende macht MOJI daraus eine '
+        + 'fertige A4-Seite zum Abgeben.\n\nHier im Postfach melde ich mich, '
+        + 'wenn es etwas Neues gibt.',
+    von: 'Studio MARU 丸'
+  }
+];
+
+function pfGelesen(){
+  return (ME && Array.isArray(ME.gelesen)) ? ME.gelesen : [];
+}
+function pfNeu(){
+  const g = pfGelesen();
+  return NACHRICHTEN.filter(n => g.indexOf(n.id) < 0);
+}
+function malZaehler(){
+  const anzahl = ME ? pfNeu().length : 0;
+  [['#av-zaehler'], ['#pf-zaehler']].forEach(([wo]) => {
+    const el = $(wo); if(!el) return;
+    if(anzahl > 0){ el.textContent = anzahl > 99 ? '99+' : String(anzahl); el.hidden = false; }
+    else el.hidden = true;
+  });
+}
+function malPostfach(){
+  const g = pfGelesen();
+  const neu = pfNeu().length;
+  $('#pf-sub').textContent = neu === 0
+    ? 'Alles gelesen'
+    : neu + (neu === 1 ? ' neue Nachricht' : ' neue Nachrichten');
+  $('#pf-alle').disabled = neu === 0;
+  if(!NACHRICHTEN.length){
+    $('#pf-liste').innerHTML = '<p class="pfleer">Noch keine Nachrichten.</p>';
+    return;
+  }
+  $('#pf-liste').innerHTML = NACHRICHTEN.map(n => {
+    const ist = g.indexOf(n.id) >= 0;
+    return '<article class="pfm ' + (ist ? 'gelesen' : 'neu') + '">'
+      + '<div class="pfm-kopf"><b>' + esc(n.titel) + '</b><i>' + fmtDate(n.datum) + '</i></div>'
+      + '<p>' + esc(n.text).replace(/\n\n/g, '</p><p style="margin-top:9px">').replace(/\n/g, '<br>') + '</p>'
+      + (n.von ? '<span class="von">von ' + esc(n.von) + '</span>' : '')
+      + (ist
+          ? '<span class="fertig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>Gelesen</span>'
+          : '<div class="haken"><button class="linkbtn" data-gelesen="' + n.id + '">Als gelesen markieren</button></div>')
+      + '</article>';
+  }).join('');
+}
+function pfMerke(ids){
+  if(!ME) return;
+  const g = pfGelesen().slice();
+  ids.forEach(id => { if(g.indexOf(id) < 0) g.push(id); });
+  ME.gelesen = g;
+  save();
+  malPostfach(); malZaehler();
+}
+function pfAuf(){
+  if($('#pfsheet').classList.contains('on')) return;
+  malPostfach();
+  if(window.__pfReset) window.__pfReset();
+  $('#pfcard').scrollTop = 0;
+  $('#pfsheet').classList.add('on');
+  document.body.classList.add('locked');
+}
+function pfZu(){
+  $('#pfsheet').classList.remove('on');
+  document.body.classList.remove('locked');
+}
+$('#postfach').addEventListener('click', pfAuf);
+$('#pfsheet').addEventListener('click', e => {
+  if(e.target.dataset.close === 'pfsheet'){ pfZu(); return; }
+  const b = e.target.closest('[data-gelesen]');
+  if(b) pfMerke([b.dataset.gelesen]);
+});
+$('#pf-alle').addEventListener('click', () => pfMerke(NACHRICHTEN.map(n => n.id)));
 
 /* ═══════════════════════════════════════════════════════════
    PROFILBILD
@@ -3841,6 +4000,7 @@ function wireSheetDrag(griffId, blattId, zu){
 window.__sheetReset = wireSheetDrag('sh-grab', 'sheet', closeSheet);
 window.__qReset     = wireSheetDrag('q-grab',  'qsheet', quickClose);
 window.__mReset     = wireSheetDrag('m-grab',  'msheet', msZu);
+window.__pfReset    = wireSheetDrag('pf-grab', 'pfsheet', pfZu);
 $('#sh-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
   SH.type = SH.type === b.dataset.t ? null : b.dataset.t;
@@ -4552,8 +4712,9 @@ async function doLogout(){
     DB.activeId = null; save();
   }
   ME = null;
-  $('#avatar').style.display = 'none';
+  $('#avwrap').style.display = 'none';
   $('#sync').style.display = 'none';
+  malZaehler();
   $('#lg-mail').value = ''; _mailPrev = ''; mailPaint();
   loginScreen();
 }
@@ -4576,13 +4737,13 @@ async function doDelete(){
     try{ localStorage.removeItem(cacheKey()); }catch(e){}
     try{ await sb.auth.signOut(); }catch(e){}
     UID = null; MAIL = ''; ME = null; PK_LISTE = null;
-    $('#avatar').style.display = 'none'; $('#sync').style.display = 'none';
+    $('#avwrap').style.display = 'none'; $('#sync').style.display = 'none'; malZaehler();
     loginScreen(); toast('Profil und Konto gelöscht');
     return;
   }
   DB.profiles = DB.profiles.filter(p => p.id !== ME.id); DB.activeId = null;
   ME = null; save();
-  $('#avatar').style.display = 'none';
+  $('#avwrap').style.display = 'none'; malZaehler();
   if(DB.profiles.length) loginScreen(); else { obInit(); go('v-onboard'); }
   toast('Profil gelöscht');
 }
@@ -4599,7 +4760,7 @@ $('#fabbar').addEventListener('click', e => {
 });
 $('#sheet').addEventListener('click', e => { if(e.target.dataset.close === 'sheet') closeSheet(); });
 document.addEventListener('keydown', e => {
-  if(e.key === 'Escape'){ closeSheet(); quickClose(); msZu(); closeTime(); menuZu(); }
+  if(e.key === 'Escape'){ closeSheet(); quickClose(); msZu(); pfZu(); closeTime(); menuZu(); }
 });
 /* Überall antippen beendet das Intro — nicht nur die Pille */
 /* Kein Überspringen: die vier Sekunden gehören der Marke. */
