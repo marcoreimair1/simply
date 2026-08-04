@@ -388,16 +388,24 @@ body.menuauf #avatar{transform:scale(.92)}
 .avbig:hover{transform:scale(1.04);box-shadow:0 12px 30px -14px rgba(0,0,0,.7)}
 .avbig:active{transform:scale(.98)}
 /* Gitter mit den Motiven — vier je Reihe, wächst nach unten auf. */
-.avgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;overflow:hidden;height:0;
+/* Das Gitter braucht overflow:hidden für die Höhenanimation. Damit der
+   Ring um die gewählte Kachel nicht an der Kante abgeschnitten wird, hat
+   es innen 5 px Polster — overflow schneidet am Polsterrand, nicht am
+   Inhalt. Die 5 px werden nach außen wieder abgezogen. */
+.avgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;overflow:hidden;height:0;
+  padding:5px;margin:0 -5px;
   transition:height .42s var(--ease-out),margin-top .42s var(--ease-out),opacity .3s ease;
-  opacity:0;margin-top:0}
-.avwahl.auf .avgrid{opacity:1;margin-top:11px}
+  opacity:0}
+.avwahl.auf .avgrid{opacity:1;margin-top:9px}
 .avopt{position:relative;aspect-ratio:1;border-radius:15px;overflow:hidden;background:#fff;
-  border:1px solid rgba(255,255,255,.14);transition:transform .22s var(--ease),border-color .22s}
+  border:0;transition:box-shadow .24s var(--ease),transform .24s var(--ease)}
 .avopt img{width:100%;height:100%;object-fit:cover;display:block}
-.avopt:hover{transform:translateY(-2px) scale(1.05);border-color:var(--butter)}
-.avopt.on{border-color:var(--butter);box-shadow:0 0 0 2px var(--butter)}
-.avopt.on::after{content:"";position:absolute;inset:0;background:rgba(247,215,116,.2)}
+.avopt:hover{transform:scale(1.05)}
+/* Gewählt: erst ein dunkler Spalt, dann der goldene Ring. Der Spalt hält
+   das Gold von den Pastelltönen fern — direkt daneben streiten die beiden.
+   Ein Farbschleier über der Figur ist raus, der machte sie stumpf. */
+.avopt.on{transform:scale(1.03);
+  box-shadow:0 0 0 2px rgba(13,20,48,1), 0 0 0 4px rgba(247,215,116,.9)}
 /* Beim Aufklappen laufen die Kacheln nacheinander ein. */
 .avwahl.auf .avopt{animation:avIn .42s var(--ease-out) both}
 @keyframes avIn{from{opacity:0;transform:translateY(9px) scale(.9)}to{opacity:1;transform:none}}
