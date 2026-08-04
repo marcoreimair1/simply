@@ -48,11 +48,34 @@ create policy "eigene Zeile anlegen"  on public.records
   for insert with check (auth.uid() = user_id);
 create policy "eigene Zeile ändern"   on public.records
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "eigene Zeile loeschen" on public.records
+  for delete using (auth.uid() = user_id);
+
+-- Profil löschen: Datenzeile und Anmeldekonto in einem Schritt.
+-- security definer, weil auth.users sonst für niemanden erreichbar ist.
+create or replace function public.konto_loeschen()
+returns void
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare wer uuid := auth.uid();
+begin
+  if wer is null then
+    raise exception 'nicht angemeldet';
+  end if;
+  delete from public.records where user_id = wer;
+  delete from auth.users where id = wer;
+end;
+$$;
+
+revoke all on function public.konto_loeschen() from public, anon;
+grant execute on function public.konto_loeschen() to authenticated;
 ```
 
 Es sollte **Success. No rows returned** erscheinen.
 
-> Diese vier Regeln sind der eigentliche Datenschutz. Sie werden in der Datenbank durchgesetzt, nicht in der App — auch wer den Quelltext liest und den öffentlichen Schlüssel kennt, kommt an fremde Zeilen nicht heran.
+> Diese Regeln sind der eigentliche Datenschutz. Sie werden in der Datenbank durchgesetzt, nicht in der App — auch wer den Quelltext liest und den öffentlichen Schlüssel kennt, kommt an fremde Zeilen nicht heran.
 
 ### 1.3 Die zwei Werte für mich
 
