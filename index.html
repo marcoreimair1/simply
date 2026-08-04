@@ -623,10 +623,12 @@ body.nobar #v-onboard{padding-top:14px}
 /* ─── Begrüßungsseite ─────────────────────────────────────
    Drei Merkmale, jedes mit einem Musterbild. Die Bilder sind aus Formen
    gebaut statt aus Dateien — nichts lädt nach, nichts blitzt auf. */
-.wfeat{max-width:430px;margin:0 0 26px}
-.wfeat > b{display:block;font-size:16px;margin:16px 0 5px}
-.wfeat > span{display:block;color:var(--tx-3);font-size:13px;line-height:1.62}
-.wmock{position:relative;border-radius:var(--r-m);padding:14px;overflow:hidden;
+#lg-choice{margin-top:30px}
+.wfeat{max-width:430px;margin:0 0 42px}
+.wfeat:last-of-type{margin-bottom:20px}
+.wfeat > b{display:block;font-size:16px;margin:22px 0 8px}
+.wfeat > span{display:block;color:var(--tx-3);font-size:13px;line-height:1.66}
+.wmock{position:relative;border-radius:var(--r-m);padding:17px;overflow:hidden;
   background:linear-gradient(165deg,rgba(27,40,86,.4),rgba(12,20,48,.26));
   border:1px solid var(--line-2);box-shadow:0 14px 34px rgba(0,0,0,.28)}
 .wmock.light{background:#F6F7FB;border-color:rgba(0,0,0,.07)}
@@ -644,13 +646,13 @@ body.nobar #v-onboard{padding-top:14px}
 .mk-head small{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-3)}
 .mk-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
 .mk-dow u{text-decoration:none;font-size:7.5px;text-align:center;color:var(--tx-3)}
-.mk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
 .mk-grid i{display:block;aspect-ratio:1.25;border-radius:5px;background:rgba(238,242,255,.07)}
 .mk-grid i.so{background:transparent;border:1px dashed var(--line-2)}
 .mk-grid i.u{background:rgba(247,215,116,.42)}
 .mk-grid i.k{background:rgba(255,142,110,.42)}
 .mk-grid i.f{background:rgba(167,139,250,.42)}
-.mk-leg{display:flex;align-items:center;gap:5px;margin-top:10px;font-size:8px;color:var(--tx-3)}
+.mk-leg{display:flex;align-items:center;gap:5px;margin-top:13px;font-size:8px;color:var(--tx-3)}
 .mk-leg s{text-decoration:none;width:8px;height:8px;border-radius:3px;display:inline-block}
 .mk-leg s + *{margin-right:6px}
 .mk-leg s.u{background:rgba(247,215,116,.6)}
@@ -663,7 +665,7 @@ body.nobar #v-onboard{padding-top:14px}
   border:1px solid var(--line-2);border-radius:6px;padding:4px 8px}
 .mz-tabs i.on{color:var(--butter);border-color:var(--butter-dim);background:rgba(247,215,116,.1)}
 .mz-tabs i.add{color:var(--tx-3);padding:4px 7px;border-style:dashed}
-.mz-rows p{display:flex;align-items:center;gap:5px;margin:0 0 5px}
+.mz-rows p{display:flex;align-items:center;gap:5px;margin:0 0 7px}
 .mz-rows u{text-decoration:none;font-size:8px;color:var(--tx-3);flex:0 0 15px}
 .mz-rows s{text-decoration:none;font-size:8px;color:var(--tx-2);flex:1;text-align:center;
   background:rgba(238,242,255,.07);border-radius:5px;padding:4px 0;
@@ -679,7 +681,7 @@ body.nobar #v-onboard{padding-top:14px}
   border-bottom:1px solid rgba(0,0,0,.1);padding-bottom:6px;margin-bottom:8px}
 .mb-head b{font-size:6.5px;letter-spacing:.14em;color:#3a4050}
 .mb-head i{font-style:normal;font-size:8px;font-weight:800;letter-spacing:.06em;color:#0A1129}
-.mb-rows p{display:flex;gap:5px;align-items:center;margin:0 0 4px;padding-bottom:3px;
+.mb-rows p{display:flex;gap:5px;align-items:center;margin:0 0 6px;padding-bottom:4px;
   border-bottom:1px solid rgba(0,0,0,.055)}
 .mb-rows p.hl{background:rgba(247,215,116,.22);border-radius:3px;padding:2px 3px 3px}
 .mb-rows p.frei{opacity:.5}
@@ -703,12 +705,21 @@ body.nobar #v-onboard{padding-top:14px}
 .mb-sig hr{border:none;border-top:.5px solid #9a9ea8;margin:1px 0 2px}
 .mb-sig u{text-decoration:none;font-size:5.5px;letter-spacing:.1em;text-transform:uppercase;color:#8a90a0}
 
+/* Musterbild Datenschutz */
+.ds-row{display:flex;align-items:flex-start;gap:12px}
+.ds-row + .ds-row{margin-top:14px;padding-top:14px;border-top:1px solid var(--line-2)}
+.ds-row .oi{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:none;
+  background:rgba(121,232,198,.14);color:var(--c-eigen)}
+.ds-row .oi svg{width:17px;height:17px}
+.ds-row b{display:block;font-size:12.5px;margin-bottom:2px}
+.ds-row small{display:block;color:var(--tx-3);font-size:11px;line-height:1.5}
+
 /* Musterbild Passkey */
 .mp-pill{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;
   color:var(--butter);background:rgba(247,215,116,.09);border:1px solid var(--butter-dim);
   border-radius:var(--r-s);padding:11px 14px}
 .mp-pill svg{width:16px;height:16px;flex:none}
-.mp-ok{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;
+.mp-ok{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:15px;
   font-size:12px;color:var(--c-eigen)}
 .mp-hak{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;
   background:rgba(121,232,198,.16)}
@@ -1109,7 +1120,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <div class="wfeat">
             <div class="wmock">
               <span class="wtag">Beispiel</span>
-              <div class="mk-head"><b>Juli 2026</b><small>Miller Optik GmbH</small></div>
+              <div class="mk-head"><b>Juli 2026</b><small>Kalender von Marco</small></div>
               <div class="mk-dow"><u>M</u><u>D</u><u>M</u><u>D</u><u>F</u><u>S</u><u>S</u></div>
               <div class="mk-grid"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class="u"></i><i class="u"></i><i class="u"></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class="k"></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="f"></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i></div>
               <div class="mk-leg"><s class="u"></s>Urlaub<s class="k"></s>Krank<s class="f"></s>Feiertag</div>
@@ -1151,6 +1162,25 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
             <b>Anmelden ohne Code</b>
             <span>Beim ersten Mal bekommst du eine E-Mail. Danach genügt Face ID oder dein
               Fingerabdruck — und deine Aufzeichnungen liegen sicher auf jedem deiner Geräte.</span>
+          </div>
+
+          <div class="wfeat">
+            <div class="wmock">
+              <div class="ds-row"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8.2 10.5V7.8a3.8 3.8 0 017.6 0v2.7"/></svg></span>
+                <span><b>Verschlüsselt übertragen</b><small>Zwischen deinem Gerät und dem
+                  Server liest niemand mit.</small></span></div>
+              <div class="ds-row"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5a13 13 0 010 17M12 3.5a13 13 0 000 17"/></svg></span>
+                <span><b>Gespeichert in der EU</b><small>Die Datenbank steht in Frankfurt,
+                  nicht außerhalb Europas.</small></span></div>
+              <div class="ds-row"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.3A9.6 9.6 0 0112 6.2c5 0 9 5.8 9 5.8a17 17 0 01-2.4 3M6.5 8.2A17.6 17.6 0 003 12s4 5.8 9 5.8c1.3 0 2.5-.4 3.6-1"/><path d="M9.9 9.9a3 3 0 004.2 4.2"/></svg></span>
+                <span><b>Nur deine eigene Zeile</b><small>Die Datenbank selbst verweigert
+                  jeden Zugriff auf fremde Daten.</small></span></div>
+            </div>
+            <b>Nur du siehst deine Zeiten</b>
+            <span>Dass jede Person ausschließlich ihre eigene Zeile lesen darf, ist in der
+              Datenbank hinterlegt — nicht bloß in der App. Das gilt auch für jemanden, der den
+              Quelltext liest. Beim Dienstgeber landet allein das PDF, das du selbst abgibst.
+              Krankenstände sind Gesundheitsdaten und werden entsprechend behandelt.</span>
           </div>
 
           <div class="navrow sticky solid" id="lg-bar">
@@ -2876,7 +2906,9 @@ function legend(){
 let FLASH = new Set(), FLASH_ORDER = [];
 function renderCal(){
   const y = CAL.y, m = CAL.m;
-  $('#cal-title').innerHTML = MONTHS[m] + ' ' + y + '<small>' + EMPLOYER + ' · ' + esc(ME.vorname) + ' ' + esc(ME.nachname) + '</small>';
+  /* Ohne Firmennamen — der brach die Zeile um und stand am Handy zweizeilig */
+  $('#cal-title').innerHTML = MONTHS[m] + ' ' + y
+    + '<small>Kalender von ' + esc(ME.vorname) + '</small>';
   const rows = monthRows(ME, y, m);
   const first = new Date(y, m, 1).getDay();
   const lead = (first + 6) % 7;
