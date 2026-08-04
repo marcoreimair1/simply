@@ -590,6 +590,8 @@ body.nobar #v-onboard{padding-top:14px}
    ============================================================ */
 .calhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}
 .calhead .ct{font-family:var(--font-dis);font-size:clamp(26px,5vw,38px);font-weight:400;letter-spacing:-.02em;line-height:1.1}
+/* Das Jahr in Butter — der Monat bleibt weiß, damit die Zeile nicht schreit */
+.calhead .ct i{font-style:normal;color:var(--butter)}
 .calhead .ct small{display:block;font-family:var(--font-ui);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
   color:var(--tx-3);margin-top:4px}
 .cal{margin-top:16px}
@@ -1500,7 +1502,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <div class="ct" id="cal-title">—<small id="cal-sub"></small></div>
           <div style="display:flex;gap:7px">
             <button class="rnd" id="cal-prev" aria-label="Monat zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
-            <button class="rnd" id="cal-today" aria-label="Heute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg></button>
+            <button class="rnd" id="cal-today" aria-label="Zurück zu heute" title="Zurück zu heute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3.2v3.6M16 3.2v3.6M3.5 10h17"/><circle cx="12" cy="15" r="2.1" fill="currentColor" stroke="none"/></svg></button>
             <button class="rnd" id="cal-next" aria-label="Monat vor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
           </div>
         </div>
@@ -2907,7 +2909,7 @@ let FLASH = new Set(), FLASH_ORDER = [];
 function renderCal(){
   const y = CAL.y, m = CAL.m;
   /* Ohne Firmennamen — der brach die Zeile um und stand am Handy zweizeilig */
-  $('#cal-title').innerHTML = MONTHS[m] + ' ' + y
+  $('#cal-title').innerHTML = MONTHS[m] + ' <i>' + y + '</i>'
     + '<small>Kalender von ' + esc(ME.vorname) + '</small>';
   const rows = monthRows(ME, y, m);
   const first = new Date(y, m, 1).getDay();
