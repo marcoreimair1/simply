@@ -188,36 +188,45 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
    Kein Gold hier — das Warme bleibt dem Slogan und dem Flimmern. */
 .mark-tile{position:relative;z-index:2;display:grid;place-items:center;overflow:hidden;
   width:min(52vw,208px);aspect-ratio:1;border-radius:23%;
-  background:linear-gradient(158deg,#17265F 0%,#0C1437 54%,#070D24 100%);
-  border:1px solid rgba(126,158,255,.2);
-  box-shadow:0 30px 70px rgba(0,0,0,.62),0 0 64px rgba(48,88,222,.3),
-             inset 0 1px 0 rgba(184,208,255,.14);
+  background:linear-gradient(158deg,#0F1940 0%,#080F2A 54%,#040817 100%);
+  border:1px solid rgba(112,142,235,.15);
+  box-shadow:0 30px 70px rgba(0,0,0,.66),0 0 52px rgba(38,70,180,.2),
+             inset 0 1px 0 rgba(170,196,255,.1);
   animation:markIn 1.15s .25s var(--ease-out) both}
 
-/* Zwei blaue Lichtflecken, die langsam wandern — dieselbe Idee wie im
-   Hintergrund der App, nur auf Kachelgröße. */
+/* Zwei blaue Lichtflecken. Wandern und Atmen laufen absichtlich auf
+   verschiedenen Takten (17 s und 11 s) — dadurch wiederholt sich das Bild
+   erst nach über drei Minuten und wirkt nie mechanisch. Genau so macht es
+   der Hintergrund der App. */
 .mark-tile::before{content:"";position:absolute;left:-26%;top:-26%;width:152%;height:152%;z-index:1;
-  background:radial-gradient(circle at 32% 28%,rgba(98,146,255,.5),transparent 56%),
-             radial-gradient(circle at 74% 80%,rgba(58,86,214,.4),transparent 58%);
-  filter:blur(12px);animation:tileDrift 13s ease-in-out infinite alternate;
-  will-change:transform}
+  background:radial-gradient(circle at 32% 28%,rgba(84,128,238,.3),transparent 58%),
+             radial-gradient(circle at 74% 80%,rgba(52,76,190,.24),transparent 60%);
+  filter:blur(14px);
+  animation:tileDrift 17s var(--ease) infinite alternate,
+            tileBreath 11s ease-in-out infinite;
+  will-change:transform,opacity}
 @keyframes tileDrift{
-  from{transform:translate3d(-6%,-4%,0) scale(1)}
-  to{transform:translate3d(7%,6%,0) scale(1.13)}
+  from{transform:translate3d(-7%,-5%,0) scale(1)}
+  to{transform:translate3d(8%,7%,0) scale(1.14)}
 }
+@keyframes tileBreath{0%,100%{opacity:.62}45%{opacity:1}}
 
-/* Der Lichtkegel: ein weicher Keil, der einmal in neun Sekunden herumstreicht */
+/* Der Lichtkegel streicht nicht mehr rundherum, sondern pendelt langsam hin
+   und her — und wird dabei heller und wieder blasser, auf einem dritten Takt. */
 .mark-tile::after{content:"";position:absolute;inset:-42%;z-index:2;
   background:conic-gradient(from 0deg,
-    rgba(150,186,255,0) 0deg,
-    rgba(150,186,255,.26) 24deg,
-    rgba(198,220,255,.44) 40deg,
-    rgba(150,186,255,.2) 56deg,
-    rgba(150,186,255,0) 88deg,
-    rgba(150,186,255,0) 360deg);
-  filter:blur(7px);mix-blend-mode:screen;
-  animation:cone 9s linear infinite;will-change:transform}
-@keyframes cone{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+    rgba(140,176,250,0) 0deg,
+    rgba(140,176,250,.1) 26deg,
+    rgba(176,202,255,.19) 42deg,
+    rgba(140,176,250,.08) 58deg,
+    rgba(140,176,250,0) 92deg,
+    rgba(140,176,250,0) 360deg);
+  filter:blur(9px);mix-blend-mode:screen;
+  animation:cone 23s var(--ease) infinite alternate,
+            coneBreath 14.5s ease-in-out infinite;
+  will-change:transform,opacity}
+@keyframes cone{from{transform:rotate(-34deg)}to{transform:rotate(58deg)}}
+@keyframes coneBreath{0%,100%{opacity:.45}38%{opacity:1}72%{opacity:.7}}
 
 .mark-img{position:relative;z-index:3;width:64%;height:auto;display:block;
   animation:shimmer 4.6s 1.4s ease-in-out infinite}
@@ -230,7 +239,7 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 /* Glühen liegt HINTER dem Bild, nicht als Filter darauf — kein Kastenschleier */
 .mark-wrap::before{content:"";position:absolute;left:-22%;right:-22%;top:-22%;bottom:-22%;z-index:1;
   border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle,rgba(92,138,255,.3),rgba(70,108,232,.07) 46%,transparent 70%);
+  background:radial-gradient(circle,rgba(80,122,236,.2),rgba(62,96,210,.05) 46%,transparent 70%);
   opacity:0;animation:halo 2.4s .3s var(--ease-out) forwards}
 @keyframes halo{0%{opacity:0;transform:scale(.6)}45%{opacity:1;transform:scale(1.06)}100%{opacity:.62;transform:scale(1)}}
 @keyframes draw{to{stroke-dashoffset:0}}
@@ -1887,6 +1896,12 @@ function endIntro(){
   }, 950);
 }
 let _pAnim = null;
+/* ─── Licht in der Luft ───
+   Vorher war das ein Feuerwerk: ein Knall bei 1,3 Sekunden, 320 Splitter und
+   vierstrahlige Sterne. Neben Wolken und einem ruhig atmenden Symbol wirkte das
+   wie ein Fremdkörper. Jetzt schweben feine Lichtpunkte langsam nach oben und
+   pendeln dabei seitlich — jeder in seinem eigenen Takt, damit sich nichts
+   gleichzeitig bewegt. Kein Anfang, kein Höhepunkt, nur Luft.              */
 function startParticles(){
   const cv = $('#pcanvas');
   if(!cv || !cv.getContext) return;
@@ -1897,79 +1912,54 @@ function startParticles(){
     cv.width = W*dpr; cv.height = H*dpr; cx.setTransform(dpr,0,0,dpr,0,0); };
   resize(); window.addEventListener('resize', resize);
 
-  const GOLD = ['#FFFFFF','#FFF6DA','#FDEBB4','#F7D774','#E9B94E'];
-  const pick = () => GOLD[(Math.random()*GOLD.length)|0];
+  /* Weiche Flecken einmal vorzeichnen und danach nur noch skaliert kopieren —
+     billiger als jeden Punkt einzeln mit Verlauf zu füllen. */
+  const TOENE = [[236,244,255],[204,222,255],[172,196,252],[255,246,222],[247,215,116]];
+  const flecken = TOENE.map(([r,g,b]) => {
+    const c = document.createElement('canvas'); c.width = c.height = 48;
+    const k = c.getContext('2d'); if(!k) return null;
+    const rg = k.createRadialGradient(24,24,0,24,24,24);
+    rg.addColorStop(0,   'rgba('+r+','+g+','+b+',1)');
+    rg.addColorStop(.22, 'rgba('+r+','+g+','+b+',.5)');
+    rg.addColorStop(.55, 'rgba('+r+','+g+','+b+',.12)');
+    rg.addColorStop(1,   'rgba('+r+','+g+','+b+',0)');
+    k.fillStyle = rg; k.fillRect(0,0,48,48);
+    return c;
+  }).filter(Boolean);
+  if(!flecken.length) return;
+  /* Kühl überwiegt, warm blitzt nur selten auf */
+  const waehle = () => { const w = Math.random();
+    return flecken[w < .42 ? 0 : w < .72 ? 1 : w < .9 ? 2 : w < .97 ? 3 : 4] || flecken[0]; };
 
-  /* Grundflimmern: Anzahl an die Fläche gekoppelt, damit es am Handy nicht dünn wirkt */
-  const n = Math.round(Math.max(110, Math.min(240, W*H/7200)));
-  const dust = Array.from({length:n}, () => ({
-    x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.35+.3,
-    vx:(Math.random()-.5)*.22, vy:(Math.random()-.5)*.22,
-    a:Math.random()*.5+.15, ph:Math.random()*6.28, sp:Math.random()*2.4+.9,
-    c:pick()
+  const n = Math.round(Math.max(55, Math.min(120, W*H/11500)));
+  const punkte = Array.from({length:n}, () => ({
+    x: Math.random()*W,
+    y: Math.random()*H,
+    r: Math.pow(Math.random(),1.6)*7 + 1.8,     /* wenige große, viele kleine */
+    vy: -(Math.random()*.15 + .035),            /* langsam nach oben */
+    weite: Math.random()*16 + 5,                /* Ausschlag des Pendelns */
+    tempo: Math.random()*.42 + .12,             /* eigenes Tempo */
+    ph: Math.random()*6.2832,
+    a: Math.random()*.3 + .08,
+    bl: Math.random()*.55 + .16,                /* eigener Blinktakt */
+    f: waehle()
   }));
 
-  let burst = [], stars = [], t0 = performance.now(), fired = false;
-
-  /* vierstrahliger Funke — das eigentliche Glitzern */
-  function star(x, y, s, rot, alpha, col){
-    cx.save(); cx.translate(x,y); cx.rotate(rot); cx.globalAlpha = alpha;
-    let fill = col;
-    try{
-      const g = cx.createLinearGradient(-s,0,s,0);
-      g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(.5,col); g.addColorStop(1,'rgba(255,255,255,0)');
-      fill = g;
-    }catch(e){}
-    cx.fillStyle = fill;
-    cx.beginPath(); cx.moveTo(-s,0); cx.lineTo(0,-s*.16); cx.lineTo(s,0); cx.lineTo(0,s*.16); cx.closePath(); cx.fill();
-    cx.beginPath(); cx.moveTo(0,-s); cx.lineTo(s*.16,0); cx.lineTo(0,s); cx.lineTo(-s*.16,0); cx.closePath(); cx.fill();
-    cx.restore();
-  }
-
+  const t0 = performance.now();
   const loop = (t) => {
-    const el = t - t0;
+    const el = t - t0, auf = Math.min(1, el/1100);
     cx.clearRect(0,0,W,H);
-
-    dust.forEach(p => {
-      p.x += p.vx; p.y += p.vy;
-      if(p.x < 0) p.x = W; if(p.x > W) p.x = 0; if(p.y < 0) p.y = H; if(p.y > H) p.y = 0;
-      const tw = .55 + .45*Math.sin(el/1000*p.sp + p.ph);      /* Funkeln */
-      cx.globalAlpha = p.a * tw * Math.min(1, el/700);
-      cx.fillStyle = p.c;
-      cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 6.2832); cx.fill();
-    });
-
-    if(!fired && el > 1320){
-      fired = true;
-      const cxp = W/2, cyp = H/2 - Math.min(H*0.05, 34);
-      for(let i = 0; i < 320; i++){
-        const a = Math.random()*6.2832, sp = Math.pow(Math.random(),.6)*8.5 + 1.4;
-        burst.push({ x:cxp, y:cyp, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
-          r:Math.random()*2.1+.6, life:1, dec:Math.random()*.008+.0042, c:pick() });
-      }
-      for(let i = 0; i < 26; i++){
-        const a = Math.random()*6.2832, sp = Math.pow(Math.random(),.5)*7 + 1.6;
-        stars.push({ x:cxp, y:cyp, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
-          s:Math.random()*11+6, rot:Math.random()*6.28, vr:(Math.random()-.5)*.05,
-          life:1, dec:Math.random()*.007+.0035, c:pick() });
-      }
+    for(let i = 0; i < punkte.length; i++){
+      const p = punkte[i];
+      p.y += p.vy;
+      if(p.y < -24){ p.y = H + 24; p.x = Math.random()*W; }
+      const sek = el/1000;
+      const x = p.x + Math.sin(sek*p.tempo + p.ph) * p.weite;
+      const blink = .55 + .45*Math.sin(sek*p.bl + p.ph*1.7);
+      cx.globalAlpha = Math.max(0, p.a * blink * auf);
+      const d = Math.max(0.5, p.r*2);
+      cx.drawImage(p.f, x - p.r, p.y - p.r, d, d);
     }
-
-    burst = burst.filter(p => p.life > 0);
-    burst.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.vx *= .977; p.vy *= .977; p.life -= p.dec;
-      cx.globalAlpha = Math.max(0, p.life);
-      cx.fillStyle = p.c;
-      cx.beginPath(); cx.arc(p.x, p.y, Math.max(0.01, p.r*p.life), 0, 6.2832); cx.fill();
-    });
-
-    stars = stars.filter(p => p.life > 0);
-    stars.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.vx *= .972; p.vy *= .972; p.rot += p.vr; p.life -= p.dec;
-      const grow = Math.sin(Math.min(1,(1-p.life)*2.2) * Math.PI);   /* wächst und schrumpft wieder */
-      star(p.x, p.y, p.s * (0.35 + grow*0.9), p.rot, Math.max(0, p.life)*0.95, p.c);
-    });
-
     cx.globalAlpha = 1;
     _pAnim = requestAnimationFrame(loop);
   };
