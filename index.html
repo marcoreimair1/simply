@@ -741,14 +741,17 @@ body.nobar #v-onboard{padding-top:14px}
   text-transform:uppercase;color:var(--tx-3)}
 
 /* Die zwei Wege: einer gefüllt, einer umrandet — beide gleich groß und breit */
-#lg-bar{max-width:430px;gap:10px}
-#lg-bar .btn{flex:1;justify-content:center;padding:16px 14px;font-size:14px}
+/* Der Untergrund läuft über die ganze Breite — begrenzt sind nur die Knöpfe,
+   damit sie mit der Textspalte darüber auf einer Linie stehen. Vorher war die
+   Leiste selbst auf 430 Pixel begrenzt und endete rechts im Nichts. */
+#lg-bar{gap:10px}
+#lg-bar .btn{flex:1 1 0;max-width:210px;justify-content:center;padding:16px 14px;font-size:14px}
 #lg-bar .btn svg{width:17px;height:17px}
 .btn-out{background:rgba(238,242,255,.05);border:1px solid rgba(238,242,255,.18);color:var(--tx-1)}
 .btn-out:hover{background:rgba(238,242,255,.09);border-color:var(--butter-dim);color:var(--butter)}
 @media(max-width:400px){
   #lg-bar{flex-direction:column}
-  #lg-bar .btn{width:100%}
+  #lg-bar .btn{width:100%;max-width:none}
 }
 
 /* Zeilen auf der Passkey-Frage */
@@ -985,11 +988,27 @@ body.nobar #v-onboard{padding-top:14px}
   font-family:var(--font-dis);font-size:23px;color:var(--paper);
   text-shadow:0 2px 10px rgba(0,0,0,.6);font-variant-numeric:tabular-nums;
   transition:opacity .3s}
-.exok{position:absolute;left:50%;top:50%;translate:-50% -50%;width:44px;height:44px;
-  fill:none;stroke:#0A1129;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;
-  stroke-dasharray:40;stroke-dashoffset:40}
+/* Statt eines Hakens: das Glas ist voll. */
+.exprost{position:absolute;left:0;right:0;top:50%;translate:0 -50%;text-align:center;
+  font-family:var(--font-dis);font-size:27px;color:#0A1129;letter-spacing:-.01em;
+  opacity:0;transform:scale(.6) rotate(-8deg);pointer-events:none}
 .exdone.done .expct{opacity:0}
-.exdone.done .exok{animation:draw .44s .1s var(--ease-out) forwards}
+.exdone.done .exprost{animation:prost .62s .12s var(--ease-out) forwards}
+@keyframes prost{
+  0%{opacity:0;transform:scale(.5) rotate(-12deg)}
+  55%{opacity:1;transform:scale(1.16) rotate(4deg)}
+  78%{transform:scale(.97) rotate(-2deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+/* Kleiner Anstoß mit dem Glas, wenn es voll ist */
+.exdone.done .exglas{animation:anstossen .7s .1s var(--ease-out)}
+@keyframes anstossen{
+  0%{transform:rotate(0)}
+  28%{transform:rotate(-7deg)}
+  55%{transform:rotate(4deg)}
+  78%{transform:rotate(-1.5deg)}
+  100%{transform:rotate(0)}
+}
 .exdone .qd-ring circle.track{fill:none;stroke:rgba(238,242,255,.13);stroke-width:3;animation:none;stroke-dasharray:none;stroke-dashoffset:0}
 .exdone .qd-ring circle.prog{fill:none;stroke:var(--butter);stroke-width:3;stroke-linecap:round;animation:none;
   stroke-dasharray:220;stroke-dashoffset:220;transform:rotate(-90deg);transform-origin:center;
@@ -3602,7 +3621,7 @@ function exOverlay(){
     +     '<i class="exblase b1"></i><i class="exblase b2"></i><i class="exblase b3"></i></div>'
     +   '<span class="exglanz"></span>'
     +   '<span class="expct">0 %</span>'
-    +   '<svg class="exok" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6.5 9.6 17 4 11.4"/></svg>'
+    +   '<span class="exprost">Prost!</span>'
     + '</div>'
     + '<b id="ex-ov-t">Aufzeichnung wird gesetzt</b>'
     + '<small id="ex-ov-s">Einen Moment …</small></div>';
