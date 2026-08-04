@@ -11,7 +11,21 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MARU">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="MARU — Arbeitszeitaufzeichnung für Miller Optik GmbH">
+<meta name="description" content="MARU — Arbeitszeitaufzeichnung. Eine App von Studio MARU 丸.">
+<meta name="author" content="Studio MARU 丸">
+<meta name="application-name" content="MARU">
+<!-- Vorschau beim Teilen des Links -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Studio MARU 丸">
+<meta property="og:title" content="MARU — Arbeitszeitaufzeichnung">
+<meta property="og:description" content="Antippen was abweicht, am Monatsende eine fertige A4-Seite. Eine App von Studio MARU 丸.">
+<meta property="og:url" content="https://marcoreimair1.github.io/simply/">
+<meta property="og:image" content="https://marcoreimair1.github.io/simply/icon-512.png">
+<meta property="og:locale" content="de_AT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MARU — Arbeitszeitaufzeichnung">
+<meta name="twitter:description" content="Eine App von Studio MARU 丸.">
+<meta name="twitter:image" content="https://marcoreimair1.github.io/simply/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
@@ -161,6 +175,8 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
   margin:18px 0 0;letter-spacing:.02em}
 .dg-tip{color:var(--tx-3);font-size:12.5px;line-height:1.6;margin:34px auto 0;max-width:380px}
 .dg-tip b{color:var(--tx-2);font-weight:600}
+.dg-by{margin:30px 0 0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-3)}
+.dg-by b{color:var(--butter);font-weight:600;letter-spacing:.1em}
 @media(max-width:520px){.dg-qr{width:200px;height:200px}}
 
 #splash{position:fixed;inset:0;z-index:60;background:#02040C;display:grid;place-items:center;overflow:hidden;
@@ -672,6 +688,9 @@ body.nobar #v-onboard{padding-top:14px}
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 /* Trenner zwischen Passkey und E-Mail */
 .mi.done svg{color:var(--c-eigen)}
+.mfoot{margin:10px 2px 4px;padding-top:11px;border-top:1px solid var(--line-2);
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-3);text-align:center}
+.mfoot b{color:var(--butter);font-weight:600;letter-spacing:.08em}
 .mi .miico{display:grid;place-items:center;width:24px;height:24px;flex:none}
 .mi .miico svg{width:24px;height:24px}
 #mi-pkreset svg{opacity:.6}
@@ -1171,6 +1190,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <p class="dg-url">marcoreimair1.github.io/simply</p>
     <p class="dg-tip">Am iPhone danach über <b>Teilen</b> → <b>Zum Home-Bildschirm</b> —
       dann liegt MARU als eigene App auf dem Bildschirm.</p>
+    <p class="dg-by">Eine App von <b>Studio MARU 丸</b></p>
   </div>
 </div>
 
@@ -1247,7 +1267,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <div class="wfeat">
             <div class="wmock">
               <span class="wtag">Beispiel</span>
-              <div class="mk-head"><b>Juli 2026</b><small>Kalender von Marco</small></div>
+              <div class="mk-head"><b>Juli 2026</b><small>Kalender von Anna</small></div>
               <div class="mk-dow"><u>M</u><u>D</u><u>M</u><u>D</u><u>F</u><u>S</u><u>S</u></div>
               <div class="mk-grid"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class="u"></i><i class="u"></i><i class="u"></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class="k"></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="f"></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i></div>
               <div class="mk-leg"><s class="u"></s>Urlaub<s class="k"></s>Krank<s class="f"></s>Feiertag</div>
@@ -1272,7 +1292,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
                 <span><u>Arbeit</u>223,00</span><span><u>Urlaub</u>13,00</span>
                 <span><u>Krank</u>9,00</span><span class="t"><u>Gesamt</u>245,00</span>
               </div>
-              <div class="mb-sig"><em>Marco Reimair</em><hr><u>Unterschrift Dienstnehmer/in</u></div>
+              <div class="mb-sig"><em>Anna Muster</em><hr><u>Unterschrift Dienstnehmer/in</u></div>
             </div>
             <b>Am Monatsende ein Tipp</b>
             <span>Ein Monat wird eine fertige A4-Seite: jeder Tag mit Vormittag, Nachmittag,
@@ -1697,6 +1717,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <button class="mi" data-act="pkreset" id="mi-pkreset" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Passkey zurücksetzen</button>
     <button class="mi" data-act="intro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12a8 8 0 108-8"/><path d="M4 4v5h5"/></svg>Intro nochmal ansehen</button>
     <button class="mi" data-act="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12H4M8 8l-4 4 4 4M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/></svg>Abmelden</button>
+    <div class="mfoot">Eine App von <b>Studio MARU 丸</b></div>
     <button class="mi danger" data-act="delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Profil löschen</button>
   </div>
 </div>
@@ -1760,7 +1781,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 /* ============================================================
-   MARU · by Marco — Arbeitszeitaufzeichnung
+   MARU — Arbeitszeitaufzeichnung · Eine App von Studio MARU 丸
    Alles lokal im Browser. Kein Server, kein Tracking.
    ============================================================ */
 "use strict";
@@ -3845,7 +3866,7 @@ function drawPage(doc, p, y, m, sigs){
   doc.line(L, 281, R, 281);
   doc.setFontSize(5.8); doc.setTextColor.apply(doc, GREY);
   doc.text('Erstellt am ' + fmtDate(new Date().toISOString().slice(0,10))
-    + ' mit MARU — Mehr Zeit fürs Wesentliche.   ·   by Marco Reimair', L, 285.4);
+    + ' mit MARU — Mehr Zeit fürs Wesentliche.   ·   Eine App von Studio MARU', L, 285.4);
   doc.text(MONTHS[m] + ' ' + y + '  ·  ' + p.vorname + ' ' + p.nachname, R, 285.4, { align:'right' });
 }
 

@@ -1,4 +1,6 @@
-# MARU · by Marco
+# MARU
+
+**Eine App von Studio MARU 丸**
 
 Arbeitszeitaufzeichnung für **Miller Optik GmbH**. Eine einzige HTML-Datei, gehostet auf GitHub Pages, mit Supabase als Datenspeicher.
 
