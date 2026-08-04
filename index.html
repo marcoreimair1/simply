@@ -141,6 +141,28 @@ input,textarea{-webkit-appearance:none}
 /* ============================================================
    INTRO
    ============================================================ */
+/* ─── Nur fürs Handy ───
+   Kein Overlay über der App, sondern die einzige Ansicht: die App selbst
+   wird gar nicht gestartet. */
+#deskgate{display:none;position:fixed;inset:0;z-index:90;background:#070B1E;
+  overflow:auto;padding:48px 24px}
+body.nurhandy #deskgate{display:block}
+body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{display:none!important}
+.dg-inner{max-width:520px;margin:0 auto;text-align:center}
+.dg-word{width:132px;display:block;margin:0 auto 6px}
+.dg-slogan{font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--butter);
+  margin:0 0 40px;opacity:.75}
+.dg-h{font-size:clamp(30px,4.4vw,42px);margin:0 0 14px}
+.dg-lede{color:var(--tx-2);font-size:14.5px;line-height:1.62;margin:0 auto 32px;max-width:420px}
+.dg-qr{width:236px;height:236px;margin:0 auto;padding:14px;border-radius:var(--r-l);
+  background:#fff;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.dg-qr svg{width:100%;height:100%;display:block;border-radius:6px}
+.dg-url{font-family:var(--font-mono,ui-monospace,monospace);font-size:12.5px;color:var(--tx-3);
+  margin:18px 0 0;letter-spacing:.02em}
+.dg-tip{color:var(--tx-3);font-size:12.5px;line-height:1.6;margin:34px auto 0;max-width:380px}
+.dg-tip b{color:var(--tx-2);font-weight:600}
+@media(max-width:520px){.dg-qr{width:200px;height:200px}}
+
 #splash{position:fixed;inset:0;z-index:60;background:#05081A;display:grid;place-items:center;overflow:hidden;
   cursor:pointer;-webkit-tap-highlight-color:transparent}
 #splash.done{animation:splashOut .9s var(--ease-out) forwards}
@@ -790,6 +812,21 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   <div class="blob b5"><span></span></div>
 </div>
 <div class="grain"></div>
+
+<!-- ═══════════════════ NUR FÜRS HANDY ════════════════════ -->
+<div id="deskgate">
+  <div class="dg-inner">
+    <img class="dg-word" src="" alt="MARU" id="dg-word">
+    <p class="dg-slogan">Mehr Zeit fürs Wesentliche.</p>
+    <h1 class="dis dg-h">MARU ist <i>fürs Handy</i> gemacht.</h1>
+    <p class="dg-lede">Die Aufzeichnung gehört dorthin, wo du arbeitest — in die Tasche.
+      Scanne den Code mit der Kamera, dann öffnet sich MARU am Telefon.</p>
+    <div class="dg-qr"><svg viewBox="0 0 33 33" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="QR-Code zu MARU"><rect width="33" height="33" fill="#fff"/><path d="M2 2h7v1h-7zM12 2h1v1h-1zM16 2h1v1h-1zM19 2h2v1h-2zM24 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM12 3h3v1h-3zM16 3h1v1h-1zM19 3h1v1h-1zM24 3h1v1h-1zM30 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM10 4h1v1h-1zM13 4h1v1h-1zM17 4h1v1h-1zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM10 5h2v1h-2zM14 5h2v1h-2zM19 5h1v1h-1zM21 5h2v1h-2zM24 5h1v1h-1zM26 5h3v1h-3zM30 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM11 6h3v1h-3zM15 6h2v1h-2zM18 6h4v1h-4zM24 6h1v1h-1zM26 6h3v1h-3zM30 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM11 7h2v1h-2zM14 7h1v1h-1zM18 7h1v1h-1zM20 7h1v1h-1zM22 7h1v1h-1zM24 7h1v1h-1zM30 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h7v1h-7zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h1v1h-1zM2 10h1v1h-1zM8 10h1v1h-1zM10 10h1v1h-1zM12 10h1v1h-1zM15 10h1v1h-1zM19 10h1v1h-1zM22 10h3v1h-3zM27 10h3v1h-3zM2 11h5v1h-5zM9 11h3v1h-3zM15 11h3v1h-3zM21 11h2v1h-2zM25 11h2v1h-2zM28 11h2v1h-2zM2 12h1v1h-1zM4 12h3v1h-3zM8 12h1v1h-1zM10 12h1v1h-1zM13 12h6v1h-6zM24 12h2v1h-2zM3 13h5v1h-5zM10 13h3v1h-3zM16 13h1v1h-1zM20 13h2v1h-2zM23 13h2v1h-2zM26 13h2v1h-2zM2 14h2v1h-2zM5 14h1v1h-1zM8 14h2v1h-2zM11 14h6v1h-6zM18 14h1v1h-1zM21 14h1v1h-1zM24 14h2v1h-2zM30 14h1v1h-1zM4 15h4v1h-4zM12 15h3v1h-3zM17 15h10v1h-10zM29 15h2v1h-2zM2 16h2v1h-2zM5 16h2v1h-2zM8 16h1v1h-1zM12 16h2v1h-2zM17 16h2v1h-2zM20 16h1v1h-1zM22 16h2v1h-2zM27 16h2v1h-2zM3 17h3v1h-3zM7 17h1v1h-1zM11 17h1v1h-1zM13 17h2v1h-2zM16 17h3v1h-3zM20 17h1v1h-1zM22 17h1v1h-1zM26 17h1v1h-1zM28 17h1v1h-1zM30 17h1v1h-1zM3 18h3v1h-3zM8 18h4v1h-4zM14 18h1v1h-1zM17 18h3v1h-3zM21 18h1v1h-1zM25 18h1v1h-1zM27 18h2v1h-2zM2 19h1v1h-1zM6 19h1v1h-1zM9 19h1v1h-1zM11 19h1v1h-1zM13 19h3v1h-3zM17 19h2v1h-2zM21 19h2v1h-2zM24 19h3v1h-3zM28 19h3v1h-3zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h4v1h-4zM13 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM21 20h1v1h-1zM24 20h1v1h-1zM26 20h2v1h-2zM30 20h1v1h-1zM2 21h1v1h-1zM4 21h1v1h-1zM6 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM15 21h1v1h-1zM17 21h2v1h-2zM23 21h1v1h-1zM26 21h1v1h-1zM2 22h1v1h-1zM5 22h1v1h-1zM8 22h1v1h-1zM11 22h3v1h-3zM16 22h1v1h-1zM19 22h1v1h-1zM22 22h5v1h-5zM28 22h3v1h-3zM10 23h3v1h-3zM14 23h1v1h-1zM16 23h3v1h-3zM20 23h1v1h-1zM22 23h1v1h-1zM26 23h2v1h-2zM2 24h7v1h-7zM11 24h1v1h-1zM13 24h1v1h-1zM17 24h6v1h-6zM24 24h1v1h-1zM26 24h3v1h-3zM2 25h1v1h-1zM8 25h1v1h-1zM12 25h3v1h-3zM16 25h3v1h-3zM20 25h3v1h-3zM26 25h1v1h-1zM29 25h2v1h-2zM2 26h1v1h-1zM4 26h3v1h-3zM8 26h1v1h-1zM11 26h1v1h-1zM13 26h4v1h-4zM18 26h1v1h-1zM20 26h8v1h-8zM30 26h1v1h-1zM2 27h1v1h-1zM4 27h3v1h-3zM8 27h1v1h-1zM12 27h1v1h-1zM14 27h1v1h-1zM16 27h6v1h-6zM23 27h1v1h-1zM27 27h2v1h-2zM30 27h1v1h-1zM2 28h1v1h-1zM4 28h3v1h-3zM8 28h1v1h-1zM12 28h2v1h-2zM15 28h5v1h-5zM21 28h9v1h-9zM2 29h1v1h-1zM8 29h1v1h-1zM11 29h4v1h-4zM18 29h1v1h-1zM20 29h1v1h-1zM25 29h4v1h-4zM30 29h1v1h-1zM2 30h7v1h-7zM10 30h1v1h-1zM13 30h1v1h-1zM16 30h1v1h-1zM19 30h1v1h-1zM21 30h1v1h-1zM25 30h1v1h-1zM28 30h1v1h-1z" fill="#0A1129"/></svg></div>
+    <p class="dg-url">marcoreimair1.github.io/simply</p>
+    <p class="dg-tip">Am iPhone danach über <b>Teilen</b> → <b>Zum Home-Bildschirm</b> —
+      dann liegt MARU als eigene App auf dem Bildschirm.</p>
+  </div>
+</div>
 
 <!-- ══════════════════════════ INTRO ══════════════════════════ -->
 <div id="splash">
@@ -3334,8 +3371,27 @@ $('#brand-word').src = LOGO_WORD;
   }catch(e){}
 })();
 
+/* ─── Zeigegerät prüfen ───
+   Ein grober Zeiger heißt Finger — Telefon oder Tablet. Ein feiner heißt Maus,
+   also Computer. Die Breite allein wäre kein Maß: ein schmales Fenster am
+   Schreibtisch ist kein Handy. Mit ?desktop=1 lässt sich die Sperre umgehen,
+   das braucht man zum Prüfen. */
+const AM_HANDY = (function(){
+  if(/[?&]desktop=1/.test(location.search)) return true;
+  const grob = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
+  const ua   = /iPhone|iPad|iPod|Android|Mobile|Silk|Kindle|Opera Mini/i.test(navigator.userAgent);
+  const tipp = (navigator.maxTouchPoints || 0) > 0;
+  return grob || ua || (tipp && window.innerWidth <= 1024);
+})();
+
+if(!AM_HANDY){
+  document.body.classList.add('nurhandy');
+  document.body.classList.remove('locked');
+  const w = document.getElementById('dg-word'); if(w) w.src = LOGO_WORD;
+}
+
 wireDob('ob'); wireDob('lg');
-try{ playIntro(); }catch(e){ console.warn(e); endIntro(); }
+if(AM_HANDY){ try{ playIntro(); }catch(e){ console.warn(e); endIntro(); } }
 DB.profiles.forEach(normalize);
 
 /* ─── Start ─── */
@@ -3418,6 +3474,7 @@ $('#lg-pk-go').addEventListener('click', async () => {
 $('#pk-card-go').addEventListener('click', () => pkAdd($('#pk-card-go')));
 
 (async function boot(){
+  if(!AM_HANDY) return;          /* am Computer wird nichts geladen und nichts angemeldet */
   const ok = await cloudBoot();
   if(!ok){ bootLocal(); return; }
   sb.auth.onAuthStateChange((evt, session) => {
