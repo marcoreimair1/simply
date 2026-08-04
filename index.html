@@ -3944,6 +3944,7 @@ function quickOpen(){
   $('#qcard').scrollTop = 0;
   $('#qsheet').classList.add('on');
   document.body.classList.add('locked');
+  requestAnimationFrame(qRollen);
 }
 function quickClose(){
   $('#qsheet').classList.remove('on');
@@ -3957,8 +3958,18 @@ $('#q-type').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
   Q.type = b.dataset.t;
   $$('#q-type .tpill').forEach(x => x.classList.toggle('on', x.dataset.t === Q.type));
-  $('#q-textwrap').style.display = Q.type === 'eigen' ? 'block' : 'none';
+  const eigen = Q.type === 'eigen';
+  $('#q-textwrap').style.display = eigen ? 'block' : 'none';
+  /* Mit dem Vermerkfeld wird der Inhalt höher als das Blatt. Dann darf es
+     rollen, sonst wäre das Feld abgeschnitten und nicht erreichbar. Ohne
+     das Feld bleibt es fest, damit das Ziehen am Griff ruhig läuft. */
+  qRollen();
 });
+function qRollen(){
+  const k = $('#qcard');
+  const zuViel = k.scrollHeight > k.clientHeight + 1;
+  k.style.overflowY = zuViel ? 'auto' : 'hidden';
+}
 $('#q-scope').addEventListener('click', e => {
   const b = e.target.closest('[data-s]'); if(!b) return;
   Q.scope = b.dataset.s;
