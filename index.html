@@ -521,6 +521,12 @@ body.nobar #v-onboard{padding-top:14px}
 @media(max-width:520px){.cell{border-radius:11px;padding:5px 3px 4px}.cell .num{font-size:12px}.cell .hrs{font-size:8.5px}.cell .ico{width:13px;height:13px}}
 
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+/* Trenner zwischen Passkey und E-Mail */
+.mi.done{color:var(--tx-3)}
+.mi.done svg{color:var(--butter);opacity:.85}
+.orline{display:flex;align-items:center;gap:12px;margin:20px 0 16px;max-width:430px}
+.orline::before,.orline::after{content:"";flex:1;height:1px;background:var(--line-2)}
+.orline span{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3)}
 .lg{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--tx-2);padding:7px 11px;
   border-radius:var(--r-s);border:1px solid var(--line-2)}
 .lg svg{width:14px;height:14px}
@@ -808,6 +814,13 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
       <!-- Cloud: Anmeldung per E-Mail-Link -->
       <div id="lg-cloud" style="display:none">
+        <div id="lg-pk" style="display:none;max-width:430px">
+          <button class="btn btn-p" id="lg-pk-go" style="width:100%;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a2.5 2.5 0 012.5 2.5c0 1.6-.3 3.2-.9 4.7"/><path d="M8.6 19.4A9.5 9.5 0 007 13.5a5 5 0 0110 0c0 1.2-.1 2.4-.4 3.6"/><path d="M5.2 17.6A13 13 0 014 13.5a8 8 0 0116 0c0 1-.1 2-.3 3"/><path d="M4.6 8.2A9.6 9.6 0 0112 4c2.9 0 5.5 1.3 7.3 3.3"/></svg>Mit Passkey anmelden
+          </button>
+          <div id="lg-pk-err" style="display:none;margin-top:12px;font-size:12.5px;color:var(--coral)"></div>
+          <div class="orline"><span>oder per E-Mail</span></div>
+        </div>
         <div class="card mt" style="max-width:430px">
           <div class="field hasgo" id="f-mail">
             <input id="lg-mail" type="email" inputmode="email" autocomplete="email" placeholder=" ">
@@ -969,6 +982,15 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
             <div class="feat">
               <div class="feat-track" id="feat-track">
+                <article class="feat-card install" id="pk-card" style="display:none">
+                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a2.5 2.5 0 012.5 2.5c0 1.6-.3 3.2-.9 4.7"/><path d="M8.6 19.4A9.5 9.5 0 007 13.5a5 5 0 0110 0c0 1.2-.1 2.4-.4 3.6"/><path d="M5.2 17.6A13 13 0 014 13.5a8 8 0 0116 0c0 1-.1 2-.3 3"/><path d="M4.6 8.2A9.6 9.6 0 0112 4c2.9 0 5.5 1.3 7.3 3.3"/></svg></span>
+                  <b id="pk-card-b">Ohne Code anmelden</b>
+                  <span id="pk-card-t">Ein Passkey merkt sich die Anmeldung im Gerät. Beim nächsten
+                    Besuch genügt Face ID oder Fingerabdruck — keine E-Mail, kein Code aus dem Postfach.</span>
+                  <button class="btn btn-p btn-sm" id="pk-card-go" style="margin-top:14px">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a2.5 2.5 0 012.5 2.5c0 1.6-.3 3.2-.9 4.7"/><path d="M8.6 19.4A9.5 9.5 0 007 13.5a5 5 0 0110 0c0 1.2-.1 2.4-.4 3.6"/><path d="M5.2 17.6A13 13 0 014 13.5a8 8 0 0116 0c0 1-.1 2-.3 3"/><path d="M4.6 8.2A9.6 9.6 0 0112 4c2.9 0 5.5 1.3 7.3 3.3"/></svg>Passkey einrichten
+                  </button>
+                </article>
                 <article class="feat-card install">
                   <div class="tilewrap">
                     <img class="tile" src="icon-180.png" alt="MARU als App-Kachel">
@@ -1137,6 +1159,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   <div class="menu-card">
     <div class="mh"><b id="me-name">—</b><small id="me-sub">Miller Optik GmbH</small><small id="me-mail" style="display:block"></small></div>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
+    <button class="mi" data-act="passkey" id="mi-pk" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a2.5 2.5 0 012.5 2.5c0 1.6-.3 3.2-.9 4.7"/><path d="M8.6 19.4A9.5 9.5 0 007 13.5a5 5 0 0110 0c0 1.2-.1 2.4-.4 3.6"/><path d="M5.2 17.6A13 13 0 014 13.5a8 8 0 0116 0c0 1-.1 2-.3 3"/><path d="M4.6 8.2A9.6 9.6 0 0112 4c2.9 0 5.5 1.3 7.3 3.3"/></svg><span id="mi-pk-t">Passkey anlegen</span></button>
     <button class="mi" data-act="intro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12a8 8 0 108-8"/><path d="M4 4v5h5"/></svg>Intro nochmal ansehen</button>
     <button class="mi" data-act="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12H4M8 8l-4 4 4 4M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/></svg>Abmelden</button>
     <button class="mi danger" data-act="delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Profil löschen</button>
@@ -1219,7 +1242,7 @@ const CLOUD = {
 };
 /* ═══════════════════════════════════════════════════════════ */
 
-let sb = null, UID = null, MAIL = '', CLOUD_ON = false;
+let sb = null, UID = null, MAIL = '', CLOUD_ON = false, PASSKEY = false;
 
 const TYPES = {
   urlaub: { label:'Urlaub',       color:'#F7D774', pdf:[214,168,40],  desc:'Urlaubstag' },
@@ -1468,13 +1491,92 @@ async function cloudBoot(){
   try{
     const m = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
     sb = m.createClient(CLOUD.url, CLOUD.key, {
-      auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+      auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true,
+              /* Passkeys sind bei Supabase noch als Beta gekennzeichnet und
+                 müssen darum ausdrücklich eingeschaltet werden. */
+              experimental: { passkey:true } }
     });
     CLOUD_ON = true;
+    /* Nicht blind darauf verlassen: sowohl die Bibliothek als auch der Browser
+       müssen mitspielen. Sonst bleiben die Passkey-Knöpfe einfach unsichtbar. */
+    PASSKEY = typeof sb.auth.signInWithPasskey === 'function'
+              && typeof window.PublicKeyCredential === 'function';
     return true;
   }catch(e){
     console.warn('Cloud nicht erreichbar, arbeite lokal weiter', e);
     return false;
+  }
+}
+
+/* ─── Passkeys ───────────────────────────────────────────────
+   Ein Passkey liegt im Gerät bzw. im Schlüsselbund und ersetzt Code und Link.
+   Anlegen geht nur angemeldet — die erste Anmeldung bleibt die E-Mail.     */
+let PK_LISTE = null;                       /* null = noch nicht nachgesehen */
+
+async function pkRefresh(){
+  if(!PASSKEY || !UID){ PK_LISTE = null; return null; }
+  try{
+    const r = await sb.auth.passkey.list();
+    PK_LISTE = r.error ? null : (r.data || []);
+  }catch(e){ console.warn('Passkeys nicht abrufbar', e); PK_LISTE = null; }
+  paintPasskey();
+  return PK_LISTE;
+}
+
+/* Anlegen. Gibt true zurück, wenn danach ein Passkey vorhanden ist. */
+async function pkAdd(knopf){
+  if(!PASSKEY) return false;
+  const alt = knopf ? knopf.innerHTML : '';
+  if(knopf){ knopf.disabled = true; knopf.textContent = 'Warte auf Bestätigung …'; }
+  try{
+    const r = await sb.auth.registerPasskey();
+    if(r.error) throw r.error;
+    toast('Passkey angelegt');
+    await pkRefresh();
+    return true;
+  }catch(e){
+    toast(pkText(e));
+    return false;
+  }finally{
+    if(knopf){ knopf.disabled = false; knopf.innerHTML = alt; }
+  }
+}
+
+/* Fehler in etwas Verständliches übersetzen. */
+function pkText(e){
+  const t = ((e && e.code) || '') + ' ' + ((e && e.name) || '') + ' ' + ((e && e.message) || '');
+  if(/NotAllowedError|AbortError|abgebrochen|cancel/i.test(t)) return 'Abgebrochen.';
+  if(/credential_exists/i.test(t))     return 'Dieses Gerät hat schon einen Passkey.';
+  if(/too_many_passkeys/i.test(t))     return 'Mehr Passkeys sind nicht möglich.';
+  if(/passkey_disabled/i.test(t))      return 'Passkeys sind für MARU nicht freigeschaltet.';
+  if(/challenge_expired/i.test(t))     return 'Zu lange gewartet — bitte nochmal.';
+  if(/NotSupportedError|not supported/i.test(t)) return 'Dieses Gerät kann keine Passkeys.';
+  return 'Mit dem Passkey hat es nicht geklappt.';
+}
+
+/* Knöpfe und Texte an den Stand anpassen — Menü und Funnel-Karte. */
+function paintPasskey(){
+  const hat = Array.isArray(PK_LISTE) && PK_LISTE.length > 0;
+  const mi = $('#mi-pk');
+  if(mi){
+    mi.style.display = (PASSKEY && UID) ? 'flex' : 'none';
+    $('#mi-pk-t').textContent = hat ? 'Passkey vorhanden' : 'Passkey anlegen';
+    mi.classList.toggle('done', hat);
+  }
+  const karte = $('#pk-card'), knopf = $('#pk-card-go'), txt = $('#pk-card-t');
+  if(karte){
+    karte.style.display = PASSKEY ? '' : 'none';
+    if(hat){
+      $('#pk-card-b').textContent = 'Anmelden ohne Code steht';
+      txt.textContent = 'Steht. Beim nächsten Anmelden genügt Face ID oder Fingerabdruck — '
+                      + 'keine E-Mail, kein Code.';
+      knopf.style.display = 'none';
+    }else{
+      $('#pk-card-b').textContent = 'Ohne Code anmelden';
+      txt.textContent = 'Ein Passkey merkt sich die Anmeldung im Gerät. Beim nächsten Besuch '
+                      + 'genügt Face ID oder Fingerabdruck — keine E-Mail, kein Code aus dem Postfach.';
+      knopf.style.display = '';
+    }
   }
 }
 
@@ -1911,6 +2013,7 @@ function obPaint(){
       ? 'Alles steht, ' + vn + '. Deine Aufzeichnungen sind gesichert — mit deiner E-Mail-Adresse kommst du auf jedem Gerät heran.'
       : 'Alles steht, ' + vn + '. Beim nächsten Besuch genügen Vorname und Geburtsdatum.';
     try{ renderPdfPreview(vn, nn); }catch(e){ console.warn('Vorschau nicht möglich', e); }
+    try{ paintPasskey(); }catch(e){ console.warn(e); }
     try{ initFeatCarousel(); nudgeCarousel(); }catch(e){ console.warn(e); }
     requestAnimationFrame(() => requestAnimationFrame(checkDoneScroll));
   }
@@ -2144,6 +2247,7 @@ function finishOnboarding(){
   ME = p;
   if(CLOUD_ON && UID){
     cloudQueue();
+    pkRefresh();
     /* Vorname ins Konto, damit die Anmeldemail künftig grüßen kann */
     try{ sb.auth.updateUser({ data:{ vorname: vn } }); }catch(e){ console.warn(e); }
   } else {
@@ -2160,6 +2264,8 @@ function loginScreen(){
   $('#lg-err').style.display = 'none';
   $('#lg-err2').style.display = 'none';
   $('#lg-sent').style.display = 'none';
+  $('#lg-pk-err').style.display = 'none';
+  $('#lg-pk').style.display = (CLOUD_ON && PASSKEY) ? 'block' : 'none';
   if(CLOUD_ON){
     $('#lg-cloud').style.display = 'block';
     $('#lg-local').style.display = 'none';
@@ -3044,6 +3150,14 @@ $('#menu').addEventListener('click', e => {
     renderSched($('#sched-edit'), DRAFT, null);
     go('v-hours');
   }
+  if(a === 'passkey'){
+    if(Array.isArray(PK_LISTE) && PK_LISTE.length){
+      const d = PK_LISTE[0];
+      toast('Passkey liegt bereits' + (d.friendly_name ? ' in ' + d.friendly_name : '') + '.');
+    }else{
+      pkAdd(null);
+    }
+  }
   if(a === 'intro') playIntro();
   if(a === 'logout') doLogout();
   if(a === 'delete') doDelete();
@@ -3052,7 +3166,7 @@ async function doLogout(){
   if(CLOUD_ON){
     if(_dirty) await cloudFlush();
     try{ await sb.auth.signOut(); }catch(e){}
-    UID = null; MAIL = '';
+    UID = null; MAIL = ''; PK_LISTE = null; paintPasskey();
   } else {
     DB.activeId = null; save();
   }
@@ -3201,6 +3315,7 @@ async function afterLogin(session){
   setSync(offline ? 'offline' : 'ok');
   if(push) cloudQueue();
   enterApp();
+  if(!offline) pkRefresh();
 }
 
 $('#wt-retry').addEventListener('click', () => location.reload());
@@ -3208,6 +3323,25 @@ $('#wt-out').addEventListener('click', async () => {
   try{ if(sb) await sb.auth.signOut(); }catch(e){}
   location.reload();
 });
+
+/* ─── Passkey-Knöpfe ─────────────────────────────────────── */
+$('#lg-pk-go').addEventListener('click', async () => {
+  const b = $('#lg-pk-go'), err = $('#lg-pk-err');
+  err.style.display = 'none';
+  b.disabled = true;
+  try{
+    const r = await sb.auth.signInWithPasskey();
+    if(r.error) throw r.error;
+    /* Ab hier übernimmt der SIGNED_IN-Horcher. */
+  }catch(e){
+    const t = ((e && e.code) || '') + ' ' + ((e && e.name) || '') + ' ' + ((e && e.message) || '');
+    err.textContent = /NotAllowedError|AbortError|not_found|cancel/i.test(t)
+      ? 'Auf diesem Gerät ist noch kein MARU-Passkey gespeichert. Melde dich einmal mit deiner E-Mail-Adresse an — danach kannst du einen anlegen.'
+      : pkText(e);
+    err.style.display = 'block';
+  }finally{ b.disabled = false; }
+});
+$('#pk-card-go').addEventListener('click', () => pkAdd($('#pk-card-go')));
 
 (async function boot(){
   const ok = await cloudBoot();
