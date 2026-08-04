@@ -1,7 +1,7 @@
 {
-  "name": "MARU — Arbeitszeitaufzeichnung",
-  "short_name": "MARU",
-  "description": "Arbeitszeitaufzeichnung für Miller Optik GmbH",
+  "name": "MOJI — Arbeitszeitaufzeichnung",
+  "short_name": "MOJI",
+  "description": "Arbeitszeitaufzeichnung — Eine App von Studio MARU",
   "lang": "de",
   "start_url": "./",
   "scope": "./",

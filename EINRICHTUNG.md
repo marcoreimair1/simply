@@ -1,4 +1,4 @@
-# MARU — Cloud einrichten
+# MOJI — Cloud einrichten
 
 > **Stand:** Schritt 1 ist erledigt — Projekt `simply` läuft in Frankfurt, Tabelle und
 > Zugriffsregeln sind angelegt, Project URL und öffentlicher Schlüssel stehen in
@@ -86,7 +86,7 @@ Ein App-Passwort ist ein 16-stelliger Code nur für diese eine App — nicht dei
 1. **Im neuen Konto** angemeldet sein, dann Zwei-Faktor-Bestätigung einschalten — ohne sie
    gibt es die App-Passwort-Seite nicht: [myaccount.google.com/security](https://myaccount.google.com/security)
 2. [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) öffnen
-3. Name `MARU` eingeben → **Erstellen**
+3. Name `MOJI` eingeben → **Erstellen**
 4. Den 16-stelligen Code **sofort kopieren**, er wird nur einmal gezeigt (Leerzeichen weglassen)
 
 ### 2.2 In Supabase eintragen  *(erledigt)*
@@ -96,7 +96,7 @@ Ein App-Passwort ist ein 16-stelliger Code nur für diese eine App — nicht dei
 | Feld | Wert |
 |---|---|
 | Sender email address | `maru.arbeitszeiten@gmail.com` |
-| Sender name | `MARU` |
+| Sender name | `MOJI` |
 | Host | `smtp.gmail.com` |
 | Port number | `587` |
 | Username | `maru.arbeitszeiten@gmail.com` |
@@ -121,20 +121,20 @@ der Grund für diese Reihenfolge. Gesetzt ist:
 
 **Authentication** → **Emails** → **Templates** → **Magic link or OTP**:
 
-- Betreff: `Deine Anmeldung bei MARU`
+- Betreff: `Deine Anmeldung bei MOJI`
 - Inhalt:
 
 ```html
-<h2>Anmeldung bei MARU</h2>
+<h2>Anmeldung bei MOJI</h2>
 <p>Tippe auf den Link — kein Passwort nötig:</p>
 <p><a href="{{ .ConfirmationURL }}">Jetzt anmelden</a></p>
 <p>Oder gib diesen Code in der App ein:</p>
 <p style="font-size:28px;letter-spacing:6px"><strong>{{ .Token }}</strong></p>
 <p>Gültig eine Stunde, einmal verwendbar. Nicht angefordert? Einfach ignorieren.</p>
-<p>MARU — Mehr Zeit fürs Wesentliche.</p>
+<p>MOJI — Mehr Zeit fürs Wesentliche.</p>
 ```
 
-Der `{{ .Token }}` ist wichtig: wer MARU vom iPhone-Home-Bildschirm öffnet, kann den Link nicht
+Der `{{ .Token }}` ist wichtig: wer MOJI vom iPhone-Home-Bildschirm öffnet, kann den Link nicht
 nutzen — der öffnet Safari, und eine Home-Bildschirm-App hat auf iOS einen eigenen Speicher.
 Mit dem Code funktioniert die Anmeldung auch dort.
 

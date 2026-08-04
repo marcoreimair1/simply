@@ -1,4 +1,4 @@
-# MARU
+# MOJI
 
 **Eine App von Studio MARU 丸**
 
@@ -34,7 +34,7 @@ Warum überhaupt eine Datenbank: Safari löscht den Browserspeicher einer Websit
 
 Siehe **[EINRICHTUNG.md](EINRICHTUNG.md)** — Supabase-Projekt, SQL für Tabelle und Zugriffsregeln, Resend für den Mailversand.
 
-Die Zugangsdaten stehen oben in `index.html` im Block `CLOUD`. Bleiben sie leer, läuft MARU rein lokal weiter.
+Die Zugangsdaten stehen oben in `index.html` im Block `CLOUD`. Bleiben sie leer, läuft MOJI rein lokal weiter.
 
 ---
 
