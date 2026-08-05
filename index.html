@@ -1371,7 +1371,10 @@ body.nobar #v-onboard{padding-top:14px}
   padding:14px 16px;display:flex;flex-direction:column;gap:12px}
 /* Drehbühne. Beide Seiten liegen übereinander, die Höhe gibt die
    Vorderseite vor. */
-.mk-buehne{perspective:1400px;padding:44px 0;margin:-32px 0}
+/* Schwächere Perspektive und reichlich Luft ringsum: beim Drehen wird die
+   zugewandte Hälfte größer und ragt oben heraus. Nachgemessen bleiben bei
+   jedem Winkel 14 px Rand übrig. */
+.mk-buehne{perspective:2200px;padding:56px 0;margin:-34px 0}
 .mk-dreh{position:relative;transform-style:preserve-3d;cursor:pointer;
   transition:transform .9s cubic-bezier(.2,.85,.2,1)}
 .mk-dreh.um{transform:rotateY(180deg)}
