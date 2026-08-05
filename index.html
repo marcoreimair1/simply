@@ -564,20 +564,40 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .seg{display:inline-flex;padding:4px;gap:3px;border-radius:14px;background:rgba(6,10,26,.6);border:1px solid var(--line-2)}
 .seg button{padding:9px 16px;border-radius:10px;font-size:12.5px;font-weight:500;color:var(--tx-3);transition:.2s}
 .seg button.on{background:var(--butter);color:#221904;font-weight:600}
+/* Über die ganze Breite und gleichmäßig geteilt — vier Knöpfe, vier gleiche
+   Felder. Die Einheit steht klein unter der Zahl. */
+.seg.breit{display:flex;width:100%;gap:4px}
+.seg.breit button{flex:1;min-width:0;padding:8px 4px;display:flex;flex-direction:column;
+  align-items:center;gap:1px;font-size:15px;font-weight:600;line-height:1.1}
+.seg.breit button i{font-style:normal;font-size:9.5px;font-weight:500;letter-spacing:.04em;opacity:.72}
 /* Gesperrt: die Auswahl wird grau und nimmt keine Tipper an. */
 .seg.gesperrt{opacity:.5}
 .seg.gesperrt button{color:var(--tx-3);cursor:default}
 .seg.gesperrt button.on{background:rgba(255,255,255,.14);color:var(--tx-2)}
 
-/* Das Schloss. Der Bügel hebt sich und kippt zur Seite, wenn es aufgeht. */
-.wlock{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
+/* Abschnitte innerhalb der Karte, damit die drei Fragen auseinandergehen. */
+.wsec{margin-top:17px;padding-top:15px;border-top:1px solid var(--line-2)}
+.wsec > u{display:block;text-decoration:none;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--tx-3);margin-bottom:7px}
+
+/* Das Schloss ist eine ganze Zeile unter der Auswahl: Sinnbild und Text
+   gehören zusammen, und die Fläche zum Antippen ist so groß wie die Auswahl
+   darüber. Der Bügel hebt sich und kippt zur Seite, wenn es aufgeht. */
+.wlock{display:flex;align-items:center;gap:10px;width:100%;margin-top:8px;
+  padding:8px 12px;border-radius:12px;text-align:left;
   border:1px solid var(--line-2);color:var(--tx-3);transition:.24s var(--ease)}
+.wlockico{flex:none;width:26px;height:26px;display:grid;place-items:center}
 .wlock svg{width:19px;height:19px;overflow:visible}
+.wlockhint{min-width:0;display:flex;flex-direction:column;gap:1px}
+.wlockhint b{font-size:11.5px;font-weight:600;letter-spacing:.02em}
+.wlockhint{font-size:10.5px;color:var(--tx-3);line-height:1.3}
 .wlock .buegel{transform-origin:8.2px 10.5px;transition:transform .44s var(--ease-out)}
 /* Zu ist unauffällig, offen leuchtet — dann darf man ja etwas ändern. */
 .wlock.zu{color:var(--tx-3)}
-.wlock.auf{color:var(--butter);border-color:var(--butter-dim);background:rgba(247,215,116,.12);
-  box-shadow:0 0 18px -6px rgba(247,215,116,.55)}
+.wlock.auf{color:var(--butter);border-color:var(--butter-dim);background:rgba(247,215,116,.1);
+  box-shadow:0 0 18px -8px rgba(247,215,116,.5)}
+.wlock.auf .wlockhint b{color:var(--butter)}
+.wlock.auf .wlockhint{color:var(--tx-2)}
 .wlock.auf .buegel{transform:translate(1px,-2.6px) rotate(-32deg)}
 .wlock:active{transform:scale(.93)}
 /* Kurzer Ruck beim Zuschnappen. */
@@ -588,7 +608,7 @@ h1.dis i{font-style:italic;color:var(--butter)}
   58%{transform:scale(1.06) rotate(2deg)}
   100%{transform:none}
 }
-.wlockhint{font-size:10.5px;letter-spacing:.06em;color:var(--tx-3);line-height:1.3}
+
 
 /* ============================================================
    KARUSSELL
@@ -2668,7 +2688,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-0936';
+const APP_STAND = '2026-08-05-0959';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -2789,13 +2809,15 @@ function kwPlus(n){
 function schlossHtml(art, zu, klack){
   return '<button class="wlock '+(zu?'zu':'auf')+(klack?' klack':'')+'" data-lock="'+art+'"'
     + ' aria-pressed="'+(zu?'true':'false')+'"'
-    + ' aria-label="'+(zu?'Zum Ändern entsperren':'Wieder sperren')+'"'
-    + ' title="'+(zu?'Zum Ändern antippen':'Offen — antippen zum Sperren')+'">'
+    + ' aria-label="'+(zu?'Zum Ändern entsperren':'Wieder sperren')+'">'
+    + '<span class="wlockico">'
     + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
     + '<g class="buegel"><path d="M8.2 10.5V7.6a3.8 3.8 0 017.6 0v2.9"/></g>'
     + '<rect x="4.6" y="10.5" width="14.8" height="9.9" rx="2.6"/>'
-    + '<path d="M12 14.2v2.6"/></svg></button>'
-    + '<small class="wlockhint">'+(zu ? 'Tippen zum Entsperren' : 'offen — Tippen zum Sperren')+'</small>';
+    + '<path d="M12 14.2v2.6"/></svg></span>'
+    + '<span class="wlockhint"><b>'+(zu ? 'Gesperrt' : 'Offen')+'</b>'
+    + (zu ? 'Tippen zum Entsperren' : 'Tippen zum Sperren')+'</span>'
+    + '</button>';
 }
 
 function weekTotal(sched, wi){
@@ -3299,33 +3321,32 @@ function renderSched(host, sched, onChange){
      es sich beim Blättern zu leicht — und wer vier Wochen arbeitet, hat
      plötzlich eine. Das Schloss lässt sich antippen. */
   const zu = sched.wcLock !== false;
-  html += '<div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">';
-  html += '<div class="seg'+(zu?' gesperrt':'')+'" id="wc-seg">';
+  html += '<div class="seg breit'+(zu?' gesperrt':'')+'" id="wc-seg" style="margin-top:13px">';
   [1,2,3,4].forEach(n => html += '<button data-wc="'+n+'"'+(n===wc?' class="on"':'')
-    + (zu?' disabled':'')+'>'+n+(n===1?' Woche':' Wochen')+'</button>');
+    + (zu?' disabled':'')+'>'+n+'<i>'+(n===1?'Woche':'Wochen')+'</i></button>');
   html += '</div>';
   html += schlossHtml('wc', zu, sched._klackWc);
-  html += '</div>';
   sched._klackWc = false;
   if(wc > 1){
     const kw = isoWeek(new Date());
     const cur = (((kw - 1 + (sched.offset||0)) % wc) + wc) % wc;
-    html += '<div style="width:100%;margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)">';
     const rotZu = sched.rotLock !== false;
-    html += '<p class="hint" style="margin-bottom:10px">Gerade läuft Kalenderwoche '+kw+'. Nach welcher deiner Wochen arbeitest du diese Woche?</p>';
-    html += '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">';
-    html += '<div class="seg'+(rotZu?' gesperrt':'')+'" id="rot-seg">';
+    html += '<div class="wsec"><u>Diese Woche</u>';
+    html += '<p class="hint" style="margin-bottom:11px">Gerade läuft Kalenderwoche '+kw+'. '
+         +  'Nach welcher deiner Wochen arbeitest du gerade?</p>';
+    html += '<div class="seg breit'+(rotZu?' gesperrt':'')+'" id="rot-seg">';
     for(let i = 0; i < wc; i++) html += '<button data-rot="'+i+'"'+(i===cur?' class="on"':'')
-      + (rotZu?' disabled':'')+'>Woche '+(i+1)+'</button>';
+      + (rotZu?' disabled':'')+'><i>Woche</i>'+(i+1)+'</button>';
     html += '</div>';
     html += schlossHtml('rot', rotZu, sched._klackRot);
-    html += '</div></div>';
+    html += '</div>';
     sched._klackRot = false;
   }
   if(wc > 1){
     const kw2 = isoWeek(new Date());
     const cur2 = (((kw2 - 1 + (sched.offset||0)) % wc) + wc) % wc;
-    html += '<p class="hint" style="margin-top:18px;margin-bottom:0">Welche Woche möchtest du bearbeiten?</p>';
+    html += '<div class="wsec"><u>Bearbeiten</u>';
+    html += '<p class="hint" style="margin-bottom:0">Welche Woche möchtest du eintragen?</p>';
     html += '<div class="wtabs">';
     for(let i = 0; i < wc; i++){
       const dran = wocheDran(i, cur2, wc);
@@ -3349,6 +3370,7 @@ function renderSched(host, sched, onChange){
       html += '<div class="wnote">Gleiche Zeiten: ' + txt + '. Falls das nicht stimmt, '
            +  'wähle die Woche oben aus und ändere sie.</div>';
     }
+    html += '</div>';                                   /* Abschnitt Bearbeiten */
   }
   html += '</div>';
 
