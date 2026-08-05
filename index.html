@@ -2692,7 +2692,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1102';
+const APP_STAND = '2026-08-05-1127';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -4179,7 +4179,7 @@ $('#lg-vn').addEventListener('keydown', e => { if(e.key === 'Enter') $('[data-do
 /* ═══════════════════════════════════════════════════════════
    APP BETRETEN
    ═══════════════════════════════════════════════════════════ */
-const CAL = { y:PREV.getFullYear(), m:PREV.getMonth() };
+const CAL = { y:NOW.getFullYear(), m:NOW.getMonth() };
 const EX  = { year:PREV.getFullYear(), set:new Set() };
 
 function enterApp(){
@@ -4191,9 +4191,12 @@ function enterApp(){
   if(!CLOUD_ON) setSync('local');
   EX.set = new Set((ME.months || []).map(o => o.y + '-' + o.m));
   EX.year = ME.months && ME.months.length ? ME.months[ME.months.length-1].y : PREV.getFullYear();
-  const first = (ME.months || [])[0];
-  CAL.y = first ? first.y : PREV.getFullYear();
-  CAL.m = first ? first.m : PREV.getMonth();
+  /* Der Kalender beginnt im laufenden Monat. Vorher stand er auf dem ersten
+     für den Export gewählten Monat, also meist auf dem Vormonat — beim Öffnen
+     will man aber sehen, wo man heute steht. */
+  const heute = new Date();
+  CAL.y = heute.getFullYear();
+  CAL.m = heute.getMonth();
   Q.from = Q.to = null; Q.y = CAL.y; Q.m = CAL.m;
   malRang();
   exYear(); renderCal(); renderQCal();
