@@ -371,7 +371,7 @@ bekommt nichts. Nur per Mail, weil eine Nachricht im App-Postfach niemanden zur�
 
 Fertig im Projekt liegen:
 
-- `supabase/functions/monatsmail/index.ts` — die Edge Function samt Mailvorlage im MOJI-Design
+- `monatsmail.ts` — die Edge Function samt Mailvorlage im MOJI-Design
 - `monatsmail.sql` — Tabelle `mail_log` gegen Doppelmails und der Zeitplan
 
 ### 15.1 Absender bei Resend freischalten
@@ -394,11 +394,13 @@ Fertig im Projekt liegen:
 ### 15.3 Funktion veröffentlichen
 
 Im **Dashboard**: **Edge Functions** → **Deploy a new function** → Name `monatsmail` → den
-Inhalt von `supabase/functions/monatsmail/index.ts` einfügen → **Deploy**.
+Inhalt von `monatsmail.ts` einfügen → **Deploy**.
 
 Oder auf dem Rechner mit der CLI:
 
 ```bash
+mkdir -p supabase/functions/monatsmail
+cp monatsmail.ts supabase/functions/monatsmail/index.ts
 npx supabase login
 npx supabase link --project-ref PROJEKT_REF
 npx supabase functions deploy monatsmail
@@ -470,7 +472,7 @@ order by u.created_at;
 | `firma-miller.png` | Logo Miller Optik, nur bei der Firmenauswahl |
 | `wolken.mp4` | Hintergrund im Ladebild |
 | `mail-anmeldung.html`, `mail-registrierung.html` | Vorlagen für Supabase |
-| `supabase/functions/monatsmail/index.ts` | Monats-Erinnerung |
+| `monatsmail.ts` | Monats-Erinnerung, Code der Edge Function |
 | `monatsmail.sql` | Tabelle und Zeitplan dazu |
 
 Profilbilder haben ihre eigene Fassung: `AV_STAND` in `index.html` hochsetzen, sonst zeigen
