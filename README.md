@@ -68,10 +68,19 @@ Speicher hat.
 Beim ersten Mal läuft danach der Funnel: Vorname, Nachname, Geburtsdatum, Arbeitsort,
 Dienstzeiten und die Einwilligung zur Monats-Erinnerung. Alles Weitere hängt am Konto.
 
-**Passkey.** Im Profilmenü lässt sich ein Passkey anlegen — danach genügt Face ID oder
-Fingerabdruck. Ein Passkey gilt immer nur für **ein Gerät** und **eine Adresse**; nach dem
-Umzug auf `moji-app.at` musste jeder seinen neu anlegen. Die App erkennt das selbst und
-bietet im Menü *Passkey neu anlegen* an.
+**Passkey.** Im Profilmenü steht dafür **eine** Zeile: das Schlüsselsymbol in Normalgröße,
+darunter der Zustand in Farbe.
+
+| Farbe | Text | Ein Tipp fragt |
+|---|---|---|
+| grün | Anmelden ohne Code aktiv | *Passkey deaktivieren?* → Deaktivieren / Behalten |
+| orange | Anmelden ohne Code – noch nicht aktiviert | *Passkey aktivieren?* → Aktivieren / Später |
+| rot | Anmelden ohne Code – Problem | *Passkey neu einrichten?* → Neu versuchen / Abbrechen |
+
+Gefragt wird in einem kleinen Balken am unteren Rand; ein Tipp daneben oder Escape schließt
+ihn. Rot heißt: veraltet (Umzug), nicht abrufbar oder der letzte Versuch ist schiefgegangen —
+der Grund steht im Balken. Ein Aussetzer beim Abruf lässt einen bekannten Passkey grün.
+Ein Passkey gilt immer nur für **ein Gerät** und **eine Adresse**.
 
 ---
 
@@ -396,6 +405,11 @@ Die RP ID muss ein registrierbares Suffix der Adresse sein, sonst lehnt der Brow
 Beim Domainumzug wurden alle bestehenden Passkeys ungültig; die App merkt sich pro Konto im
 Gerätespeicher, für welche Adresse ihr Passkey gilt, räumt bei `InvalidStateError` selbständig
 auf und legt neu an.
+
+Im Code hängt alles an `pkStand()` — `aktiv`, `aus`, `problem`, `laden`. Die Menüzeile nimmt
+davon Farbe und Text (`pk-ok` / `pk-warn` / `pk-bad`), der Balken `#pkbar` seine Beschriftung
+und die Aktion: `pkReset()`, `pkAdd()` oder `pkErneuern()`. Eine eigene Zeile
+*Passkey zurücksetzen* gibt es nicht mehr — das erledigt der Balken.
 
 ---
 
