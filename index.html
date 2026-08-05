@@ -1333,7 +1333,7 @@ body.nobar #v-onboard{padding-top:14px}
 
 .mk{position:relative;overflow:hidden;border-radius:26px;color:#141B3A;
   background:linear-gradient(168deg,var(--pa,#eef2fb) 0%,var(--pb,#d8e2f7) 58%,var(--pa,#eef2fb) 100%);
-  box-shadow:0 34px 70px -28px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.5) inset;
+  box-shadow:0 34px 70px -28px rgba(0,0,0,.85);
   animation:mkRein .78s var(--ease-out) both}
 @keyframes mkRein{
   0%{opacity:0;transform:scale(.86) rotate(-2.6deg) translateY(18px)}
@@ -3985,24 +3985,24 @@ function vsIco(k){
 const VERGLEICHE = [
   [0,     'uhr',    'Der erste Export wartet noch auf dich.'],
   [5,     'eis',    'eine Kugel Eis in Ruhe schlecken'],
-  [13,    'eis',    'zwei Kugeln Eis, ganz ohne Hetze'],
+  [13,    'eis',    'zwei Kugeln Eis essen, ganz ohne Hetze'],
   [20,    'eis',    'vier Kugeln Eis essen'],
   [30,    'kaffee', 'einen Kaffee trinken und aus dem Fenster schauen'],
   [45,    'kuchen', 'einen Kuchen backen'],
   [60,    'tv',     'eine Folge deiner Serie schauen'],
-  [90,    'mond',   'ein Nickerchen, das sich auszahlt'],
+  [90,    'mond',   'ein Nickerchen machen, das sich auszahlt'],
   [120,   'film',   'einen ganzen Kinofilm ansehen'],
   [180,   'berg',   'auf den Hausberg wandern'],
   [240,   'buch',   'ein halbes Buch lesen'],
-  [300,   'welle',  'einen Nachmittag am See'],
+  [300,   'welle',  'einen Nachmittag am See verbringen'],
   [420,   'mond',   'einmal richtig ausschlafen'],
   [600,   'koffer', 'einen ganzen Arbeitstag freinehmen'],
-  [900,   'auto',   'die Fahrt an die Adria'],
-  [1440,  'sonne',  'einen Tag ohne einen einzigen Termin'],
-  [2880,  'koffer', 'ein langes Wochenende'],
-  [4320,  'welle',  'drei Tage Urlaub'],
-  [10080, 'sonne',  'eine ganze Woche Urlaub'],
-  [20160, 'herz',   'zwei Wochen Urlaub — und MOJI trägt sie mit']
+  [900,   'auto',   'an die Adria fahren'],
+  [1440,  'sonne',  'dir einen Tag ohne einen einzigen Termin schenken'],
+  [2880,  'koffer', 'dir ein langes Wochenende nehmen'],
+  [4320,  'welle',  'dir drei Tage Urlaub nehmen'],
+  [10080, 'sonne',  'dir eine ganze Woche Urlaub nehmen'],
+  [20160, 'herz',   'dir zwei Wochen Urlaub nehmen — MOJI trägt sie mit']
 ];
 function vergleich(min){
   let v = VERGLEICHE[0];
@@ -4025,7 +4025,7 @@ function malKarte(){
 
   const min = gespartMin(), v = vergleich(min);
   $('#mk-zeit').textContent = anzahl ? fmtDauer(min) : 'noch nichts';
-  $('#mk-verg').textContent = anzahl ? 'Das reicht für ' + v.text + '.' : v.text;
+  $('#mk-verg').textContent = anzahl ? 'Damit könntest du ' + v.text + '.' : v.text;
   $('#mk-ico').innerHTML = vsIco(v.ico);
 
   $('#mk-bar').style.width = '0%';
@@ -4051,10 +4051,10 @@ function karteAuf(){
   karte.style.animation = 'none'; void karte.offsetWidth; karte.style.animation = '';
   b.classList.add('on');
   document.body.classList.add('locked');
-  /* Die Leiste füllt sich erst, wenn die Karte steht — dann sieht man es. */
-  requestAnimationFrame(() => {
-    $('#mk-bar').style.width = Math.round(stufeAnteil() * 100) + '%';
-  });
+  /* Die Leiste füllt sich erst, wenn die Karte steht — dann sieht man es
+     laufen. Ein kurzer Zeitgeber statt requestAnimationFrame: der läuft
+     auch dann, wenn das Fenster gerade nicht im Vordergrund war. */
+  setTimeout(() => { $('#mk-bar').style.width = Math.round(stufeAnteil() * 100) + '%'; }, 90);
 }
 function karteZu(){
   const b = $('#mkv');
@@ -4074,7 +4074,7 @@ function teilText(){
     'Ich bin bei MOJI auf Stufe ' + nr + ' — ' + r.n + '.',
     anzahl
       ? anzahl + (anzahl === 1 ? ' Monat' : ' Monate') + ' Arbeitszeit ohne einen einzigen Zettel. '
-        + 'Gespart: ' + fmtDauer(gespartMin()) + ' — genug für ' + v.text + '.'
+        + 'Gespart: ' + fmtDauer(gespartMin()) + ' — damit könnte ich ' + v.text + '.'
       : 'Gerade erst beigetreten.',
     '',
     'Magst du auch? MOJI zeichnet deine Arbeitszeit auf und macht daraus ein fertiges PDF.',
@@ -4156,7 +4156,7 @@ async function karteBild(){
   c.fillText(anzahl ? fmtDauer(gespartMin()) : 'noch nichts', hx + 40, hy + 126);
   const v = vergleich(gespartMin());
   c.fillStyle = 'rgba(20,27,58,.72)'; c.font = 'italic 400 30px Fraunces, Georgia, serif';
-  const satz = anzahl ? 'Das reicht für ' + v.text + '.' : v.text;
+  const satz = anzahl ? 'Damit könntest du ' + v.text + '.' : v.text;
   /* Umbruch von Hand, damit nichts über den Rand läuft */
   const worte = satz.split(' ');
   let zeile = '', zy = hy + 176;
