@@ -1318,6 +1318,38 @@ body.nobar #v-onboard{padding-top:14px}
 .mbbar span:nth-child(5){animation-delay:.28s}
 .mbbar .leer{flex:1;background:rgba(238,242,255,.06);animation:none}
 
+/* ─── Neue Fassung ─────────────────────────────────────────────────────
+   Sie liegt über allem, zeichnet den Hintergrund weich und wartet auf einen
+   Tipp. Danach dreht sich das Zeichen und ein Balken läuft durch — erst dann
+   wird geladen, sonst wirkt der Sprung wie ein Fehler. */
+.neuv{position:fixed;inset:0;z-index:70;display:none;place-items:center;cursor:pointer;
+  background:rgba(6,10,26,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.neuv.on{display:grid;animation:fade .32s}
+.neuv-karte{width:min(84vw,304px);padding:22px 22px 20px;border-radius:24px;text-align:center;
+  background:linear-gradient(175deg,rgba(27,40,86,.98),rgba(10,17,41,.98));
+  border:1px solid var(--line);box-shadow:var(--shadow);
+  animation:neuvRein .52s var(--ease-out) both}
+@keyframes neuvRein{
+  0%{opacity:0;transform:scale(.88) translateY(14px)}
+  62%{opacity:1;transform:scale(1.02)}
+  100%{opacity:1;transform:none}
+}
+.neuv-ico{display:grid;place-items:center;width:46px;height:46px;margin:0 auto 14px;
+  border-radius:15px;background:rgba(247,215,116,.12);color:var(--butter)}
+.neuv-ico svg{width:22px;height:22px}
+.neuv.laedt .neuv-ico svg{animation:neuvDreh 1s linear infinite}
+@keyframes neuvDreh{to{transform:rotate(360deg)}}
+.neuv-karte b{display:block;font-family:var(--font-dis);font-weight:400;
+  font-size:19px;line-height:1.25;letter-spacing:-.01em}
+.neuv-karte small{display:block;margin-top:7px;font-size:12.5px;color:var(--tx-3)}
+.neuv-bar{display:block;height:4px;border-radius:99px;margin-top:16px;overflow:hidden;
+  background:rgba(255,255,255,.09);opacity:0;transition:opacity .2s}
+.neuv.laedt .neuv-bar{opacity:1}
+.neuv-bar i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--butter-dim),var(--butter))}
+.neuv.laedt .neuv-bar i{animation:neuvBalken .92s var(--ease-out) forwards}
+@keyframes neuvBalken{to{width:100%}}
+
 /* ─── Begrüßung nach dem Anmelden ──────────────────────────────────────
    Kurz, aber mit Anlauf: das Bild federt herein, dann der Name, dann der
    Satz. Nach rund zweieinhalb Sekunden löst sich alles auf und der
@@ -2520,6 +2552,21 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   </div>
 </div>
 
+<!-- Neue Fassung: Kachel in der Bildmitte, Hintergrund weich gezeichnet.
+     Ein Tipp irgendwo darauf lädt neu — mit sichtbarem Fortschritt, damit
+     der Moment nicht wie ein Absturz aussieht. -->
+<div class="neuv" id="neuv" role="button" tabindex="0" aria-hidden="true"
+     aria-label="Neue Version laden">
+  <div class="neuv-karte">
+    <span class="neuv-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 10-2.6 5.9"/><path d="M20 4.5V11h-6"/></svg>
+    </span>
+    <b>Es gibt eine neue Version</b>
+    <small id="neuv-sub">Tippen um neu zu laden</small>
+    <span class="neuv-bar" aria-hidden="true"><i></i></span>
+  </div>
+</div>
+
 <!-- Begrüßung nach dem Anmelden. Hier darf der Charakter groß und
      unbeschnitten auftreten — 3:4 Feld auf 3:4 Motiv. -->
 <div class="hallo" id="hallo" aria-hidden="true">
@@ -2692,7 +2739,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1127';
+const APP_STAND = '2026-08-05-1133';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -2703,12 +2750,30 @@ async function pruefeStand(){
     const m = (await r.text()).match(/APP_STAND = '([^']+)'/);
     if(m && m[1] !== APP_STAND){
       _updBereit = true;
-      toast('Neue Fassung da — hier tippen zum Laden', true);
+      neuZeigen();
     }
   }catch(e){}
 }
 
-$('#toast').addEventListener('click', () => { if(_updBereit) location.reload(); });
+function neuZeigen(){
+  const el = $('#neuv');
+  el.classList.remove('laedt');
+  $('#neuv-sub').textContent = 'Tippen um neu zu laden';
+  el.classList.add('on');
+  el.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('locked');
+}
+function neuLaden(){
+  const el = $('#neuv');
+  if(!el.classList.contains('on') || el.classList.contains('laedt')) return;
+  el.classList.add('laedt');
+  $('#neuv-sub').textContent = 'Wird geladen …';
+  setTimeout(() => location.reload(), 960);
+}
+$('#neuv').addEventListener('click', neuLaden);
+$('#neuv').addEventListener('keydown', e => {
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); neuLaden(); }
+});
 document.addEventListener('visibilitychange', () => {
   if(document.visibilityState === 'visible') pruefeStand();
 });
