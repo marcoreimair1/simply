@@ -355,12 +355,13 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 /* Roter Kreis mit Zahl, wie am Homescreen. Er sitzt an der Ecke und darf
    ein Stück hinausragen, deshalb liegt er ausserhalb des beschnittenen
    Bildes. Bei zweistelligen Zahlen wird er zur Pille. */
-/* Das Tier macht Platz: sobald eine Meldung anliegt, wandert der Ausschnitt
-   nach oben — die Figur rutscht also im Rahmen nach unten und darüber steht
-   ihr eigenes Pastell. Verschoben wird der Ausschnitt, nicht das Bild:
-   sonst rutscht das Bild aus dem Rahmen und oben käme Weiß zum Vorschein. */
-#avwrap .avatar img{transition:object-position .62s var(--ease-out),transform .62s var(--ease-out)}
-#avwrap.meldung .avatar img{object-position:center 58%;transform:scale(1.04)}
+/* Das Tier macht Platz: sobald eine Meldung anliegt, rutscht es im Rahmen
+   nach unten und über ihm steht sein eigenes Pastell — das liegt als
+   Hintergrund im Rahmen, deshalb entsteht dabei keine weiße Lücke.
+   Bewegt wird das Bild selbst: eine Verschiebung animiert jedes Gerät
+   verlässlich, ein wandernder Ausschnitt nicht. */
+#avwrap .avatar img{transition:transform .62s var(--ease-out);will-change:transform}
+#avwrap.meldung .avatar img{transform:translateY(15%) scale(1.03)}
 #avwrap.meldung #av-zaehler{animation:meldungPop .62s var(--ease-out) both}
 @keyframes meldungPop{
   0%{opacity:0;transform:translateY(6px) scale(.3)}
@@ -2619,7 +2620,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-0749';
+const APP_STAND = '2026-08-05-0757';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -4684,6 +4685,11 @@ const AVATARE = 12;
    bei Geräten ankommt, die die alte Datei schon im Zwischenspeicher haben.
    Bei jeder Änderung an den Bildern wird die Zahl erhöht. */
 const AV_STAND = 6;
+/* Der Pastellgrund jedes Motivs. Er liegt hinter dem Bild im Rahmen —
+   rutscht das Bild nach unten, kommt also dieselbe Farbe zum Vorschein
+   und nicht Weiß. */
+const AV_GRUND = ['#D9F2DF','#F2D9DC','#F2D9DE','#F2D9DA','#F2E4D9','#F2EED9',
+                  '#F2EBD9','#F2D9DE','#F2E5D9','#F2EED9','#F2F2D9','#F2DCD9'];
 function avDatei(n){ return 'av-' + n + '.png?v=' + AV_STAND; }
 function avZufall(){
   /* Aus Vorname und Geburtsdatum eine Zahl bilden — gleicher Mensch,
@@ -4705,6 +4711,7 @@ function malAvatar(){
     + 'onerror="this.remove();this.parentNode.classList.remove(\'hatbild\');'
     + 'this.parentNode.textContent=\'' + kurz + '\'">';
   oben.classList.add('hatbild');
+  oben.style.background = AV_GRUND[n - 1] || '#fff';
   $('#avbig').innerHTML = '<img src="' + avDatei(n) + '" alt="">';
   malAvGitter();
 }
