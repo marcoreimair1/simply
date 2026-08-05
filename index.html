@@ -387,10 +387,12 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 .menu-bd{position:absolute;inset:0;background:rgba(4,7,20,.6);backdrop-filter:blur(4px);animation:fade .25s}
 /* Dieselbe Trübung wie der Menühintergrund. Sie hält den Übergang, während
    die Seite wechselt und das Menü wieder aufgeht. */
-.blurhalt{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;visibility:hidden;
-  background:rgba(4,7,20,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-  transition:opacity .28s var(--ease),visibility .28s}
-.blurhalt.on{opacity:1;visibility:visible}
+.blurhalt{position:fixed;inset:0;z-index:40;pointer-events:none;display:none;
+  background:rgba(4,7,20,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.blurhalt.on{display:block}
+/* Beim Übergeben blendet der Menühintergrund nicht ein, sondern steht sofort —
+   die Halteschicht sieht genauso aus, der Wechsel fällt deshalb nicht auf. */
+.menu.sofort .menu-bd{animation:none}
 /* Der Ursprung liegt in der rechten oberen Ecke — das Menü wächst aus dem
    Profilbild heraus und fährt beim Schließen dorthin zurück. Vorher war es
    beim Zumachen einfach weg, das riss. */
@@ -3518,7 +3520,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2225';
+const APP_STAND = '2026-08-05-2230';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7774,11 +7776,19 @@ function zurueckInsMenu(){
   if(!_vonMenu) return;
   _vonMenu = false;
   /* Erst die Trübung halten, dann wechseln — sonst blitzt die Seite scharf
-     auf, bevor das Menü mit seinem eigenen Hintergrund wieder aufgeht. */
+     auf, bevor das Menü mit seinem eigenen Hintergrund wieder aufgeht.
+     Übergeben wird ohne Überblendung: der Menühintergrund steht sofort da,
+     im selben Bild geht die Halteschicht weg. Sonst lägen beide kurz
+     übereinander und der Hintergrund würde dunkler springen. */
+  const m = $('#menu');
   blurHalten(true);
   setTimeout(() => {
+    m.classList.add('sofort');
     menuAuf();
-    setTimeout(() => blurHalten(false), 300);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      blurHalten(false);
+      setTimeout(() => m.classList.remove('sofort'), 80);
+    }));
   }, 170);
 }
 function menuAuf(){
