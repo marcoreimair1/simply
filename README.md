@@ -88,7 +88,24 @@ bietet im Menü *Passkey neu anlegen* an.
   einen Urlaubseintrag am selben Tag
 - **Getrennte Summen**: Arbeitszeit, Urlaub, Krankenstand, Feiertag, Sonstige, Gesamt
 - Bei *Eigener Text* lässt sich festlegen, ob die Stunden als Arbeitszeit zählen (Schulung)
-  oder nicht (Zeitausgleich)
+  oder nicht
+
+### Zeitausgleich
+
+Am Kalendertag antippen → **Zeitausgleich**. Sobald eine Art gewählt ist, treten die anderen
+drei weg (Höhe animiert); ein Tipp auf die gewählte Art holt sie zurück — der kleine Pfeil im
+Knopf zeigt das an. Dasselbe gilt für Urlaub, Krankenstand und Eigener Text.
+
+- **Einlösen** (rot, Minus) oder **Sammeln** (grün, Plus) — zwei Knöpfe, Sammeln ist vorgewählt
+- Die Menge nur über **−** und **+** in **0,25-h-Schritten**, Start bei **1,00 h**,
+  Kleinstwert 0,25 h. Die Zahl selbst ist kein Eingabefeld, es gibt also keine Tastatur.
+- **Halber Tag / Ganzer Tag** übernehmen die Stunden aus dem Dienstplan dieses Tages;
+  ein zweiter Tipp auf den gewählten Knopf stellt wieder 1,00 h ein. An dienstfreien Tagen
+  sind beide Knöpfe aus, und Einlösen wird abgelehnt.
+- **Sammeln** legt die Stunden auf die Arbeitszeit dieses Tages, **Einlösen** nimmt sie weg,
+  höchstens bis auf null
+- Gespeichert wird `{ t:'zeit', za: <Zahl mit Vorzeichen> }`. Ein durchlaufendes Gesamtkonto
+  führt MOJI nicht — jeder Monat steht für sich.
 
 ---
 
