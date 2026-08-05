@@ -339,7 +339,7 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 /* Oben rechts sitzt das Profilbild in einem weichen Quadrat — rund wirkt
    bei diesen Figuren beschnitten, weil sie unten auf der Kante sitzen.
    Die Anfangsbuchstaben bleiben als Rückfall, falls ein Bild fehlt. */
-.avatar{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;font-weight:600;font-size:13px;
+.avatar{position:relative;width:38px;height:38px;border-radius:13px;display:grid;place-items:center;font-weight:600;font-size:13px;
   background:linear-gradient(140deg,var(--butter),#E0A93C);color:#20180A;border:1px solid rgba(255,255,255,.2);
   transition:.25s var(--ease);overflow:hidden;padding:0}
 .avatar:hover{transform:scale(1.07) rotate(-3deg)}
@@ -349,7 +349,8 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
    drei Größen, damit der Ausschnitt überall gleich aussieht — links und
    rechts wird ohnehin nichts beschnitten, das hatte vorher die Ohren
    gekostet, als das große Feld hochkant und das Motiv quadratisch war. */
-.avatar img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block}
+.avatar img{position:absolute;left:0;top:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 86%;display:block}
 .avwrap{position:relative;display:grid;flex:none}
 
 /* Roter Kreis mit Zahl, wie am Homescreen. Er sitzt an der Ecke und darf
@@ -361,7 +362,7 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
    Bewegt wird das Bild selbst: eine Verschiebung animiert jedes Gerät
    verlässlich, ein wandernder Ausschnitt nicht. */
 #avwrap .avatar img{transition:transform .62s var(--ease-out);will-change:transform}
-#avwrap.meldung .avatar img{transform:translateY(15%) scale(1.03)}
+#avwrap.meldung .avatar img{transform:translateY(14%) scale(1.03)}
 #avwrap.meldung #av-zaehler{animation:meldungPop .62s var(--ease-out) both}
 @keyframes meldungPop{
   0%{opacity:0;transform:translateY(6px) scale(.3)}
@@ -437,7 +438,8 @@ body.menuauf #avatar{transform:scale(.92)}
   background:#fff;border:1px solid rgba(255,255,255,.22);display:grid;place-items:center;
   font-family:var(--font-dis);font-size:36px;color:#20180A;
   transition:transform .34s var(--ease),border-radius .34s var(--ease),box-shadow .3s}
-.avbig img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block}
+.avbig img{position:absolute;left:0;top:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 86%;display:block}
 .avbig:hover{transform:scale(1.04);box-shadow:0 12px 30px -14px rgba(0,0,0,.7)}
 .avbig:active{transform:scale(.98)}
 /* Gitter mit den Motiven — vier je Reihe, wächst nach unten auf. */
@@ -2620,7 +2622,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-0757';
+const APP_STAND = '2026-08-05-0812';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
