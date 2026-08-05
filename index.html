@@ -2962,6 +2962,16 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 /* ─── Konstanten ───────────────────────────────────────────── */
 const MONTHS = ['Jänner','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 const MSHORT = ['Jän','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+
+/* MOJI kennt keine Zeit vor Jänner 2025. Das spart keinen Code und macht
+   nichts schneller — der Kalender zeichnet ohnehin nur den einen Monat,
+   den man ansieht. Es verhindert bloß Vertipper: wer sich weit zurück
+   blättert, trägt sonst Urlaub in ein Jahr ein, das niemand mehr ansieht. */
+const START = { y: 2025, m: 0 };
+
+function vorDemStart(y, m){
+  return y < START.y || (y === START.y && m < START.m);
+}
 const DOWFULL = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
 const DOWSHORT = ['So','Mo','Di','Mi','Do','Fr','Sa'];
 const WORKDAYS = [1,2,3,4,5,6];
@@ -3035,7 +3045,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1534';
+const APP_STAND = '2026-08-05-1544';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5577,6 +5587,9 @@ $('#avgrid').addEventListener('click', e => {
 let FLASH = new Set(), FLASH_ORDER = [];
 function renderCal(){
   const y = CAL.y, m = CAL.m;
+  /* Am unteren Rand nimmt der Pfeil sich zurück, statt ins Leere zu führen. */
+  const p = $('#cal-prev');
+  if(p) p.disabled = vorDemStart(m === 0 ? y - 1 : y, m === 0 ? 11 : m - 1);
   /* Ohne Firmennamen — der brach die Zeile um und stand am Handy zweizeilig */
   $('#cal-title').innerHTML = MONTHS[m] + ' <i>' + y + '</i>'
     + '<small>Kalender von ' + esc(ME.vorname) + '</small>';
@@ -5694,7 +5707,12 @@ $('#mbar').addEventListener('click', msAuf);
 $('#msheet').addEventListener('click', e => {
   if(e.target.dataset.close === 'msheet') msZu();
 });
-$('#cal-prev').addEventListener('click', () => { CAL.m--; if(CAL.m < 0){ CAL.m = 11; CAL.y--; } renderCal(); });
+$('#cal-prev').addEventListener('click', () => {
+  let y = CAL.y, m = CAL.m - 1;
+  if(m < 0){ m = 11; y--; }
+  if(vorDemStart(y, m)){ toast('Weiter zurück als Jänner ' + START.y + ' geht es nicht.'); return; }
+  CAL.y = y; CAL.m = m; renderCal();
+});
 $('#cal-next').addEventListener('click', () => { CAL.m++; if(CAL.m > 11){ CAL.m = 0; CAL.y++; } renderCal(); });
 $('#cal-today').addEventListener('click', () => { CAL.y = NOW.getFullYear(); CAL.m = NOW.getMonth(); renderCal(); });
 $('#cal-grid').addEventListener('click', e => {
@@ -6054,6 +6072,8 @@ function qEach(fn){
 function renderQCal(){
   if(!ME) return;
   const y = Q.y, m = Q.m, n = dim(y, m);
+  const qp = $('#qc-prev');
+  if(qp) qp.disabled = vorDemStart(m === 0 ? y - 1 : y, m === 0 ? 11 : m - 1);
   const lead = (new Date(y, m, 1).getDay() + 6) % 7;
   const hol = holidays(y), today = new Date();
   const a = Q.from ? +Q.from : null, b = Q.to ? +Q.to : null;
@@ -6105,7 +6125,12 @@ $('#qc-grid').addEventListener('click', e => {
   else Q.to = dt;
   renderQCal();
 });
-$('#qc-prev').addEventListener('click', () => { Q.m--; if(Q.m < 0){ Q.m = 11; Q.y--; } renderQCal(); });
+$('#qc-prev').addEventListener('click', () => {
+  let y = Q.y, m = Q.m - 1;
+  if(m < 0){ m = 11; y--; }
+  if(vorDemStart(y, m)){ toast('Weiter zurück als Jänner ' + START.y + ' geht es nicht.'); return; }
+  Q.y = y; Q.m = m; renderQCal();
+});
 $('#qc-next').addEventListener('click', () => { Q.m++; if(Q.m > 11){ Q.m = 0; Q.y++; } renderQCal(); });
 /* Das Blatt fährt von unten herein — die Kalenderseite bleibt stehen. */
 function quickOpen(){
@@ -6215,6 +6240,7 @@ $('#q-clear').addEventListener('click', () => {
 /* Was in der Zukunft liegt, kann noch niemand aufgezeichnet haben. Der
    laufende Monat ist erlaubt — wer vor Monatsende abgibt, soll das können. */
 function monatOffen(y, m){
+  if(vorDemStart(y, m)) return false;
   const h = new Date();
   return y < h.getFullYear() || (y === h.getFullYear() && m <= h.getMonth());
 }
@@ -6232,12 +6258,15 @@ function exYear(){
   $('#ex-months').innerHTML = MONTHS.map((n,i) => {
     const offen = monatOffen(EX.year, i);
     return '<button class="chip'+(EX.set.has(EX.year+'-'+i)?' on':'')+(offen?'':' zu')+'"'
-      + ' data-m="'+i+'"'+(offen?'':' disabled aria-label="'+n+' '+EX.year+' liegt noch in der Zukunft"')
+      + ' data-m="'+i+'"'+(offen?'':' disabled aria-label="'+n+' '+EX.year
+          + (vorDemStart(EX.year, i) ? ' liegt vor dem Start von MOJI' : ' liegt noch in der Zukunft')+'"')
       + '>'+MSHORT[i]+'</button>';
   }).join('');
   /* Kein Blättern in Jahre, in denen ohnehin nichts wählbar ist. */
   const vor = $('[data-exyr="1"]');
   if(vor) vor.disabled = EX.year >= h.getFullYear();
+  const zurueck = $('[data-exyr="-1"]');
+  if(zurueck) zurueck.disabled = EX.year <= START.y;
   const list = exList();
   $('#ex-note').textContent = list.length
     ? list.length + (list.length === 1 ? ' Monat' : ' Monate') + ' gewählt · ' +
@@ -6255,14 +6284,20 @@ function exList(){
 $('#ex-months').addEventListener('click', e => {
   const b = e.target.closest('[data-m]'); if(!b) return;
   if(b.disabled || !monatOffen(EX.year, +b.dataset.m)){
-    toast('Dieser Monat liegt noch vor uns.');
+    toast(vorDemStart(EX.year, +b.dataset.m)
+      ? 'MOJI beginnt im Jänner ' + START.y + '.'
+      : 'Dieser Monat liegt noch vor uns.');
     return;
   }
   const k = EX.year + '-' + b.dataset.m;
   EX.set.has(k) ? EX.set.delete(k) : EX.set.add(k);
   ME.months = exList(); save(); exYear();
 });
-$$('[data-exyr]').forEach(b => b.addEventListener('click', () => { EX.year += +b.dataset.exyr; exYear(); }));
+$$('[data-exyr]').forEach(b => b.addEventListener('click', () => {
+  const z = EX.year + (+b.dataset.exyr);
+  if(z < START.y) return;
+  EX.year = z; exYear();
+}));
 $('#ex-go').addEventListener('click', () => buildPdf(exList(), false));
 $('#ex-single').addEventListener('click', () => buildPdf(exList(), true));
 
