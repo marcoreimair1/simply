@@ -624,8 +624,13 @@ body.menuauf #avatar{transform:scale(.92)}
 .avbig.tauscht{animation:avTausch .5s var(--ease-out)}
 .mi{display:flex;align-items:center;gap:12px;width:100%;padding:12px 13px;border-radius:var(--r-s);
   font-size:14px;text-align:left;transition:.18s}
-.mi:hover{background:rgba(247,215,116,.1);color:var(--butter)}
-.mi.danger:hover{background:rgba(255,142,110,.12);color:var(--coral)}
+@media (hover:hover) and (pointer:fine){
+  .mi:hover{background:rgba(247,215,116,.1);color:var(--butter)}
+  .mi.danger:hover{background:rgba(255,142,110,.12);color:var(--coral)}
+}
+/* Nach dem Tippen soll nichts hängenbleiben: kein Rahmen, keine Fläche. */
+.mi:focus{outline:none;background:transparent}
+.mi:focus-visible{outline:2px solid var(--butter-dim);outline-offset:-2px}
 .mi svg{width:16px;height:16px;flex:none;opacity:.8}
 /* Passkey: dasselbe Symbolmaß wie überall, der Zustand steckt in der Farbe
    der Zeile darunter — grün aktiv, orange noch nicht, rot bei einem Problem. */
@@ -1867,7 +1872,8 @@ body.nobar #v-onboard{padding-top:14px}
 .mrang{position:relative;display:block;width:100%;text-align:left;padding:12px 13px 11px;border-radius:var(--r-s);
   border:1px solid var(--line-2);margin-bottom:6px;transition:.2s;
   background:linear-gradient(135deg,var(--rft,rgba(143,160,200,.16)),transparent 70%)}
-.mrang:hover{border-color:var(--rf,#8FA0C8)}
+@media (hover:hover) and (pointer:fine){ .mrang:hover{border-color:var(--rf,#8FA0C8)} }
+.mrang:focus{outline:none}
 .mrang:active{transform:scale(.985)}
 .mr-kopf{display:flex;align-items:center;gap:9px}
 .mr-lvl{flex:none;font-size:9.5px;font-weight:700;letter-spacing:.13em;padding:3px 7px;border-radius:7px;
@@ -3480,7 +3486,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2147';
+const APP_STAND = '2026-08-05-2152';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7775,6 +7781,8 @@ $('#avatar').addEventListener('click', () => {
 $('#menu').addEventListener('click', e => {
   if(e.target.dataset.close === 'menu'){ menuZu(); return; }
   const b = e.target.closest('[data-act]'); if(!b) return;
+  /* Nach dem Tippen die Auswahl abgeben, sonst bleibt der Knopf hell. */
+  try{ b.blur(); }catch(_e){}
   /* Diese drei bleiben im Menü — dafür wird es nicht geschlossen. */
   if(b.dataset.act === 'konten'){ kontenAuf(); return; }
   if(b.dataset.act === 'erinnerung'){ erinUmschalten(); return; }
