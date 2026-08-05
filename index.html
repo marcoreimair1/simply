@@ -627,11 +627,32 @@ h1.dis i{font-style:italic;color:var(--butter)}
 /* ============================================================
    DIENSTZEITEN
    ============================================================ */
-.wtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-top:14px;scrollbar-width:none}
+/* Wochenreiter: jede Woche mit eigener Farbe, eigener Kante und den
+   Stunden darunter. Die gerade laufende Woche ist mit „jetzt" vermerkt. */
+.wtabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-top:10px;scrollbar-width:none}
 .wtabs::-webkit-scrollbar{display:none}
-.wtab{padding:10px 16px;border-radius:12px;border:1px solid var(--line-2);font-size:12.5px;font-weight:500;
-  white-space:nowrap;color:var(--tx-3);transition:.2s}
-.wtab.on{background:rgba(247,215,116,.14);border-color:rgba(247,215,116,.45);color:var(--butter);font-weight:600}
+.wtab{position:relative;flex:1 0 auto;min-width:104px;display:flex;flex-direction:column;
+  align-items:flex-start;gap:2px;padding:10px 13px 10px 16px;border-radius:12px;overflow:hidden;
+  border:1px solid var(--line-2);white-space:nowrap;transition:.2s;text-align:left}
+.wtab::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--wf,var(--butter))}
+.wtab b{font-size:13px;font-weight:600;color:var(--tx-2)}
+.wtab small{font-size:10.5px;color:var(--tx-3);letter-spacing:0}
+.wtab.on{border-color:var(--wf,var(--butter));background:var(--wfa,rgba(247,215,116,.14))}
+.wtab.on b{color:var(--wf,var(--butter))}
+.wtab.on small{color:var(--tx-2)}
+
+/* Hinweis, wenn mehrere Wochen dieselben Zeiten tragen. */
+.wnote{margin-top:12px;padding:10px 12px;border-radius:12px;border:1px dashed var(--line-2);
+  font-size:11.5px;line-height:1.55;color:var(--tx-2)}
+
+/* Die Karte der Woche trägt ihre Farbe oben und im Schild. */
+.wcard{border-top:3px solid var(--wf,var(--butter))}
+.wkopf{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.wchip{flex:none;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 10px;border-radius:8px;background:var(--wf,var(--butter));color:#141B3A}
+.wlauf{font-size:11.5px;color:var(--tx-3)}
+.wkopie{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:11px;
+  font-size:11.5px;color:var(--tx-3)}
 .dayrow{display:grid;grid-template-columns:112px 1fr auto;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line-2)}
 .dayrow:last-child{border-bottom:none}
 .dayrow .dn{font-size:13.5px;font-weight:600}
@@ -2622,7 +2643,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-0902';
+const APP_STAND = '2026-08-05-0911';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -2707,6 +2728,35 @@ function dayPlan(sched, date){
   }
   return { vm:vm, nm:nm, pause:pause, cfg:cfg, wi:wi };
 }
+/* Jede Woche bekommt eine eigene Farbe. Sie zieht sich durch: Reiter,
+   Kopf der Karte und Rahmen — damit auf einen Blick klar ist, welche Woche
+   gerade bearbeitet wird. Vorher waren alle vier Reiter gleich und man
+   hat versehentlich viermal dieselbe Woche ausgefüllt. */
+const WOCHENFARBE = ['#F7D774','#79E8C6','#A99BFF','#FF8E6E'];
+/* Zwei Wochen inhaltlich vergleichen — nur die Zeiten, nichts anderes. */
+function wocheSchluessel(sched, i){
+  const w = sched.weeks[i] || {};
+  return WORKDAYS.map(d => {
+    const c = w[d] || {};
+    return [c.vmOn ? 1 : 0, c.vmFrom, c.vmTo, c.nmOn ? 1 : 0, c.nmFrom, c.nmTo].join('|');
+  }).join(';');
+}
+/* Welche Wochen sind untereinander gleich? Gibt Gruppen zurück. */
+function gleicheWochen(sched, wc){
+  const gruppen = {};
+  for(let i = 0; i < wc; i++){
+    const k = wocheSchluessel(sched, i);
+    (gruppen[k] = gruppen[k] || []).push(i + 1);
+  }
+  return Object.keys(gruppen).map(k => gruppen[k]).filter(g => g.length > 1);
+}
+/* In wie vielen Wochen ist diese Woche dran? 0 heißt: jetzt. */
+function wocheDran(i, cur, wc){ return (((i - cur) % wc) + wc) % wc; }
+function kwPlus(n){
+  const d = new Date(); d.setDate(d.getDate() + n * 7);
+  return isoWeek(d);
+}
+
 function weekTotal(sched, wi){
   const w = sched.weeks[wi] || {};
   return WORKDAYS.reduce((s,d) => {
@@ -3218,13 +3268,55 @@ function renderSched(host, sched, onChange){
     html += '</div></div>';
   }
   if(wc > 1){
+    const kw2 = isoWeek(new Date());
+    const cur2 = (((kw2 - 1 + (sched.offset||0)) % wc) + wc) % wc;
+    html += '<p class="hint" style="margin-top:18px;margin-bottom:0">Welche Woche möchtest du bearbeiten?</p>';
     html += '<div class="wtabs">';
-    for(let i = 0; i < wc; i++) html += '<button class="wtab'+(i===tab?' on':'')+'" data-tab="'+i+'">Woche '+(i+1)+' · '+fmtH(weekTotal(sched,i))+' h</button>';
+    for(let i = 0; i < wc; i++){
+      const dran = wocheDran(i, cur2, wc);
+      html += '<button class="wtab'+(i===tab?' on':'')+'" data-tab="'+i+'"'
+           +  ' style="--wf:'+WOCHENFARBE[i]+';--wfa:'+rgba(WOCHENFARBE[i], .14)+'">'
+           +  '<b>Woche '+(i+1)+'</b>'
+           +  '<small>'+fmtH(weekTotal(sched,i))+' h'+(dran === 0 ? ' · jetzt' : '')+'</small>'
+           +  '</button>';
+    }
     html += '</div>';
+    /* Der eigentliche Stolperstein: alle Wochen tragen dieselben Zeiten. */
+    const paare = gleicheWochen(sched, wc);
+    if(paare.length === 1 && paare[0].length === wc){
+      html += '<div class="wnote">Alle ' + wc + ' Wochen haben derzeit dieselben Zeiten. '
+           +  'Wähle oben eine Woche und trage ihre eigenen Zeiten ein.</div>';
+    } else if(paare.length){
+      /* „Woche 1, 2 und 4“ statt „Woche 1 und 2 und 4“. */
+      const txt = paare.map(g => 'Woche ' + (g.length > 2
+        ? g.slice(0, -1).join(', ') + ' und ' + g[g.length-1]
+        : g.join(' und '))).join('; ');
+      html += '<div class="wnote">Gleiche Zeiten: ' + txt + '. Falls das nicht stimmt, '
+           +  'wähle die Woche oben aus und ändere sie.</div>';
+    }
   }
   html += '</div>';
 
-  html += '<div class="card"><h3>'+(wc>1?'Woche '+(tab+1):'Deine Woche')+'</h3><p class="hint">Vormittag und Nachmittag lassen sich einzeln abschalten.</p><div style="margin-top:8px">';
+  if(wc > 1){
+    const kw3 = isoWeek(new Date());
+    const cur3 = (((kw3 - 1 + (sched.offset||0)) % wc) + wc) % wc;
+    const dran = wocheDran(tab, cur3, wc);
+    const lauf = dran === 0 ? 'Läuft gerade — Kalenderwoche ' + kw3
+               : dran === 1 ? 'Ab nächster Woche — Kalenderwoche ' + kwPlus(1)
+               : 'In ' + dran + ' Wochen — Kalenderwoche ' + kwPlus(dran);
+    html += '<div class="card wcard" style="--wf:'+WOCHENFARBE[tab]+';--wfa:'+rgba(WOCHENFARBE[tab], .14)+'">';
+    html += '<div class="wkopf"><span class="wchip">Woche '+(tab+1)+' von '+wc+'</span>'
+         +  '<span class="wlauf">'+lauf+'</span></div>';
+    /* Zum bewussten Gleichmachen — statt es versehentlich zu tun. */
+    const andere = [];
+    for(let i = 0; i < wc; i++) if(i !== tab) andere.push(i);
+    html += '<div class="wkopie"><span>Zeiten übernehmen von</span>'
+         +  andere.map(i => '<button class="linkbtn" data-copy="'+i+'">Woche '+(i+1)+'</button>').join('')
+         +  '</div>';
+    html += '<p class="hint" style="margin-top:12px">Vormittag und Nachmittag lassen sich einzeln abschalten.</p><div style="margin-top:8px">';
+  } else {
+    html += '<div class="card"><h3>Deine Woche</h3><p class="hint">Vormittag und Nachmittag lassen sich einzeln abschalten.</p><div style="margin-top:8px">';
+  }
   WORKDAYS.forEach(d => {
     const c = w[d];
     const vm = segH(c.vmOn,c.vmFrom,c.vmTo), nm = segH(c.nmOn,c.nmFrom,c.nmTo);
@@ -3254,7 +3346,8 @@ function renderSched(host, sched, onChange){
     html += '<span class="hbadge'+(tot>0?'':' zero')+'">'+fmtH(tot)+' h</span>';
     html += '</div>';
   });
-  html += '</div><div class="wsum"><span>Wochenstunden</span><b>'+fmtH(weekTotal(sched,tab))+' h</b></div></div>';
+  html += '</div><div class="wsum"><span>'+(wc>1 ? 'Woche '+(tab+1)+' · Wochenstunden' : 'Wochenstunden')+'</span>'
+       +  '<b>'+fmtH(weekTotal(sched,tab))+' h</b></div></div>';
 
   host.innerHTML = html;
 
@@ -3270,6 +3363,14 @@ function renderSched(host, sched, onChange){
     }
     const tb = t.closest('[data-tab]');
     if(tb){ sched.tab = +tb.dataset.tab; renderSched(host, sched, onChange); return; }
+    const cp = t.closest('[data-copy]');
+    if(cp){
+      const von = +cp.dataset.copy;
+      sched.weeks[sched.tab] = JSON.parse(JSON.stringify(sched.weeks[von]));
+      renderSched(host, sched, onChange); onChange && onChange();
+      toast('Zeiten von Woche ' + (von + 1) + ' übernommen');
+      return;
+    }
     const tg = t.closest('[data-tg]');
     if(tg){
       const d = +tg.dataset.d, seg = tg.dataset.tg;
