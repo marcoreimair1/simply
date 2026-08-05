@@ -1239,6 +1239,9 @@ body.nobar #v-onboard{padding-top:14px}
   62%{opacity:1;transform:scale(1.05) rotate(1.5deg)}
   100%{opacity:1;transform:none}
 }
+/* Beim Abmelden kein Federn — das Bild tritt ruhig ab. */
+.hallo.ab .hallo-bild{animation:halloAb .68s var(--ease-out) both}
+@keyframes halloAb{from{opacity:0;transform:scale(1.07)}to{opacity:1;transform:none}}
 .hallo-in b{display:block;font-family:var(--font-dis);font-weight:400;
   font-size:clamp(27px,7.6vw,40px);letter-spacing:-.015em;line-height:1.1;
   animation:fadeUp .6s .34s var(--ease-out) both}
@@ -2042,7 +2045,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   <div class="hallo-in">
     <div class="hallo-bild"><img id="hallo-img" alt=""></div>
     <b id="hallo-t">Hallo</b>
-    <span class="hallo-s">schön dich wieder zu sehen!</span>
+    <span class="hallo-s" id="hallo-s">schön dich wieder zu sehen!</span>
   </div>
 </div>
 
@@ -3472,20 +3475,31 @@ function enterApp(){
    davor und löst sich von selbst auf.
    ═══════════════════════════════════════════════════════════ */
 let _halloT = null;
-function zeigeHallo(){
+
+/* Dieselbe Bühne für Kommen und Gehen. Beim Abmelden muss sie vor dem
+   Abmelden aufgehen — danach ist ME leer und niemand mehr zu grüßen. */
+function zeigeGruss(art){
   if(!ME || !ME.vorname) return;
+  const ab = art === 'ab';
   const el = $('#hallo');
   clearTimeout(_halloT);
   $('#hallo-img').src = avDatei(avNummer());
-  $('#hallo-t').innerHTML = 'Hallo <i>' + esc(ME.vorname) + '</i>,';
-  el.classList.remove('weg');
+  $('#hallo-t').innerHTML = ab
+    ? 'Bis bald, <i>' + esc(ME.vorname) + '</i>!'
+    : 'Hallo <i>' + esc(ME.vorname) + '</i>,';
+  $('#hallo-s').textContent = ab
+    ? (CLOUD_ON ? 'Deine Zeiten sind gesichert.' : 'Bis zum nächsten Mal.')
+    : 'schön dich wieder zu sehen!';
+  el.classList.remove('weg','ab');
+  if(ab) el.classList.add('ab');
   void el.offsetWidth;                       /* Animationen neu anstoßen */
   el.classList.add('on');
   _halloT = setTimeout(() => {
     el.classList.add('weg');
-    _halloT = setTimeout(() => { el.classList.remove('on','weg'); }, 560);
-  }, 2350);
+    _halloT = setTimeout(() => { el.classList.remove('on','weg','ab'); }, 560);
+  }, ab ? 1750 : 2350);
 }
+function zeigeHallo(){ zeigeGruss('an'); }
 
 /* ═══════════════════════════════════════════════════════════
    POSTFACH
@@ -4779,6 +4793,11 @@ $('#menu').addEventListener('click', e => {
   if(a === 'delete') doDelete();
 });
 async function doLogout(){
+  /* Erst der Abschied, dann das Abmelden: solange die Bühne oben liegt,
+     räumt die App darunter auf und die Anmeldeseite steht schon bereit,
+     wenn sich das Bild auflöst. */
+  zeigeGruss('ab');
+  menuZu();
   if(CLOUD_ON){
     if(_dirty) await cloudFlush();
     try{ await sb.auth.signOut(); }catch(e){}
