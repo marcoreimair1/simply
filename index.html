@@ -1643,6 +1643,10 @@ body.nobar #v-onboard{padding-top:14px}
   background:rgba(18,28,66,.98);border:1px solid var(--butter-dim);box-shadow:var(--shadow);font-size:13.5px;
   display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:.34s var(--ease-out)}
 .toast.on{opacity:1;transform:translateY(-6px)}
+/* Der Hinweis ist normalerweise nicht antippbar. Bleibt er stehen, muss er
+   es sein — sonst käme der Fingertipp nie an. */
+.toast.klickbar{pointer-events:auto;cursor:pointer;border-color:var(--butter)}
+.toast.klickbar:active{transform:translateY(-6px) scale(.97)}
 .toast svg{width:17px;height:17px;color:var(--butter)}
 
 /* Feste Leiste am unteren Rand — dieselben Knöpfe, Maße und Verläufe wie die
@@ -2602,11 +2606,39 @@ function isoWeek(d){
   return Math.ceil(((t - y0) / 86400000 + 1) / 7);
 }
 function fmtDate(iso){ if(!iso) return '—'; const p = iso.split('-'); return p[2]+'.'+p[1]+'.'+p[0]; }
-function toast(msg){
+function toast(msg, bleib){
   const el = $('#toast'); $('#toast-t').textContent = msg;
-  el.classList.add('on'); clearTimeout(toast._t);
-  toast._t = setTimeout(()=>el.classList.remove('on'), 2600);
+  el.classList.add('on');
+  el.classList.toggle('klickbar', !!bleib);
+  clearTimeout(toast._t);
+  if(!bleib) toast._t = setTimeout(()=>el.classList.remove('on'), 2600);
 }
+
+/* ─── Neue Fassung ────────────────────────────────────────────────────
+   GitHub Pages lässt die Seite zehn Minuten im Zwischenspeicher liegen.
+   Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
+   fragt die App beim Start und beim Zurückkehren selbst nach — ohne
+   Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
+const APP_STAND = '2026-08-05-0749';
+let _updZeit = 0, _updBereit = false;
+async function pruefeStand(){
+  if(_updBereit || Date.now() - _updZeit < 12e4) return;
+  _updZeit = Date.now();
+  try{
+    const r = await fetch(location.pathname + '?stand=' + Date.now(), { cache:'no-store' });
+    if(!r.ok) return;
+    const m = (await r.text()).match(/APP_STAND = '([^']+)'/);
+    if(m && m[1] !== APP_STAND){
+      _updBereit = true;
+      toast('Neue Fassung da — hier tippen zum Laden', true);
+    }
+  }catch(e){}
+}
+
+$('#toast').addEventListener('click', () => { if(_updBereit) location.reload(); });
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible') pruefeStand();
+});
 
 /* ─── Feiertage Österreich ─────────────────────────────────── */
 function easter(y){
@@ -3894,6 +3926,7 @@ function enterApp(){
   Q.from = Q.to = null; Q.y = CAL.y; Q.m = CAL.m;
   malRang();
   exYear(); renderCal(); renderQCal();
+  setTimeout(pruefeStand, 3500);
   go('v-cal');
 }
 
