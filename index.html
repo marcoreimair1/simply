@@ -444,16 +444,23 @@ body.menuauf #avatar{transform:scale(.92)}
   object-fit:cover;object-position:center 86%;display:block}
 .avbig:hover{transform:scale(1.04);box-shadow:0 12px 30px -14px rgba(0,0,0,.7)}
 .avbig:active{transform:scale(.98)}
-/* Gitter mit den Motiven — vier je Reihe, wächst nach unten auf. */
-/* Das Gitter braucht overflow:hidden für die Höhenanimation. Damit der
-   Ring um die gewählte Kachel nicht an der Kante abgeschnitten wird, hat
-   es innen 5 px Polster — overflow schneidet am Polsterrand, nicht am
-   Inhalt. Die 5 px werden nach außen wieder abgezogen. */
-.avgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;overflow:hidden;height:0;
-  padding:5px;margin:0 -5px;
-  transition:height .42s var(--ease-out),margin-top .42s var(--ease-out),opacity .3s ease;
-  opacity:0}
-.avwahl.auf .avgrid{opacity:1;margin-top:9px}
+/* Gitter mit den Motiven — vier je Reihe. Es legt sich als blaue Fläche
+   über den Bereich unter dem Kopf, statt das Menü zu verlängern: der Block
+   bleibt stehen, die Bilder kommen dort heraus, wo vorher die Zeilen waren. */
+.mbody{position:relative}
+.avgrid{position:absolute;inset:-4px -6px;z-index:3;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:9px;align-content:center;
+  padding:14px;border-radius:20px;overflow:auto;
+  background:linear-gradient(165deg,rgba(46,80,190,.46),rgba(20,38,108,.58));
+  border:1px solid rgba(130,168,255,.30);
+  box-shadow:0 20px 50px -26px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter:blur(10px) saturate(1.2);-webkit-backdrop-filter:blur(10px) saturate(1.2);
+  opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
+  transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
+.menu-card.avauf .avgrid{opacity:1;visibility:visible;transform:none}
+/* Die Zeilen darunter treten zurück, solange gewählt wird. */
+.menu-card.avauf .mbody > :not(.avgrid){opacity:.18;pointer-events:none}
+.mbody > :not(.avgrid){transition:opacity .26s var(--ease)}
 /* Dieselbe Rundung im Verhältnis wie beim kleinen Bild oben rechts —
    34 % der Kante. So sind die Pastellecken gleich weit weggenommen und
    die Kachel wirkt in jeder Größe wie dieselbe Form. */
@@ -467,20 +474,20 @@ body.menuauf #avatar{transform:scale(.92)}
 .avopt.on{transform:scale(1.03);
   box-shadow:0 0 0 2px rgba(13,20,48,1), 0 0 0 4px rgba(247,215,116,.9)}
 /* Beim Aufklappen laufen die Kacheln nacheinander ein. */
-.avwahl.auf .avopt{animation:avIn .42s var(--ease-out) both}
+.menu-card.avauf .avopt{animation:avIn .42s var(--ease-out) both}
 @keyframes avIn{from{opacity:0;transform:translateY(9px) scale(.9)}to{opacity:1;transform:none}}
-.avwahl.auf .avopt:nth-child(1){animation-delay:.02s}
-.avwahl.auf .avopt:nth-child(2){animation-delay:.05s}
-.avwahl.auf .avopt:nth-child(3){animation-delay:.08s}
-.avwahl.auf .avopt:nth-child(4){animation-delay:.11s}
-.avwahl.auf .avopt:nth-child(5){animation-delay:.14s}
-.avwahl.auf .avopt:nth-child(6){animation-delay:.17s}
-.avwahl.auf .avopt:nth-child(7){animation-delay:.20s}
-.avwahl.auf .avopt:nth-child(8){animation-delay:.23s}
-.avwahl.auf .avopt:nth-child(9){animation-delay:.26s}
-.avwahl.auf .avopt:nth-child(10){animation-delay:.29s}
-.avwahl.auf .avopt:nth-child(11){animation-delay:.32s}
-.avwahl.auf .avopt:nth-child(12){animation-delay:.35s}
+.menu-card.avauf .avopt:nth-child(1){animation-delay:.02s}
+.menu-card.avauf .avopt:nth-child(2){animation-delay:.05s}
+.menu-card.avauf .avopt:nth-child(3){animation-delay:.08s}
+.menu-card.avauf .avopt:nth-child(4){animation-delay:.11s}
+.menu-card.avauf .avopt:nth-child(5){animation-delay:.14s}
+.menu-card.avauf .avopt:nth-child(6){animation-delay:.17s}
+.menu-card.avauf .avopt:nth-child(7){animation-delay:.20s}
+.menu-card.avauf .avopt:nth-child(8){animation-delay:.23s}
+.menu-card.avauf .avopt:nth-child(9){animation-delay:.26s}
+.menu-card.avauf .avopt:nth-child(10){animation-delay:.29s}
+.menu-card.avauf .avopt:nth-child(11){animation-delay:.32s}
+.menu-card.avauf .avopt:nth-child(12){animation-delay:.35s}
 /* Der Wechsel selbst: das große Bild dreht sich kurz herein. */
 @keyframes avTausch{
   0%{transform:scale(.86) rotate(-7deg);opacity:.35}
@@ -2753,8 +2760,11 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         </div>
         <button class="avbig" id="avbig" aria-label="Profilbild ändern" aria-expanded="false"></button>
       </div>
-      <div class="avgrid" id="avgrid"></div>
     </div>
+    <!-- Alles unter dem Kopf. Die Bildauswahl legt sich als blaue Fläche
+         darüber, damit das Menü beim Öffnen nicht in die Länge wächst. -->
+    <div class="mbody" id="mbody">
+      <div class="avgrid" id="avgrid" role="group" aria-label="Profilbild wählen"></div>
     <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge. -->
     <button class="mrang" id="mrang" data-act="raenge" aria-label="Stufen ansehen">
       <span class="zaehler" id="mr-zaehler" hidden></span>
@@ -2779,6 +2789,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         <button class="mi" data-act="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12H4M8 8l-4 4 4 4M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/></svg>Abmelden</button>
     
     <button class="mi danger" data-act="delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Profil löschen</button>
+    </div>
     <div class="mfoot">Eine App von <b>Studio MARU 丸</b></div>
   </div>
 </div>
@@ -3272,7 +3283,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2043';
+const APP_STAND = '2026-08-05-2049';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5970,35 +5981,25 @@ function malAvGitter(){
        + 'aria-label="Motiv ' + i + '"><img src="' + avDatei(i) + '" alt=""></button>';
   $('#avgrid').innerHTML = h;
 }
-/* Auf- und zuklappen mit gemessener Höhe, damit der Übergang läuft. */
-let _avAnim = null;
-function avWahl(){
-  const box = $('#avwahl'), gitter = $('#avgrid'), auf = box.classList.contains('auf');
-  clearTimeout(_avAnim);
-  if(auf){
-    gitter.style.height = gitter.scrollHeight + 'px';
-    void gitter.offsetHeight;
-    box.classList.remove('auf');
-    $('#avbig').setAttribute('aria-expanded', 'false');
-    requestAnimationFrame(() => { gitter.style.height = '0px'; });
-  } else {
-    gitter.style.height = 'auto';
-    const hoch = gitter.scrollHeight;
-    gitter.style.height = '0px';
-    void gitter.offsetHeight;
-    box.classList.add('auf');
-    $('#avbig').setAttribute('aria-expanded', 'true');
-    requestAnimationFrame(() => { gitter.style.height = hoch + 'px'; });
-    _avAnim = setTimeout(() => {
-      if(box.classList.contains('auf')) gitter.style.height = 'auto';
-    }, 460);
-  }
+/* Ein- und ausblenden. Die Fläche liegt über dem Bereich unter dem Kopf,
+   deshalb braucht es keine gemessene Höhe mehr — nur einen Zustand. */
+function avOffen(){
+  const k = $('#menu .menu-card');
+  return !!(k && k.classList.contains('avauf'));
 }
-$('#avbig').addEventListener('click', avWahl);
+function avWahl(an){
+  const k = $('#menu .menu-card'); if(!k) return;
+  const auf = (an === undefined) ? !avOffen() : !!an;
+  k.classList.toggle('avauf', auf);
+  const b = $('#avbig'); if(b) b.setAttribute('aria-expanded', auf ? 'true' : 'false');
+}
+$('#avbig').addEventListener('click', () => avWahl());
 $('#avgrid').addEventListener('click', e => {
-  const b = e.target.closest('[data-av]'); if(!b) return;
+  const b = e.target.closest('[data-av]');
+  /* Ein Tipp auf die blaue Fläche neben den Bildern schließt sie wieder. */
+  if(!b){ avWahl(false); return; }
   const n = +b.dataset.av;
-  if(!ME || n === avNummer()){ avWahl(); return; }
+  if(!ME || n === avNummer()){ avWahl(false); return; }
   ME.avatar = n;
   save();
   malAvatar();
@@ -6006,7 +6007,7 @@ $('#avgrid').addEventListener('click', e => {
   gross.classList.remove('tauscht'); void gross.offsetWidth;
   gross.classList.add('tauscht');
   setTimeout(() => gross.classList.remove('tauscht'), 520);
-  setTimeout(avWahl, 240);
+  setTimeout(() => avWahl(false), 240);
 });
 
 /* ═══════════════════════════════════════════════════════════
@@ -7273,12 +7274,7 @@ function menuZu(){
   const m = $('#menu');
   if(!m.classList.contains('on') || m.classList.contains('zu')) return;
   /* Die Bildauswahl beginnt beim nächsten Öffnen wieder geschlossen. */
-  const box = $('#avwahl');
-  if(box && box.classList.contains('auf')){
-    box.classList.remove('auf');
-    $('#avgrid').style.height = '0px';
-    $('#avbig').setAttribute('aria-expanded', 'false');
-  }
+  if(avOffen()) avWahl(false);
   m.classList.add('zu');
   document.body.classList.remove('menuauf');
   clearTimeout(_menuZu);
