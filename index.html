@@ -538,6 +538,8 @@ body.menuauf #avatar{transform:scale(.92)}
 .dlbox .dl-zeile svg{width:14px;height:14px}
 .dlbox .dl-warn{margin:0 0 10px;padding:9px 11px;font-size:11px;line-height:1.45;gap:9px}
 .dlbox .dl-warn svg{width:15px;height:15px}
+/* In der Spalte darf nichts zusammengedrückt werden — der Regler sonst schon. */
+.dlbox > *{flex:none}
 .dlbox .dlz{height:52px}
 .dlbox .dlz-knopf{width:44px;height:44px;border-radius:13px}
 .dlbox .dlz-text{font-size:12.5px;padding-left:30px}
@@ -3513,7 +3515,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2214';
+const APP_STAND = '2026-08-05-2217';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
