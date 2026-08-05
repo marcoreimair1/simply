@@ -459,6 +459,47 @@ body.menuauf #avatar{transform:scale(.92)}
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
 .menu-card.avauf .avgrid{opacity:1;visibility:visible;transform:none}
+/* Dritte Fläche: die Stufen. Sie beginnt erst unter der Stufenbox, damit
+   die aktuelle Stufe stehen bleibt und die Liste darunter herauskommt. */
+.mrows{position:relative}
+.rangbox{position:absolute;inset:-2px -6px -4px;z-index:3;overflow-y:auto;overscroll-behavior:contain;
+  padding:6px 5px 4px;border-radius:var(--r-s);background:rgba(18,28,66,.97);
+  opacity:0;visibility:hidden;transform:translateY(-10px);
+  transition:opacity .3s var(--ease),transform .38s var(--ease-out),visibility .38s}
+.menu-card.rauf .rangbox{opacity:1;visibility:visible;transform:none}
+.menu-card.rauf .mrows > :not(.rangbox){opacity:0;pointer-events:none}
+.mrows > *{transition:opacity .26s var(--ease)}
+.rb-sub{margin:2px 2px 10px;font-size:11px;color:var(--tx-3)}
+.rb-fuss{margin:10px 2px 2px;font-size:10.5px;line-height:1.5;color:var(--tx-3)}
+/* Die Stufen laufen von oben nacheinander ein. */
+.menu-card.rauf .rangbox .rl{animation:rbIn .42s var(--ease-out) both}
+@keyframes rbIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.menu-card.rauf .rangbox .rl:nth-child(1){animation-delay:.02s}
+.menu-card.rauf .rangbox .rl:nth-child(2){animation-delay:.04s}
+.menu-card.rauf .rangbox .rl:nth-child(3){animation-delay:.06s}
+.menu-card.rauf .rangbox .rl:nth-child(4){animation-delay:.08s}
+.menu-card.rauf .rangbox .rl:nth-child(5){animation-delay:.10s}
+.menu-card.rauf .rangbox .rl:nth-child(6){animation-delay:.12s}
+.menu-card.rauf .rangbox .rl:nth-child(7){animation-delay:.14s}
+.menu-card.rauf .rangbox .rl:nth-child(8){animation-delay:.16s}
+.menu-card.rauf .rangbox .rl:nth-child(9){animation-delay:.18s}
+.menu-card.rauf .rangbox .rl:nth-child(10){animation-delay:.20s}
+.menu-card.rauf .rangbox .rl:nth-child(11){animation-delay:.22s}
+.menu-card.rauf .rangbox .rl:nth-child(12){animation-delay:.24s}
+
+/* Monats-Erinnerung: grün wenn ein, grau wenn aus, orange während des
+   Umschaltens — die Glocke wandert durch dieselben Töne wie die Zeile. */
+.mi#mi-erin .miico,.mi#mi-erin small{transition:color .32s var(--ease)}
+.mi.erin-on  .miico,.mi.erin-on  small{color:var(--za-plus)}
+.mi.erin-off .miico,.mi.erin-off small{color:var(--tx-3)}
+.mi.erin-wechsel .miico,.mi.erin-wechsel small{color:var(--butter)!important}
+.mi.erin-wechsel .miico{animation:glocke .7s var(--ease) both}
+.mi.erin-wechsel small{animation:erinTxt .32s var(--ease-out) both}
+@keyframes glocke{
+  0%{transform:rotate(0)} 20%{transform:rotate(-14deg)} 40%{transform:rotate(11deg)}
+  60%{transform:rotate(-7deg)} 80%{transform:rotate(4deg)} 100%{transform:rotate(0)}
+}
+@keyframes erinTxt{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
 /* Die Zeilen darunter treten ganz zurück, solange etwas darüber liegt —
    sonst scheinen sie zwischen den Bildern durch. */
 .menu-card.avauf .mbody > :not(.avgrid),
@@ -2904,13 +2945,21 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <b id="k-save-t">Speichern</b>
         </button>
       </div>
-    <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge. -->
+    <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge darunter. -->
     <button class="mrang" id="mrang" data-act="raenge" aria-label="Stufen ansehen">
       <span class="zaehler" id="mr-zaehler" hidden></span>
       <span class="mr-kopf"><span class="mr-lvl" id="mr-lvl">LVL 1</span><b id="mr-name">—</b></span>
       <span class="mr-schiene"><span class="mr-bar" id="mr-bar"></span></span>
       <small id="mr-rest">—</small>
     </button>
+    <div class="mrows">
+      <!-- Die Stufen legen sich unter die aktuelle Stufe, bis zur Linie,
+           und lassen sich dort rollen. -->
+      <div class="rangbox" id="rangbox" role="group" aria-label="Alle Stufen">
+        <p class="rb-sub" id="rb-sub">—</p>
+        <div id="rb-liste"></div>
+        <p class="rb-fuss">Jeder exportierte Monat zählt einmal. Alle vier Monate geht es eine Stufe hoch.</p>
+      </div>
     <button class="mi" data-act="firma">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V6.5l7-3.5 7 3.5V21"/><path d="M9.5 21v-5h5v5M9 10h1.5M13.5 10H15"/></svg>
       Meine Firma
@@ -2922,8 +2971,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       Zeitausgleich &amp; Urlaubstage
     </button>
     <button class="mi" data-act="erinnerung" id="mi-erin" style="display:none">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 10-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.3 20a2 2 0 003.4 0"/></svg>
-      <span id="mi-erin-t">Monats-Erinnerung</span>
+      <span class="miico" id="mi-erin-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 10-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.3 20a2 2 0 003.4 0"/></svg></span>
+      <span id="mi-erin-t">Monats-Erinnerung<small id="mi-erin-s">—</small></span>
     </button>
     <button class="mi" data-act="passkey" id="mi-pk" style="display:none">
       <span class="miico" id="mi-pk-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span>
@@ -2932,6 +2981,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         <button class="mi" data-act="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12H4M8 8l-4 4 4 4M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/></svg>Abmelden</button>
     
     <button class="mi danger" data-act="delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Profil löschen</button>
+    </div>
     </div>
     <div class="mfoot">Eine App von <b>Studio MARU 丸</b></div>
   </div>
@@ -3309,6 +3359,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         </div>
       </div>
     </div>
+    <!-- Was der Zeitraum vom Urlaubskontingent übrig lässt. -->
+    <p class="shkonto urlaub" id="q-konto" style="display:none;margin-top:12px">—</p>
     <div class="qf" id="q-textwrap" style="display:none;margin-top:14px"><small>Vermerk</small>
       <input type="text" id="q-text" placeholder="z. B. Schulung" style="width:100%;padding:13px;border-radius:12px;border:1px solid var(--line-2);background:rgba(6,10,26,.6);outline:none;font-size:16px">
     </div>
@@ -3428,7 +3480,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2137';
+const APP_STAND = '2026-08-05-2147';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5399,12 +5451,35 @@ function malErinnerung(){
   const moeglich = !!(CLOUD_ON && UID && MAIL);
   mi.style.display = moeglich ? 'flex' : 'none';
   const an = !!(ME && ME.mailOk);
-  $('#mi-erin-t').innerHTML = 'Monats-Erinnerung <small>'
-    + (an ? 'ein · per E-Mail an ' + esc(MAIL) : 'aus')
-    + '</small>';
-  mi.classList.toggle('done', an);
+  if(!mi.classList.contains('erin-wechsel')){
+    $('#mi-erin-s').textContent = an ? 'ein · per E-Mail an ' + MAIL : 'aus';
+    mi.classList.toggle('erin-on', an);
+    mi.classList.toggle('erin-off', !an);
+  }
+  mi.classList.remove('done');
   const box = $('#mailok');
   if(box) box.checked = an;
+}
+/* Umschalten mit Zwischenschritt: die Glocke geht über Orange von Grün nach
+   Grau und umgekehrt. Das Menü bleibt dabei offen. */
+let _erinLaeuft = false;
+function erinUmschalten(){
+  if(!ME || _erinLaeuft) return;
+  const mi = $('#mi-erin'); if(!mi) return;
+  _erinLaeuft = true;
+  mi.classList.remove('erin-on', 'erin-off');
+  mi.classList.add('erin-wechsel');
+  $('#mi-erin-s').textContent = 'wird geändert …';
+  setTimeout(() => {
+    ME.mailOk = !ME.mailOk;
+    save();
+    mi.classList.remove('erin-wechsel');
+    malErinnerung();
+    _erinLaeuft = false;
+    toast(ME.mailOk
+      ? 'Wir erinnern dich künftig am Monatsersten.'
+      : 'Erinnerung ausgeschaltet.');
+  }, 760);
 }
 
 /* ─── Meine Firma ──────────────────────────────────────────────────────
@@ -6179,6 +6254,7 @@ function avWahl(an){
   const k = $('#menu .menu-card'); if(!k) return;
   const auf = (an === undefined) ? !avOffen() : !!an;
   if(auf && typeof kontenOffen === 'function' && kontenOffen()) kontenAuf(false);
+  if(auf && typeof rangboxOffen === 'function' && rangboxOffen()) rangboxAuf(false);
   k.classList.toggle('avauf', auf);
   const b = $('#avbig'); if(b) b.setAttribute('aria-expanded', auf ? 'true' : 'false');
 }
@@ -6252,6 +6328,40 @@ function kontenFrei(an){
     ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 017.7-1.5"/></svg>'
     : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 018 0v2.7"/></svg>';
 }
+/* Die Stufen im Menü: dieselbe Liste wie im Blatt, nur unter der aktuellen
+   Stufe und rollbar bis zur Linie. Ein zweiter Tipp schließt wieder. */
+function rangboxOffen(){
+  const k = $('#menu .menu-card');
+  return !!(k && k.classList.contains('rauf'));
+}
+function malRangbox(){
+  const nr = stufe();
+  $('#rb-sub').textContent = 'Stufe ' + nr + ' von ' + RAENGE.length
+    + ' · ' + expAnzahl() + (expAnzahl() === 1 ? ' Monat' : ' Monate') + ' exportiert';
+  $('#rb-liste').innerHTML = RAENGE.map((r, i) => {
+    const n = i + 1, hier = n === nr, offen = n > nr;
+    const v = rangVars(r);
+    const stil = Object.keys(v).map(k => k + ':' + v[k]).join(';');
+    return '<div class="rl' + (hier ? ' hier' : '') + (offen ? ' zu' : '')
+      + '" style="' + stil + '">'
+      + '<span class="rl-nr">' + n + '</span>'
+      + '<span class="rl-t"><b>' + r.n + '</b><small>ab ' + stufeAb(n)
+      + (stufeAb(n) === 1 ? ' Monat' : ' Monaten') + '</small></span>'
+      + (hier ? '<span class="rl-hier">hier</span>' : '')
+      + '</div>';
+  }).join('');
+}
+function rangboxAuf(an){
+  const k = $('#menu .menu-card'); if(!k || !ME) return;
+  const auf = (an === undefined) ? !rangboxOffen() : !!an;
+  if(auf){
+    if(avOffen()) avWahl(false);
+    if(kontenOffen()) kontenAuf(false);
+    malRangbox();
+    $('#rangbox').scrollTop = 0;
+  }
+  k.classList.toggle('rauf', auf);
+}
 function kontenOffen(){
   const k = $('#menu .menu-card');
   return !!(k && k.classList.contains('kauf'));
@@ -6260,6 +6370,7 @@ function kontenAuf(an){
   const k = $('#menu .menu-card'); if(!k || !ME) return;
   const auf = (an === undefined) ? !kontenOffen() : !!an;
   if(auf && avOffen()) avWahl(false);
+  if(auf && rangboxOffen()) rangboxAuf(false);
   k.classList.toggle('kauf', auf);
   kontenFrei(false);              /* immer gesperrt beginnen */
   if(auf) malKonten(true);
@@ -6967,6 +7078,28 @@ function renderQCal(){
   }
   $('#qc-grid').innerHTML = h;
   qSummary();
+  qKontingent();
+}
+/* Wie im Tagesblatt: was das Kontingent nach diesem Zeitraum hergibt. */
+function qKontingent(){
+  const el = $('#q-konto'); if(!el || !ME) return;
+  const zeig = Q.type === 'urlaub';
+  if(zeig){
+    const jetzt = kontenRechnen(ME) || {};
+    const p = Object.assign({}, ME, { events: Object.assign({}, ME.events) });
+    const r = qRange();
+    if(r) for(const d = new Date(r[0]); d <= r[1]; d.setDate(d.getDate() + 1)){
+      if(!qTouched(d)) continue;
+      p.events[key(d.getFullYear(), d.getMonth(), d.getDate())] =
+        { t:'urlaub', s:Q.scope, text:'', aw:false };
+    }
+    const neu = kontenRechnen(p) || {};
+    el.innerHTML = 'Urlaubstage ' + jetzt.jahr + ': <b>' + fmtTage(jetzt.urlaub || 0) + '</b> von '
+      + fmtTage(jetzt.anspruch || 0) + ' offen'
+      + (Math.abs((neu.urlaub || 0) - (jetzt.urlaub || 0)) > 0.001
+          ? ' <i>· nach diesem Zeitraum ' + fmtTage(neu.urlaub || 0) + '</i>' : '');
+  }
+  el.style.display = zeig ? 'block' : 'none';
 }
 function qSummary(){
   const el = $('#q-sum');
@@ -7033,6 +7166,7 @@ $('#q-type').addEventListener('click', e => {
   $$('#q-type .tpill').forEach(x => x.classList.toggle('on', x.dataset.t === Q.type));
   const eigen = Q.type === 'eigen';
   $('#q-textwrap').style.display = eigen ? 'block' : 'none';
+  qKontingent();
   /* Mit dem Vermerkfeld wird der Inhalt höher als das Blatt. Dann darf es
      rollen, sonst wäre das Feld abgeschnitten und nicht erreichbar. Ohne
      das Feld bleibt es fest, damit das Ziehen am Griff ruhig läuft. */
@@ -7047,6 +7181,7 @@ $('#q-scope').addEventListener('click', e => {
   const b = e.target.closest('[data-s]'); if(!b) return;
   Q.scope = b.dataset.s;
   $$('#q-scope button').forEach(x => x.classList.toggle('on', x.dataset.s === Q.scope));
+  qKontingent();
 });
 let _qBusy = false;
 /* Erfolg zeigen, Fenster schliessen, betroffene Tage im Kalender aufblitzen lassen */
@@ -7620,6 +7755,7 @@ function menuZu(){
   /* Bildauswahl und Stände beginnen beim nächsten Öffnen wieder geschlossen. */
   if(avOffen()) avWahl(false);
   if(kontenOffen()) kontenAuf(false);
+  if(rangboxOffen()) rangboxAuf(false);
   m.classList.add('zu');
   document.body.classList.remove('menuauf');
   clearTimeout(_menuZu);
@@ -7639,8 +7775,10 @@ $('#avatar').addEventListener('click', () => {
 $('#menu').addEventListener('click', e => {
   if(e.target.dataset.close === 'menu'){ menuZu(); return; }
   const b = e.target.closest('[data-act]'); if(!b) return;
-  /* Die Stände bleiben im Menü — dafür wird es nicht geschlossen. */
+  /* Diese drei bleiben im Menü — dafür wird es nicht geschlossen. */
   if(b.dataset.act === 'konten'){ kontenAuf(); return; }
+  if(b.dataset.act === 'erinnerung'){ erinUmschalten(); return; }
+  if(b.dataset.act === 'raenge' && !aufOffen()){ rangboxAuf(); return; }
   menuZu();
   const a = b.dataset.act;
   if(a === 'hours'){
@@ -7657,16 +7795,6 @@ $('#menu').addEventListener('click', e => {
   if(a === 'firma'){ _vonMenu = true; firmaAuf(); }
   if(a === 'karte'){ _vonMenu = true; karteAuf(); }
   if(a === 'raenge'){ _vonMenu = true; if(aufOffen()) aufFeier(); else rangAuf(); }
-  if(a === 'erinnerung'){
-    if(ME){
-      ME.mailOk = !ME.mailOk;
-      save();
-      malErinnerung();
-      toast(ME.mailOk
-        ? 'Wir erinnern dich künftig am Monatsersten.'
-        : 'Erinnerung ausgeschaltet.');
-    }
-  }
   if(a === 'logout') doLogout();
   if(a === 'delete') doDelete();
 });
