@@ -391,7 +391,11 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 .menu-card{position:absolute;top:64px;right:14px;width:min(344px,calc(100vw - 28px));
   max-height:calc(100vh - 80px);overflow-y:auto;overscroll-behavior:contain;background:rgba(18,28,66,.97);border:1px solid var(--line);
   border-radius:var(--r-m);padding:8px;box-shadow:var(--shadow);
-  transform-origin:100% 0;animation:pop .34s var(--ease-out)}
+  transform-origin:100% 0;animation:pop .34s var(--ease-out);
+  transition:border-color .35s var(--ease),box-shadow .35s var(--ease)}
+/* Kurzes grünes Leuchten als Bestätigung, dass gesichert ist. */
+.menu-card.gruen{border-color:rgba(95,224,160,.65);
+  box-shadow:0 0 0 1px rgba(95,224,160,.35),0 0 40px -6px rgba(95,224,160,.5),var(--shadow)}
 @keyframes fade{from{opacity:0}}
 @keyframes pop{from{opacity:0;transform:translateY(-10px) scale(.94)}}
 .menu.zu .menu-card{animation:popZu .2s var(--ease) forwards}
@@ -534,7 +538,12 @@ body.menuauf #avatar{transform:scale(.92)}
   height:0;padding:0;margin-top:-11px;opacity:0;transform:translateY(-8px) scale(.98);overflow:hidden;
   transition:height .34s var(--ease-out),opacity .24s var(--ease),
              transform .34s var(--ease-out),margin .34s var(--ease-out)}
-.ksave svg{width:16px;height:16px}
+.ksave svg{width:16px;height:16px;transition:transform .34s var(--ease-out)}
+.ksave b{font-weight:600}
+/* Nach dem Sichern kurz grün: derselbe Ton wie beim gesammelten Zeitausgleich. */
+.ksave.ok{background:linear-gradient(135deg,var(--za-plus),#93F0C6);
+  border-color:var(--za-plus)!important;color:#05241A}
+.ksave.ok svg{transform:scale(1.18)}
 .konten.frei .ksave{height:48px;margin-top:0;opacity:1;transform:none}
 .ksave:hover{filter:brightness(1.05)}
 .ksave:active{transform:scale(.985)}
@@ -1576,6 +1585,18 @@ body.nobar #v-onboard{padding-top:14px}
 #sheet .sd{margin:0 0 16px}
 #sheet .sheet-actions{margin-top:20px}
 #sheet #sh-opts .opt:last-child{margin-bottom:2px}
+/* Kontingent-Zeile im Tagesblatt: was steht noch zur Verfügung, und was
+   bleibt nach diesem Eintrag übrig. */
+.shkonto{margin:2px 0 0;padding:10px 12px;border-radius:13px;
+  border:1px solid var(--line-2);background:rgba(6,10,26,.35);
+  font-size:11.5px;line-height:1.5;color:var(--tx-2)}
+.shkonto b{font-weight:600;color:var(--tx)}
+.shkonto i{font-style:normal;color:var(--tx-3)}
+.shkonto.urlaub{border-color:rgba(247,215,116,.3);background:rgba(247,215,116,.07)}
+.shkonto.urlaub b{color:var(--c-urlaub)}
+.shkonto.zeit{border-color:rgba(191,208,242,.3);background:rgba(191,208,242,.07)}
+.shkonto.zeit b{color:var(--c-arbeit)}
+
 /* Zeitausgleich: erst Einlösen oder Sammeln, dann die Menge, dann die
    beiden Tagesknöpfe. Alles mit etwas Luft, damit es nicht gedrängt wirkt. */
 .shlab{display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
@@ -2880,7 +2901,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         </div>
         <button class="ksave" id="k-save">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>
-          Speichern
+          <b id="k-save-t">Speichern</b>
         </button>
       </div>
     <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge. -->
@@ -3077,6 +3098,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <span id="sh-holiday-t"></span>
     </div>
     <div id="sh-opts"></div>
+    <!-- Was noch da ist: bei Urlaub die Tage, beim Zeitausgleich das Konto. -->
+    <p class="shkonto" id="sh-konto" style="display:none">—</p>
     <div id="sh-scopewrap" style="display:none">
       <small class="shlab">Umfang</small>
       <div class="scope" id="sh-scope">
@@ -3405,7 +3428,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2129';
+const APP_STAND = '2026-08-05-2137';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6242,12 +6265,22 @@ function kontenAuf(an){
   if(auf) malKonten(true);
 }
 $('#k-lock').addEventListener('click', () => kontenFrei(!$('#konten').classList.contains('frei')));
+let _kSaveT = [];
 $('#k-save').addEventListener('click', () => {
   save();
-  kontenFrei(false);
-  /* Kurz stehenlassen, damit man das Zuschnappen sieht, dann zurück ins Menü. */
-  setTimeout(() => kontenAuf(false), 240);
-  toast('Gespeichert');
+  const knopf = $('#k-save'), karte = $('#menu .menu-card');
+  _kSaveT.forEach(clearTimeout); _kSaveT = [];
+  /* Erst die Bestätigung: Rahmen und Knopf werden grün. */
+  knopf.classList.add('ok');
+  $('#k-save-t').textContent = 'Gespeichert';
+  if(karte) karte.classList.add('gruen');
+  /* Dann zuschnappen und zurück ins Menü. */
+  _kSaveT.push(setTimeout(() => { kontenFrei(false); kontenAuf(false); }, 760));
+  _kSaveT.push(setTimeout(() => {
+    if(karte) karte.classList.remove('gruen');
+    knopf.classList.remove('ok');
+    $('#k-save-t').textContent = 'Speichern';
+  }, 1180));
 });
 $('#konten').addEventListener('click', e => {
   /* Riegel und Speichern haben eigene Knöpfe — hier nicht mitschließen. */
@@ -6622,6 +6655,45 @@ function zeigen(sel, an){
     el.classList.add('sheinein');
   }
 }
+/* Derselbe Stand, aber mit einem gedachten Eintrag an diesem Tag — so lässt
+   sich zeigen, was nach dem Übernehmen übrig bleibt. Rechnet auf einer Kopie,
+   das echte Profil bleibt unberührt. */
+function standMit(k, ev){
+  if(!ME) return null;
+  const p = Object.assign({}, ME, { events: Object.assign({}, ME.events) });
+  if(ev) p.events[k] = ev; else delete p.events[k];
+  return kontenRechnen(p);
+}
+const fmtTage = v => { const r = Math.round(v * 2) / 2;
+  return (r % 1 === 0 ? String(r) : String(r).replace('.', ',')); };
+const fmtVz = v => (v > 0.001 ? '+' : v < -0.001 ? '−' : '') + fmtH(Math.abs(v));
+
+/* Die Kontingent-Zeile: bei Urlaub die offenen Tage, beim Zeitausgleich das
+   Konto — jeweils mit dem, was dieser Eintrag daraus macht. */
+function malKontingent(){
+  const el = $('#sh-konto'); if(!el || !ME) return;
+  const zeig = SH.type === 'urlaub' || SH.type === 'zeit';
+  el.classList.toggle('urlaub', SH.type === 'urlaub');
+  el.classList.toggle('zeit',   SH.type === 'zeit');
+  if(zeig){
+    const k = key(SH.y, SH.m, SH.d);
+    const jetzt = kontenRechnen(ME) || {};
+    if(SH.type === 'urlaub'){
+      const neu = standMit(k, { t:'urlaub', s:SH.scope, text:'', aw:false }) || {};
+      el.innerHTML = 'Urlaubstage ' + jetzt.jahr + ': <b>' + fmtTage(jetzt.urlaub || 0) + '</b> von '
+        + fmtTage(jetzt.anspruch || 0) + ' offen'
+        + (Math.abs((neu.urlaub || 0) - (jetzt.urlaub || 0)) > 0.001
+            ? ' <i>· nach diesem Tag ' + fmtTage(neu.urlaub || 0) + '</i>' : '');
+    } else {
+      const za = r25(SH.zaDir === 'minus' ? -SH.zaH : SH.zaH);
+      const neu = standMit(k, { t:'zeit', za:za }) || {};
+      el.innerHTML = 'Zeitausgleich-Konto: <b>' + fmtVz(jetzt.za || 0) + ' h</b>'
+        + (Math.abs((neu.za || 0) - (jetzt.za || 0)) > 0.001
+            ? ' <i>· nach diesem Tag ' + fmtVz(neu.za || 0) + ' h</i>' : '');
+    }
+  }
+  zeigen('#sh-konto', zeig);
+}
 function paintSheet(){
   const za = SH.type === 'zeit';
   /* Ist eine Art gewählt, treten die anderen weg — mitanimiert über die
@@ -6640,6 +6712,7 @@ function paintSheet(){
   $('#sh-text').value = SH.text;
   const aw = $('#sh-aw'); if(aw) aw.classList.toggle('on', SH.aw);
 
+  malKontingent();
   zeigen('#sh-zawrap', za);
   if(za) malZa();
   $('#sh-save').disabled = !SH.type || (za && SH.zaH <= 0);
