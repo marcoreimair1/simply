@@ -19,13 +19,13 @@
 <meta property="og:site_name" content="Studio MARU 丸">
 <meta property="og:title" content="MOJI — Arbeitszeitaufzeichnung">
 <meta property="og:description" content="Antippen was abweicht, am Monatsende eine fertige A4-Seite. Eine App von Studio MARU 丸.">
-<meta property="og:url" content="https://marcoreimair1.github.io/simply/">
-<meta property="og:image" content="https://marcoreimair1.github.io/simply/icon-512.png">
+<meta property="og:url" content="https://moji-app.at/">
+<meta property="og:image" content="https://moji-app.at/icon-512.png">
 <meta property="og:locale" content="de_AT">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MOJI — Arbeitszeitaufzeichnung">
 <meta name="twitter:description" content="Eine App von Studio MARU 丸.">
-<meta name="twitter:image" content="https://marcoreimair1.github.io/simply/icon-512.png">
+<meta name="twitter:image" content="https://moji-app.at/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
@@ -494,6 +494,10 @@ body.menuauf #avatar{transform:scale(.92)}
 /* Zweizeiliger Eintrag: oben die Sache, darunter ihr Zustand. */
 .mi small{display:block;font-size:10.5px;color:var(--tx-3);margin-top:1px;letter-spacing:0}
 .mi.done small{color:var(--c-eigen)}
+/* Etwas zu erledigen: derselbe Ton wie die roten Meldungen, aber ruhiger. */
+.mi.achtung{background:rgba(255,142,110,.07)}
+.mi.achtung svg,.mi.achtung .miico{color:var(--coral)}
+.mi.achtung small{color:var(--coral)}
 
 /* ============================================================
    BAUSTEINE
@@ -1811,8 +1815,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <h1 class="dis dg-h">MOJI ist <i>fürs Handy</i> gemacht.</h1>
     <p class="dg-lede">Die Aufzeichnung gehört dorthin, wo du arbeitest — in die Tasche.
       Scanne den Code mit der Kamera, dann öffnet sich MOJI am Telefon.</p>
-    <div class="dg-qr"><svg viewBox="0 0 33 33" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="QR-Code zu MOJI"><rect width="33" height="33" fill="#fff"/><path d="M2 2h7v1h-7zM12 2h1v1h-1zM16 2h1v1h-1zM19 2h2v1h-2zM24 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM12 3h3v1h-3zM16 3h1v1h-1zM19 3h1v1h-1zM24 3h1v1h-1zM30 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM10 4h1v1h-1zM13 4h1v1h-1zM17 4h1v1h-1zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM10 5h2v1h-2zM14 5h2v1h-2zM19 5h1v1h-1zM21 5h2v1h-2zM24 5h1v1h-1zM26 5h3v1h-3zM30 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM11 6h3v1h-3zM15 6h2v1h-2zM18 6h4v1h-4zM24 6h1v1h-1zM26 6h3v1h-3zM30 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM11 7h2v1h-2zM14 7h1v1h-1zM18 7h1v1h-1zM20 7h1v1h-1zM22 7h1v1h-1zM24 7h1v1h-1zM30 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h7v1h-7zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h1v1h-1zM2 10h1v1h-1zM8 10h1v1h-1zM10 10h1v1h-1zM12 10h1v1h-1zM15 10h1v1h-1zM19 10h1v1h-1zM22 10h3v1h-3zM27 10h3v1h-3zM2 11h5v1h-5zM9 11h3v1h-3zM15 11h3v1h-3zM21 11h2v1h-2zM25 11h2v1h-2zM28 11h2v1h-2zM2 12h1v1h-1zM4 12h3v1h-3zM8 12h1v1h-1zM10 12h1v1h-1zM13 12h6v1h-6zM24 12h2v1h-2zM3 13h5v1h-5zM10 13h3v1h-3zM16 13h1v1h-1zM20 13h2v1h-2zM23 13h2v1h-2zM26 13h2v1h-2zM2 14h2v1h-2zM5 14h1v1h-1zM8 14h2v1h-2zM11 14h6v1h-6zM18 14h1v1h-1zM21 14h1v1h-1zM24 14h2v1h-2zM30 14h1v1h-1zM4 15h4v1h-4zM12 15h3v1h-3zM17 15h10v1h-10zM29 15h2v1h-2zM2 16h2v1h-2zM5 16h2v1h-2zM8 16h1v1h-1zM12 16h2v1h-2zM17 16h2v1h-2zM20 16h1v1h-1zM22 16h2v1h-2zM27 16h2v1h-2zM3 17h3v1h-3zM7 17h1v1h-1zM11 17h1v1h-1zM13 17h2v1h-2zM16 17h3v1h-3zM20 17h1v1h-1zM22 17h1v1h-1zM26 17h1v1h-1zM28 17h1v1h-1zM30 17h1v1h-1zM3 18h3v1h-3zM8 18h4v1h-4zM14 18h1v1h-1zM17 18h3v1h-3zM21 18h1v1h-1zM25 18h1v1h-1zM27 18h2v1h-2zM2 19h1v1h-1zM6 19h1v1h-1zM9 19h1v1h-1zM11 19h1v1h-1zM13 19h3v1h-3zM17 19h2v1h-2zM21 19h2v1h-2zM24 19h3v1h-3zM28 19h3v1h-3zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h4v1h-4zM13 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM21 20h1v1h-1zM24 20h1v1h-1zM26 20h2v1h-2zM30 20h1v1h-1zM2 21h1v1h-1zM4 21h1v1h-1zM6 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM15 21h1v1h-1zM17 21h2v1h-2zM23 21h1v1h-1zM26 21h1v1h-1zM2 22h1v1h-1zM5 22h1v1h-1zM8 22h1v1h-1zM11 22h3v1h-3zM16 22h1v1h-1zM19 22h1v1h-1zM22 22h5v1h-5zM28 22h3v1h-3zM10 23h3v1h-3zM14 23h1v1h-1zM16 23h3v1h-3zM20 23h1v1h-1zM22 23h1v1h-1zM26 23h2v1h-2zM2 24h7v1h-7zM11 24h1v1h-1zM13 24h1v1h-1zM17 24h6v1h-6zM24 24h1v1h-1zM26 24h3v1h-3zM2 25h1v1h-1zM8 25h1v1h-1zM12 25h3v1h-3zM16 25h3v1h-3zM20 25h3v1h-3zM26 25h1v1h-1zM29 25h2v1h-2zM2 26h1v1h-1zM4 26h3v1h-3zM8 26h1v1h-1zM11 26h1v1h-1zM13 26h4v1h-4zM18 26h1v1h-1zM20 26h8v1h-8zM30 26h1v1h-1zM2 27h1v1h-1zM4 27h3v1h-3zM8 27h1v1h-1zM12 27h1v1h-1zM14 27h1v1h-1zM16 27h6v1h-6zM23 27h1v1h-1zM27 27h2v1h-2zM30 27h1v1h-1zM2 28h1v1h-1zM4 28h3v1h-3zM8 28h1v1h-1zM12 28h2v1h-2zM15 28h5v1h-5zM21 28h9v1h-9zM2 29h1v1h-1zM8 29h1v1h-1zM11 29h4v1h-4zM18 29h1v1h-1zM20 29h1v1h-1zM25 29h4v1h-4zM30 29h1v1h-1zM2 30h7v1h-7zM10 30h1v1h-1zM13 30h1v1h-1zM16 30h1v1h-1zM19 30h1v1h-1zM21 30h1v1h-1zM25 30h1v1h-1zM28 30h1v1h-1z" fill="#0A1129"/></svg></div>
-    <p class="dg-url">marcoreimair1.github.io/simply</p>
+    <div class="dg-qr"><svg viewBox="0 0 29 29" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="QR-Code zu moji-app.at"><rect width="29" height="29" fill="#fff"/><path d="M2 2h7v1h-7zM10 2h4v1h-4zM18 2h1v1h-1zM20 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM12 3h1v1h-1zM17 3h1v1h-1zM20 3h1v1h-1zM26 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM12 4h3v1h-3zM16 4h1v1h-1zM18 4h1v1h-1zM20 4h1v1h-1zM22 4h3v1h-3zM26 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM13 5h4v1h-4zM20 5h1v1h-1zM22 5h3v1h-3zM26 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h3v1h-3zM16 6h1v1h-1zM20 6h1v1h-1zM22 6h3v1h-3zM26 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM16 7h2v1h-2zM20 7h1v1h-1zM26 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h7v1h-7zM17 9h1v1h-1zM3 10h7v1h-7zM11 10h1v1h-1zM13 10h1v1h-1zM17 10h2v1h-2zM21 10h2v1h-2zM26 10h1v1h-1zM2 11h1v1h-1zM4 11h4v1h-4zM10 11h1v1h-1zM15 11h1v1h-1zM18 11h1v1h-1zM21 11h1v1h-1zM25 11h1v1h-1zM2 12h2v1h-2zM7 12h3v1h-3zM12 12h1v1h-1zM14 12h4v1h-4zM19 12h1v1h-1zM21 12h1v1h-1zM23 12h1v1h-1zM25 12h2v1h-2zM3 13h1v1h-1zM10 13h1v1h-1zM15 13h1v1h-1zM17 13h1v1h-1zM19 13h1v1h-1zM21 13h2v1h-2zM26 13h1v1h-1zM4 14h1v1h-1zM7 14h6v1h-6zM14 14h1v1h-1zM16 14h5v1h-5zM22 14h1v1h-1zM24 14h3v1h-3zM2 15h2v1h-2zM5 15h1v1h-1zM7 15h1v1h-1zM12 15h2v1h-2zM18 15h1v1h-1zM21 15h1v1h-1zM23 15h1v1h-1zM25 15h1v1h-1zM2 16h1v1h-1zM6 16h3v1h-3zM10 16h1v1h-1zM12 16h2v1h-2zM15 16h1v1h-1zM17 16h2v1h-2zM21 16h3v1h-3zM25 16h2v1h-2zM2 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM11 17h1v1h-1zM13 17h3v1h-3zM17 17h1v1h-1zM21 17h2v1h-2zM26 17h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM8 18h3v1h-3zM16 18h7v1h-7zM24 18h1v1h-1zM10 19h2v1h-2zM14 19h5v1h-5zM22 19h2v1h-2zM2 20h7v1h-7zM10 20h1v1h-1zM13 20h1v1h-1zM15 20h2v1h-2zM18 20h1v1h-1zM20 20h1v1h-1zM22 20h1v1h-1zM24 20h3v1h-3zM2 21h1v1h-1zM8 21h1v1h-1zM10 21h4v1h-4zM16 21h1v1h-1zM18 21h1v1h-1zM22 21h2v1h-2zM25 21h1v1h-1zM2 22h1v1h-1zM4 22h3v1h-3zM8 22h1v1h-1zM10 22h6v1h-6zM17 22h6v1h-6zM24 22h1v1h-1zM26 22h1v1h-1zM2 23h1v1h-1zM4 23h3v1h-3zM8 23h1v1h-1zM10 23h1v1h-1zM12 23h1v1h-1zM15 23h2v1h-2zM19 23h2v1h-2zM22 23h5v1h-5zM2 24h1v1h-1zM4 24h3v1h-3zM8 24h1v1h-1zM10 24h3v1h-3zM15 24h1v1h-1zM18 24h1v1h-1zM23 24h2v1h-2zM26 24h1v1h-1zM2 25h1v1h-1zM8 25h1v1h-1zM10 25h1v1h-1zM12 25h3v1h-3zM17 25h2v1h-2zM21 25h3v1h-3zM26 25h1v1h-1zM2 26h7v1h-7zM11 26h2v1h-2zM14 26h1v1h-1zM17 26h1v1h-1zM19 26h8v1h-8z" fill="#0A1129"/></svg></div>
+    <p class="dg-url">moji-app.at</p>
     <p class="dg-tip">Am iPhone danach über <b>Teilen</b> → <b>Zum Home-Bildschirm</b> —
       dann liegt MOJI als eigene App auf dem Bildschirm.</p>
     <p class="dg-by">Eine App von <b>Studio MARU 丸</b></p>
@@ -2688,7 +2692,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-0959';
+const APP_STAND = '2026-08-05-1011';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -2959,6 +2963,7 @@ function normalize(p){
   if(!(av >= 1 && av <= 12)) delete p.avatar;
   if(!Array.isArray(p.gelesen)) p.gelesen = [];
   if(!Array.isArray(p.post)) p.post = [];
+  if(typeof p.pkHost !== 'string') p.pkHost = '';
   p.ort = EMPLOYER;
   return p;
 }
@@ -3024,6 +3029,17 @@ async function pkRefresh(){
   return PK_LISTE;
 }
 
+/* Ein Passkey gilt nur für die Adresse, unter der er angelegt wurde. Mit dem
+   Umzug auf moji-app.at sind die alten also wertlos, obwohl sie in der
+   Verwaltung noch gelistet sind. Deshalb merkt sich das Profil, wo der
+   Passkey entstanden ist — passt es nicht zur jetzigen Adresse, weist das
+   Menü darauf hin. */
+function pkVeraltet(){
+  const hat = Array.isArray(PK_LISTE) && PK_LISTE.length > 0;
+  if(!hat || !ME) return false;
+  return ME.pkHost !== location.hostname;
+}
+
 /* Anlegen. Gibt true zurück, wenn danach ein Passkey vorhanden ist. */
 async function pkAdd(knopf){
   if(!PASSKEY) return false;
@@ -3032,6 +3048,7 @@ async function pkAdd(knopf){
   try{
     const r = await sb.auth.registerPasskey();
     if(r.error) throw r.error;
+    if(ME){ ME.pkHost = location.hostname; save(); }   /* gilt für diese Adresse */
     toast('Passkey angelegt');
     await pkRefresh();
     return true;
@@ -3095,14 +3112,18 @@ function pkText(e){
 /* Knöpfe und Texte an den Stand anpassen — Menü und Funnel-Karte. */
 function paintPasskey(){
   const hat = Array.isArray(PK_LISTE) && PK_LISTE.length > 0;
+  const alt = pkVeraltet();
   const mi = $('#mi-pk'), mr = $('#mi-pkreset');
   if(mi){
     mi.style.display = (PASSKEY && UID) ? 'flex' : 'none';
-    $('#mi-pk-t').innerHTML = hat
-      ? 'Passkey <small>aktiv auf diesem Konto</small>'
-      : 'Passkey anlegen <small>Anmelden ohne Code</small>';
-    $('#mi-pk-i').innerHTML = hat ? PK_HAKEN : PK_KEY;
-    mi.classList.toggle('done', hat);
+    $('#mi-pk-t').innerHTML = alt
+      ? 'Passkey neu anlegen <small>Nach dem Umzug auf moji-app.at nötig</small>'
+      : (hat
+          ? 'Passkey <small>aktiv auf diesem Konto</small>'
+          : 'Passkey anlegen <small>Anmelden ohne Code</small>');
+    $('#mi-pk-i').innerHTML = (hat && !alt) ? PK_HAKEN : PK_KEY;
+    mi.classList.toggle('done', hat && !alt);
+    mi.classList.toggle('achtung', alt);
   }
   /* Zurücksetzen nur zeigen, wenn es auch etwas zurückzusetzen gibt */
   if(mr) mr.style.display = (PASSKEY && UID && hat) ? 'flex' : 'none';
@@ -4566,7 +4587,7 @@ async function aufFeier(){
 /* ─── Teilen ───────────────────────────────────────────────────────────
    Am liebsten als Bild: das ist das, was man herzeigen will. Kann das Gerät
    keine Dateien teilen, geht der Text raus, und im Notfall in die Ablage. */
-const MOJI_LINK = 'https://marcoreimair1.github.io/simply/';
+const MOJI_LINK = 'https://moji-app.at/';
 function teilText(){
   const nr = stufe(), r = rang(nr), anzahl = expAnzahl(), v = vergleich(gespartMin());
   const zeilen = [
@@ -4577,7 +4598,7 @@ function teilText(){
       : 'Gerade erst beigetreten.',
     '',
     'Magst du auch? MOJI zeichnet deine Arbeitszeit auf und macht daraus ein fertiges PDF.',
-    'Gratis, ohne Passwort, direkt am Handy: ' + MOJI_LINK,
+    'Gratis, ohne Passwort, direkt am Handy: moji-app.at',
     'Mehr Zeit fürs Wesentliche. — Eine App von Studio MARU 丸'
   ];
   return zeilen.join('\n');
@@ -4707,7 +4728,7 @@ async function karteBild(){
   c.textAlign = 'center';
   c.fillText('Auch mitmachen? Gratis unter', B / 2, ky + kh + 76);
   c.fillStyle = r.a; c.font = '700 34px Inter, sans-serif';
-  c.fillText('marcoreimair1.github.io/simply', B / 2, ky + kh + 126);
+  c.fillText('moji-app.at', B / 2, ky + kh + 126);
   c.textAlign = 'left';
 
   return await new Promise(res => {
@@ -4819,6 +4840,20 @@ function verlaufZu(){
    ═══════════════════════════════════════════════════════════ */
 const NACHRICHTEN = [
   {
+    id: 'umzug-moji-app-at',
+    datum: '2026-08-05',
+    titel: 'Neue Adresse: moji-app.at',
+    text: 'MOJI hat eine eigene Adresse: moji-app.at.\n\n'
+        + 'Die alte Adresse leitet weiter, du musst also nichts tun. Wer MOJI am '
+        + 'Handy als Kachel auf dem Startbildschirm hat, sollte sie einmal neu '
+        + 'anlegen — dann zeigt sie auf die neue Adresse.\n\n'
+        + 'Ein Punkt ist wichtig: Ein Passkey gilt immer nur für eine Adresse. '
+        + 'Wenn du dich mit Face ID oder Fingerabdruck angemeldet hast, richte '
+        + 'den Passkey bitte einmal neu ein — im Profilmenü steht der Hinweis, '
+        + 'solange es noch offen ist. Anmelden mit Code per E-Mail geht wie immer.',
+    von: 'Studio MARU 丸'
+  },
+  {
     /* Neue Kennung heißt: für alle wieder ungelesen. Alte nie wiederverwenden. */
     id: 'willkommen-2026-08',
     datum: '2026-08-04',
@@ -4837,7 +4872,11 @@ const NACHRICHTEN = [
    Neueste zuerst. */
 function alleNachrichten(){
   const eigen = (ME && Array.isArray(ME.post)) ? ME.post : [];
-  return NACHRICHTEN.concat(eigen).sort((a, b) => (b.datum || '').localeCompare(a.datum || ''));
+  /* Neueste oben. Bei gleichem Datum steht das Persönliche vor dem an alle. */
+  return NACHRICHTEN.map(n => ({ n:n, eigen:0 }))
+    .concat(eigen.map(n => ({ n:n, eigen:1 })))
+    .sort((a, b) => (b.n.datum || '').localeCompare(a.n.datum || '') || b.eigen - a.eigen)
+    .map(x => x.n);
 }
 function pfGelesen(){
   return (ME && Array.isArray(ME.gelesen)) ? ME.gelesen : [];
