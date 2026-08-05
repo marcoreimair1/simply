@@ -450,11 +450,8 @@ body.menuauf #avatar{transform:scale(.92)}
 .mbody{position:relative}
 .avgrid{position:absolute;inset:-4px -6px;z-index:3;
   display:grid;grid-template-columns:repeat(4,1fr);gap:9px;align-content:center;
-  padding:14px;border-radius:20px;overflow:auto;
-  background:linear-gradient(165deg,rgba(46,80,190,.72),rgba(18,34,102,.86));
-  border:1px solid rgba(130,168,255,.30);
-  box-shadow:0 20px 50px -26px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.06);
-  backdrop-filter:blur(10px) saturate(1.2);-webkit-backdrop-filter:blur(10px) saturate(1.2);
+  padding:10px 5px;border-radius:var(--r-s);overflow:auto;
+  background:rgba(18,28,66,.97);
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
 .menu-card.avauf .avgrid{opacity:1;visibility:visible;transform:none}
@@ -3284,7 +3281,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2052';
+const APP_STAND = '2026-08-05-2057';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
