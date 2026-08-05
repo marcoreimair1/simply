@@ -1731,10 +1731,8 @@ body.nobar #v-onboard{padding-top:14px}
 @keyframes mkWippe{from{transform:translateY(0) rotate(-1.4deg)}to{transform:translateY(-5px) rotate(1.6deg)}}
 .mk-bild img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block}
 .mk-txt{flex:1;min-width:0}
-.mk-txt i{display:block;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.19em;
-  text-transform:uppercase;color:var(--rd,#5C6A94)}
-.mk-txt b{display:block;font-family:var(--font-dis);font-weight:400;font-size:22px;line-height:1.1;
-  letter-spacing:-.015em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mk-txt b{display:block;font-family:var(--font-dis);font-weight:400;font-size:23px;line-height:1.12;
+  letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mk-txt small{display:block;font-size:11px;color:rgba(20,27,58,.55);margin-top:2px}
 .mk-lvl{flex:none;align-self:flex-start;font-size:10px;font-weight:800;letter-spacing:.1em;
   padding:5px 9px;border-radius:9px;color:#fff;background:var(--rd,#5C6A94);
@@ -1758,7 +1756,13 @@ body.nobar #v-onboard{padding-top:14px}
 .mk-held-t em{display:block;font-family:var(--font-dis);font-style:italic;font-size:13px;line-height:1.35;
   color:rgba(20,27,58,.72)}
 
-.mk-leiter{position:relative;margin:13px 18px 0}
+.mk-leiter{position:relative;margin:15px 18px 0}
+/* Der Name der Stufe gehört zur Leiste, nicht zum Namen der Person. */
+.mk-stufe{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.mk-stufe b{flex:1;min-width:0;font-size:13.5px;font-weight:700;letter-spacing:.01em;
+  color:var(--rd,#5C6A94);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mk-stufe i{flex:none;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(20,27,58,.42)}
 .mk-schiene{display:block;height:7px;border-radius:99px;overflow:hidden;background:rgba(20,27,58,.1)}
 .mk-bar{display:block;height:100%;width:0;border-radius:99px;
   background:linear-gradient(90deg,var(--rd,#5C6A94),var(--rf,#8FA0C8));
@@ -2647,10 +2651,12 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <div class="mk" id="mk">
       <div class="mk-glanz" aria-hidden="true"></div>
       <div class="mk-funken" aria-hidden="true"><i></i><i></i><i></i></div>
+      <!-- Oben steht, wer das ist. Die Stufe stand vorher zweimal da —
+           als "Stufe 2 · Warmgelaufen" und als Plakette. Jetzt trägt sie
+           nur die Plakette, der Name der Stufe sitzt bei der Leiste. -->
       <div class="mk-kopf">
         <span class="mk-bild"><img id="mk-img" alt=""></span>
         <span class="mk-txt">
-          <i id="mk-rang">—</i>
           <b id="mk-name">—</b>
           <small id="mk-firma">—</small>
         </span>
@@ -2667,6 +2673,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       </div>
 
       <div class="mk-leiter">
+        <div class="mk-stufe">
+          <b id="mk-rang">—</b>
+          <i id="mk-von">—</i>
+        </div>
         <span class="mk-schiene"><span class="mk-bar" id="mk-bar"></span></span>
         <small id="mk-rest">—</small>
       </div>
@@ -3045,7 +3055,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1544';
+const APP_STAND = '2026-08-05-1554';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -4751,6 +4761,13 @@ function expVerlauf(grenze){
   }).sort((x, z) => z.ts - x.ts);
   return grenze ? v.slice(0, grenze) : v;
 }
+/* Der jüngste abgegebene Monat — nach Monat sortiert, nicht nach dem
+   Zeitpunkt des Exports. */
+function neuesterMonat(){
+  const v = expVerlauf();
+  if(!v.length) return null;
+  return v.slice().sort((a, b) => b.y - a.y || b.m - a.m)[0];
+}
 function stufe(){ return Math.min(RAENGE.length, Math.floor(expAnzahl() / PRO_STUFE) + 1); }
 function rang(nr){ return RAENGE[(nr || stufe()) - 1]; }
 function stufeAb(nr){ return (nr - 1) * PRO_STUFE; }
@@ -4925,9 +4942,10 @@ function malKarte(nrZeig){
   if(pr && !pr.style.getPropertyValue('--marke')) pr.style.setProperty('--marke', 'url("' + LOGO_MARK + '")');
   $('#mk-img').src = avDatei(avNummer());
   $('#mk-name').textContent = ME.vorname + ' ' + ME.nachname;
-  $('#mk-rang').textContent = 'Stufe ' + nr + ' · ' + r.n;
   $('#mk-firma').textContent = EMPLOYER;
   $('#mk-lvl').textContent = 'LVL ' + nr;
+  $('#mk-rang').textContent = r.n;
+  $('#mk-von').textContent = 'Stufe ' + nr + ' von ' + RAENGE.length;
   if(!$('#mk-wort').getAttribute('src')) $('#mk-wort').src = LOGO_WORD;
 
   const min = gespartMin(), v = vergleich(min);
@@ -4946,12 +4964,16 @@ function malKarte(nrZeig){
         : 'höchste Stufe erreicht — mehr geht nicht');
   _mkAnteil = fertig ? 1 : stufeAnteil();
 
-  const letzter = expVerlauf(1)[0];
+  /* Drei Angaben, die etwas aussagen. Die Zeile "Rang" trug vorher den
+     Spruch der Stufe — als Wert unter der Überschrift "Rang" war das
+     irreführend, und der Name der Stufe steht jetzt ohnehin an der Leiste.
+     "Zuletzt" zeigt den jüngsten abgegebenen Monat, nicht die letzte
+     Handlung: wer im August den Juni nachreicht, will trotzdem Juli sehen. */
+  const jung = neuesterMonat();
   $('#mk-zeilen').innerHTML = [
     ['Mitglied seit', seitText()],
-    ['Aufzeichnungen', anzahl + (anzahl === 1 ? ' Monat' : ' Monate')],
-    ['Zuletzt', letzter ? fmtMonatJahr(letzter.y, letzter.m) : 'noch nichts abgegeben'],
-    ['Rang', r.w]
+    ['Abgegeben', anzahl ? anzahl + (anzahl === 1 ? ' Monat' : ' Monate') : 'noch nichts'],
+    ['Zuletzt', jung ? fmtMonatJahr(jung.y, jung.m) : '—']
   ].map(z => '<div class="mkz"><u>' + z[0] + '</u><b>' + esc(z[1]) + '</b></div>').join('');
 }
 let _mkAnteil = 0;
@@ -5058,20 +5080,15 @@ async function aufFeier(){
    Am liebsten als Bild: das ist das, was man herzeigen will. Kann das Gerät
    keine Dateien teilen, geht der Text raus, und im Notfall in die Ablage. */
 const MOJI_LINK = 'https://moji-app.at/';
+/* Kurz halten. Der lange Text mit Stufe, gesparter Zeit und Slogan war in
+   WhatsApp eine Textwand, die niemand liest — und das Bild sagt das alles
+   schon. Hier steht nur, wer einlädt, wozu und wohin. */
 function teilText(){
-  const nr = stufe(), r = rang(nr), anzahl = expAnzahl(), v = vergleich(gespartMin());
-  const zeilen = [
-    'Ich bin bei MOJI auf Stufe ' + nr + ' — ' + r.n + '.',
-    anzahl
-      ? anzahl + (anzahl === 1 ? ' Monat' : ' Monate') + ' Arbeitszeit ohne einen einzigen Zettel. '
-        + 'Gespart: ' + fmtDauer(gespartMin()) + ' — damit könnte ich ' + v.text + '.'
-      : 'Gerade erst beigetreten.',
-    '',
-    'Magst du auch? MOJI zeichnet deine Arbeitszeit auf und macht daraus ein fertiges PDF.',
-    'Gratis, ohne Passwort, direkt am Handy: moji-app.at',
-    'Mehr Zeit fürs Wesentliche. — Eine App von Studio MARU 丸'
-  ];
-  return zeilen.join('\n');
+  const wer = (ME && ME.vorname) ? ME.vorname : 'Jemand';
+  return wer + ' möchte dich einladen, MOJI beizutreten.\n\n'
+    + 'Arbeitszeit am Handy eintragen, am Monatsende als fertiges PDF abgeben. '
+    + 'Gratis und ohne Passwort.\n\n'
+    + MOJI_LINK;
 }
 /* Zeichnet die Karte auf eine Leinwand. Alles von Hand — so sieht das Bild
    überall gleich aus, egal wie das Gerät die Seite darstellt. */
@@ -5128,14 +5145,26 @@ async function karteBild(){
   c.restore();
   c.lineWidth = 9; c.strokeStyle = r.a; rrect(bx - 5, by - 5, bs + 10, bs + 10, 66); c.stroke();
 
-  /* Kopftexte */
+  /* Kopftexte — wie auf der Karte: Name, Dienstgeber, Stufe als Plakette. */
   const tx = bx + bs + 34;
-  c.fillStyle = r.b; c.font = '700 26px Inter, sans-serif'; c.textBaseline = 'alphabetic';
-  c.fillText(('Stufe ' + nr + ' · ' + r.n).toUpperCase(), tx, by + 46);
+  c.textBaseline = 'alphabetic';
   c.fillStyle = '#141B3A'; c.font = '400 62px Fraunces, Georgia, serif';
-  c.fillText(ME.vorname + ' ' + ME.nachname, tx, by + 118);
+  c.fillText(ME.vorname + ' ' + ME.nachname, tx, by + 84);
   c.fillStyle = 'rgba(20,27,58,.55)'; c.font = '400 28px Inter, sans-serif';
-  c.fillText(EMPLOYER, tx, by + 164);
+  c.fillText(EMPLOYER, tx, by + 130);
+  /* Plakette rechts oben */
+  const pl = 'LVL ' + nr;
+  c.font = '800 26px Inter, sans-serif';
+  const pw = c.measureText(pl).width + 44, px = kx + kb - 56 - pw;
+  c.fillStyle = r.b; rrect(px, by + 6, pw, 52, 16); c.fill();
+  c.fillStyle = '#fff'; c.textAlign = 'center';
+  c.fillText(pl, px + pw / 2, by + 41);
+  c.textAlign = 'left';
+  /* Stufe mit Namen darunter */
+  c.fillStyle = r.b; c.font = '700 30px Inter, sans-serif';
+  c.fillText(r.n, tx, by + 182);
+  c.fillStyle = 'rgba(20,27,58,.42)'; c.font = '700 22px Inter, sans-serif';
+  c.fillText(('Stufe ' + nr + ' von ' + RAENGE.length).toUpperCase(), tx, by + 214);
 
   /* Zeitersparnis */
   const hx = kx + 56, hy = by + bs + 56, hb = kb - 112, hh2 = 210;
@@ -5159,11 +5188,11 @@ async function karteBild(){
   if(zeile) c.fillText(zeile, hx + 40, zy);
 
   /* Kennzahlen */
-  const letzter = expVerlauf(1)[0];
+  const jung = neuesterMonat();
   const zeilen = [
     ['MITGLIED SEIT', seitText()],
-    ['AUFZEICHNUNGEN', anzahl + (anzahl === 1 ? ' Monat' : ' Monate')],
-    ['ZULETZT', letzter ? fmtMonatJahr(letzter.y, letzter.m) : 'noch nichts abgegeben']
+    ['ABGEGEBEN', anzahl ? anzahl + (anzahl === 1 ? ' Monat' : ' Monate') : 'noch nichts'],
+    ['ZULETZT', jung ? fmtMonatJahr(jung.y, jung.m) : '—']
   ];
   let zy2 = Math.max(zy + 96, hy + hh2 + 84);
   zeilen.forEach(z => {
