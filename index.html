@@ -2622,7 +2622,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-0831';
+const APP_STAND = '2026-08-05-0845';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -2845,6 +2845,7 @@ function normalize(p){
   const av = +p.avatar;
   if(!(av >= 1 && av <= 12)) delete p.avatar;
   if(!Array.isArray(p.gelesen)) p.gelesen = [];
+  if(!Array.isArray(p.post)) p.post = [];
   p.ort = EMPLOYER;
   return p;
 }
@@ -3720,8 +3721,34 @@ function sichereProfil(){
 function finishOnboarding(){
   const p = sichereProfil();
   if(!p) return;
+  postWillkommen();
   enterApp();
   zeigeGruss('neu');
+}
+
+/* Legt die persönliche Begrüßung ins Postfach. Die allgemeine Willkommens-
+   nachricht gilt damit als gelesen — zwei Begrüßungen wären eine zu viel. */
+function postWillkommen(){
+  if(!ME) return;
+  if(!Array.isArray(ME.post)) ME.post = [];
+  const kennung = 'start-' + (ME.id || 'x');
+  if(ME.post.some(n => n.id === kennung)) return;
+  const heute = new Date();
+  const iso = heute.getFullYear() + '-' + p2(heute.getMonth() + 1) + '-' + p2(heute.getDate());
+  ME.post.push({
+    id: kennung,
+    datum: iso,
+    titel: 'Willkommen bei MOJI',
+    text: 'Schön, dass du da bist.\n\nWir sind noch nicht fertig entwickelt, '
+        + 'aber wir bleiben nie stehen.\n\nViel Spaß — und einen schönen '
+        + DOWFULL[heute.getDay()] + '! :)',
+    von: 'Studio MARU 丸'
+  });
+  /* Die allgemeine Begrüßung braucht ein neu angelegtes Profil nicht mehr. */
+  if(!Array.isArray(ME.gelesen)) ME.gelesen = [];
+  NACHRICHTEN.forEach(n => { if(ME.gelesen.indexOf(n.id) < 0) ME.gelesen.push(n.id); });
+  save();
+  malZaehler();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -4591,12 +4618,19 @@ const NACHRICHTEN = [
   }
 ];
 
+/* Neben den Nachrichten an alle kann im Profil noch Persönliches liegen —
+   etwa die Begrüßung nach dem Anlegen, die den Wochentag von damals nennt.
+   Neueste zuerst. */
+function alleNachrichten(){
+  const eigen = (ME && Array.isArray(ME.post)) ? ME.post : [];
+  return NACHRICHTEN.concat(eigen).sort((a, b) => (b.datum || '').localeCompare(a.datum || ''));
+}
 function pfGelesen(){
   return (ME && Array.isArray(ME.gelesen)) ? ME.gelesen : [];
 }
 function pfNeu(){
   const g = pfGelesen();
-  return NACHRICHTEN.filter(n => g.indexOf(n.id) < 0);
+  return alleNachrichten().filter(n => g.indexOf(n.id) < 0);
 }
 /* Beim Einstieg soll erst das Tier zu sehen sein. Ein paar Sekunden später
    rutscht das Bild im Rahmen nach unten und die rote Zahl springt darüber
@@ -4633,11 +4667,12 @@ function malPostfach(){
     ? 'Alles gelesen'
     : neu + (neu === 1 ? ' neue Nachricht' : ' neue Nachrichten');
   $('#pf-alle').disabled = neu === 0;
-  if(!NACHRICHTEN.length){
+  const liste = alleNachrichten();
+  if(!liste.length){
     $('#pf-liste').innerHTML = '<p class="pfleer">Noch keine Nachrichten.</p>';
     return;
   }
-  $('#pf-liste').innerHTML = NACHRICHTEN.map(n => {
+  $('#pf-liste').innerHTML = liste.map(n => {
     const ist = g.indexOf(n.id) >= 0;
     return '<article class="pfm ' + (ist ? 'gelesen' : 'neu') + '">'
       + '<div class="pfm-kopf"><b>' + esc(n.titel) + '</b><i>' + fmtDate(n.datum) + '</i></div>'
@@ -4685,7 +4720,7 @@ $('#pfsheet').addEventListener('click', e => {
   const b = e.target.closest('[data-gelesen]');
   if(b) pfMerke([b.dataset.gelesen]);
 });
-$('#pf-alle').addEventListener('click', () => pfMerke(NACHRICHTEN.map(n => n.id)));
+$('#pf-alle').addEventListener('click', () => pfMerke(alleNachrichten().map(n => n.id)));
 
 /* ═══════════════════════════════════════════════════════════
    PROFILBILD
@@ -6220,19 +6255,17 @@ $('#pk-ask-skip').addEventListener('click', () => {
   GEBOOTET = true;
   const ok = await cloudBoot();
   if(!ok){ bootLocal(); return; }
-  /* Beim Start meldet die Bibliothek die wiederhergestellte Sitzung selbst
-     als Anmeldung. Das ist keine: sonst würde beim Neuladen begrüßt. Erst
-     wenn die erste Sitzung abgehandelt ist, zählt SIGNED_IN als frisch. */
-  let startFertig = false;
+  /* Auch die wiederhergestellte Sitzung wird begrüßt — das gehört zum
+     Öffnen dazu. Mit dem Vorspann kommt sie sich nicht mehr in die Quere,
+     weil die Begrüßung darauf wartet. */
   sb.auth.onAuthStateChange((evt, session) => {
-    if(evt === 'SIGNED_IN' && session && !UID) afterLogin(session, startFertig);
+    if(evt === 'SIGNED_IN' && session && !UID) afterLogin(session, true);
     if(evt === 'SIGNED_OUT' && ME){ ME = null; UID = null; loginScreen(); }
   });
   let session = null;
   try{ const r = await sb.auth.getSession(); session = r.data.session; }catch(e){ console.warn(e); }
-  if(session) await afterLogin(session);
+  if(session) await afterLogin(session, true);
   else loginScreen();
-  startFertig = true;
 })();
 </script>
 </body>
