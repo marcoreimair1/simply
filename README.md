@@ -99,6 +99,21 @@ Ein Passkey gilt immer nur für **ein Gerät** und **eine Adresse**.
 - Bei *Eigener Text* lässt sich festlegen, ob die Stunden als Arbeitszeit zählen (Schulung)
   oder nicht
 
+### Zeitausgleich & Urlaubstage im Profilmenü
+
+Der Menüpunkt unter *Dienstzeiten bearbeiten* färbt das Menü — dieselbe Fläche wie bei den
+Profilbildern — und zeigt zwei Stände, die beim Öffnen hochzählen:
+
+- **Zeitausgleich**: alle `zeit`-Einträge zusammen (jahresübergreifend) plus `konten.zaStart`.
+  Grün bei plus, rot bei minus, verstellbar in 0,25-h-Schritten.
+- **Urlaubstage**: `konten.urlaubJahr` minus die im laufenden Kalenderjahr genommenen Tage
+  (halbe Tage zählen 0,5). Verstellbar in halben Tagen, Balken zeigt den Rest.
+
+Gespeichert werden nur die beiden **Grundwerte** in `konten`. Der gerechnete Stand steht in
+`stand = { za, zaRoh, urlaub, genommen, anspruch, jahr, ts }` und wird bei **jedem** `save()`
+nachgezogen — er liegt damit auch in der Cloud-Zeile und ändert sich automatisch, sobald im
+Kalender Urlaub oder Zeitausgleich eingetragen wird. Rechenzeit rund 2 ms.
+
 ### Zeitausgleich
 
 Am Kalendertag antippen → **Zeitausgleich**. Sobald eine Art gewählt ist, treten die anderen

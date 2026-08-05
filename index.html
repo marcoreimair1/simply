@@ -3361,7 +3361,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2121';
+const APP_STAND = '2026-08-05-2124';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6153,7 +6153,7 @@ function malKonten(vonNull){
       ((st.zaRoh || 0) > 0 ? '+' : (st.zaRoh || 0) < 0 ? '−' : '') + fmtH(Math.abs(st.zaRoh || 0)) + ' h'
     + (Math.abs(ME.konten.zaStart) > 0.001
         ? ' · Grundwert ' + (ME.konten.zaStart > 0 ? '+' : '−') + fmtH(Math.abs(ME.konten.zaStart)) + ' h'
-        : ' · kein Grundwert');
+        : '');
 
   $('#k-ur-jahr').textContent = 'Jahr ' + st.jahr;
   const elUr = $('#k-ur');
