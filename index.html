@@ -524,20 +524,24 @@ body.menuauf #avatar{transform:scale(.92)}
 
 /* Löschen liegt auf derselben Fläche — nur eben in Rot gehalten. */
 .dlbox{position:absolute;inset:-4px -6px;z-index:4;display:flex;flex-direction:column;
-  justify-content:center;padding:10px 7px;border-radius:var(--r-s);
+  justify-content:flex-start;padding:8px 7px;border-radius:var(--r-s);
   overflow-y:auto;overscroll-behavior:contain;background:rgba(18,28,66,.97);
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
 .menu-card.dlauf .dlbox{opacity:1;visibility:visible;transform:none}
 .menu-card.dlauf .mbody > :not(.dlbox){opacity:0;pointer-events:none}
-.dlb-h{display:block;font-family:var(--font-dis);font-weight:400;font-size:19px;
-  letter-spacing:-.01em;margin:0 2px 2px}
-.dlb-s{display:block;font-size:11.5px;color:var(--tx-3);margin:0 2px 12px}
-.dlbox .dl-liste{margin:0 0 12px}
-.dlbox .dl-warn{margin:0 0 14px;padding:11px 12px}
-.dlbox .dlz{height:54px}
-.dlbox .dlz-knopf{width:46px;height:46px}
-.dlb-weg{width:100%;margin-top:12px;padding:12px 18px}
+.dlb-h{display:block;font-family:var(--font-dis);font-weight:400;font-size:18px;
+  letter-spacing:-.01em;margin:0 2px 1px}
+.dlb-s{display:block;font-size:11px;color:var(--tx-3);margin:0 2px 9px}
+.dlbox .dl-liste{margin:0 0 9px}
+.dlbox .dl-zeile{padding:6px 0;font-size:12.5px;gap:9px}
+.dlbox .dl-zeile svg{width:14px;height:14px}
+.dlbox .dl-warn{margin:0 0 10px;padding:9px 11px;font-size:11px;line-height:1.45;gap:9px}
+.dlbox .dl-warn svg{width:15px;height:15px}
+.dlbox .dlz{height:52px}
+.dlbox .dlz-knopf{width:44px;height:44px;border-radius:13px}
+.dlbox .dlz-text{font-size:12.5px;padding-left:30px}
+.dlb-weg{width:100%;margin-top:9px;padding:11px 18px}
 .menu-card.dlauf .dlbox > *{animation:kIn .46s var(--ease-out) both}
 .menu-card.dlauf .dlbox > :nth-child(3){animation-delay:.05s}
 .menu-card.dlauf .dlbox > :nth-child(4){animation-delay:.09s}
@@ -3509,7 +3513,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2209';
+const APP_STAND = '2026-08-05-2214';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
