@@ -503,6 +503,41 @@ body.menuauf #avatar{transform:scale(.92)}
   transition:.16s var(--ease)}
 .kstep button:hover{border-color:var(--butter-dim);color:var(--butter)}
 .kstep button:active{transform:scale(.9)}
+
+/* Riegel oben: solange er zu ist, sind die Knöpfe fort und die Zahlen
+   stehen nur da. Ein Tipp gibt sie frei, der Speichern-Knopf fährt auf. */
+.kschloss{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:10px 12px;border-radius:14px;border:1px dashed var(--line-2);
+  color:var(--tx-3);transition:.2s var(--ease)}
+.kschloss:hover{border-color:var(--butter-dim);color:var(--tx-2)}
+.kschloss-i{flex:none;width:26px;height:26px;border-radius:9px;display:grid;place-items:center;
+  border:1px solid var(--line-2);transition:.24s var(--ease)}
+.kschloss-i svg{width:14px;height:14px}
+.kschloss-t b{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);transition:color .2s}
+.kschloss-t small{display:block;font-size:10.5px;margin-top:1px}
+.konten.frei .kschloss{border-style:solid;border-color:var(--butter-dim);
+  background:rgba(247,215,116,.07)}
+.konten.frei .kschloss-i{color:var(--butter);border-color:var(--butter-dim);
+  background:rgba(247,215,116,.1);transform:rotate(-8deg)}
+.konten.frei .kschloss-t b{color:var(--butter)}
+
+/* Die Verstellknöpfe gibt es erst nach dem Entsperren. */
+.kstep{opacity:0;transform:translateX(8px) scale(.9);pointer-events:none;
+  transition:opacity .26s var(--ease),transform .3s var(--ease-out)}
+.konten.frei .kstep{opacity:1;transform:none;pointer-events:auto}
+
+/* Speichern: gleiche Breite und Rundung wie die Kacheln, in Gelb. */
+.ksave{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  border-radius:18px;font-size:14px;font-weight:600;letter-spacing:-.01em;
+  background:linear-gradient(135deg,var(--butter),var(--butter-2));color:#20180A;
+  border:1px solid var(--butter);
+  height:0;padding:0;margin-top:-11px;opacity:0;transform:translateY(-8px) scale(.98);overflow:hidden;
+  transition:height .34s var(--ease-out),opacity .24s var(--ease),
+             transform .34s var(--ease-out),margin .34s var(--ease-out)}
+.ksave svg{width:16px;height:16px}
+.konten.frei .ksave{height:48px;margin-top:0;opacity:1;transform:none}
+.ksave:hover{filter:brightness(1.05)}
+.ksave:active{transform:scale(.985)}
 /* Dieselbe Rundung im Verhältnis wie beim kleinen Bild oben rechts —
    34 % der Kante. So sind die Pastellecken gleich weit weggenommen und
    die Kachel wirkt in jeder Größe wie dieselbe Form. */
@@ -2809,6 +2844,11 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <div class="avgrid" id="avgrid" role="group" aria-label="Profilbild wählen"></div>
       <!-- Zweite Fläche im selben Blau: die beiden Stände. -->
       <div class="konten" id="konten" role="group" aria-label="Zeitausgleich und Urlaubstage">
+        <!-- Erst schauen, dann ändern: der Riegel oben gibt die Knöpfe frei. -->
+        <button class="kschloss" id="k-lock" aria-pressed="false">
+          <span class="kschloss-i" id="k-lock-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 018 0v2.7"/></svg></span>
+          <span class="kschloss-t"><b id="k-lock-b">Ansicht gesperrt</b><small id="k-lock-s">Zum Entsperren drücken</small></span>
+        </button>
         <div class="kbox" data-k="za">
           <div class="kkopf">
             <span class="kico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
@@ -2838,6 +2878,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
             </span>
           </div>
         </div>
+        <button class="ksave" id="k-save">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>
+          Speichern
+        </button>
       </div>
     <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge. -->
     <button class="mrang" id="mrang" data-act="raenge" aria-label="Stufen ansehen">
@@ -2853,7 +2897,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <button class="mi" data-act="karte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.6"/><path d="M3 10h18M7 14.5h4"/></svg>Mitgliedschaftskarte</button>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
     <button class="mi" data-act="konten">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M7 8H4l3-4 3 4H7zm0 0v3a5 5 0 005 5"/><path d="M17 20h3l-3 -4 -3 4h3zm0 0v-3a5 5 0 00-5-5"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/></svg>
       Zeitausgleich &amp; Urlaubstage
     </button>
     <button class="mi" data-act="erinnerung" id="mi-erin" style="display:none">
@@ -3361,7 +3405,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2124';
+const APP_STAND = '2026-08-05-2129';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6171,6 +6215,20 @@ function malKonten(vonNull){
     requestAnimationFrame(() => { bar.style.width = (anteil * 100).toFixed(1) + '%'; });
   }
 }
+/* Der Riegel. Zu heißt: nur schauen. Offen heißt: verstellen und danach
+   mit Speichern wieder zumachen — der Knopf schließt auch die Fläche. */
+function kontenFrei(an){
+  const f = $('#konten'); if(!f) return;
+  const auf = !!an;
+  f.classList.toggle('frei', auf);
+  const k = $('#k-lock');
+  if(k) k.setAttribute('aria-pressed', auf ? 'true' : 'false');
+  $('#k-lock-b').textContent = auf ? 'Ansicht entsperrt' : 'Ansicht gesperrt';
+  $('#k-lock-s').textContent = auf ? 'Werte anpassen, dann speichern' : 'Zum Entsperren drücken';
+  $('#k-lock-i').innerHTML = auf
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 017.7-1.5"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 018 0v2.7"/></svg>';
+}
 function kontenOffen(){
   const k = $('#menu .menu-card');
   return !!(k && k.classList.contains('kauf'));
@@ -6180,12 +6238,24 @@ function kontenAuf(an){
   const auf = (an === undefined) ? !kontenOffen() : !!an;
   if(auf && avOffen()) avWahl(false);
   k.classList.toggle('kauf', auf);
+  kontenFrei(false);              /* immer gesperrt beginnen */
   if(auf) malKonten(true);
 }
+$('#k-lock').addEventListener('click', () => kontenFrei(!$('#konten').classList.contains('frei')));
+$('#k-save').addEventListener('click', () => {
+  save();
+  kontenFrei(false);
+  /* Kurz stehenlassen, damit man das Zuschnappen sieht, dann zurück ins Menü. */
+  setTimeout(() => kontenAuf(false), 240);
+  toast('Gespeichert');
+});
 $('#konten').addEventListener('click', e => {
+  /* Riegel und Speichern haben eigene Knöpfe — hier nicht mitschließen. */
+  if(e.target.closest('#k-lock') || e.target.closest('#k-save')) return;
   const b = e.target.closest('[data-kstep]');
   /* Ein Tipp auf die Fläche daneben schließt wieder. */
   if(!b){ if(!e.target.closest('.kbox')) kontenAuf(false); return; }
+  if(!$('#konten').classList.contains('frei')) return;   /* gesperrt: nichts tun */
   const w = b.dataset.kstep;
   if(w === 'za-') ME.konten.zaStart = r25(ME.konten.zaStart - 0.25);
   if(w === 'za+') ME.konten.zaStart = r25(ME.konten.zaStart + 0.25);
