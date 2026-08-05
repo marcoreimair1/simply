@@ -1381,28 +1381,67 @@ body.nobar #v-onboard{padding-top:14px}
   line-height:1;white-space:nowrap;margin:0}
 .exh i{font-style:normal;color:var(--butter)}
 
-.qbar{position:relative;display:inline-flex;align-items:center;gap:8px;
-  padding:6px 15px 6px 7px;margin:0 0 11px;height:36px;box-sizing:border-box;border-radius:999px;
-  border:1px solid var(--butter-dim);background:rgba(247,215,116,.08);
-  color:var(--butter);font-size:12.5px;font-weight:600;letter-spacing:.01em;
-  transition:.24s var(--ease)}
-.qbar:hover{background:rgba(247,215,116,.15);border-color:var(--butter);
-  box-shadow:0 8px 22px -12px rgba(247,215,116,.6)}
-.qbar:active{transform:scale(.97)}
-.qbar .qi{width:22px;height:22px;border-radius:50%;flex:none;display:grid;place-items:center;
+/* ─── Zeitraum: Kachel, Feld und Leiste ───────────────────────────────
+   Die Kachel oben ist ruhig grau, nur das Plus ist golden. Ein Tipp klappt
+   die drei Arten aus; ist eine gewählt, fällt die Kachel zusammen und der
+   Kalender rückt um genau ihre Höhe nach oben. */
+.zrk{overflow:hidden;margin:0 0 11px;border-radius:16px;
+  border:1px solid var(--line-2);background:rgba(6,10,26,.35);
+  max-height:220px;transition:max-height .4s var(--ease),opacity .28s var(--ease),
+    margin .4s var(--ease),border-color .28s}
+.zrk.weg{max-height:0;opacity:0;margin-bottom:0;border-width:0;pointer-events:none}
+.zrk-kopf{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  height:36px;box-sizing:border-box;padding:6px 13px 6px 6px;
+  font-size:13px;font-weight:600;color:var(--tx-2);transition:.2s var(--ease)}
+.zrk-kopf .qi{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;
   background:linear-gradient(120deg,var(--butter-2),var(--butter));color:#221904;
   transition:transform .42s var(--ease)}
-.qbar .qi svg{width:14px;height:14px;stroke-width:2.6}
-/* Beim Öffnen dreht das Plus eine Vierteldrehung und ein goldener Ring
-   läuft aus der Pille heraus — der Blick wandert mit dem Blatt nach unten. */
-.qbar.oeffnet .qi{transform:rotate(135deg)}
-.qbar::after{content:"";position:absolute;inset:-1px;border-radius:inherit;
-  border:1px solid var(--butter);opacity:0;pointer-events:none}
-.qbar.oeffnet::after{animation:zrRing .62s var(--ease-out) forwards}
-@keyframes zrRing{
-  0%{opacity:.85;transform:scale(1)}
-  100%{opacity:0;transform:scale(1.5)}
+.zrk-kopf .qi svg{width:14px;height:14px;stroke-width:2.6}
+.zrk.auf .zrk-kopf{color:var(--tx)}
+.zrk.auf .zrk-kopf .qi{transform:rotate(135deg)}
+.zrk-opts{display:flex;flex-direction:column;gap:7px;
+  max-height:0;opacity:0;padding:0 9px;overflow:hidden;
+  transition:max-height .4s var(--ease),opacity .26s var(--ease),padding .4s var(--ease)}
+.zrk.auf .zrk-opts{max-height:190px;opacity:1;padding:0 9px 10px}
+.zrk-opts button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:11px 12px;border-radius:12px;border:1px solid var(--line-2);
+  font-size:13px;font-weight:500;color:var(--tx-2);transition:.18s var(--ease)}
+.zrk-opts button:active{transform:scale(.985)}
+.zo-i{width:9px;height:9px;border-radius:50%;flex:none}
+.zrk-opts [data-zt=urlaub] .zo-i{background:var(--c-urlaub)}
+.zrk-opts [data-zt=krank]  .zo-i{background:var(--c-krank)}
+.zrk-opts [data-zt=eigen]  .zo-i{background:var(--c-eigen)}
+@media (hover:hover) and (pointer:fine){
+  .zrk-kopf:hover{color:var(--butter)}
+  .zrk-opts button:hover{border-color:var(--butter-dim);color:var(--butter)}
 }
+
+/* Das Feld unter dem Kalender, an der Stelle der Monatsdetails. */
+.zrp{margin-top:15px;padding-top:14px;border-top:1px solid var(--line-2);
+  animation:zrpIn .4s var(--ease-out) both}
+@keyframes zrpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.zrp-kopf{display:flex;align-items:center;gap:11px}
+.zrp-i{width:30px;height:30px;border-radius:11px;flex:none;display:grid;place-items:center}
+.zrp-i svg{width:16px;height:16px}
+.zrp-t b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.zrp-t small{display:block;font-size:10.5px;color:var(--tx-3);margin-top:1px}
+.zrp-sum{display:block;width:100%;text-align:left;margin-top:11px;padding:11px 12px;
+  border-radius:13px;border:1px dashed var(--line-2);font-size:12px;line-height:1.5;
+  color:var(--tx-2);transition:.18s var(--ease)}
+.zrp-sum b{color:var(--tx);font-weight:600}
+.zrp-sum:active{transform:scale(.99)}
+.zrp-teil{margin-top:12px}
+.zrp-teil .shlab{margin:0 0 7px}
+#q-text{width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line-2);
+  background:rgba(6,10,26,.6);outline:none;font-size:16px;color:var(--tx)}
+.zrp-weg{display:block;width:100%;margin-top:12px;padding:9px 0;font-size:11.5px;
+  color:var(--tx-3);transition:color .18s}
+.zrp-weg:hover{color:var(--coral)}
+
+/* Leiste unten: entweder die zwei Ansichten oder die zwei Entscheidungen. */
+.fb-z{display:none}
+body.zrmodus .fb-n{display:none}
+body.zrmodus .fb-z{display:inline-flex}
 .qdone{position:absolute;inset:0;z-index:6;display:grid;place-items:center;border-radius:inherit;
   background:rgba(9,15,38,.9);backdrop-filter:blur(12px);animation:qdoneIn .28s var(--ease-out)}
 @keyframes qdoneIn{from{opacity:0}}
@@ -2842,10 +2881,19 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <section class="view pt" id="v-cal">
       <!-- Eine schmale Zeile statt der Klappkarte. Der Inhalt liegt jetzt im
            Blatt #qsheet — so verschiebt sich der Kalender beim Öffnen nie. -->
-      <button class="qbar" id="qopen">
-        <span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
-        Zeitraum eintragen
-      </button>
+      <!-- Ruhige graue Kachel. Ein Tipp klappt die drei Arten aus; ist eine
+           gewählt, verschwindet sie und der Kalender rückt nach oben. -->
+      <div class="zrk" id="zrk">
+        <button class="zrk-kopf" id="qopen" aria-expanded="false">
+          <span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+          <span>Zeitraum eintragen</span>
+        </button>
+        <div class="zrk-opts" id="zrk-opts">
+          <button data-zt="urlaub"><span class="zo-i"></span>Urlaub</button>
+          <button data-zt="krank"><span class="zo-i"></span>Krankenstand</button>
+          <button data-zt="eigen"><span class="zo-i"></span>Eigener Text</button>
+        </div>
+      </div>
 
       <div class="card">
         <div class="calhead">
@@ -2859,6 +2907,31 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         <div class="cal">
           <div class="cal-dow"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
           <div class="cal-grid" id="cal-grid"></div>
+        </div>
+
+        <!-- Während eines Zeitraums steht hier, worum es geht — statt der
+             Monatsdetails, die so lange weichen. -->
+        <div class="zrp" id="zrp" hidden>
+          <div class="zrp-kopf">
+            <span class="zrp-i" id="zrp-i"></span>
+            <span class="zrp-t"><b id="zrp-b">—</b><small id="zrp-s">—</small></span>
+          </div>
+          <button class="zrp-sum" id="zr-sum">—</button>
+          <div class="zrp-teil">
+            <small class="shlab">Umfang</small>
+            <div class="scope" id="q-scope" style="margin:0">
+              <button data-s="full" class="on">Ganzer Tag</button>
+              <button data-s="vm">Nur Vormittag</button>
+              <button data-s="nm">Nur Nachmittag</button>
+            </div>
+          </div>
+          <div class="zrp-teil" id="q-textwrap" style="display:none">
+            <small class="shlab">Vermerk</small>
+            <input type="text" id="q-text" placeholder="z. B. Schulung">
+          </div>
+          <!-- Was der Zeitraum vom Urlaubskontingent übrig lässt. -->
+          <p class="shkonto urlaub" id="q-konto" style="display:none;margin-top:12px">—</p>
+          <button class="zrp-weg" id="q-clear">Einträge in diesem Zeitraum entfernen</button>
         </div>
 
         <!-- Der Auszug gehört zum Monat, also steht er in dessen Karte. -->
@@ -2944,8 +3017,11 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   </div>
 
   <nav class="fabbar" id="fabbar" style="display:none">
-    <button class="btn btn-p" data-go="v-cal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Kalender</button>
-    <button class="btn btn-out" data-go="v-export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg>Export</button>
+    <button class="btn btn-p fb-n" data-go="v-cal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Kalender</button>
+    <button class="btn btn-out fb-n" data-go="v-export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg>Export</button>
+    <!-- Während eines Zeitraums stehen hier die beiden Entscheidungen. -->
+    <button class="btn btn-p fb-z" id="zr-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>Eintragen</button>
+    <button class="btn btn-out fb-z" id="zr-weg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Eintrag verwerfen</button>
   </nav>
 </div>
 
@@ -3387,26 +3463,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <div class="qcal-grid" id="qc-grid"></div>
     </div>
     <p class="qsum" id="q-sum"></p>
-    <div class="qrow" style="margin-top:16px">
-      <div class="qf" style="flex:2"><small>Art</small><div class="tsel" id="q-type"></div></div>
-    </div>
-    <div class="qrow" style="margin-top:14px">
-      <div class="qf" style="flex:2"><small>Umfang</small>
-        <div class="scope" id="q-scope" style="margin:0">
-          <button data-s="full" class="on">Ganzer Tag</button>
-          <button data-s="vm">Nur Vormittag</button>
-          <button data-s="nm">Nur Nachmittag</button>
-        </div>
-      </div>
-    </div>
-    <!-- Was der Zeitraum vom Urlaubskontingent übrig lässt. -->
-    <p class="shkonto urlaub" id="q-konto" style="display:none;margin-top:12px">—</p>
-    <div class="qf" id="q-textwrap" style="display:none;margin-top:14px"><small>Vermerk</small>
-      <input type="text" id="q-text" placeholder="z. B. Schulung" style="width:100%;padding:13px;border-radius:12px;border:1px solid var(--line-2);background:rgba(6,10,26,.6);outline:none;font-size:16px">
-    </div>
     <div class="sheet-actions">
-      <button class="btn btn-p" id="q-apply">Eintragen</button>
-      <button class="btn btn-g" id="q-clear">Einträge entfernen</button>
+      <button class="btn btn-p" id="q-fertig">Fertig</button>
     </div>
   </div>
 </div>
@@ -3520,7 +3578,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2236';
+const APP_STAND = '2026-08-05-2304';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7070,8 +7128,6 @@ $('#sh-del').addEventListener('click', () => {
    SCHNELLEINTRAG (Zeitraum)
    ═══════════════════════════════════════════════════════════ */
 const Q = { type:'urlaub', scope:'full', from:null, to:null, y:PREV.getFullYear(), m:PREV.getMonth() };
-$('#q-type').innerHTML = ['urlaub','krank','eigen'].map(t =>
-  '<button class="tpill'+(t===Q.type?' on':'')+'" data-t="'+t+'">'+ICONS[t]+TYPES[t].label+'</button>').join('');
 
 function fmtDay(d){ return DOWSHORT[d.getDay()] + ', ' + d.getDate() + '. ' + MSHORT[d.getMonth()] + ' ' + d.getFullYear(); }
 
@@ -7140,6 +7196,16 @@ function qKontingent(){
 }
 function qSummary(){
   const el = $('#q-sum');
+  /* Dieselbe Zeile steht auch unter dem Kalender — dort führt sie zurück
+     zur Tagesauswahl. */
+  setTimeout(() => {
+    const z = $('#zr-sum'); if(!z) return;
+    z.innerHTML = !Q.from
+      ? 'Noch kein Zeitraum · <b>antippen zum Wählen</b>'
+      : (!Q.to || +Q.to === +Q.from
+          ? '<b>' + fmtDay(Q.from) + '</b>'
+          : '<b>' + fmtDay(Q.from) + ' – ' + fmtDay(Q.to) + '</b>');
+  }, 0);
   /* Eine Zeile statt zwei — das Blatt soll ohne Rollen auskommen. */
   if(!Q.from){ el.innerHTML = '<span class="qhint">Ersten und letzten Tag antippen.</span>'; return; }
   if(!Q.to){ el.innerHTML = '<b>' + fmtDay(Q.from) + '</b><br><span class="qhint">Jetzt den letzten Tag antippen — oder unten direkt eintragen.</span>'; return; }
@@ -7176,11 +7242,7 @@ $('#qc-next').addEventListener('click', () => { Q.m++; if(Q.m > 11){ Q.m = 0; Q.
 /* Das Blatt fährt von unten herein — die Kalenderseite bleibt stehen. */
 function quickOpen(){
   if($('#qsheet').classList.contains('on')) return;
-  const pille = $('#qopen');
-  pille.classList.remove('oeffnet');
-  void pille.offsetWidth;                 /* Animation neu anstoßen */
-  pille.classList.add('oeffnet');
-  setTimeout(() => pille.classList.remove('oeffnet'), 640);
+  if(!zrModus()) return;                  /* nur innerhalb eines Zeitraums */
   if(!Q.from){ Q.y = CAL.y; Q.m = CAL.m; }
   renderQCal();
   if(window.__qReset) window.__qReset();
@@ -7193,22 +7255,63 @@ function quickClose(){
   $('#qsheet').classList.remove('on');
   document.body.classList.remove('locked');
 }
-$('#qopen').addEventListener('click', quickOpen);
+$('#qopen').addEventListener('click', () => zrkAuf());
 $('#qsheet').addEventListener('click', e => {
   if(e.target.dataset.close === 'qsheet') quickClose();
 });
-$('#q-type').addEventListener('click', e => {
-  const b = e.target.closest('[data-t]'); if(!b) return;
-  Q.type = b.dataset.t;
-  $$('#q-type .tpill').forEach(x => x.classList.toggle('on', x.dataset.t === Q.type));
-  const eigen = Q.type === 'eigen';
-  $('#q-textwrap').style.display = eigen ? 'block' : 'none';
+/* ─── Der Ablauf: Kachel → Art → Tage → Eintragen ────────────────────
+   Die Kachel klappt die drei Arten aus. Ist eine gewählt, fällt sie
+   zusammen, der Kalender rückt nach oben, die Monatsdetails weichen dem
+   Feld mit Art, Umfang und Vermerk, und unten stehen die zwei
+   Entscheidungen. */
+function zrkAuf(an){
+  const k = $('#zrk'); if(!k) return;
+  const auf = (an === undefined) ? !k.classList.contains('auf') : !!an;
+  k.classList.toggle('auf', auf);
+  $('#qopen').setAttribute('aria-expanded', auf ? 'true' : 'false');
+}
+function zrModus(){ return document.body.classList.contains('zrmodus'); }
+function zrAn(art){
+  if(!ME) return;
+  Q.type = art; Q.scope = 'full'; Q.from = Q.to = null;
+  $$('#q-scope button').forEach(x => x.classList.toggle('on', x.dataset.s === 'full'));
+  const feld = $('#q-text'); if(feld) feld.value = '';
+  zrkAuf(false);
+  $('#zrk').classList.add('weg');
+  $('#zrp').hidden = false;
+  $('#mbar').style.display = 'none';
+  document.body.classList.add('zrmodus');
+  zrMalen();
+  setTimeout(quickOpen, 260);        /* gleich die Tage wählen lassen */
+}
+function zrAus(){
+  document.body.classList.remove('zrmodus');
+  $('#zrp').hidden = true;
+  $('#mbar').style.display = '';
+  $('#zrk').classList.remove('weg');
+  zrkAuf(false);
+  Q.from = Q.to = null;
+  renderQCal();
+}
+function zrMalen(){
+  if(!zrModus()) return;
+  const T = TYPES[Q.type] || TYPES.urlaub;
+  $('#zrp-i').innerHTML = ICONS[Q.type] || '';
+  $('#zrp-i').style.color = T.color;
+  $('#zrp-i').style.background = rgba(T.color, .14);
+  $('#zrp-b').textContent = T.label + ' eintragen';
+  $('#zrp-s').textContent = 'Zeitraum wählen, dann unten eintragen';
+  $('#q-textwrap').style.display = Q.type === 'eigen' ? 'block' : 'none';
+  qSummary();
   qKontingent();
-  /* Mit dem Vermerkfeld wird der Inhalt höher als das Blatt. Dann darf es
-     rollen, sonst wäre das Feld abgeschnitten und nicht erreichbar. Ohne
-     das Feld bleibt es fest, damit das Ziehen am Griff ruhig läuft. */
-  qRollen();
+}
+$('#zrk-opts').addEventListener('click', e => {
+  const b = e.target.closest('[data-zt]'); if(!b) return;
+  zrAn(b.dataset.zt);
 });
+$('#zr-weg').addEventListener('click', () => { quickClose(); zrAus(); toast('Verworfen'); });
+$('#q-fertig').addEventListener('click', quickClose);
+$('#zr-sum').addEventListener('click', quickOpen);
 function qRollen(){
   const k = $('#qcard');
   const zuViel = k.scrollHeight > k.clientHeight + 1;
@@ -7223,29 +7326,16 @@ $('#q-scope').addEventListener('click', e => {
 let _qBusy = false;
 /* Erfolg zeigen, Fenster schliessen, betroffene Tage im Kalender aufblitzen lassen */
 function qFinish(title, sub, keys){
-  const card = $('#qcard');
   FLASH = new Set(keys); FLASH_ORDER = keys.slice();
-  const ov = document.createElement('div');
-  ov.className = 'qdone';
-  ov.innerHTML = '<div class="qd-in"><div class="qd-ring">'
-    + '<svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="35"/>'
-    + '<path d="M25 41l11 11 20-22"/></svg><span class="puls"></span></div>'
-    + '<b>' + esc(title) + '</b><small>' + esc(sub) + '</small></div>';
-  card.appendChild(ov);
-  setTimeout(() => {
-    quickClose();
-    setTimeout(() => {
-      ov.remove();
-      Q.from = Q.to = null; renderQCal();
-      renderCal();
-      setTimeout(() => { FLASH = new Set(); FLASH_ORDER = []; }, 1400);
-      _qBusy = false;
-    }, 410);
-  }, 1050);
+  toast(title + ' · ' + sub);
+  quickClose();
+  zrAus();
+  renderCal();
+  setTimeout(() => { FLASH = new Set(); FLASH_ORDER = []; _qBusy = false; }, 1400);
 }
-$('#q-apply').addEventListener('click', () => {
+$('#zr-ok').addEventListener('click', () => {
   if(_qBusy) return;
-  if(!qRange()){ toast('Zuerst Tage im Kalender antippen'); return; }
+  if(!qRange()){ toast('Zuerst den Zeitraum wählen'); quickOpen(); return; }
   const hit = [];
   qEach(d => {
     if(!qTouched(d)) return false;
@@ -7263,7 +7353,7 @@ $('#q-apply').addEventListener('click', () => {
 });
 $('#q-clear').addEventListener('click', () => {
   if(_qBusy) return;
-  if(!qRange()){ toast('Zuerst Tage im Kalender antippen'); return; }
+  if(!qRange()){ toast('Zuerst den Zeitraum wählen'); quickOpen(); return; }
   const hit = [];
   qEach(d => {
     const k = key(d.getFullYear(), d.getMonth(), d.getDate());
