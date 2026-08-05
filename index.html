@@ -794,10 +794,23 @@ body.nobar #v-onboard{padding-top:14px}
 .geb.on{display:grid;animation:qdoneIn .3s var(--ease-out)}
 #gcanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .geb-in{position:relative;z-index:2;text-align:center;padding:26px 22px;max-width:420px}
-.geb-box{display:block;width:76px;height:76px;margin:0 auto 20px;color:var(--butter);
-  filter:drop-shadow(0 10px 26px rgba(247,215,116,.35));
+/* Das Profilbild im selben Ausschnitt wie überall, mit einem Hütchen auf
+   dem Rahmen. Der Rahmen selbst schneidet nichts ab — die Rundung sitzt am
+   Bild, damit das Hütchen darüber hinausragen darf. */
+.geb-bild{position:relative;width:min(46vw,152px);aspect-ratio:1;margin:6px auto 22px;
   animation:gebbox 1.05s var(--ease-out) both}
-.geb-box svg{width:100%;height:100%;stroke-width:1.5}
+.geb-bild img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block;
+  border-radius:30%;background:#fff;border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 26px 56px -22px rgba(0,0,0,.8),0 0 54px -16px rgba(247,215,116,.45)}
+.geb-hut{position:absolute;left:50%;top:-31%;width:40%;line-height:0;
+  transform-origin:50% 100%;filter:drop-shadow(0 7px 14px rgba(0,0,0,.5));
+  animation:gebHut .72s .6s var(--ease-out) both}
+.geb-hut svg{width:100%;height:auto;display:block}
+@keyframes gebHut{
+  0%{opacity:0;transform:translate(-68%,-30px) rotate(-64deg)}
+  62%{opacity:1;transform:translate(-68%,0) rotate(-6deg)}
+  100%{opacity:1;transform:translate(-68%,0) rotate(-16deg)}
+}
 @keyframes gebbox{
   0%{opacity:0;transform:scale(.3) rotate(-24deg)}
   50%{opacity:1;transform:scale(1.24) rotate(9deg)}
@@ -1239,7 +1252,7 @@ body.nobar #v-onboard{padding-top:14px}
   animation:halloBild .82s var(--ease-out) both}
 /* Der Haken erscheint nur nach dem Anlegen — er sitzt außerhalb des
    beschnittenen Bildfelds, sonst würde ihn die runde Ecke abschneiden. */
-.hallo-haken{position:absolute;right:-6px;bottom:-6px;width:54px;height:54px;border-radius:50%;
+.hallo-haken{position:absolute;right:-6px;top:-6px;width:54px;height:54px;border-radius:50%;
   background:var(--butter);color:#221904;display:grid;place-items:center;opacity:0;
   border:4px solid #080D22;box-shadow:0 14px 28px -12px rgba(0,0,0,.85)}
 .hallo.neu .hallo-haken{animation:hakenRein .58s .5s var(--ease-out) both}
@@ -2013,7 +2026,22 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 <div class="geb" id="geb">
   <canvas id="gcanvas"></canvas>
   <div class="geb-in">
-    <span class="geb-box" id="geb-box"></span>
+    <div class="geb-bild">
+      <img id="geb-img" alt="">
+      <span class="geb-hut" aria-hidden="true">
+        <svg viewBox="0 0 64 82" xmlns="http://www.w3.org/2000/svg">
+          <defs><clipPath id="hutKegel"><path d="M32 17 L57 78 H7 Z"/></clipPath></defs>
+          <path d="M32 17 L57 78 H7 Z" fill="#F7D774"/>
+          <g clip-path="url(#hutKegel)">
+            <path d="M-6 34 L70 22 L70 34 L-6 46 Z" fill="#F2A9C0"/>
+            <path d="M-6 58 L70 46 L70 58 L-6 70 Z" fill="#BFD0F2"/>
+          </g>
+          <path d="M32 17 L57 78 H7 Z" fill="none" stroke="rgba(34,25,4,.35)" stroke-width="2"/>
+          <circle cx="32" cy="12" r="9" fill="#F2A9C0"/>
+          <circle cx="29" cy="9" r="3" fill="rgba(255,255,255,.6)"/>
+        </svg>
+      </span>
+    </div>
     <div class="geb-eyebrow">Heute ist dein Tag</div>
     <h2 class="geb-h">Alles Gute zum <i>Geburtstag</i></h2>
     <div class="geb-name" id="geb-name">—</div>
@@ -3864,7 +3892,7 @@ let _gTimer = null;
 function feiern(tag){
   const geb = gebInMonat(CAL.m); if(!geb) return;
   const alter = CAL.y - geb.jahr;
-  $('#geb-box').innerHTML = PK_GESCHENK;
+  $('#geb-img').src = avDatei(avNummer());
   $('#geb-name').textContent = ME.vorname + (ME.nachname ? ' ' + ME.nachname : '') + '!';
   $('#geb-age').textContent = alter > 0 && alter < 130
     ? 'Heute werden es ' + alter + ' Jahre — der ' + tag + '. ' + MONTHS[CAL.m] + ' gehört dir.'
