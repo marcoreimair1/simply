@@ -1399,14 +1399,16 @@ body.nobar #v-onboard{padding-top:14px}
 .zrk-kopf .qi svg{width:14px;height:14px;stroke-width:2.6}
 .zrk.auf .zrk-kopf{color:var(--tx)}
 .zrk.auf .zrk-kopf .qi{transform:rotate(135deg)}
-.zrk-opts{display:flex;flex-direction:column;gap:7px;
+/* Die drei Arten stehen nebeneinander — ein Blick, eine Wahl. */
+.zrk-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;
   max-height:0;opacity:0;padding:0 9px;overflow:hidden;
   transition:max-height .4s var(--ease),opacity .26s var(--ease),padding .4s var(--ease)}
-.zrk.auf .zrk-opts{max-height:190px;opacity:1;padding:0 9px 10px}
-.zrk-opts button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
-  padding:11px 12px;border-radius:12px;border:1px solid var(--line-2);
-  font-size:13px;font-weight:500;color:var(--tx-2);transition:.18s var(--ease)}
-.zrk-opts button:active{transform:scale(.985)}
+.zrk.auf .zrk-opts{max-height:120px;opacity:1;padding:0 9px 10px}
+.zrk-opts button{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;padding:11px 6px;border-radius:12px;border:1px solid var(--line-2);
+  font-size:11.5px;font-weight:600;line-height:1.25;text-align:center;
+  color:var(--tx-2);transition:.18s var(--ease);hyphens:auto}
+.zrk-opts button:active{transform:scale(.97)}
 .zo-i{width:9px;height:9px;border-radius:50%;flex:none}
 .zrk-opts [data-zt=urlaub] .zo-i{background:var(--c-urlaub)}
 .zrk-opts [data-zt=krank]  .zo-i{background:var(--c-krank)}
@@ -1421,15 +1423,22 @@ body.nobar #v-onboard{padding-top:14px}
   animation:zrpIn .4s var(--ease-out) both}
 @keyframes zrpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .zrp-kopf{display:flex;align-items:center;gap:11px}
+.zrp-t{flex:1;min-width:0}
+/* Rechts daneben der Ist-Stand — nur dort, wo es einen gibt. */
+.zrp-ist{flex:none;text-align:right;padding:5px 11px;border-radius:12px;
+  border:1px solid rgba(247,215,116,.28);background:rgba(247,215,116,.08)}
+.zrp-ist b{display:block;font-family:var(--font-dis);font-weight:400;font-size:19px;
+  line-height:1.1;color:var(--c-urlaub);font-variant-numeric:tabular-nums}
+.zrp-ist u{display:block;text-decoration:none;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--tx-3);margin-top:1px}
 .zrp-i{width:30px;height:30px;border-radius:11px;flex:none;display:grid;place-items:center}
 .zrp-i svg{width:16px;height:16px}
 .zrp-t b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.01em}
 .zrp-t small{display:block;font-size:10.5px;color:var(--tx-3);margin-top:1px}
-.zrp-sum{display:block;width:100%;text-align:left;margin-top:11px;padding:11px 12px;
-  border-radius:13px;border:1px dashed var(--line-2);font-size:12px;line-height:1.5;
-  color:var(--tx-2);transition:.18s var(--ease)}
+.zrp-sum{margin:11px 0 0;padding:11px 12px;border-radius:13px;
+  border:1px dashed var(--line-2);font-size:12px;line-height:1.5;color:var(--tx-2)}
 .zrp-sum b{color:var(--tx);font-weight:600}
-.zrp-sum:active{transform:scale(.99)}
+.zrp-sum i{font-style:normal;color:var(--tx-3)}
 .zrp-teil{margin-top:12px}
 .zrp-teil .shlab{margin:0 0 7px}
 #q-text{width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line-2);
@@ -1437,6 +1446,19 @@ body.nobar #v-onboard{padding-top:14px}
 .zrp-weg{display:block;width:100%;margin-top:12px;padding:9px 0;font-size:11.5px;
   color:var(--tx-3);transition:color .18s}
 .zrp-weg:hover{color:var(--coral)}
+
+/* Im Zeitraum-Modus wird der Kalender zur Auswahlfläche: erster Tipp setzt
+   den Anfang, zweiter das Ende. Dazwischen liegt die goldene Spur. */
+body.zrmodus .cell .hrs,
+body.zrmodus .cell .ico,
+body.zrmodus .cell .gift{opacity:.35}
+body.zrmodus .cell.zr-off{opacity:.4}
+body.zrmodus .cell.zr-mid{background:rgba(247,215,116,.16);border-color:rgba(247,215,116,.3)}
+body.zrmodus .cell.zr-mid .num{color:var(--butter)}
+body.zrmodus .cell.zr-edge{background:linear-gradient(140deg,var(--butter-2),var(--butter));
+  border-color:var(--butter);box-shadow:0 8px 20px -10px rgba(247,215,116,.75)}
+body.zrmodus .cell.zr-edge .num{color:#221904;font-weight:700}
+body.zrmodus .cell.zr-edge .hrs,body.zrmodus .cell.zr-edge .ico{color:#221904;opacity:.55}
 
 /* Leiste unten: entweder die zwei Ansichten oder die zwei Entscheidungen. */
 .fb-z{display:none}
@@ -2890,7 +2912,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         </button>
         <div class="zrk-opts" id="zrk-opts">
           <button data-zt="urlaub"><span class="zo-i"></span>Urlaub</button>
-          <button data-zt="krank"><span class="zo-i"></span>Krankenstand</button>
+          <button data-zt="krank"><span class="zo-i"></span>Kranken&shy;stand</button>
           <button data-zt="eigen"><span class="zo-i"></span>Eigener Text</button>
         </div>
       </div>
@@ -2915,10 +2937,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <div class="zrp-kopf">
             <span class="zrp-i" id="zrp-i"></span>
             <span class="zrp-t"><b id="zrp-b">—</b><small id="zrp-s">—</small></span>
+            <span class="zrp-ist" id="zrp-ist" hidden><b id="zrp-ist-v">—</b><u id="zrp-ist-u">Tage offen</u></span>
           </div>
-          <button class="zrp-sum" id="zr-sum">—</button>
-          <div class="zrp-teil">
-            <small class="shlab">Umfang</small>
+          <p class="zrp-sum" id="zr-sum">—</p>
+          <div class="zrp-teil" id="zrp-umfang">
             <div class="scope" id="q-scope" style="margin:0">
               <button data-s="full" class="on">Ganzer Tag</button>
               <button data-s="vm">Nur Vormittag</button>
@@ -2926,11 +2948,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
             </div>
           </div>
           <div class="zrp-teil" id="q-textwrap" style="display:none">
-            <small class="shlab">Vermerk</small>
-            <input type="text" id="q-text" placeholder="z. B. Schulung">
+            <input type="text" id="q-text" placeholder="Vermerk, z. B. Schulung">
           </div>
-          <!-- Was der Zeitraum vom Urlaubskontingent übrig lässt. -->
-          <p class="shkonto urlaub" id="q-konto" style="display:none;margin-top:12px">—</p>
           <button class="zrp-weg" id="q-clear">Einträge in diesem Zeitraum entfernen</button>
         </div>
 
@@ -3021,7 +3040,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <button class="btn btn-out fb-n" data-go="v-export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg>Export</button>
     <!-- Während eines Zeitraums stehen hier die beiden Entscheidungen. -->
     <button class="btn btn-p fb-z" id="zr-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>Eintragen</button>
-    <button class="btn btn-out fb-z" id="zr-weg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Eintrag verwerfen</button>
+    <button class="btn btn-g fb-z" id="zr-weg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Eintrag verwerfen</button>
   </nav>
 </div>
 
@@ -3447,28 +3466,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   </div>
 </div>
 
-<!-- Zeitraum eintragen — als Blatt von unten, damit die Seite ruhig bleibt -->
-<div class="sheet" id="qsheet">
-  <div class="sheet-bd" data-close="qsheet"></div>
-  <div class="sheet-card" id="qcard">
-    <div class="sheet-grab" id="q-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
-    <h3>Zeitraum eintragen</h3>
-    <div class="qcal">
-      <div class="qcal-head">
-        <button class="rnd" id="qc-prev" aria-label="Monat zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
-        <b id="qc-title">—</b>
-        <button class="rnd" id="qc-next" aria-label="Monat vor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
-      </div>
-      <div class="qcal-dow"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
-      <div class="qcal-grid" id="qc-grid"></div>
-    </div>
-    <p class="qsum" id="q-sum"></p>
-    <div class="sheet-actions">
-      <button class="btn btn-p" id="q-fertig">Fertig</button>
-    </div>
-  </div>
-</div>
-
 <!-- Zeit-Popover -->
 <div class="tpop" id="tpop">
   <p class="tp-h">Stunde</p>
@@ -3578,7 +3575,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2304';
+const APP_STAND = '2026-08-05-2321';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -4673,7 +4670,9 @@ function go(id){
   const inApp = (id === 'v-cal' || id === 'v-export');
   $('#fabbar').style.display = inApp ? 'flex' : 'none';
   /* Aktiv ist gold gefüllt, das andere umrandet — wie auf der Anmeldeseite. */
-  $$('#fabbar button').forEach(b => {
+  /* Nur die beiden Ansichtsknöpfe umfärben — Eintragen und Verwerfen
+     behalten ihr eigenes Aussehen. */
+  $$('#fabbar button[data-go]').forEach(b => {
     const an = b.dataset.go === id;
     b.classList.toggle('btn-p', an);
     b.classList.toggle('btn-out', !an);
@@ -5346,7 +5345,7 @@ function enterApp(){
   Q.from = Q.to = null; Q.y = CAL.y; Q.m = CAL.m;
   malRang();
   malErinnerung();
-  exYear(); renderCal(); renderQCal();
+  exYear(); renderCal();
   setTimeout(pruefeStand, 3500);
   go('v-cal');
 }
@@ -6546,7 +6545,17 @@ function renderCal(){
     const isSun = r.dow === 0;
     const isToday = today.getFullYear() === y && today.getMonth() === m && today.getDate() === r.day;
     const fl = FLASH.has(r.k);
-    html += '<button class="cell'+(isSun?' sun':'')+(isToday?' today':'')+(fl?' flash':'')+'"'
+    /* Im Zeitraum-Modus trägt die Zelle zusätzlich ihre Rolle in der Spur. */
+    let zr = '';
+    if(zrModus()){
+      const x = +new Date(y, m, r.day);
+      const a = Q.from ? +Q.from : null, b = Q.to ? +Q.to : null;
+      if(!qTouched(new Date(y, m, r.day))) zr = ' zr-off';
+      if(a !== null && b !== null){
+        if(x >= a && x <= b) zr += (x === a || x === b) ? ' zr-edge' : ' zr-mid';
+      } else if(a !== null && x === a) zr += ' zr-edge';
+    }
+    html += '<button class="cell'+(isSun?' sun':'')+(isToday?' today':'')+(fl?' flash':'')+zr+'"'
       + (fl ? ' style="animation-delay:'+(FLASH_ORDER.indexOf(r.k)*55)+'ms"' : '')
       + (r.type ? ' data-t="'+r.type+'"' : '') + ' data-d="'+r.day+'">';
     html += '<span class="num">'+r.day+'</span>';
@@ -6663,6 +6672,17 @@ $('#cal-grid').addEventListener('click', e => {
   const g = e.target.closest('[data-geb]');
   if(g){ e.stopPropagation(); feiern(+g.dataset.geb); return; }
   const c = e.target.closest('[data-d]'); if(!c) return;
+  /* Läuft ein Zeitraum, setzt der Tipp Anfang und Ende statt das Tagesblatt
+     zu öffnen. Ein dritter Tipp beginnt von vorn. */
+  if(zrModus()){
+    const dt = new Date(CAL.y, CAL.m, +c.dataset.d);
+    if(!Q.from || (Q.from && Q.to)){ Q.from = dt; Q.to = null; }
+    else if(+dt < +Q.from){ Q.to = Q.from; Q.from = dt; }
+    else Q.to = dt;
+    renderCal();
+    zrMalen();
+    return;
+  }
   openSheet(CAL.y, CAL.m, +c.dataset.d);
 });
 
@@ -7067,7 +7087,6 @@ function wireSheetDrag(griffId, blattId, zu, rollId){
 }
 $('#hallo').addEventListener('click', grussEnde);
 window.__sheetReset = wireSheetDrag('sh-grab', 'sheet', closeSheet);
-window.__qReset     = wireSheetDrag('q-grab',  'qsheet', quickClose);
 window.__mReset     = wireSheetDrag('m-grab',  'msheet', msZu);
 window.__pfReset    = wireSheetDrag('pf-grab', 'pfsheet', pfZu, 'pf-liste');
 window.__rReset     = wireSheetDrag('r-grab',  'rsheet',  rangZu);
@@ -7144,121 +7163,33 @@ function qEach(fn){
   for(const d = new Date(r[0]); d <= r[1]; d.setDate(d.getDate()+1)) if(fn(new Date(d))) n++;
   return n;
 }
-function renderQCal(){
-  if(!ME) return;
-  const y = Q.y, m = Q.m, n = dim(y, m);
-  const qp = $('#qc-prev');
-  if(qp) qp.disabled = vorDemStart(m === 0 ? y - 1 : y, m === 0 ? 11 : m - 1);
-  const lead = (new Date(y, m, 1).getDay() + 6) % 7;
-  const hol = holidays(y), today = new Date();
-  const a = Q.from ? +Q.from : null, b = Q.to ? +Q.to : null;
-  $('#qc-title').textContent = MONTHS[m] + ' ' + y;
-  let h = '';
-  for(let i = 0; i < lead; i++) h += '<div class="qc pad"></div>';
-  for(let d = 1; d <= n; d++){
-    const dt = new Date(y, m, d), x = +dt;
-    let cls = 'qc';
-    if(!qTouched(dt)) cls += ' off';
-    if(a !== null && b !== null){
-      if(x === a && x === b) cls += ' edge solo';
-      else if(x === a) cls += ' edge start';
-      else if(x === b) cls += ' edge end';
-      else if(x > a && x < b) cls += ' mid';
-    } else if(a !== null && x === a) cls += ' edge solo';
-    if(today.getFullYear() === y && today.getMonth() === m && today.getDate() === d) cls += ' today';
-    const title = hol[key(y,m,d)] || (dt.getDay() === 0 ? 'Sonntag' : '');
-    h += '<button class="'+cls+'" data-qd="'+d+'"'+(title?' title="'+esc(title)+'"':'')+'>'+d+'</button>';
-  }
-  $('#qc-grid').innerHTML = h;
-  qSummary();
-  qKontingent();
-}
-/* Wie im Tagesblatt: was das Kontingent nach diesem Zeitraum hergibt. */
-function qKontingent(){
-  const el = $('#q-konto'); if(!el || !ME) return;
-  const zeig = Q.type === 'urlaub';
-  if(zeig){
-    const jetzt = kontenRechnen(ME) || {};
-    const p = Object.assign({}, ME, { events: Object.assign({}, ME.events) });
-    const r = qRange();
-    if(r) for(const d = new Date(r[0]); d <= r[1]; d.setDate(d.getDate() + 1)){
-      if(!qTouched(d)) continue;
-      p.events[key(d.getFullYear(), d.getMonth(), d.getDate())] =
-        { t:'urlaub', s:Q.scope, text:'', aw:false };
-    }
-    const neu = kontenRechnen(p) || {};
-    el.innerHTML = 'Urlaubstage ' + jetzt.jahr + ': <b>' + fmtTage(jetzt.urlaub || 0) + '</b> von '
-      + fmtTage(jetzt.anspruch || 0) + ' offen'
-      + (Math.abs((neu.urlaub || 0) - (jetzt.urlaub || 0)) > 0.001
-          ? ' <i>· nach diesem Zeitraum ' + fmtTage(neu.urlaub || 0) + '</i>' : '');
-  }
-  el.style.display = zeig ? 'block' : 'none';
-}
+/* Von–bis unter dem Kalender. Sonntage, Feiertage und dienstfreie Tage
+   werden übersprungen, deshalb steht die Zahl der Arbeitstage dabei. */
 function qSummary(){
-  const el = $('#q-sum');
-  /* Dieselbe Zeile steht auch unter dem Kalender — dort führt sie zurück
-     zur Tagesauswahl. */
-  setTimeout(() => {
-    const z = $('#zr-sum'); if(!z) return;
-    z.innerHTML = !Q.from
-      ? 'Noch kein Zeitraum · <b>antippen zum Wählen</b>'
-      : (!Q.to || +Q.to === +Q.from
-          ? '<b>' + fmtDay(Q.from) + '</b>'
-          : '<b>' + fmtDay(Q.from) + ' – ' + fmtDay(Q.to) + '</b>');
-  }, 0);
-  /* Eine Zeile statt zwei — das Blatt soll ohne Rollen auskommen. */
-  if(!Q.from){ el.innerHTML = '<span class="qhint">Ersten und letzten Tag antippen.</span>'; return; }
-  if(!Q.to){ el.innerHTML = '<b>' + fmtDay(Q.from) + '</b><br><span class="qhint">Jetzt den letzten Tag antippen — oder unten direkt eintragen.</span>'; return; }
+  const el = $('#zr-sum'); if(!el) return;
+  if(!Q.from){
+    el.innerHTML = '<i>Ersten Tag im Kalender antippen, dann den letzten.</i>';
+    return;
+  }
+  if(!Q.to){
+    el.innerHTML = '<b>ab ' + fmtDay(Q.from) + '</b><br><i>Jetzt den letzten Tag antippen.</i>';
+    return;
+  }
   let days = 0, taken = 0;
-  for(const d = new Date(Q.from); d <= Q.to; d.setDate(d.getDate()+1)){
+  for(const d = new Date(Q.from); d <= Q.to; d.setDate(d.getDate() + 1)){
     if(!qTouched(d)) continue;
     days++;
     if(ME.events[key(d.getFullYear(), d.getMonth(), d.getDate())]) taken++;
   }
-  el.innerHTML = '<b>' + fmtDay(Q.from) + ' &nbsp;–&nbsp; ' + fmtDay(Q.to) + '</b><br>'
-    + '<span class="qhint">' + days + (days === 1 ? ' Arbeitstag' : ' Arbeitstage') + ' betroffen'
-    + (taken ? ' · ' + taken + ' davon bereits belegt' : '')
-    + ' · Sonntage, Feiertage und dienstfreie Tage werden übersprungen.</span>';
+  el.innerHTML = '<b>' + fmtDay(Q.from) + ' – ' + fmtDay(Q.to) + '</b><br>'
+    + '<i>' + days + (days === 1 ? ' Arbeitstag' : ' Arbeitstage')
+    + (taken ? ' · ' + taken + ' bereits belegt' : '') + '</i>';
 }
 function qRange(){
   if(!Q.from) return null;
   return [new Date(Q.from), new Date(Q.to || Q.from)];
 }
-$('#qc-grid').addEventListener('click', e => {
-  const b = e.target.closest('[data-qd]'); if(!b) return;
-  const dt = new Date(Q.y, Q.m, +b.dataset.qd);
-  if(!Q.from || (Q.from && Q.to)){ Q.from = dt; Q.to = null; }
-  else if(+dt < +Q.from){ Q.to = Q.from; Q.from = dt; }
-  else Q.to = dt;
-  renderQCal();
-});
-$('#qc-prev').addEventListener('click', () => {
-  let y = Q.y, m = Q.m - 1;
-  if(m < 0){ m = 11; y--; }
-  if(vorDemStart(y, m)){ toast('Weiter zurück als Jänner ' + START.y + ' geht es nicht.'); return; }
-  Q.y = y; Q.m = m; renderQCal();
-});
-$('#qc-next').addEventListener('click', () => { Q.m++; if(Q.m > 11){ Q.m = 0; Q.y++; } renderQCal(); });
-/* Das Blatt fährt von unten herein — die Kalenderseite bleibt stehen. */
-function quickOpen(){
-  if($('#qsheet').classList.contains('on')) return;
-  if(!zrModus()) return;                  /* nur innerhalb eines Zeitraums */
-  if(!Q.from){ Q.y = CAL.y; Q.m = CAL.m; }
-  renderQCal();
-  if(window.__qReset) window.__qReset();
-  $('#qcard').scrollTop = 0;
-  $('#qsheet').classList.add('on');
-  document.body.classList.add('locked');
-  requestAnimationFrame(qRollen);
-}
-function quickClose(){
-  $('#qsheet').classList.remove('on');
-  document.body.classList.remove('locked');
-}
 $('#qopen').addEventListener('click', () => zrkAuf());
-$('#qsheet').addEventListener('click', e => {
-  if(e.target.dataset.close === 'qsheet') quickClose();
-});
 /* ─── Der Ablauf: Kachel → Art → Tage → Eintragen ────────────────────
    Die Kachel klappt die drei Arten aus. Ist eine gewählt, fällt sie
    zusammen, der Kalender rückt nach oben, die Monatsdetails weichen dem
@@ -7282,7 +7213,6 @@ function zrAn(art){
   $('#mbar').style.display = 'none';
   document.body.classList.add('zrmodus');
   zrMalen();
-  setTimeout(quickOpen, 260);        /* gleich die Tage wählen lassen */
 }
 function zrAus(){
   document.body.classList.remove('zrmodus');
@@ -7291,7 +7221,7 @@ function zrAus(){
   $('#zrk').classList.remove('weg');
   zrkAuf(false);
   Q.from = Q.to = null;
-  renderQCal();
+  renderCal();
 }
 function zrMalen(){
   if(!zrModus()) return;
@@ -7300,42 +7230,61 @@ function zrMalen(){
   $('#zrp-i').style.color = T.color;
   $('#zrp-i').style.background = rgba(T.color, .14);
   $('#zrp-b').textContent = T.label + ' eintragen';
-  $('#zrp-s').textContent = 'Zeitraum wählen, dann unten eintragen';
+  $('#zrp-s').textContent = 'Tage im Kalender antippen';
+
+  /* Rechts der Ist-Stand — den gibt es nur beim Urlaub. */
+  const ist = $('#zrp-ist');
+  if(Q.type === 'urlaub'){
+    const st = kontenRechnen(ME) || {};
+    $('#zrp-ist-v').textContent = fmtTage(st.urlaub || 0);
+    /* Ist ein Zeitraum gewählt, steht daneben, was danach bleibt. */
+    const p = Object.assign({}, ME, { events: Object.assign({}, ME.events) });
+    const r = qRange();
+    if(r) for(const d = new Date(r[0]); d <= r[1]; d.setDate(d.getDate() + 1)){
+      if(!qTouched(d)) continue;
+      p.events[key(d.getFullYear(), d.getMonth(), d.getDate())] =
+        { t:'urlaub', s:Q.scope, text:'', aw:false };
+    }
+    const neu = r ? (kontenRechnen(p) || {}) : st;
+    $('#zrp-ist-u').textContent = Math.abs((neu.urlaub || 0) - (st.urlaub || 0)) > 0.001
+      ? 'danach ' + fmtTage(neu.urlaub || 0)
+      : 'Tage offen';
+    ist.hidden = false;
+  } else ist.hidden = true;
+
+  /* Umfang: bei Krankenstand gilt immer der ganze Tag. */
+  const mitUmfang = Q.type !== 'krank';
+  $('#zrp-umfang').style.display = mitUmfang ? 'block' : 'none';
+  if(!mitUmfang){
+    Q.scope = 'full';
+    $$('#q-scope button').forEach(x => x.classList.toggle('on', x.dataset.s === 'full'));
+  }
   $('#q-textwrap').style.display = Q.type === 'eigen' ? 'block' : 'none';
   qSummary();
-  qKontingent();
 }
 $('#zrk-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-zt]'); if(!b) return;
   zrAn(b.dataset.zt);
 });
-$('#zr-weg').addEventListener('click', () => { quickClose(); zrAus(); toast('Verworfen'); });
-$('#q-fertig').addEventListener('click', quickClose);
-$('#zr-sum').addEventListener('click', quickOpen);
-function qRollen(){
-  const k = $('#qcard');
-  const zuViel = k.scrollHeight > k.clientHeight + 1;
-  k.style.overflowY = zuViel ? 'auto' : 'hidden';
-}
+$('#zr-weg').addEventListener('click', () => { zrAus(); toast('Verworfen'); });
 $('#q-scope').addEventListener('click', e => {
   const b = e.target.closest('[data-s]'); if(!b) return;
   Q.scope = b.dataset.s;
   $$('#q-scope button').forEach(x => x.classList.toggle('on', x.dataset.s === Q.scope));
-  qKontingent();
+  zrMalen();
 });
 let _qBusy = false;
 /* Erfolg zeigen, Fenster schliessen, betroffene Tage im Kalender aufblitzen lassen */
 function qFinish(title, sub, keys){
   FLASH = new Set(keys); FLASH_ORDER = keys.slice();
   toast(title + ' · ' + sub);
-  quickClose();
   zrAus();
   renderCal();
   setTimeout(() => { FLASH = new Set(); FLASH_ORDER = []; _qBusy = false; }, 1400);
 }
 $('#zr-ok').addEventListener('click', () => {
   if(_qBusy) return;
-  if(!qRange()){ toast('Zuerst den Zeitraum wählen'); quickOpen(); return; }
+  if(!qRange()){ toast('Zuerst die Tage im Kalender antippen'); return; }
   const hit = [];
   qEach(d => {
     if(!qTouched(d)) return false;
@@ -7353,7 +7302,7 @@ $('#zr-ok').addEventListener('click', () => {
 });
 $('#q-clear').addEventListener('click', () => {
   if(_qBusy) return;
-  if(!qRange()){ toast('Zuerst den Zeitraum wählen'); quickOpen(); return; }
+  if(!qRange()){ toast('Zuerst die Tage im Kalender antippen'); return; }
   const hit = [];
   qEach(d => {
     const k = key(d.getFullYear(), d.getMonth(), d.getDate());
@@ -8162,7 +8111,7 @@ $('#fabbar').addEventListener('click', e => {
 });
 $('#sheet').addEventListener('click', e => { if(e.target.dataset.close === 'sheet') closeSheet(); });
 document.addEventListener('keydown', e => {
-  if(e.key === 'Escape'){ closeSheet(); quickClose(); msZu(); pfZu(); dlZu(); firmaZu(); closeTime(); menuZu(); }
+  if(e.key === 'Escape'){ closeSheet(); msZu(); pfZu(); dlZu(); firmaZu(); closeTime(); menuZu(); if(zrModus()) zrAus(); }
 });
 /* Überall antippen beendet das Intro — nicht nur die Pille */
 /* Kein Überspringen: die vier Sekunden gehören der Marke. */
