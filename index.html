@@ -355,6 +355,17 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 /* Roter Kreis mit Zahl, wie am Homescreen. Er sitzt an der Ecke und darf
    ein Stück hinausragen, deshalb liegt er ausserhalb des beschnittenen
    Bildes. Bei zweistelligen Zahlen wird er zur Pille. */
+/* Das Tier macht Platz: es rutscht im Rahmen ein Stück nach unten, sobald
+   eine Meldung anliegt, und die Zahl springt darüber ins Bild. */
+#avwrap .avatar img{transition:transform .62s var(--ease-out)}
+#avwrap.meldung .avatar img{transform:translateY(11%) scale(1.06)}
+#avwrap.meldung #av-zaehler{animation:meldungPop .62s var(--ease-out) both}
+@keyframes meldungPop{
+  0%{opacity:0;transform:translateY(6px) scale(.3)}
+  55%{opacity:1;transform:translateY(0) scale(1.28)}
+  78%{transform:scale(.94)}
+  100%{opacity:1;transform:none}
+}
 .zaehler{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;
   border-radius:999px;background:#FF453A;color:#fff;font-size:11px;font-weight:700;
   display:grid;place-items:center;line-height:1;box-sizing:border-box;
@@ -3868,7 +3879,7 @@ const EX  = { year:PREV.getFullYear(), set:new Set() };
 
 function enterApp(){
   malAvatar();
-  malZaehler();
+  zaehlerAnlauf();
   $('#me-name').textContent = ME.vorname + ' ' + ME.nachname;
   $('#me-sub').textContent = EMPLOYER + ' · ' + fmtDate(ME.dob);
   $('#me-mail').textContent = MAIL || '';
@@ -4192,6 +4203,7 @@ function karteZu(){
   document.body.classList.remove('locked');
   /* Die Feier gilt als gesehen, sobald man sie schließt. */
   aufQuittiert();
+  zurueckInsMenu();
 }
 
 /* ─── Stufenaufstieg ──────────────────────────────────────────────────
@@ -4465,6 +4477,7 @@ function rangAuf(){
 function rangZu(){
   $('#rsheet').classList.remove('on');
   document.body.classList.remove('locked');
+  zurueckInsMenu();
 }
 
 /* Der Verlauf: in der Exportansicht steckt nur ein Knopf, die Liste liegt
@@ -4534,6 +4547,10 @@ function pfNeu(){
   const g = pfGelesen();
   return NACHRICHTEN.filter(n => g.indexOf(n.id) < 0);
 }
+/* Beim Einstieg soll erst das Tier zu sehen sein. Ein paar Sekunden später
+   rutscht das Bild im Rahmen nach unten und die rote Zahl springt darüber
+   ins Bild — so merkt man die Neuigkeit, ohne davon begrüßt zu werden. */
+let _zaehlerFrei = false, _zaehlerT = null;
 function malZaehler(){
   const post = ME ? pfNeu().length : 0;
   const stufen = aufOffen();
@@ -4544,9 +4561,19 @@ function malZaehler(){
   };
   /* Am Profilbild steht alles zusammen, wie am Telefon: Nachrichten und
      Stufenaufstiege in einer Zahl. */
-  setz('#av-zaehler', post + stufen);
+  const oben = post + stufen;
+  setz('#av-zaehler', _zaehlerFrei ? oben : 0);
   setz('#pf-zaehler', post);
   setz('#mr-zaehler', stufen);
+  const w = $('#avwrap');
+  if(w) w.classList.toggle('meldung', _zaehlerFrei && oben > 0);
+}
+/* Wird beim Betreten der App aufgerufen. */
+function zaehlerAnlauf(){
+  clearTimeout(_zaehlerT);
+  _zaehlerFrei = false;
+  malZaehler();
+  _zaehlerT = setTimeout(() => { _zaehlerFrei = true; malZaehler(); }, 4500);
 }
 function malPostfach(){
   const g = pfGelesen();
@@ -4590,8 +4617,9 @@ function pfAuf(){
 function pfZu(){
   $('#pfsheet').classList.remove('on');
   document.body.classList.remove('locked');
+  zurueckInsMenu();
 }
-$('#postfach').addEventListener('click', pfAuf);
+$('#postfach').addEventListener('click', () => { _vonMenu = true; pfAuf(); });
 $('#mk-zu').addEventListener('click', karteZu);
 $('#mk-dreh').addEventListener('click', karteDreh);
 $('#mk-dreh').addEventListener('keydown', e => {
@@ -5773,6 +5801,15 @@ let DRAFT = null;
 /* Auf und zu laufen beide über eine Stelle, damit die Rückbewegung nie
    vergessen wird — egal ob per Grund, Eintrag oder Escape geschlossen. */
 let _menuZu = null;
+/* Wer aus dem Profilmenü heraus ein Blatt öffnet, will danach wieder im
+   Menü stehen — sonst landet man ohne Grund im Kalender. Diese Merkfahne
+   wird beim Öffnen gesetzt und beim Zurückkehren verbraucht. */
+let _vonMenu = false;
+function zurueckInsMenu(){
+  if(!_vonMenu) return;
+  _vonMenu = false;
+  setTimeout(menuAuf, 190);      /* erst wenn das Blatt weg ist */
+}
 function menuAuf(){
   clearTimeout(_menuZu);
   /* Erst mit dem bekannten Stand zeichnen, dann im Hintergrund nachfragen —
@@ -5821,8 +5858,8 @@ $('#menu').addEventListener('click', e => {
       pkAdd(null);
     }
   }
-  if(a === 'karte') karteAuf();
-  if(a === 'raenge'){ if(aufOffen()) aufFeier(); else rangAuf(); }
+  if(a === 'karte'){ _vonMenu = true; karteAuf(); }
+  if(a === 'raenge'){ _vonMenu = true; if(aufOffen()) aufFeier(); else rangAuf(); }
   if(a === 'pkreset') pkReset();
   if(a === 'logout') doLogout();
   if(a === 'delete') doDelete();
