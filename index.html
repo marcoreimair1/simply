@@ -2148,10 +2148,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <!-- 2 Geburtsdatum -->
           <div class="slide">
             <div class="eyebrow">Schritt 2 · Geburtsdatum</div>
-            <h1 class="dis">Wann hat's <i>angefangen</i>?</h1>
-            <p class="lede">Auf einer Arbeitszeitaufzeichnung muss eindeutig sein, wem sie gehört —
-              Name allein genügt dafür nicht. Dein Geburtsdatum steht darum im Kopf jeder A4-Seite
-              und dient MOJI gleichzeitig als Schlüssel, wenn du dich das nächste Mal anmeldest.
+            <h1 class="dis">Dein <i>Geburtsdatum</i>.</h1>
+            <p class="lede">Es steht im Kopf jeder A4-Seite — ein Name allein genügt dort nicht.
               Und im Kalender wartet an dem Tag eine kleine Überraschung.</p>
             <div class="card mt" style="max-width:430px">
               <div class="dob" data-dob="ob" style="margin-top:2px">
@@ -2742,7 +2740,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1157';
+const APP_STAND = '2026-08-05-1203';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3778,8 +3776,14 @@ let _prevStep = 0;
 function obPaint(){
   const gewechselt = OB.step !== _prevStep;
   const back = OB.step < _prevStep; _prevStep = OB.step;
-  /* neuer Schritt fängt oben an, sonst hängt man in der Mitte des vorigen */
-  if(gewechselt) window.scrollTo({ top:0, behavior:'auto' });
+  /* Neuer Schritt fängt oben an, sonst hängt man in der Mitte des vorigen.
+     Und die Tastatur geht zu: sie blieb vom vorigen Feld offen und schob die
+     Überschrift aus dem Bild. Wer tippen will, tippt ins Feld. */
+  if(gewechselt){
+    const fokus = document.activeElement;
+    if(fokus && fokus.blur && /INPUT|TEXTAREA/.test(fokus.tagName)) fokus.blur();
+    window.scrollTo({ top:0, behavior:'auto' });
+  }
   /* Nie automatisch weiterspringen, wenn man gerade zurückgegangen ist */
   clearAutos();
   const da = $('#dob-auto'); if(da) da.style.display = 'none';
