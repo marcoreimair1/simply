@@ -355,10 +355,12 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 /* Roter Kreis mit Zahl, wie am Homescreen. Er sitzt an der Ecke und darf
    ein Stück hinausragen, deshalb liegt er ausserhalb des beschnittenen
    Bildes. Bei zweistelligen Zahlen wird er zur Pille. */
-/* Das Tier macht Platz: es rutscht im Rahmen ein Stück nach unten, sobald
-   eine Meldung anliegt, und die Zahl springt darüber ins Bild. */
-#avwrap .avatar img{transition:transform .62s var(--ease-out)}
-#avwrap.meldung .avatar img{transform:translateY(11%) scale(1.06)}
+/* Das Tier macht Platz: sobald eine Meldung anliegt, wandert der Ausschnitt
+   nach oben — die Figur rutscht also im Rahmen nach unten und darüber steht
+   ihr eigenes Pastell. Verschoben wird der Ausschnitt, nicht das Bild:
+   sonst rutscht das Bild aus dem Rahmen und oben käme Weiß zum Vorschein. */
+#avwrap .avatar img{transition:object-position .62s var(--ease-out),transform .62s var(--ease-out)}
+#avwrap.meldung .avatar img{object-position:center 58%;transform:scale(1.04)}
 #avwrap.meldung #av-zaehler{animation:meldungPop .62s var(--ease-out) both}
 @keyframes meldungPop{
   0%{opacity:0;transform:translateY(6px) scale(.3)}
