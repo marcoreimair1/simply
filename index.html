@@ -1406,6 +1406,28 @@ body.nobar #v-onboard{padding-top:14px}
 #dlcard .grip{width:52px;height:5px;background:var(--tx-3)}
 #dl-grab:hover .grip{background:var(--butter)}
 
+/* Meine Firma */
+.fikopf{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:6px 0 18px;border-bottom:1px solid var(--line-2);margin-bottom:4px}
+.fi-logo{width:92px;height:92px;border-radius:30%;overflow:hidden;background:#030B21;
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 18px 40px -20px rgba(0,0,0,.8),0 0 0 6px rgba(247,215,116,.05)}
+.fi-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.fikopf b{display:block;margin-top:15px;font-family:var(--font-dis);font-weight:400;
+  font-size:22px;letter-spacing:-.01em}
+.fikopf small{display:block;margin-top:5px;font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--tx-3)}
+.fizeilen{margin:0}
+.fiz{display:flex;align-items:baseline;gap:12px;padding:11px 0;
+  border-bottom:1px solid var(--line-2)}
+.fiz:last-child{border-bottom:none}
+.fiz u{flex:none;width:104px;text-decoration:none;font-size:9.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--tx-3);padding-top:2px}
+.fiz b{flex:1;min-width:0;font-size:13.5px;font-weight:600;color:var(--tx)}
+.fiz b small{display:block;margin-top:2px;font-size:11.5px;font-weight:400;
+  color:var(--tx-3);line-height:1.45}
+.fihint{margin:14px 0 0;font-size:11.5px;line-height:1.5;color:var(--tx-3)}
+
 /* Bottom-Sheet */
 .sheet{position:fixed;inset:0;z-index:50;display:none}
 .sheet.on{display:block}
@@ -2619,6 +2641,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <span class="mr-schiene"><span class="mr-bar" id="mr-bar"></span></span>
       <small id="mr-rest">—</small>
     </button>
+    <button class="mi" data-act="firma">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V6.5l7-3.5 7 3.5V21"/><path d="M9.5 21v-5h5v5M9 10h1.5M13.5 10H15"/></svg>
+      Meine Firma
+    </button>
     <button class="mi" data-act="karte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.6"/><path d="M3 10h18M7 14.5h4"/></svg>Mitgliedschaftskarte</button>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
     <button class="mi" data-act="erinnerung" id="mi-erin" style="display:none">
@@ -2853,6 +2879,33 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   </div>
 </div>
 
+<!-- Meine Firma. Zeigt nur, was MOJI wirklich über den Dienstgeber weiß:
+     Zeichen, Name und wo er in der App auftaucht. Nichts dazuerfunden —
+     Adresse oder Firmenbuchnummer kennt die App nicht. -->
+<div class="sheet" id="fisheet">
+  <div class="sheet-bd" data-close="fisheet"></div>
+  <div class="sheet-card" id="ficard">
+    <div class="sheet-grab" id="fi-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
+    <h3>Meine Firma</h3>
+    <p class="sd">Dein Dienstgeber, wie er in MOJI hinterlegt ist.</p>
+
+    <div class="fikopf">
+      <span class="fi-logo"><img src="firma-miller.png?v=1" alt="" aria-hidden="true"></span>
+      <b id="fi-name">—</b>
+      <small>Arbeitsort · fix hinterlegt</small>
+    </div>
+
+    <div class="fizeilen" id="fi-zeilen"></div>
+
+    <p class="fihint">Der Dienstgeber ist für alle MOJI-Konten fest eingestellt
+      und lässt sich in der App nicht ändern.</p>
+
+    <div class="sheet-actions">
+      <button class="btn btn-g" data-close="fisheet">Schließen</button>
+    </div>
+  </div>
+</div>
+
 <!-- Profil löschen — zweite Rückfrage mit Schieberegler.
      Ein Knopf lässt sich verrutschen, ein Zug über die ganze Breite nicht. -->
 <div class="sheet" id="dlsheet">
@@ -3055,7 +3108,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1902';
+const APP_STAND = '2026-08-05-1930';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -4870,6 +4923,55 @@ function malErinnerung(){
   if(box) box.checked = an;
 }
 
+/* ─── Meine Firma ──────────────────────────────────────────────────────
+   Bewusst nur Angaben, die die App tatsächlich hat. Eine Adresse oder
+   Firmenbuchnummer steht nirgends hinterlegt — die würde ich hier sonst
+   erfinden müssen. */
+function malFirma(){
+  if(!$('#fisheet') || !ME) return;
+  $('#fi-name').textContent = EMPLOYER;
+
+  /* Wie viele Diensttage hat der Rhythmus, und wie viele Wochen? */
+  const sch = ME.sched || defaultSched();
+  const wc = clamp(sch.weekCount || 1, 1, 4);
+  let tage = 0;
+  for(let dow = 1; dow <= 6; dow++){
+    for(let w = 0; w < wc; w++){
+      const cfg = (sch.weeks[w] || sch.weeks[0])[dow];
+      if(cfg && (segH(cfg.vmOn, cfg.vmFrom, cfg.vmTo) + segH(cfg.nmOn, cfg.nmFrom, cfg.nmTo)) > 0){
+        tage++; break;
+      }
+    }
+  }
+  const rhythmus = wc === 1
+    ? 'Eine Woche · ' + tage + (tage === 1 ? ' Diensttag' : ' Diensttage')
+    : wc + ' Wochen im Wechsel · ' + tage + (tage === 1 ? ' Diensttag' : ' Diensttage') + ' je Woche';
+
+  const zeile = (label, wert, hinweis) =>
+    '<div class="fiz"><u>' + label + '</u><b>' + esc(wert)
+    + (hinweis ? '<small>' + esc(hinweis) + '</small>' : '') + '</b></div>';
+
+  $('#fi-zeilen').innerHTML =
+      zeile('Dienstgeber', EMPLOYER, 'Steht so auf jedem Monats-PDF in der Zeile „Dienstgeber / Arbeitsort".')
+    + zeile('Dein Dienstplan', rhythmus, 'Ändern über „Dienstzeiten bearbeiten".')
+    + zeile('Dabei seit', seitText())
+    + zeile('Feiertage', 'Österreich', 'Werden inklusive Ostertermin selbst berechnet.');
+}
+function firmaAuf(){
+  if($('#fisheet').classList.contains('on')) return;
+  malFirma();
+  if(window.__fiReset) window.__fiReset();
+  $('#ficard').scrollTop = 0;
+  $('#fisheet').classList.add('on');
+  document.body.classList.add('locked');
+}
+function firmaZu(){
+  if(!$('#fisheet').classList.contains('on')) return;
+  $('#fisheet').classList.remove('on');
+  document.body.classList.remove('locked');
+  zurueckInsMenu();
+}
+
 function malRang(){
   const zeile = $('#mrang'); if(!zeile) return;
   const nr = stufe(), r = rang(nr);
@@ -6064,6 +6166,7 @@ window.__pfReset    = wireSheetDrag('pf-grab', 'pfsheet', pfZu, 'pf-liste');
 window.__rReset     = wireSheetDrag('r-grab',  'rsheet',  rangZu);
 window.__vReset     = wireSheetDrag('v-grab',  'vsheet',  verlaufZu);
 window.__dlReset    = wireSheetDrag('dl-grab', 'dlsheet', dlZu);
+window.__fiReset    = wireSheetDrag('fi-grab', 'fisheet', firmaZu);
 $('#sh-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
   SH.type = SH.type === b.dataset.t ? null : b.dataset.t;
@@ -6826,6 +6929,7 @@ $('#menu').addEventListener('click', e => {
       pkAdd(null);
     }
   }
+  if(a === 'firma'){ _vonMenu = true; firmaAuf(); }
   if(a === 'karte'){ _vonMenu = true; karteAuf(); }
   if(a === 'raenge'){ _vonMenu = true; if(aufOffen()) aufFeier(); else rangAuf(); }
   if(a === 'erinnerung'){
@@ -6997,6 +7101,9 @@ function dlZurueck(){
   });
 })();
 
+$('#fisheet').addEventListener('click', e => {
+  if(e.target.dataset.close === 'fisheet') firmaZu();
+});
 $('#dl-abbruch').addEventListener('click', dlZu);
 $('#dlsheet').addEventListener('click', e => { if(e.target.dataset.close === 'dlsheet') dlZu(); });
 
@@ -7055,7 +7162,7 @@ $('#fabbar').addEventListener('click', e => {
 });
 $('#sheet').addEventListener('click', e => { if(e.target.dataset.close === 'sheet') closeSheet(); });
 document.addEventListener('keydown', e => {
-  if(e.key === 'Escape'){ closeSheet(); quickClose(); msZu(); pfZu(); dlZu(); closeTime(); menuZu(); }
+  if(e.key === 'Escape'){ closeSheet(); quickClose(); msZu(); pfZu(); dlZu(); firmaZu(); closeTime(); menuZu(); }
 });
 /* Überall antippen beendet das Intro — nicht nur die Pille */
 /* Kein Überspringen: die vier Sekunden gehören der Marke. */
