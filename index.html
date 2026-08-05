@@ -2692,7 +2692,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1011';
+const APP_STAND = '2026-08-05-1102';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3015,6 +3015,7 @@ async function cloudBoot(){
    Ein Passkey liegt im Gerät bzw. im Schlüsselbund und ersetzt Code und Link.
    Anlegen geht nur angemeldet — die erste Anmeldung bleibt die E-Mail.     */
 let PK_LISTE = null;                       /* null = noch nicht nachgesehen */
+let _pkHostNachLogin = false;              /* gerade per Passkey angemeldet */
 const PK_KEY   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>';
 const PK_GESCHENK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5h16v8.5a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 20z"/><path d="M3 8h18v3.5H3z"/><path d="M12 8v13.5"/><path d="M12 8S10.6 4 8.6 4a2.3 2.3 0 000 4.6z"/><path d="M12 8s1.4-4 3.4-4a2.3 2.3 0 010 4.6z"/></svg>';
 const PK_HAKEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>';
@@ -3029,15 +3030,26 @@ async function pkRefresh(){
   return PK_LISTE;
 }
 
-/* Ein Passkey gilt nur für die Adresse, unter der er angelegt wurde. Mit dem
-   Umzug auf moji-app.at sind die alten also wertlos, obwohl sie in der
-   Verwaltung noch gelistet sind. Deshalb merkt sich das Profil, wo der
-   Passkey entstanden ist — passt es nicht zur jetzigen Adresse, weist das
-   Menü darauf hin. */
+/* Ein Passkey gilt nur für die Adresse, unter der er angelegt wurde, und er
+   liegt im jeweiligen Gerät. Nach dem Umzug auf moji-app.at sind die alten
+   wertlos, obwohl die Verwaltung sie noch listet. Der Vermerk gehört deshalb
+   in dieses Gerät und zu diesem Konto — nicht ins Profil: das wandert in die
+   Cloud und würde auf einem anderen Handy einen Passkey behaupten, den es
+   dort nicht gibt. Ausserdem baut der Anmeldeablauf das Profil neu auf, ein
+   Vermerk darin ging dabei verloren. */
+function pkHostSchluessel(){ return 'moji.pkhost.' + (UID || 'x'); }
+function pkHostVermerk(){
+  try{ const v = localStorage.getItem(pkHostSchluessel()); if(v) return v; }catch(e){}
+  return (ME && ME.pkHost) || '';       /* Rückfall für den Übergang */
+}
+function pkHostMerken(){
+  try{ localStorage.setItem(pkHostSchluessel(), location.hostname); }catch(e){}
+  if(ME){ ME.pkHost = location.hostname; save(); }
+}
 function pkVeraltet(){
   const hat = Array.isArray(PK_LISTE) && PK_LISTE.length > 0;
-  if(!hat || !ME) return false;
-  return ME.pkHost !== location.hostname;
+  if(!hat) return false;
+  return pkHostVermerk() !== location.hostname;
 }
 
 /* Anlegen. Gibt true zurück, wenn danach ein Passkey vorhanden ist. */
@@ -3048,7 +3060,7 @@ async function pkAdd(knopf){
   try{
     const r = await sb.auth.registerPasskey();
     if(r.error) throw r.error;
-    if(ME){ ME.pkHost = location.hostname; save(); }   /* gilt für diese Adresse */
+    pkHostMerken();                                   /* gilt für diese Adresse */
     toast('Passkey angelegt');
     await pkRefresh();
     return true;
@@ -3072,6 +3084,8 @@ async function pkReset(){
       if(r && r.error) throw r.error;
     }
     try{ localStorage.removeItem('maru.pkask.' + UID); }catch(e){}
+    try{ localStorage.removeItem(pkHostSchluessel()); }catch(e){}
+    if(ME && ME.pkHost){ ME.pkHost = ''; save(); }
     await pkRefresh();
     toast('Passkey zurückgesetzt');
   }catch(e){ toast('Zurücksetzen nicht möglich'); }
@@ -6427,6 +6441,9 @@ function bootLocal(){
 async function afterLogin(session, frisch){
   UID = session.user.id;
   MAIL = session.user.email || '';
+  /* Wer sich gerade per Passkey angemeldet hat, hat hier nachweislich einen
+     brauchbaren — also vermerken, jetzt ist das Konto bekannt. */
+  if(_pkHostNachLogin){ _pkHostNachLogin = false; pkHostMerken(); }
   /* Passkey-Stand holen, sonst bleiben die Menüeinträge auf display:none
      stehen — paintPasskey lief vorher nur im Funnel und beim Abmelden. */
   pkRefresh().catch(e => console.warn('[MOJI] Passkey-Stand offen:', e));
@@ -6487,6 +6504,9 @@ $('#lg-pk-go').addEventListener('click', async () => {
   try{
     const r = await sb.auth.signInWithPasskey();
     if(r.error) throw r.error;
+    /* Geglückt heißt: hier gibt es einen brauchbaren Passkey. Der Vermerk
+       wird gleich gesetzt, sobald das Konto bekannt ist. */
+    _pkHostNachLogin = true;
     /* Ab hier übernimmt der SIGNED_IN-Horcher. */
   }catch(e){
     const t = ((e && e.code) || '') + ' ' + ((e && e.name) || '') + ' ' + ((e && e.message) || '');
