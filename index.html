@@ -1284,7 +1284,7 @@ body.nobar #v-onboard{padding-top:14px}
    Jede Stufe bringt zwei Farben mit (--rf hell, --rf2 dunkel). Ab Stufe 8
    kommt ein Schimmer dazu, ab 10 wandert er, bei 12 ist er golden. So
    unterscheiden sich die Ränge ohne zwölf Sonderregeln. */
-.mrang{display:block;width:100%;text-align:left;padding:12px 13px 11px;border-radius:var(--r-s);
+.mrang{position:relative;display:block;width:100%;text-align:left;padding:12px 13px 11px;border-radius:var(--r-s);
   border:1px solid var(--line-2);margin-bottom:6px;transition:.2s;
   background:linear-gradient(135deg,var(--rft,rgba(143,160,200,.16)),transparent 70%)}
 .mrang:hover{border-color:var(--rf,#8FA0C8)}
@@ -1326,7 +1326,46 @@ body.nobar #v-onboard{padding-top:14px}
 @keyframes wolke2{to{transform:translate(-8vw,-6vh) scale(1.2)}}
 @keyframes wolke3{to{transform:translate(5vw,-5vh) scale(1.1)}}
 
-.mkv-in{position:relative;width:min(92vw,392px);max-height:100vh;overflow-y:auto;padding:14px 0;
+/* Das Papier fällt vor der Karte — sonst sieht man kaum etwas davon. */
+#mkkanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+/* Der Kopf über der Karte gehört zur Aufstiegsfeier. */
+.auf-kopf{position:relative;text-align:center;padding:2px 6px 2px}
+.auf-boost{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.28em;
+  padding:4px 12px 4px 14px;border-radius:99px;color:#2A1C00;
+  background:linear-gradient(100deg,#FFE9A3,var(--rf,#F7D774));
+  box-shadow:0 0 22px -4px var(--rf,#F7D774);
+  animation:boostRein .6s var(--ease-out) both}
+.auf-kopf b{display:block;margin-top:9px;font-family:var(--font-dis);font-weight:400;
+  font-size:clamp(24px,7vw,33px);line-height:1.08;letter-spacing:-.02em;
+  animation:aufT .62s .12s var(--ease-out) both}
+.auf-kopf small{display:block;margin-top:5px;font-size:12.5px;color:var(--tx-2);
+  animation:fadeUp .5s .3s var(--ease-out) both}
+@keyframes boostRein{
+  0%{opacity:0;transform:scale(.5) rotate(-8deg)}
+  60%{opacity:1;transform:scale(1.16) rotate(2deg)}
+  100%{opacity:1;transform:none}
+}
+@keyframes aufT{
+  0%{opacity:0;transform:translateY(14px) scale(.9)}
+  65%{opacity:1;transform:translateY(0) scale(1.05)}
+  100%{opacity:1;transform:none}
+}
+/* Karussell: jede Stufe schiebt von rechts herein. */
+.mk.schub{animation:mkSchub .52s var(--ease-out) both}
+@keyframes mkSchub{
+  0%{opacity:0;transform:translateX(46%) scale(.94) rotate(1.6deg)}
+  70%{opacity:1;transform:translateX(-2%) scale(1.01) rotate(-.4deg)}
+  100%{opacity:1;transform:none}
+}
+/* Beim Aufstieg pocht das Schild kurz. */
+.mk.puls .mk-lvl{animation:lvlPuls .7s var(--ease-out) both}
+@keyframes lvlPuls{
+  0%{transform:scale(.6) rotate(-10deg)}
+  55%{transform:scale(1.3) rotate(5deg)}
+  100%{transform:none}
+}
+
+.mkv-in{position:relative;z-index:4;width:min(92vw,392px);max-height:100vh;overflow-y:auto;padding:14px 0;
   display:flex;flex-direction:column;gap:14px}
 .mkv-akt{display:flex;gap:10px;padding:0 2px 6px}
 .mkv-akt .btn{flex:1}
@@ -2177,6 +2216,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     </div>
     <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge. -->
     <button class="mrang" id="mrang" data-act="raenge" aria-label="Stufen ansehen">
+      <span class="zaehler" id="mr-zaehler" hidden></span>
       <span class="mr-kopf"><span class="mr-lvl" id="mr-lvl">LVL 1</span><b id="mr-name">—</b></span>
       <span class="mr-schiene"><span class="mr-bar" id="mr-bar"></span></span>
       <small id="mr-rest">—</small>
@@ -2196,7 +2236,14 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
      Rest der App wie eine echte Karte in der Hand wirken soll. -->
 <div class="mkv" id="mkv" aria-hidden="true">
   <div class="mkv-luft" aria-hidden="true"><i></i><i></i><i></i></div>
+  <canvas id="mkkanvas" aria-hidden="true"></canvas>
   <div class="mkv-in">
+    <!-- Nur bei der Aufstiegsfeier zu sehen -->
+    <div class="auf-kopf" id="auf-kopf" hidden>
+      <span class="auf-boost" id="auf-boost">BOOST</span>
+      <b id="auf-t">Stufenaufstieg</b>
+      <small id="auf-s">—</small>
+    </div>
     <div class="mk" id="mk">
       <div class="mk-glanz" aria-hidden="true"></div>
       <div class="mk-funken" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -2688,6 +2735,9 @@ function normalize(p){
   /* Exportbuch: Monat → Zeitstempel des letzten Exports. Jeder Monat steht
      nur einmal darin, doppeltes Exportieren zählt also nicht doppelt. */
   if(!p.exp || typeof p.exp !== 'object' || Array.isArray(p.exp)) p.exp = {};
+  /* Ein noch nicht angesehener Stufenaufstieg: {von, bis}. Bleibt liegen,
+     bis die Feier gelaufen ist — auch über einen Neustart hinweg. */
+  if(p.auf && !(p.auf.bis > p.auf.von)) delete p.auf;
   /* Mitglied seit. Alte Profile haben das Feld nicht — die Kennung trägt den
      Zeitstempel ihrer Entstehung in sich, der reicht als Ersatz. */
   if(typeof p.seit !== 'number' || !isFinite(p.seit)) p.seit = seitAusId(p.id);
@@ -3938,7 +3988,10 @@ function merkeExporte(list){
   save();
   malRang();
   const nachher = stufe();
-  if(nachher > vorher) setTimeout(() => toast('Neue Stufe: ' + rang(nachher).n), 900);
+  if(nachher > vorher){
+    aufMelde(vorher, nachher);
+    setTimeout(() => toast('Stufenaufstieg! Tipp auf dein Profilbild.'), 900);
+  }
 }
 
 /* Die Zeile im Profilmenü */
@@ -3954,6 +4007,7 @@ function malRang(){
     ? 'noch ' + rest + (rest === 1 ? ' Monat' : ' Monate') + ' bis ' + rang(nr + 1).n
     : 'höchste Stufe erreicht';
   malVerlaufKnopf();
+  malZaehler();
 }
 
 /* Kleine Symbole für die Vergleiche — bewusst schlicht, damit sie in einem
@@ -4011,8 +4065,11 @@ function vergleich(min){
 }
 
 /* Die Karte */
-function malKarte(){
-  const nr = stufe(), r = rang(nr), anzahl = expAnzahl();
+/* nrZeig: nur für die Aufstiegsfeier — dann zeigt die Karte eine
+   vergangene Stufe, damit man den Weg nach oben sieht. */
+function malKarte(nrZeig){
+  const echt = stufe();
+  const nr = nrZeig || echt, r = rang(nr), anzahl = expAnzahl();
   const karte = $('#mk'), buehne = $('#mkv');
   faerbe(karte, nr);
   faerbe(buehne, nr);                      /* die Farbwolken im Hintergrund */
@@ -4029,10 +4086,15 @@ function malKarte(){
   $('#mk-ico').innerHTML = vsIco(v.ico);
 
   $('#mk-bar').style.width = '0%';
-  const rest = nochBis();
-  $('#mk-rest').textContent = rest
-    ? 'noch ' + rest + (rest === 1 ? ' Monat' : ' Monate') + ' bis ' + rang(nr + 1).n
-    : 'höchste Stufe erreicht — mehr geht nicht';
+  /* Eine schon abgeschlossene Stufe zeigt die Leiste voll. */
+  const fertig = nr < echt;
+  const rest = fertig ? 0 : nochBis();
+  $('#mk-rest').textContent = fertig
+    ? 'Stufe ' + nr + ' abgeschlossen'
+    : (rest
+        ? 'noch ' + rest + (rest === 1 ? ' Monat' : ' Monate') + ' bis ' + rang(nr + 1).n
+        : 'höchste Stufe erreicht — mehr geht nicht');
+  _mkAnteil = fertig ? 1 : stufeAnteil();
 
   const letzter = expVerlauf(1)[0];
   $('#mk-zeilen').innerHTML = [
@@ -4042,9 +4104,11 @@ function malKarte(){
     ['Rang', r.w]
   ].map(z => '<div class="mkz"><u>' + z[0] + '</u><b>' + esc(z[1]) + '</b></div>').join('');
 }
+let _mkAnteil = 0;
 function karteAuf(){
   const b = $('#mkv');
   if(b.classList.contains('on')) return;
+  $('#auf-kopf').hidden = true;
   malKarte();
   b.classList.remove('weg');
   const karte = $('#mk');
@@ -4054,14 +4118,81 @@ function karteAuf(){
   /* Die Leiste füllt sich erst, wenn die Karte steht — dann sieht man es
      laufen. Ein kurzer Zeitgeber statt requestAnimationFrame: der läuft
      auch dann, wenn das Fenster gerade nicht im Vordergrund war. */
-  setTimeout(() => { $('#mk-bar').style.width = Math.round(stufeAnteil() * 100) + '%'; }, 90);
+  setTimeout(() => { $('#mk-bar').style.width = Math.round(_mkAnteil * 100) + '%'; }, 90);
 }
 function karteZu(){
   const b = $('#mkv');
   if(!b.classList.contains('on')) return;
+  clearTimeout(_aufT);
   b.classList.add('weg');
-  setTimeout(() => { b.classList.remove('on','weg'); }, 310);
+  setTimeout(() => { b.classList.remove('on','weg'); $('#auf-kopf').hidden = true; }, 310);
   document.body.classList.remove('locked');
+  /* Die Feier gilt als gesehen, sobald man sie schließt. */
+  aufQuittiert();
+}
+
+/* ─── Stufenaufstieg ──────────────────────────────────────────────────
+   Ein Aufstieg wird nicht gleich vorgeführt, sondern angemeldet: rote Zahl
+   am Profilbild und an der Stufenleiste. Wer draufdrückt, bekommt die Feier —
+   bei mehreren Stufen auf einmal läuft die Karte im Karussell nach oben. */
+let _aufT = null;
+function aufOffen(){
+  const a = ME && ME.auf;
+  return (a && a.bis > a.von) ? (a.bis - a.von) : 0;
+}
+function aufMelde(von, bis){
+  if(!ME || !(bis > von)) return;
+  /* Liegt schon einer, wird er zusammengefasst — sonst ginge einer verloren. */
+  const alt = ME.auf;
+  ME.auf = { von: alt && alt.von < von ? alt.von : von, bis: bis, ts: Date.now() };
+  save();
+  malZaehler();
+}
+function aufQuittiert(){
+  if(!ME || !ME.auf) return;
+  delete ME.auf;
+  save();
+  malZaehler();
+  malRang();
+}
+async function aufFeier(){
+  const a = ME && ME.auf;
+  if(!a) { karteAuf(); return; }
+  const von = a.von, bis = a.bis, anzahl = bis - von;
+  const b = $('#mkv'), karte = $('#mk');
+
+  $('#auf-kopf').hidden = false;
+  $('#auf-boost').hidden = anzahl < 2;
+  $('#auf-t').textContent = anzahl < 2
+    ? 'Stufenaufstieg'
+    : 'Stufenaufstieg bis zum LVL ' + bis;
+  $('#auf-s').textContent = anzahl < 2
+    ? 'Du bist jetzt auf Stufe ' + bis + ' — ' + rang(bis).n + '.'
+    : anzahl + ' Stufen auf einmal — von ' + rang(von).n + ' zu ' + rang(bis).n + '.';
+
+  malKarte(von + 1);
+  b.classList.remove('weg');
+  karte.style.animation = 'none'; void karte.offsetWidth; karte.style.animation = '';
+  b.classList.add('on');
+  document.body.classList.add('locked');
+  faerbe($('#auf-kopf'), bis);
+  setTimeout(() => { $('#mk-bar').style.width = Math.round(_mkAnteil * 100) + '%'; }, 90);
+  konfetti($('#mkkanvas'), () => b.classList.contains('on'),
+           { starts: anzahl > 1 ? [120, 520, 1000, 1500, 2100] : [140, 560], regen: 900 + anzahl * 400 });
+
+  /* Karussell: jede weitere Stufe schiebt herein. */
+  for(let nr = von + 2; nr <= bis; nr++){
+    await new Promise(r => { _aufT = setTimeout(r, 1150); });
+    if(!b.classList.contains('on')) return;          /* zwischendurch geschlossen */
+    malKarte(nr);
+    karte.classList.remove('schub','puls'); void karte.offsetWidth;
+    karte.classList.add('schub','puls');
+    setTimeout(() => { $('#mk-bar').style.width = Math.round(_mkAnteil * 100) + '%'; }, 90);
+  }
+  await new Promise(r => { _aufT = setTimeout(r, 900); });
+  if(!b.classList.contains('on')) return;
+  karte.classList.remove('schub','puls');
+  aufQuittiert();
 }
 
 /* ─── Teilen ───────────────────────────────────────────────────────────
@@ -4340,12 +4471,18 @@ function pfNeu(){
   return NACHRICHTEN.filter(n => g.indexOf(n.id) < 0);
 }
 function malZaehler(){
-  const anzahl = ME ? pfNeu().length : 0;
-  [['#av-zaehler'], ['#pf-zaehler']].forEach(([wo]) => {
+  const post = ME ? pfNeu().length : 0;
+  const stufen = aufOffen();
+  const setz = (wo, n) => {
     const el = $(wo); if(!el) return;
-    if(anzahl > 0){ el.textContent = anzahl > 99 ? '99+' : String(anzahl); el.hidden = false; }
+    if(n > 0){ el.textContent = n > 99 ? '99+' : String(n); el.hidden = false; }
     else el.hidden = true;
-  });
+  };
+  /* Am Profilbild steht alles zusammen, wie am Telefon: Nachrichten und
+     Stufenaufstiege in einer Zahl. */
+  setz('#av-zaehler', post + stufen);
+  setz('#pf-zaehler', post);
+  setz('#mr-zaehler', stufen);
 }
 function malPostfach(){
   const g = pfGelesen();
@@ -5617,7 +5754,7 @@ $('#menu').addEventListener('click', e => {
     }
   }
   if(a === 'karte') karteAuf();
-  if(a === 'raenge') rangAuf();
+  if(a === 'raenge'){ if(aufOffen()) aufFeier(); else rangAuf(); }
   if(a === 'pkreset') pkReset();
   if(a === 'logout') doLogout();
   if(a === 'delete') doDelete();
