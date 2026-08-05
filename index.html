@@ -1366,8 +1366,41 @@ body.nobar #v-onboard{padding-top:14px}
 }
 
 .mkv-in{position:relative;z-index:4;width:min(92vw,392px);max-height:100vh;overflow-y:auto;padding:14px 0;
-  display:flex;flex-direction:column;gap:14px}
-.mkv-akt{display:flex;gap:10px;padding:0 2px 6px}
+  display:flex;flex-direction:column;gap:12px}
+/* Drehbühne. Beide Seiten liegen übereinander, die Höhe gibt die
+   Vorderseite vor. */
+.mk-buehne{perspective:1400px}
+.mk-dreh{position:relative;transform-style:preserve-3d;cursor:pointer;
+  transition:transform .9s cubic-bezier(.2,.85,.2,1)}
+.mk-dreh.um{transform:rotateY(180deg)}
+.mk,.mk-rueck{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.mk-rueck{position:absolute;inset:0;transform:rotateY(180deg);overflow:hidden;
+  border-radius:26px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:30px;padding:26px;
+  background:linear-gradient(196deg,var(--pa,#eef2fb),var(--pb,#d8e2f7) 55%,var(--pa,#eef2fb));
+  box-shadow:0 34px 70px -28px rgba(0,0,0,.85)}
+/* Prägung: dieselbe Form dreimal übereinander — dunkel nach oben links,
+   hell nach unten rechts, darüber der Karton selbst. So sieht es aus, als
+   wäre das Zeichen in die Karte gedrückt. */
+.mk-praege{position:relative;width:46%;max-width:170px;aspect-ratio:1}
+.mk-praege i{position:absolute;inset:0;display:block;
+  -webkit-mask-image:var(--marke);mask-image:var(--marke);
+  -webkit-mask-size:contain;mask-size:contain;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center}
+.mk-praege i:nth-child(1){background:rgba(20,27,58,.34);transform:translate(-2.5px,-2.5px)}
+.mk-praege i:nth-child(2){background:rgba(255,255,255,.92);transform:translate(2.5px,2.5px)}
+.mk-praege i:nth-child(3){background:linear-gradient(160deg,var(--pa,#eef2fb),var(--pb,#d8e2f7))}
+.mk-rt{position:relative;text-align:center}
+.mk-rt u{display:block;text-decoration:none;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(20,27,58,.45)}
+.mk-rt b{display:block;margin-top:6px;font-family:var(--font-dis);font-weight:400;
+  font-size:19px;letter-spacing:-.01em;color:#141B3A}
+
+.mk-tipp{display:block;text-align:center;font-size:11px;letter-spacing:.02em;
+  color:var(--tx-3);margin:2px 0 0}
+/* Deutlich mehr Luft zwischen Karte und Knöpfen — vorher klebten sie daran. */
+.mkv-akt{display:flex;gap:10px;padding:14px 2px 6px}
 .mkv-akt .btn{flex:1}
 
 .mk{position:relative;overflow:hidden;border-radius:26px;color:#141B3A;
@@ -2244,6 +2277,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <b id="auf-t">Stufenaufstieg</b>
       <small id="auf-s">—</small>
     </div>
+    <div class="mk-buehne">
+      <div class="mk-dreh" id="mk-dreh" role="button" tabindex="0" aria-label="Karte umdrehen">
     <div class="mk" id="mk">
       <div class="mk-glanz" aria-hidden="true"></div>
       <div class="mk-funken" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -2278,6 +2313,16 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         <span>Mehr Zeit fürs Wesentliche.</span>
       </div>
     </div>
+
+    <!-- Rückseite: das quadratische Zeichen als Prägung im Karton. -->
+    <div class="mk-rueck" id="mk-rueck">
+      <div class="mk-glanz" aria-hidden="true"></div>
+      <div class="mk-praege" id="mk-praege" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="mk-rt"><u>Eine App entwickelt von</u><b>Studio MARU 丸</b></div>
+    </div>
+      </div>
+    </div>
+    <small class="mk-tipp" id="mk-tipp">Antippen, um die Karte zu drehen</small>
 
     <div class="mkv-akt">
       <button class="btn btn-p" id="mk-teilen">
@@ -4073,6 +4118,10 @@ function malKarte(nrZeig){
   const karte = $('#mk'), buehne = $('#mkv');
   faerbe(karte, nr);
   faerbe(buehne, nr);                      /* die Farbwolken im Hintergrund */
+  faerbe($('#mk-rueck'), nr);              /* die Rückseite trägt dieselbe Stufe */
+  /* Die Prägung braucht das Zeichen als Maske — einmal setzen genügt. */
+  const pr = $('#mk-praege');
+  if(pr && !pr.style.getPropertyValue('--marke')) pr.style.setProperty('--marke', 'url("' + LOGO_MARK + '")');
   $('#mk-img').src = avDatei(avNummer());
   $('#mk-name').textContent = ME.vorname + ' ' + ME.nachname;
   $('#mk-rang').textContent = 'Stufe ' + nr + ' · ' + r.n;
@@ -4109,6 +4158,8 @@ function karteAuf(){
   const b = $('#mkv');
   if(b.classList.contains('on')) return;
   $('#auf-kopf').hidden = true;
+  $('#mk-dreh').classList.remove('um');    /* immer mit der Vorderseite beginnen */
+  $('#mk-tipp').textContent = 'Antippen, um die Karte zu drehen';
   malKarte();
   b.classList.remove('weg');
   const karte = $('#mk');
@@ -4119,6 +4170,11 @@ function karteAuf(){
      laufen. Ein kurzer Zeitgeber statt requestAnimationFrame: der läuft
      auch dann, wenn das Fenster gerade nicht im Vordergrund war. */
   setTimeout(() => { $('#mk-bar').style.width = Math.round(_mkAnteil * 100) + '%'; }, 90);
+}
+function karteDreh(){
+  const d = $('#mk-dreh');
+  const um = d.classList.toggle('um');
+  $('#mk-tipp').textContent = um ? 'Antippen, um zurückzudrehen' : 'Antippen, um die Karte zu drehen';
 }
 function karteZu(){
   const b = $('#mkv');
@@ -4170,6 +4226,7 @@ async function aufFeier(){
     ? 'Du bist jetzt auf Stufe ' + bis + ' — ' + rang(bis).n + '.'
     : anzahl + ' Stufen auf einmal — von ' + rang(von).n + ' zu ' + rang(bis).n + '.';
 
+  $('#mk-dreh').classList.remove('um');
   malKarte(von + 1);
   b.classList.remove('weg');
   karte.style.animation = 'none'; void karte.offsetWidth; karte.style.animation = '';
@@ -4529,6 +4586,10 @@ function pfZu(){
 }
 $('#postfach').addEventListener('click', pfAuf);
 $('#mk-zu').addEventListener('click', karteZu);
+$('#mk-dreh').addEventListener('click', karteDreh);
+$('#mk-dreh').addEventListener('keydown', e => {
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); karteDreh(); }
+});
 $('#mk-teilen').addEventListener('click', teileKarte);
 $('#rsheet').addEventListener('click', e => { if(e.target.dataset.close === 'rsheet') rangZu(); });
 $('#vsheet').addEventListener('click', e => { if(e.target.dataset.close === 'vsheet') verlaufZu(); });
