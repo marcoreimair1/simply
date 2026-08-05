@@ -1219,20 +1219,35 @@ body.nobar #v-onboard{padding-top:14px}
 /* ─── Begrüßung nach dem Anmelden ──────────────────────────────────────
    Kurz, aber mit Anlauf: das Bild federt herein, dann der Name, dann der
    Satz. Nach rund zweieinhalb Sekunden löst sich alles auf und der
-   Kalender liegt schon darunter. Nicht antippbar, damit niemand
-   versehentlich etwas im Kalender trifft. */
+   Kalender liegt schon darunter. Sie fängt Berührungen ab, damit niemand
+   blind in den Kalender tippt — ein Tippen darauf beendet sie sofort. */
 .hallo{position:fixed;inset:0;z-index:60;display:none;place-items:center;
   background:radial-gradient(circle at 50% 42%,rgba(23,36,84,.97),rgba(6,10,26,.99) 68%);
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);pointer-events:none}
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);cursor:pointer}
 .hallo.on{display:grid;animation:halloRein .5s var(--ease-out)}
 .hallo.weg{animation:halloWeg .55s var(--ease) forwards}
 @keyframes halloRein{from{opacity:0}}
 @keyframes halloWeg{to{opacity:0}}
-.hallo-in{text-align:center;padding:24px}
-.hallo-bild{width:min(62vw,212px);aspect-ratio:1;margin:0 auto 26px;border-radius:30%;
+.hallo-in{text-align:center;padding:24px;position:relative;z-index:1}
+/* Beim Anlegen steigen Raketen — dasselbe Konfetti wie am Geburtstag,
+   nur auf dieser Leinwand und mit kürzerem Programm. */
+#hkanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.hallo-rahmen{position:relative;width:min(62vw,212px);margin:0 auto 26px}
+.hallo-bild{width:100%;aspect-ratio:1;border-radius:30%;
   overflow:hidden;background:#fff;border:1px solid rgba(255,255,255,.22);
   box-shadow:0 34px 70px -26px rgba(0,0,0,.8),0 0 60px -18px rgba(80,122,236,.4);
   animation:halloBild .82s var(--ease-out) both}
+/* Der Haken erscheint nur nach dem Anlegen — er sitzt außerhalb des
+   beschnittenen Bildfelds, sonst würde ihn die runde Ecke abschneiden. */
+.hallo-haken{position:absolute;right:-6px;bottom:-6px;width:54px;height:54px;border-radius:50%;
+  background:var(--butter);color:#221904;display:grid;place-items:center;opacity:0;
+  border:4px solid #080D22;box-shadow:0 14px 28px -12px rgba(0,0,0,.85)}
+.hallo.neu .hallo-haken{animation:hakenRein .58s .5s var(--ease-out) both}
+@keyframes hakenRein{
+  0%{opacity:0;transform:scale(.3) rotate(-25deg)}
+  65%{opacity:1;transform:scale(1.14) rotate(4deg)}
+  100%{opacity:1;transform:none}
+}
 .hallo-bild img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block}
 @keyframes halloBild{
   0%{opacity:0;transform:scale(.7) rotate(-5deg)}
@@ -2043,10 +2058,14 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
      unbeschnitten auftreten — 3:4 Feld auf 3:4 Motiv. -->
 <div class="hallo" id="hallo" aria-hidden="true">
   <div class="hallo-in">
-    <div class="hallo-bild"><img id="hallo-img" alt=""></div>
+    <div class="hallo-rahmen">
+      <div class="hallo-bild"><img id="hallo-img" alt=""></div>
+      <span class="hallo-haken" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"/></svg></span>
+    </div>
     <b id="hallo-t">Hallo</b>
     <span class="hallo-s" id="hallo-s">schön dich wieder zu sehen!</span>
   </div>
+  <canvas id="hkanvas" aria-hidden="true"></canvas>
 </div>
 
 <!-- Postfach — Ankündigungen, gelesen wird pro Nachricht gemerkt -->
@@ -3249,7 +3268,7 @@ function finishOnboarding(){
   const p = sichereProfil();
   if(!p) return;
   enterApp();
-  toast('Willkommen, ' + p.vorname + '!');
+  zeigeGruss('neu');
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3478,28 +3497,48 @@ let _halloT = null;
 
 /* Dieselbe Bühne für Kommen und Gehen. Beim Abmelden muss sie vor dem
    Abmelden aufgehen — danach ist ME leer und niemand mehr zu grüßen. */
+/* Drei Anlässe, dieselbe Bühne: anmelden, anlegen, abmelden. */
+const GRUSS = {
+  an:  { kopf: n => 'Hallo <i>' + n + '</i>,',        zeile: () => 'schön dich wieder zu sehen!',
+         dauer: 2350 },
+  neu: { kopf: n => 'Willkommen, <i>' + n + '</i>!',  zeile: () => 'Dein Profil ist angelegt.',
+         dauer: 3600, konfetti: true },
+  ab:  { kopf: n => 'Bis bald, <i>' + n + '</i>!',    zeile: () => CLOUD_ON ? 'Deine Zeiten sind gesichert.' : 'Bis zum nächsten Mal.',
+         dauer: 1750 }
+};
 function zeigeGruss(art){
   if(!ME || !ME.vorname) return;
-  const ab = art === 'ab';
+  const g = GRUSS[art] || GRUSS.an;
   const el = $('#hallo');
   clearTimeout(_halloT);
   $('#hallo-img').src = avDatei(avNummer());
-  $('#hallo-t').innerHTML = ab
-    ? 'Bis bald, <i>' + esc(ME.vorname) + '</i>!'
-    : 'Hallo <i>' + esc(ME.vorname) + '</i>,';
-  $('#hallo-s').textContent = ab
-    ? (CLOUD_ON ? 'Deine Zeiten sind gesichert.' : 'Bis zum nächsten Mal.')
-    : 'schön dich wieder zu sehen!';
-  el.classList.remove('weg','ab');
-  if(ab) el.classList.add('ab');
+  $('#hallo-t').innerHTML = g.kopf(esc(ME.vorname));
+  $('#hallo-s').textContent = g.zeile();
+  el.classList.remove('weg','ab','neu');
+  if(art === 'ab' || art === 'neu') el.classList.add(art);
   void el.offsetWidth;                       /* Animationen neu anstoßen */
   el.classList.add('on');
+  /* Erst jetzt: vorher ist die Leinwand nicht sichtbar und damit null groß. */
+  if(g.konfetti) konfetti($('#hkanvas'), gruessend, { starts:[140,540,1120], regen:2100 });
   _halloT = setTimeout(() => {
     el.classList.add('weg');
-    _halloT = setTimeout(() => { el.classList.remove('on','weg','ab'); }, 560);
-  }, ab ? 1750 : 2350);
+    _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); }, 560);
+  }, g.dauer);
 }
 function zeigeHallo(){ zeigeGruss('an'); }
+
+/* Solange die Bühne oben liegt, darf das Konfetti weiterlaufen. */
+function gruessend(){
+  const el = $('#hallo');
+  return el.classList.contains('on') && !el.classList.contains('weg');
+}
+function grussEnde(){
+  const el = $('#hallo');
+  if(!el.classList.contains('on') || el.classList.contains('weg')) return;
+  clearTimeout(_halloT);
+  el.classList.add('weg');
+  _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); }, 560);
+}
 
 /* ═══════════════════════════════════════════════════════════
    POSTFACH
@@ -3821,7 +3860,7 @@ function gebInMonat(m){
   return { tag: tag, jahr: +t[0] };
 }
 
-let _gAnim = null, _gTimer = null;
+let _gTimer = null;
 function feiern(tag){
   const geb = gebInMonat(CAL.m); if(!geb) return;
   const alter = CAL.y - geb.jahr;
@@ -3842,14 +3881,22 @@ function schliesseFeier(){
   clearTimeout(_gTimer);
   $('#geb').classList.remove('on');
   document.body.classList.remove('locked');
-  cancelAnimationFrame(_gAnim); _gAnim = null;
+  const cv = $('#gcanvas'); if(cv){ cancelAnimationFrame(cv.__anim); cv.__anim = null; }
 }
 $('#geb-close').addEventListener('click', schliesseFeier);
 
 /* Raketen steigen, platzen, und es regnet Papier. Alles auf einem Canvas —
-   kein Bild, keine Bibliothek. */
-function konfetti(){
-  const cv = $('#gcanvas'); if(!cv || !cv.getContext) return;
+   kein Bild, keine Bibliothek.
+
+   cv     — die Leinwand, auf der gefeiert wird
+   lebt   — solange das wahr bleibt, läuft die Feier
+   plan   — starts: Startzeiten der Raketen, regen: wie lange es von oben regnet */
+function konfetti(cv, lebt, plan){
+  cv = cv || $('#gcanvas');
+  lebt = lebt || (() => $('#geb').classList.contains('on'));
+  const starts = (plan && plan.starts) || [0, 480, 950, 1900, 2700];
+  const regenBis = (plan && plan.regen) || 4500;
+  if(!cv || !cv.getContext) return;
   const cx = cv.getContext('2d'); if(!cx || !cx.setTransform) return;
   let W, H, dpr;
   const mass = () => { dpr = Math.min(devicePixelRatio || 1, 2);
@@ -3872,9 +3919,9 @@ function konfetti(){
     raketen.push({ x:x, y:H + 10, vy:-(8.5 + Math.random()*3.2), vx:(Math.random()-.5)*1.1,
       ziel:ziel, c: zufall(FARBEN), spur:[] });
   }
-  /* Drei Starts kurz nacheinander, danach noch zwei */
-  [0, 480, 950, 1900, 2700].forEach((ms, i) => setTimeout(() => {
-    if(!$('#geb').classList.contains('on')) return;
+  /* Starts kurz nacheinander */
+  starts.forEach((ms, i) => setTimeout(() => {
+    if(!lebt()) return;
     rakete(W * (0.18 + 0.16*i + Math.random()*.1), H * (0.2 + Math.random()*0.24));
   }, ms));
 
@@ -3883,9 +3930,10 @@ function konfetti(){
   const lauf = (t) => {
     const el = t - t0;
     cx.clearRect(0,0,W,H);
+    if(!lebt()){ cv.__anim = null; return; }   /* Bühne weg, Feier vorbei */
 
-    /* Dauerregen von oben, in den ersten viereinhalb Sekunden */
-    if(el < 4500 && t - letzterRegen > 55){
+    /* Dauerregen von oben */
+    if(el < regenBis && t - letzterRegen > 55){
       letzterRegen = t;
       for(let i = 0; i < 3; i++)
         schnipsel(Math.random()*W, -14, (Math.random()-.5)*1.2, 1.4 + Math.random()*1.8, false);
@@ -3927,12 +3975,12 @@ function konfetti(){
     }
 
     cx.globalAlpha = 1;
-    if(el > 9000 && !papier.length && !raketen.length){ _gAnim = null; return; }
-    _gAnim = requestAnimationFrame(lauf);
+    if(el > regenBis + 4500 && !papier.length && !raketen.length){ cv.__anim = null; return; }
+    cv.__anim = requestAnimationFrame(lauf);
   };
-  cancelAnimationFrame(_gAnim);
-  _gAnim = requestAnimationFrame(t => { try{ lauf(t); }catch(e){ console.warn(e); } });
-  window.addEventListener('resize', mass);
+  cancelAnimationFrame(cv.__anim);
+  cv.__anim = requestAnimationFrame(t => { try{ lauf(t); }catch(e){ console.warn(e); } });
+  if(!cv.__horcht){ cv.__horcht = true; window.addEventListener('resize', () => mass()); }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -4086,6 +4134,7 @@ function wireSheetDrag(griffId, blattId, zu){
   karte.addEventListener('touchcancel', ende);
   return auf;
 }
+$('#hallo').addEventListener('click', grussEnde);
 window.__sheetReset = wireSheetDrag('sh-grab', 'sheet', closeSheet);
 window.__qReset     = wireSheetDrag('q-grab',  'qsheet', quickClose);
 window.__mReset     = wireSheetDrag('m-grab',  'msheet', msZu);
