@@ -1314,114 +1314,83 @@ body.nobar #v-onboard{padding-top:14px}
   .dlz:not(.zieht) .dlz-knopf{transition:none}
 }
 
-/* Danke fürs Bleiben. Das Schweinchen kommt vom linken Bildschirmrand
-   hereingetrötet. Liegt über allem, nimmt aber keine Tipper an — die
-   Schicht verschwindet von selbst. */
+/* Danke fürs Bleiben. Das Schweinchen — eigene Zeichnung von Marco —
+   schaut über der Nachricht hervor, trötet Konfetti und verschwindet
+   wieder; danach geht die Nachricht mit. Nur beim Abbrechen, nie nach
+   dem Löschen. Liegt über allem, nimmt aber keine Tipper an. */
 #bleib{position:fixed;inset:0;z-index:60;display:none;pointer-events:none;
   background:rgba(4,7,20,.55);
   -webkit-backdrop-filter:blur(16px) saturate(1.15);backdrop-filter:blur(16px) saturate(1.15)}
-#bleib.on{display:block;animation:bleibRein .34s var(--ease-out) both}
-#bleib.weg{animation:bleibRaus .62s ease-in both}
+#bleib.on{display:block;animation:bleibRein .3s var(--ease-out) both}
+#bleib.weg{animation:bleibRaus .5s ease-in both}
 @keyframes bleibRein{from{opacity:0}}
 @keyframes bleibRaus{to{opacity:0}}
 
-.bleib-buehne{position:absolute;left:0;top:50%;translate:0 -50%;
-  display:flex;align-items:center;gap:2px;padding-right:16px;width:100%}
-.bleib-schwein{flex:none;width:min(168px,38vw);margin-left:-14px;
-  animation:schweinRein .8s cubic-bezier(.18,1.32,.34,1) both}
-.bleib-schwein svg{display:block;width:100%;height:auto;overflow:visible}
-/* Zwei kurze Stöße: dabei lehnt sich das Tier mit. */
-.sw-alles{animation:troeteWippe 2.4s .55s var(--ease-out) both;transform-origin:30% 70%}
-.sw-hut{animation:hutWippe 2.4s .55s var(--ease-out) both;transform-origin:70% 100%}
-/* Das eingerollte Ende schnellt beim Blasen auf. */
-.sw-rollo{animation:rolloAuf 2.4s .55s var(--ease-out) both;transform-origin:0 50%}
-.sw-luft path{opacity:0}
-.sw-luft .p1{animation:luft 1.1s .72s ease-out 2 both}
-.sw-luft .p2{animation:luft 1.1s .82s ease-out 2 both}
-.sw-luft .p3{animation:luft 1.1s .78s ease-out 2 both}
-.sw-konf > *{opacity:0}
-.sw-konf .k1{animation:konf 1.5s .8s ease-out 2 both}
-.sw-konf .k2{animation:konf 1.5s .95s ease-out 2 both}
-.sw-konf .k3{animation:konf 1.5s .88s ease-out 2 both}
-.sw-aug{animation:blinzel 2.6s 1.5s both}
+.bleib-buehne{position:absolute;left:50%;top:50%;translate:-50% -50%;
+  width:min(330px,86vw)}
 
-@keyframes schweinRein{
-  0%{transform:translateX(-118%) rotate(-9deg)}
-  100%{transform:translateX(0) rotate(0)}
-}
-@keyframes troeteWippe{
-  0%,10%{transform:rotate(0) translateX(0)}
-  16%{transform:rotate(-3.5deg) translateX(-4px)}
-  24%{transform:rotate(2deg) translateX(3px)}
-  34%{transform:rotate(0) translateX(0)}
-  46%{transform:rotate(-3deg) translateX(-3px)}
-  54%{transform:rotate(1.6deg) translateX(2px)}
-  66%,100%{transform:rotate(0) translateX(0)}
-}
-@keyframes hutWippe{
-  0%,10%{transform:rotate(0)}
-  18%{transform:rotate(7deg)}
-  30%{transform:rotate(-4deg)}
-  42%{transform:rotate(5deg)}
-  56%{transform:rotate(-3deg)}
-  70%,100%{transform:rotate(0)}
-}
-@keyframes rolloAuf{
-  0%,12%{transform:scaleX(1) rotate(0)}
-  18%{transform:scaleX(2.5) rotate(-8deg)}
-  30%{transform:scaleX(1.1) rotate(2deg)}
-  46%{transform:scaleX(2.2) rotate(-6deg)}
-  60%,100%{transform:scaleX(1) rotate(0)}
-}
-@keyframes luft{
-  0%{opacity:0;transform:translateX(0) scaleX(.4)}
-  25%{opacity:.95;transform:translateX(6px) scaleX(1)}
-  100%{opacity:0;transform:translateX(30px) scaleX(1.5)}
-}
-@keyframes konf{
-  0%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)}
-  20%{opacity:1}
-  100%{opacity:0;transform:translate(46px,-26px) scale(1) rotate(160deg)}
-}
-@keyframes blinzel{
-  0%,44%,52%,100%{transform:scaleY(1)}
-  47%,49%{transform:scaleY(.12)}
+/* Sitzt über der Nachricht und ist unten von ihr verdeckt. */
+.bleib-schwein{position:absolute;left:12%;bottom:100%;width:132px;
+  margin-bottom:-24px;transform-origin:50% 100%;
+  animation:schweinRaus 2.5s .12s var(--ease-out) both}
+.bleib-schwein img{display:block;width:100%;height:auto;
+  filter:drop-shadow(0 14px 26px rgba(0,0,0,.45))}
+
+/* Konfetti kommt aus der Trötenspitze — rechts unten am Bild. */
+.bleib-konf{position:absolute;right:6px;bottom:34%;width:0;height:0}
+.kf{position:absolute;left:0;top:0;opacity:0}
+.bleib-konf .k1{--dx:-39px;--dy:-82px;--dr:127deg;width:6px;height:6px;border-radius:2px;background:#79E8C6;animation:konfFlug 1218ms 639ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k2{--dx:-106px;--dy:-59px;--dr:-389deg;width:5px;height:5px;border-radius:2px;background:#FF8E6E;animation:konfFlug 985ms 733ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k3{--dx:-14px;--dy:-37px;--dr:-316deg;width:9px;height:5px;border-radius:2px;background:#A99BFF;animation:konfFlug 1264ms 678ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k4{--dx:24px;--dy:-66px;--dr:400deg;width:6px;height:6px;border-radius:50%;background:#FBD3DE;animation:konfFlug 1379ms 632ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k5{--dx:-84px;--dy:-84px;--dr:-161deg;width:7px;height:7px;border-radius:2px;background:#FBE59A;animation:konfFlug 1040ms 832ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k6{--dx:40px;--dy:-67px;--dr:40deg;width:6px;height:3px;border-radius:2px;background:var(--butter);animation:konfFlug 980ms 636ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k7{--dx:50px;--dy:-64px;--dr:-156deg;width:6px;height:6px;border-radius:2px;background:#79E8C6;animation:konfFlug 1177ms 772ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k8{--dx:79px;--dy:-46px;--dr:-215deg;width:9px;height:9px;border-radius:50%;background:#FF8E6E;animation:konfFlug 1213ms 769ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k9{--dx:62px;--dy:-73px;--dr:403deg;width:8px;height:4px;border-radius:2px;background:#A99BFF;animation:konfFlug 1159ms 651ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k10{--dx:-82px;--dy:-60px;--dr:-387deg;width:7px;height:7px;border-radius:2px;background:#FBD3DE;animation:konfFlug 1332ms 794ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k11{--dx:99px;--dy:-71px;--dr:164deg;width:7px;height:7px;border-radius:2px;background:#FBE59A;animation:konfFlug 1240ms 775ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k12{--dx:90px;--dy:-30px;--dr:-22deg;width:8px;height:4px;border-radius:50%;background:var(--butter);animation:konfFlug 980ms 793ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k13{--dx:42px;--dy:-26px;--dr:270deg;width:8px;height:8px;border-radius:2px;background:#79E8C6;animation:konfFlug 1143ms 694ms cubic-bezier(.2,.7,.35,1) both}
+.bleib-konf .k14{--dx:-114px;--dy:-62px;--dr:-279deg;width:8px;height:8px;border-radius:2px;background:#FF8E6E;animation:konfFlug 979ms 650ms cubic-bezier(.2,.7,.35,1) both}
+@keyframes konfFlug{
+  0%{opacity:0;transform:translate(0,0) scale(.4) rotate(0)}
+  12%{opacity:1;transform:translate(calc(var(--dx)*.16),calc(var(--dy)*.5)) scale(1) rotate(calc(var(--dr)*.2))}
+  100%{opacity:0;transform:translate(var(--dx),calc(var(--dy) + 96px)) scale(.9) rotate(var(--dr))}
 }
 
-/* Sprechblase rechts daneben */
-.bleib-blase{position:relative;flex:1;min-width:0;max-width:280px;
-  padding:16px 18px;border-radius:22px 22px 22px 6px;
-  background:linear-gradient(165deg,rgba(27,40,86,.94),rgba(10,17,41,.92));
+/* Auftauchen, zweimal trötend wippen, wieder abtauchen. */
+@keyframes schweinRaus{
+  0%{transform:translateY(72%) rotate(-4deg)}
+  16%{transform:translateY(-4%) rotate(3deg)}
+  24%{transform:translateY(2%) rotate(-2deg)}
+  30%{transform:translateY(0) rotate(0)}
+  38%{transform:translateY(-5%) rotate(4deg)}
+  46%{transform:translateY(0) rotate(-1deg)}
+  56%{transform:translateY(-4%) rotate(3deg)}
+  64%,76%{transform:translateY(0) rotate(0)}
+  100%{transform:translateY(78%) rotate(-5deg)}
+}
+
+/* Nachricht */
+.bleib-blase{position:relative;display:block;
+  padding:17px 19px;border-radius:22px;
+  background:linear-gradient(165deg,rgba(27,40,86,.96),rgba(10,17,41,.94));
   border:1px solid var(--line);box-shadow:var(--shadow);
-  animation:blaseRein .56s .5s var(--ease-out) both}
-.bleib-blase::before{content:'';position:absolute;left:-8px;bottom:16px;width:16px;height:16px;
-  background:linear-gradient(165deg,rgba(27,40,86,.94),rgba(10,17,41,.92));
-  border-left:1px solid var(--line);border-bottom:1px solid var(--line);
-  transform:rotate(45deg);border-radius:0 0 0 4px}
-.bleib-blase b{display:block;font-family:var(--font-dis);font-weight:400;font-size:19px;line-height:1.3;
+  animation:blaseRein .5s .34s var(--ease-out) both}
+.bleib-blase b{display:block;font-family:var(--font-dis);font-weight:400;font-size:20px;line-height:1.3;
   color:var(--tx)}
-.bleib-blase small{display:block;margin-top:8px;font-size:12px;line-height:1.5;color:var(--tx-2)}
-@keyframes blaseRein{from{opacity:0;transform:translateX(-14px) scale(.94)}}
-
-/* Drei kleine Herzen steigen über der Blase auf — mehr wäre Kitsch. */
-.bleib-mini{position:absolute;top:-6px;width:13px;height:13px;color:var(--coral);opacity:0}
-.bleib-mini svg{display:block;width:100%;height:100%}
-.bleib-mini.m1{left:16%;animation:herzAuf 2.2s 1.0s ease-out both}
-.bleib-mini.m2{left:48%;width:9px;height:9px;animation:herzAuf 2.5s 1.3s ease-out both}
-.bleib-mini.m3{left:76%;width:11px;height:11px;animation:herzAuf 2.3s 1.15s ease-out both}
-@keyframes herzAuf{
-  0%{opacity:0;transform:translateY(6px) scale(.6)}
-  22%{opacity:.9}
-  100%{opacity:0;transform:translateY(-70px) scale(1.05)}
-}
+.bleib-blase small{display:block;margin-top:8px;font-size:12.5px;line-height:1.5;color:var(--tx-2)}
+@keyframes blaseRein{from{opacity:0;transform:translateY(12px) scale(.95)}}
 
 @media(max-width:400px){
-  .bleib-schwein{width:34vw;margin-left:-18px}
-  .bleib-blase b{font-size:17px}
+  .bleib-schwein{width:112px;left:8%}
+  .bleib-blase b{font-size:18px}
 }
 @media(prefers-reduced-motion:reduce){
-  .bleib-schwein,.bleib-blase,.sw-alles,.sw-hut,.sw-rollo,.sw-aug{animation:none;opacity:1;transform:none}
-  .bleib-mini,.sw-luft,.sw-konf{display:none}
+  .bleib-schwein,.bleib-blase{animation:none;transform:none;opacity:1}
+  .bleib-schwein{position:relative;bottom:auto;left:auto;margin:0 auto 8px}
+  .kf{display:none}
 }
 
 /* Beim Löschblatt darf der Griff deutlicher und größer sein — hier will
@@ -2902,64 +2871,15 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
      Hintergrund. Nur beim Bleiben, nie nach dem Löschen. -->
 <div id="bleib" aria-hidden="true">
   <div class="bleib-buehne">
+    <!-- Das Schweinchen schaut über der Nachricht hervor, trötet Konfetti
+         und zieht sich wieder zurück. Danach geht die Nachricht mit. -->
     <span class="bleib-schwein">
-      <svg viewBox="0 0 210 190" aria-hidden="true">
-        <g class="sw-alles" fill="none" stroke="#16110F" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
-          <!-- Hütchen -->
-          <g class="sw-hut">
-            <path d="M55 40 L112 33 L80 -16 Z" fill="#FBE59A"/>
-            <path d="M69 15 L96 11 M62 28 L106 22" stroke="#8FE3C0" stroke-width="7"/>
-            <path d="M55 40 L112 33 L80 -16 Z"/>
-            <circle cx="76" cy="-22" r="8" fill="#FBD3DE"/>
-            <path d="M76 -36v-6M62 -30l-4-4M90 -30l4-4M60 -18l-6-2M92 -18l6-2"/>
-          </g>
-          <!-- Ohren -->
-          <path d="M48 52c-9-14-6-24 4-22 8 2 14 9 16 16z" fill="#F9AEC0"/>
-          <path d="M132 46c11-12 20-8 19 3-1 9-8 15-15 17z" fill="#F9AEC0"/>
-          <!-- Körper -->
-          <path d="M28 148c-6-30 8-52 30-58 8-2 12 4 20 4 10 0 22-6 34-2 20 7 28 30 22 56 -3 12-12 18-26 18H52c-14 0-21-6-24-18z" fill="#F9AEC0"/>
-          <!-- Kopf -->
-          <circle cx="90" cy="80" r="47" fill="#F9AEC0"/>
-          <!-- Wangen -->
-          <ellipse cx="55" cy="92" rx="13" ry="10" fill="#F58AA6" stroke="none"/>
-          <ellipse cx="126" cy="86" rx="11" ry="9" fill="#F58AA6" stroke="none"/>
-          <!-- Augen -->
-          <path class="sw-aug" d="M76 68v6" stroke-width="7"/>
-          <path class="sw-aug" d="M108 65v6" stroke-width="7"/>
-          <!-- Rüssel -->
-          <ellipse cx="97" cy="90" rx="16" ry="12" fill="#FBD3DE"/>
-          <path d="M92 88v4M103 87v4" stroke-width="5"/>
-          <!-- Tröte: Mundstück, Rohr, Ende -->
-          <g class="sw-troete">
-            <path d="M112 98 l16 6" stroke-width="9"/>
-            <path d="M126 101 l52 -16 -4 22 -46 6z" fill="#8FE3C0"/>
-            <path d="M144 96 l3 18M160 91 l3 17" stroke="#FBE59A" stroke-width="5"/>
-            <path d="M126 101 l52 -16 -4 22 -46 6z"/>
-            <path class="sw-rollo" d="M176 88c14-10 24 2 16 12-6 8-16 4-14-4" fill="none"/>
-          </g>
-          <!-- Huf hält die Tröte -->
-          <path d="M104 124c8-8 20-8 26-2 5 5 4 14-4 18-9 4-20 0-24-6-2-4-1-8 2-10z" fill="#F9AEC0"/>
-          <!-- Luftstöße -->
-          <g class="sw-luft" stroke="#FBE59A" stroke-width="5">
-            <path class="p1" d="M190 100h9"/>
-            <path class="p2" d="M188 88h7"/>
-            <path class="p3" d="M188 112h7"/>
-          </g>
-          <g class="sw-konf" stroke="none">
-            <circle class="k1" cx="196" cy="94" r="4" fill="#F7D774"/>
-            <rect class="k2" x="196" y="106" width="7" height="5" rx="1.6" fill="#79E8C6"/>
-            <circle class="k3" cx="200" cy="82" r="3.4" fill="#FF8E6E"/>
-          </g>
-        </g>
-      </svg>
+      <img src="schwein-troete.png?v=1" alt="" aria-hidden="true">
+      <span class="bleib-konf" aria-hidden="true"><i class="kf k1"></i><i class="kf k2"></i><i class="kf k3"></i><i class="kf k4"></i><i class="kf k5"></i><i class="kf k6"></i><i class="kf k7"></i><i class="kf k8"></i><i class="kf k9"></i><i class="kf k10"></i><i class="kf k11"></i><i class="kf k12"></i><i class="kf k13"></i><i class="kf k14"></i></span>
     </span>
-
     <span class="bleib-blase">
       <b>Schön, dass du dich<br>nochmal umentschieden hast</b>
       <small>Deine Aufzeichnungen sind alle noch da.</small>
-      <i class="bleib-mini m1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.6-4.7-9.5-9.1C.8 8.3 2.7 4.5 6.3 4.5c2 0 3.4 1.1 4.2 2.3.4.6 1.2.6 1.6 0 .8-1.2 2.2-2.3 4.2-2.3 3.6 0 5.5 3.8 3.8 7.4C19.6 16.3 12 21 12 21z"/></svg></i>
-      <i class="bleib-mini m2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.6-4.7-9.5-9.1C.8 8.3 2.7 4.5 6.3 4.5c2 0 3.4 1.1 4.2 2.3.4.6 1.2.6 1.6 0 .8-1.2 2.2-2.3 4.2-2.3 3.6 0 5.5 3.8 3.8 7.4C19.6 16.3 12 21 12 21z"/></svg></i>
-      <i class="bleib-mini m3" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.6-4.7-9.5-9.1C.8 8.3 2.7 4.5 6.3 4.5c2 0 3.4 1.1 4.2 2.3.4.6 1.2.6 1.6 0 .8-1.2 2.2-2.3 4.2-2.3 3.6 0 5.5 3.8 3.8 7.4C19.6 16.3 12 21 12 21z"/></svg></i>
     </span>
   </div>
 </div>
@@ -3108,7 +3028,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1517';
+const APP_STAND = '2026-08-05-1527';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6920,8 +6840,8 @@ function bleibZeigen(){
   el.classList.remove('on','weg');
   void el.offsetWidth;                       /* Animation neu anstoßen */
   el.classList.add('on');
-  bleibZeigen._a = setTimeout(() => el.classList.add('weg'), 3100);
-  bleibZeigen._b = setTimeout(() => el.classList.remove('on','weg'), 3780);
+  bleibZeigen._a = setTimeout(() => el.classList.add('weg'), 2680);
+  bleibZeigen._b = setTimeout(() => el.classList.remove('on','weg'), 3220);
 }
 function dlZurueck(){
   const z = $('#dlz');
