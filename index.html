@@ -1018,7 +1018,10 @@ body.nobar #v-onboard{padding-top:14px}
    Mittel wie bei den Knöpfen. Nur halb so hoch wie die alte Zeile, weil der
    erklärende Satz jetzt im Blatt steht, wo er gebraucht wird. */
 /* Kopfzeile im Export — gleiche Bauhöhe wie die Pille daneben. */
-.exhead{display:flex;align-items:center;height:36px;margin:0 0 11px}
+.exhead{display:flex;align-items:center;gap:10px;height:36px;margin:0 0 11px}
+/* Der Knopf sitzt am rechten Ende der Kopfzeile — dort war schon Platz,
+   die Ansicht füllt das Fenster nämlich genau und darf nicht wachsen. */
+.exhbtn{margin-left:auto;flex:none}
 .exh{font-family:var(--font-dis);font-size:23px;font-weight:400;letter-spacing:-.01em;
   line-height:1;white-space:nowrap;margin:0}
 .exh i{font-style:normal;color:var(--butter)}
@@ -1343,11 +1346,12 @@ body.nobar #v-onboard{padding-top:14px}
 .rl-t small{display:block;font-size:10px;color:var(--tx-3)}
 .rl-hier{flex:none;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--rf)}
 
-.exhist{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-2)}
-.exhist u{display:block;text-decoration:none;font-size:9px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--tx-3);margin-bottom:6px}
-.exh-z{display:flex;align-items:baseline;gap:10px;padding:4px 0}
-.exh-z b{flex:1;font-size:12.5px;font-weight:600;color:var(--tx-2)}
+.exh-jahr{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--tx-3);margin:14px 0 4px}
+.exh-jahr:first-child{margin-top:2px}
+.exh-z{display:flex;align-items:baseline;gap:10px;padding:7px 0;
+  border-bottom:1px solid rgba(255,255,255,.055)}
+.exh-z b{flex:1;font-size:13px;font-weight:600;color:var(--tx-2)}
 .exh-z i{flex:none;font-style:normal;font-size:10.5px;color:var(--tx-3)}
 
 /* ─── Postfach ────────────────────────────────────────────────────────
@@ -2021,7 +2025,12 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <!-- Der Kopf ist genau so hoch wie die Pille im Kalender. Dadurch
            beginnt die Karte in beiden Ansichten auf derselben Höhe und das
            Bild springt beim Wechseln unten nicht mehr. -->
-      <div class="exhead"><h1 class="exh">Export <i>als PDF</i></h1></div>
+      <div class="exhead">
+        <h1 class="exh">Export <i>als PDF</i></h1>
+        <button class="rnd exhbtn" id="ex-histbtn" aria-label="Verlauf ansehen" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+        </button>
+      </div>
 
       <div class="card" id="ex-card">
         <div class="yearnav">
@@ -2031,7 +2040,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         </div>
         <div class="mgrid" id="ex-months"></div>
         <p class="hint" style="margin-top:16px" id="ex-note"></p>
-        <div class="exhist" id="ex-hist" hidden></div>
         <div style="margin-top:18px">
           <button class="btn btn-p" id="ex-go">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg>
@@ -2122,6 +2130,20 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     </div>
     <div class="sheet-actions">
       <button class="btn btn-g" data-close="ksheet">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Verlauf der Exporte -->
+<div class="sheet" id="vsheet">
+  <div class="sheet-bd" data-close="vsheet"></div>
+  <div class="sheet-card" id="vcard">
+    <div class="sheet-grab" id="v-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
+    <h3>Verlauf</h3>
+    <p class="sd" id="vl-sub">—</p>
+    <div id="vl-liste"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-g" data-close="vsheet">Schließen</button>
     </div>
   </div>
 </div>
@@ -3812,7 +3834,7 @@ function malRang(){
   $('#mr-rest').textContent = rest
     ? 'noch ' + rest + (rest === 1 ? ' Monat' : ' Monate') + ' bis ' + rang(nr + 1).n
     : 'höchste Stufe erreicht';
-  const k = $('#ex-hist'); if(k) malVerlauf();
+  malVerlaufKnopf();
 }
 
 /* Die Karte */
@@ -3880,15 +3902,40 @@ function rangZu(){
   document.body.classList.remove('locked');
 }
 
-/* Der Verlauf in der Exportansicht */
+/* Der Verlauf: in der Exportansicht steckt nur ein Knopf, die Liste liegt
+   in einem Blatt. Die Ansicht füllt das Fenster genau — jede zusätzliche
+   Zeile würde sie zum Rollen bringen. */
+function malVerlaufKnopf(){
+  const b = $('#ex-histbtn'); if(!b) return;
+  b.hidden = expAnzahl() === 0;
+}
 function malVerlauf(){
-  const box = $('#ex-hist'); if(!box) return;
-  const v = expVerlauf(6);
-  if(!v.length){ box.innerHTML = ''; box.hidden = true; return; }
-  box.hidden = false;
-  box.innerHTML = '<u>Zuletzt exportiert</u>'
-    + v.map(o => '<div class="exh-z"><b>' + fmtMonatJahr(o.y, o.m) + '</b>'
-        + '<i>' + fmtDate(new Date(o.ts).toISOString().slice(0,10)) + '</i></div>').join('');
+  malVerlaufKnopf();
+  const box = $('#vl-liste'); if(!box) return;
+  const v = expVerlauf();
+  const min = gespartMin();
+  $('#vl-sub').textContent = v.length
+    ? v.length + (v.length === 1 ? ' Monat' : ' Monate') + ' abgegeben · ' + fmtDauer(min) + ' gespart'
+    : 'Noch nichts exportiert.';
+  let jahr = null, h = '';
+  v.forEach(o => {
+    if(o.y !== jahr){ jahr = o.y; h += '<span class="exh-jahr">' + jahr + '</span>'; }
+    h += '<div class="exh-z"><b>' + MONTHS[o.m] + '</b>'
+      + '<i>' + fmtDate(new Date(o.ts).toISOString().slice(0,10)) + '</i></div>';
+  });
+  box.innerHTML = h;
+}
+function verlaufAuf(){
+  if($('#vsheet').classList.contains('on')) return;
+  malVerlauf();
+  if(window.__vReset) window.__vReset();
+  $('#vcard').scrollTop = 0;
+  $('#vsheet').classList.add('on');
+  document.body.classList.add('locked');
+}
+function verlaufZu(){
+  $('#vsheet').classList.remove('on');
+  document.body.classList.remove('locked');
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3976,6 +4023,8 @@ function pfZu(){
 $('#postfach').addEventListener('click', pfAuf);
 $('#ksheet').addEventListener('click', e => { if(e.target.dataset.close === 'ksheet') karteZu(); });
 $('#rsheet').addEventListener('click', e => { if(e.target.dataset.close === 'rsheet') rangZu(); });
+$('#vsheet').addEventListener('click', e => { if(e.target.dataset.close === 'vsheet') verlaufZu(); });
+$('#ex-histbtn').addEventListener('click', verlaufAuf);
 $('#pfsheet').addEventListener('click', e => {
   if(e.target.dataset.close === 'pfsheet'){ pfZu(); return; }
   const b = e.target.closest('[data-gelesen]');
@@ -4494,6 +4543,7 @@ window.__mReset     = wireSheetDrag('m-grab',  'msheet', msZu);
 window.__pfReset    = wireSheetDrag('pf-grab', 'pfsheet', pfZu);
 window.__kReset     = wireSheetDrag('k-grab',  'ksheet',  karteZu);
 window.__rReset     = wireSheetDrag('r-grab',  'rsheet',  rangZu);
+window.__vReset     = wireSheetDrag('v-grab',  'vsheet',  verlaufZu);
 $('#sh-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
   SH.type = SH.type === b.dataset.t ? null : b.dataset.t;
@@ -4712,7 +4762,7 @@ function exYear(){
     : 'Wähle mindestens einen Monat.';
   $('#ex-go').disabled = !list.length;
   $('#ex-single').disabled = !list.length;
-  malVerlauf();
+  malVerlaufKnopf();
   fitAll();
 }
 function exList(){
