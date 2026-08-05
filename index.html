@@ -524,8 +524,8 @@ body.menuauf #avatar{transform:scale(.92)}
 
 /* Löschen liegt auf derselben Fläche — nur eben in Rot gehalten. */
 .dlbox{position:absolute;inset:-4px -6px;z-index:4;display:flex;flex-direction:column;
-  justify-content:flex-start;padding:8px 7px;border-radius:var(--r-s);
-  overflow-y:auto;overscroll-behavior:contain;background:rgba(18,28,66,.97);
+  justify-content:flex-start;padding:8px 7px 2px;border-radius:var(--r-s);
+  overflow:hidden;overscroll-behavior:contain;background:rgba(18,28,66,.97);
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
 .menu-card.dlauf .dlbox{opacity:1;visibility:visible;transform:none}
@@ -538,8 +538,11 @@ body.menuauf #avatar{transform:scale(.92)}
 .dlbox .dl-zeile svg{width:14px;height:14px}
 .dlbox .dl-warn{margin:0 0 10px;padding:9px 11px;font-size:11px;line-height:1.45;gap:9px}
 .dlbox .dl-warn svg{width:15px;height:15px}
-/* In der Spalte darf nichts zusammengedrückt werden — der Regler sonst schon. */
+/* Nichts wird gequetscht; nur die Aufzählung gibt nach und rollt notfalls.
+   So sitzt der Knopf immer bündig an der Linie unten. */
 .dlbox > *{flex:none}
+.dlbox .dl-liste{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.dlb-weg{margin-bottom:0}
 .dlbox .dlz{height:52px}
 .dlbox .dlz-knopf{width:44px;height:44px;border-radius:13px}
 .dlbox .dlz-text{font-size:12.5px;padding-left:30px}
@@ -3515,7 +3518,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2217';
+const APP_STAND = '2026-08-05-2225';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7877,8 +7880,7 @@ function dlZeilen(){
   const eintraege = ME && ME.events ? Object.keys(ME.events).length : 0;
   const exporte   = expAnzahl();
   const st        = stufe();
-  const seit      = ME && ME.created ? new Date(ME.created).toLocaleDateString('de-AT',
-                      { month:'long', year:'numeric' }) : '—';
+  const seit      = seitText();
   const zeile = (pfad, text) =>
     '<div class="dl-zeile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
     + 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + pfad + '</svg>'
