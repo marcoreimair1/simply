@@ -1274,6 +1274,46 @@ body.nobar #v-onboard{padding-top:14px}
 .qsum b{color:var(--butter);font-weight:600}
 .qhint{color:var(--tx-3)}
 
+/* Profil löschen — Liste, Warnung, Schieberegler */
+.dl-liste{margin:0 0 14px}
+.dl-zeile{display:flex;align-items:center;gap:11px;padding:9px 0;font-size:13.5px;color:var(--tx-2)}
+.dl-zeile + .dl-zeile{border-top:1px solid var(--line-2)}
+.dl-zeile svg{width:16px;height:16px;flex:none;color:var(--tx-3)}
+.dl-zeile b{color:var(--tx);font-weight:600}
+.dl-warn{display:flex;gap:11px;padding:13px 14px;margin:0 0 20px;border-radius:16px;
+  background:rgba(255,142,110,.09);border:1px solid rgba(255,142,110,.22);
+  font-size:12.5px;line-height:1.5;color:var(--tx-2)}
+.dl-warn svg{width:18px;height:18px;flex:none;color:var(--coral);margin-top:1px}
+.dl-warn b{color:var(--coral);font-weight:600}
+
+/* Der Zug muss über die ganze Breite gehen — genau das macht ihn zur
+   bewussten Handlung und nicht zum Verrutschen. */
+.dlz{position:relative;height:60px;border-radius:18px;overflow:hidden;
+  background:rgba(6,10,26,.55);border:1px solid rgba(255,142,110,.28);
+  touch-action:none;-webkit-user-select:none;user-select:none;cursor:grab}
+.dlz:active{cursor:grabbing}
+.dlz::before{content:'';position:absolute;inset:0;border-radius:17px;
+  background:linear-gradient(90deg,rgba(255,142,110,.32),rgba(255,142,110,0) 70%);
+  opacity:var(--fort,0);transition:opacity .18s}
+.dlz-text{position:absolute;inset:0;display:grid;place-items:center;padding-left:34px;
+  font-size:13.5px;font-weight:600;color:var(--tx-3);pointer-events:none;
+  transition:color .2s,opacity .2s}
+.dlz-knopf{position:absolute;left:4px;top:4px;width:52px;height:52px;border-radius:15px;
+  display:grid;place-items:center;color:#2A0F07;
+  background:linear-gradient(140deg,#FFB199,var(--coral));
+  box-shadow:0 8px 22px -8px rgba(255,142,110,.75);
+  transform:translateX(var(--zug,0px));pointer-events:none}
+.dlz-knopf svg{width:21px;height:21px}
+.dlz.zieht .dlz-knopf{transition:none}
+.dlz:not(.zieht) .dlz-knopf{transition:transform .34s var(--ease-out)}
+.dlz.reif{border-color:var(--coral);background:rgba(255,142,110,.16)}
+.dlz.reif .dlz-text{color:var(--coral)}
+.dlz.laeuft .dlz-text{opacity:.55}
+.dlz.laeuft{pointer-events:none}
+@media(prefers-reduced-motion:reduce){
+  .dlz:not(.zieht) .dlz-knopf{transition:none}
+}
+
 /* Bottom-Sheet */
 .sheet{position:fixed;inset:0;z-index:50;display:none}
 .sheet.on{display:block}
@@ -2655,6 +2695,37 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   </div>
 </div>
 
+<!-- Profil löschen — zweite Rückfrage mit Schieberegler.
+     Ein Knopf lässt sich verrutschen, ein Zug über die ganze Breite nicht. -->
+<div class="sheet" id="dlsheet">
+  <div class="sheet-bd" data-close="dlsheet"></div>
+  <div class="sheet-card" id="dlcard">
+    <div class="sheet-grab" id="dl-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
+    <h3>Wirklich alles löschen?</h3>
+    <p class="sd">Das lässt sich nicht rückgängig machen.</p>
+
+    <div class="dl-liste" id="dl-liste"></div>
+
+    <div class="dl-warn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18.2A2 2 0 0 0 3.5 21h17a2 2 0 0 0 1.7-2.8L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+      <span>Es gibt keine Sicherung. Wer die Aufzeichnungen noch braucht,
+      <b>exportiert sie vorher als PDF</b>.</span>
+    </div>
+
+    <div class="dlz" id="dlz" role="slider" tabindex="0"
+         aria-label="Zum Löschen nach rechts ziehen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <span class="dlz-text" id="dlz-text">Zum Löschen ziehen</span>
+      <span class="dlz-knopf" id="dlz-knopf" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>
+      </span>
+    </div>
+
+    <div class="sheet-actions">
+      <button class="btn btn-g" id="dl-abbruch">Behalten</button>
+    </div>
+  </div>
+</div>
+
 <!-- Monatsdetails — die Zahlen liegen im Blatt, nicht auf der Seite -->
 <div class="sheet" id="msheet">
   <div class="sheet-bd" data-close="msheet"></div>
@@ -2799,7 +2870,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1331';
+const APP_STAND = '2026-08-05-1454';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6503,25 +6574,158 @@ async function doLogout(){
    und die App meldete trotzdem Erfolg, während die Daten liegen blieben.
    Jetzt erledigt eine Funktion in der Datenbank beides in einem Schritt,
    Datenzeile und Anmeldekonto, und ihr Fehler wird auch gezeigt.        */
-async function doDelete(){
-  if(!confirm('Profil und alle Einträge endgültig löschen? Das lässt sich nicht rückgängig machen.')) return;
+/* Zwei Stufen: erst das Blatt mit dem, was verloren geht, dann ein Zug
+   über die ganze Breite. Ein Knopf allein war zu leicht zu erwischen. */
+function dlZeilen(){
+  const eintraege = ME && ME.events ? Object.keys(ME.events).length : 0;
+  const exporte   = expAnzahl();
+  const st        = stufe();
+  const seit      = ME && ME.created ? new Date(ME.created).toLocaleDateString('de-AT',
+                      { month:'long', year:'numeric' }) : '—';
+  const zeile = (pfad, text) =>
+    '<div class="dl-zeile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    + 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + pfad + '</svg>'
+    + '<span>' + text + '</span></div>';
+
+  let h = '';
+  h += zeile('<rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+             '<b>' + eintraege + '</b> ' + (eintraege === 1 ? 'eingetragener Tag' : 'eingetragene Tage'));
+  h += zeile('<path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4 20h16"/>',
+             '<b>' + exporte + '</b> ' + (exporte === 1 ? 'abgegebener Monat' : 'abgegebene Monate'));
+  h += zeile('<rect x="3" y="5.5" width="18" height="13" rx="2.6"/><path d="M3 10h18M7 14.5h4"/>',
+             'Mitgliedschaft <b>LVL ' + st + ' · ' + RAENGE[st-1].n + '</b>');
+  h += zeile('<circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/>',
+             'Passkey und Anmeldung');
+  h += zeile('<path d="M18 9.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/>',
+             'Konto seit <b>' + seit + '</b>');
+  return h;
+}
+
+let _dlReif = false;
+function dlAuf(){
+  if($('#dlsheet').classList.contains('on')) return;
+  $('#dl-liste').innerHTML = dlZeilen();
+  dlZurueck();
+  $('#dlcard').scrollTop = 0;
+  $('#dlsheet').classList.add('on');
+  document.body.classList.add('locked');
+}
+function dlZu(){
+  $('#dlsheet').classList.remove('on');
+  document.body.classList.remove('locked');
+  dlZurueck();
+  zurueckInsMenu();
+}
+function dlZurueck(){
+  const z = $('#dlz');
+  _dlReif = false;
+  z.classList.remove('zieht','reif','laeuft');
+  z.style.setProperty('--zug', '0px');
+  z.style.setProperty('--fort', 0);
+  z.setAttribute('aria-valuenow', 0);
+  $('#dlz-text').textContent = 'Zum Löschen ziehen';
+}
+
+/* Der Zug. Weg = Breite minus Knopf; ab 92 % gilt er als vollzogen. */
+(function dlRegler(){
+  const z = $('#dlz'), knopf = $('#dlz-knopf'), txt = $('#dlz-text');
+  if(!z) return;
+  let zieht = false, startX = 0, weg = 1;
+
+  const mass = () => Math.max(1, z.clientWidth - knopf.offsetWidth - 8);
+
+  function setze(px){
+    const x = Math.max(0, Math.min(weg, px));
+    const anteil = x / weg;
+    z.style.setProperty('--zug', x + 'px');
+    z.style.setProperty('--fort', anteil.toFixed(3));
+    z.setAttribute('aria-valuenow', Math.round(anteil * 100));
+    const reif = anteil >= .92;
+    if(reif !== _dlReif){
+      _dlReif = reif;
+      z.classList.toggle('reif', reif);
+      txt.textContent = reif ? 'Loslassen zum Löschen' : 'Zum Löschen ziehen';
+      if(reif && navigator.vibrate) try{ navigator.vibrate(12); }catch(e){}
+    }
+  }
+
+  z.addEventListener('pointerdown', e => {
+    if(z.classList.contains('laeuft')) return;
+    zieht = true; weg = mass(); startX = e.clientX;
+    z.classList.add('zieht');
+    try{ z.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  z.addEventListener('pointermove', e => { if(zieht) setze(e.clientX - startX); });
+  function los(){
+    if(!zieht) return;
+    zieht = false;
+    z.classList.remove('zieht');
+    if(_dlReif){
+      z.classList.add('laeuft');
+      z.style.setProperty('--zug', mass() + 'px');
+      txt.textContent = 'Wird gelöscht …';
+      loeschenJetzt();
+    }else{
+      dlZurueck();
+    }
+  }
+  z.addEventListener('pointerup', los);
+  z.addEventListener('pointercancel', () => { zieht = false; z.classList.remove('zieht'); dlZurueck(); });
+
+  /* Tastatur: fünfmal Pfeil rechts oder Ende, dann Enter. */
+  let tasten = 0;
+  z.addEventListener('keydown', e => {
+    if(z.classList.contains('laeuft')) return;
+    weg = mass();
+    if(e.key === 'ArrowRight'){ e.preventDefault(); tasten = Math.min(5, tasten + 1); setze(weg * tasten / 5); }
+    else if(e.key === 'ArrowLeft'){ e.preventDefault(); tasten = Math.max(0, tasten - 1); setze(weg * tasten / 5); }
+    else if(e.key === 'End'){ e.preventDefault(); tasten = 5; setze(weg); }
+    else if(e.key === 'Home'){ e.preventDefault(); tasten = 0; dlZurueck(); }
+    else if((e.key === 'Enter' || e.key === ' ') && _dlReif){
+      e.preventDefault(); z.classList.add('laeuft'); txt.textContent = 'Wird gelöscht …'; loeschenJetzt();
+    }
+  });
+})();
+
+$('#dl-abbruch').addEventListener('click', dlZu);
+$('#dlsheet').addEventListener('click', e => { if(e.target.dataset.close === 'dlsheet') dlZu(); });
+
+/* Erste Stufe: das Blatt. Kein confirm() mehr — das war zu schnell weggetippt. */
+function doDelete(){
+  _vonMenu = true;
+  dlAuf();
+}
+
+/* Zweite Stufe: nach dem Zug. Vorher lag alles hinter einem einzigen
+   confirm(); und die Cloud-Löschung war nur ein Aufräumen nebenbei.
+   Jetzt erledigt eine Funktion in der Datenbank beides in einem Schritt,
+   Datenzeile und Anmeldekonto, und ihr Fehler wird auch gezeigt. */
+async function loeschenJetzt(){
   if(CLOUD_ON && UID){
     _dirty = false;                      /* nichts mehr hochschicken */
     const r = await sb.rpc('konto_loeschen');
     if(r.error){
       console.warn('[MOJI] Löschen fehlgeschlagen:', r.error);
+      dlZurueck();
       toast('Löschen fehlgeschlagen — bitte später erneut versuchen');
       return;
     }
     try{ localStorage.removeItem(cacheKey()); }catch(e){}
+    try{ localStorage.removeItem(pkHostSchluessel()); }catch(e){}
     try{ await sb.auth.signOut(); }catch(e){}
     UID = null; MAIL = ''; ME = null; PK_LISTE = null;
+    $('#dlsheet').classList.remove('on');
+    document.body.classList.remove('locked');
+    _vonMenu = false;
     $('#avwrap').style.display = 'none'; $('#sync').style.display = 'none'; malZaehler();
     loginScreen(); toast('Profil und Konto gelöscht');
     return;
   }
   DB.profiles = DB.profiles.filter(p => p.id !== ME.id); DB.activeId = null;
   ME = null; save();
+  $('#dlsheet').classList.remove('on');
+  document.body.classList.remove('locked');
+  _vonMenu = false;
   $('#avwrap').style.display = 'none'; malZaehler();
   if(DB.profiles.length) loginScreen(); else { obInit(); go('v-onboard'); }
   toast('Profil gelöscht');
@@ -6539,7 +6743,7 @@ $('#fabbar').addEventListener('click', e => {
 });
 $('#sheet').addEventListener('click', e => { if(e.target.dataset.close === 'sheet') closeSheet(); });
 document.addEventListener('keydown', e => {
-  if(e.key === 'Escape'){ closeSheet(); quickClose(); msZu(); pfZu(); closeTime(); menuZu(); }
+  if(e.key === 'Escape'){ closeSheet(); quickClose(); msZu(); pfZu(); dlZu(); closeTime(); menuZu(); }
 });
 /* Überall antippen beendet das Intro — nicht nur die Pille */
 /* Kein Überspringen: die vier Sekunden gehören der Marke. */
