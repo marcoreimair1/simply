@@ -451,15 +451,16 @@ body.menuauf #avatar{transform:scale(.92)}
 .avgrid{position:absolute;inset:-4px -6px;z-index:3;
   display:grid;grid-template-columns:repeat(4,1fr);gap:9px;align-content:center;
   padding:14px;border-radius:20px;overflow:auto;
-  background:linear-gradient(165deg,rgba(46,80,190,.46),rgba(20,38,108,.58));
+  background:linear-gradient(165deg,rgba(46,80,190,.72),rgba(18,34,102,.86));
   border:1px solid rgba(130,168,255,.30);
   box-shadow:0 20px 50px -26px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.06);
   backdrop-filter:blur(10px) saturate(1.2);-webkit-backdrop-filter:blur(10px) saturate(1.2);
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
 .menu-card.avauf .avgrid{opacity:1;visibility:visible;transform:none}
-/* Die Zeilen darunter treten zurück, solange gewählt wird. */
-.menu-card.avauf .mbody > :not(.avgrid){opacity:.18;pointer-events:none}
+/* Die Zeilen darunter treten ganz zurück, solange gewählt wird — sonst
+   scheinen sie zwischen den Bildern durch. */
+.menu-card.avauf .mbody > :not(.avgrid){opacity:0;pointer-events:none}
 .mbody > :not(.avgrid){transition:opacity .26s var(--ease)}
 /* Dieselbe Rundung im Verhältnis wie beim kleinen Bild oben rechts —
    34 % der Kante. So sind die Pastellecken gleich weit weggenommen und
@@ -3283,7 +3284,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2049';
+const APP_STAND = '2026-08-05-2052';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
