@@ -526,11 +526,25 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .locked-field{display:flex;align-items:center;gap:13px;padding:16px;border-radius:var(--r-m);
   background:linear-gradient(120deg,rgba(247,215,116,.1),rgba(247,215,116,.02));border:1px solid var(--butter-dim)}
 .locked-field .lf-i{width:40px;height:40px;border-radius:12px;background:var(--butter);color:#20180A;display:grid;place-items:center;flex:none}
-/* Beim Dienstgeber steht sein eigenes Zeichen — gleiche Form wie die
-   Profilbilder, nur etwas größer als das kleine in der Leiste. */
-.locked-field .lf-logo{width:46px;height:46px;border-radius:34%;overflow:hidden;padding:0;
-  background:#030B21;border:1px solid rgba(255,255,255,.16)}
-.locked-field .lf-logo img{width:100%;height:100%;object-fit:cover;display:block}
+/* Der Dienstgeber steht fest — hier gibt es nichts einzutragen. Also keine
+   Zeile mit Feld und Knopf, sondern eine ruhige mittige Anordnung: sein
+   Zeichen groß, darunter der Name. */
+.firmenkarte{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:6px 4px 4px}
+.fk-logo{width:104px;height:104px;border-radius:30%;overflow:hidden;background:#030B21;
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 18px 40px -20px rgba(0,0,0,.8),0 0 0 6px rgba(247,215,116,.05)}
+.fk-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.firmenkarte b{display:block;margin-top:16px;font-family:var(--font-dis);font-weight:400;
+  font-size:21px;letter-spacing:-.01em}
+.firmenkarte small{display:block;margin-top:5px;font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--tx-3)}
+.fk-go{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:11px 20px;
+  border-radius:13px;font-size:13.5px;font-weight:600;color:#221904;
+  background:linear-gradient(120deg,var(--butter-2),var(--butter));
+  box-shadow:0 10px 26px -12px rgba(247,215,116,.65);transition:.24s var(--ease)}
+.fk-go svg{width:17px;height:17px}
+.fk-go:active{transform:scale(.97)}
 .locked-field b{display:block;font-size:15.5px}
 .locked-field small{color:var(--tx-3);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase}
 
@@ -2177,12 +2191,14 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
             <h1 class="dis">Dein <i>Arbeitsort</i>.</h1>
             <p class="lede">Steht schon fest und lässt sich nicht ändern.</p>
             <div class="card mt" style="max-width:430px">
-              <div class="locked-field" style="position:relative;padding-right:66px">
-                <div class="lf-i lf-logo">
-                  <img src="firma-miller.png?v=1" alt="Miller United Optics">
-                </div>
-                <div><b>Miller Optik GmbH</b><small>Arbeitsort · fix</small></div>
-                <button class="inline-go" id="go-ort" aria-label="Weiter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
+              <div class="firmenkarte">
+                <span class="fk-logo"><img src="firma-miller.png?v=1" alt="Miller United Optics"></span>
+                <b>Miller Optik GmbH</b>
+                <small>Arbeitsort · fix</small>
+                <button class="fk-go" id="go-ort" aria-label="Weiter">
+                  Weiter
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg>
+                </button>
               </div>
             </div>
           </div>
@@ -2745,7 +2761,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1259';
+const APP_STAND = '2026-08-05-1306';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
