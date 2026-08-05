@@ -385,6 +385,12 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 .menu{position:fixed;inset:0;z-index:45;display:none}
 .menu.on{display:block}
 .menu-bd{position:absolute;inset:0;background:rgba(4,7,20,.6);backdrop-filter:blur(4px);animation:fade .25s}
+/* Dieselbe Trübung wie der Menühintergrund. Sie hält den Übergang, während
+   die Seite wechselt und das Menü wieder aufgeht. */
+.blurhalt{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;visibility:hidden;
+  background:rgba(4,7,20,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  transition:opacity .28s var(--ease),visibility .28s}
+.blurhalt.on{opacity:1;visibility:visible}
 /* Der Ursprung liegt in der rechten oberen Ecke — das Menü wächst aus dem
    Profilbild heraus und fährt beim Schließen dorthin zurück. Vorher war es
    beim Zumachen einfach weg, das riss. */
@@ -515,6 +521,28 @@ body.menuauf #avatar{transform:scale(.92)}
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
 .menu-card.kauf .konten{opacity:1;visibility:visible;transform:none}
+
+/* Löschen liegt auf derselben Fläche — nur eben in Rot gehalten. */
+.dlbox{position:absolute;inset:-4px -6px;z-index:4;display:flex;flex-direction:column;
+  justify-content:center;padding:10px 7px;border-radius:var(--r-s);
+  overflow-y:auto;overscroll-behavior:contain;background:rgba(18,28,66,.97);
+  opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
+  transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
+.menu-card.dlauf .dlbox{opacity:1;visibility:visible;transform:none}
+.menu-card.dlauf .mbody > :not(.dlbox){opacity:0;pointer-events:none}
+.dlb-h{display:block;font-family:var(--font-dis);font-weight:400;font-size:19px;
+  letter-spacing:-.01em;margin:0 2px 2px}
+.dlb-s{display:block;font-size:11.5px;color:var(--tx-3);margin:0 2px 12px}
+.dlbox .dl-liste{margin:0 0 12px}
+.dlbox .dl-warn{margin:0 0 14px;padding:11px 12px}
+.dlbox .dlz{height:54px}
+.dlbox .dlz-knopf{width:46px;height:46px}
+.dlb-weg{width:100%;margin-top:12px;padding:12px 18px}
+.menu-card.dlauf .dlbox > *{animation:kIn .46s var(--ease-out) both}
+.menu-card.dlauf .dlbox > :nth-child(3){animation-delay:.05s}
+.menu-card.dlauf .dlbox > :nth-child(4){animation-delay:.09s}
+.menu-card.dlauf .dlbox > :nth-child(5){animation-delay:.13s}
+.menu-card.dlauf .dlbox > :nth-child(6){animation-delay:.17s}
 .kbox{border:1px solid var(--line-2);border-radius:18px;padding:13px 14px 11px;
   background:linear-gradient(165deg,rgba(27,40,86,.55),rgba(12,20,48,.30))}
 .menu-card.kauf .kbox{animation:kIn .5s var(--ease-out) both}
@@ -573,8 +601,8 @@ body.menuauf #avatar{transform:scale(.92)}
 
 /* Speichern: gleiche Breite und Rundung wie die Kacheln, in Gelb. */
 .ksave{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
-  border-radius:18px;font-size:14px;font-weight:600;letter-spacing:-.01em;
-  background:linear-gradient(135deg,var(--butter),var(--butter-2));color:#20180A;
+  border-radius:14px;font-size:14px;font-weight:600;letter-spacing:.01em;
+  background:linear-gradient(120deg,var(--butter-2),var(--butter));color:#221904;
   border:1px solid var(--butter);
   height:0;padding:0;margin-top:-11px;opacity:0;transform:translateY(-8px) scale(.98);overflow:hidden;
   transition:height .34s var(--ease-out),opacity .24s var(--ease),
@@ -2976,6 +3004,25 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <b id="k-save-t">Speichern</b>
         </button>
       </div>
+      <!-- Profil löschen: alles im Menü, in derselben blauen Fläche. -->
+      <div class="dlbox" id="dlbox" role="group" aria-label="Profil löschen">
+        <b class="dlb-h">Wirklich alles löschen?</b>
+        <small class="dlb-s">Das lässt sich nicht rückgängig machen.</small>
+        <div class="dl-liste" id="dl-liste"></div>
+        <div class="dl-warn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18.2A2 2 0 0 0 3.5 21h17a2 2 0 0 0 1.7-2.8L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          <span>Es gibt keine Sicherung. Wer die Aufzeichnungen noch braucht,
+          <b>exportiert sie vorher als PDF</b>.</span>
+        </div>
+        <div class="dlz" id="dlz" role="slider" tabindex="0"
+             aria-label="Zum Löschen nach rechts ziehen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <span class="dlz-text" id="dlz-text">Zum Löschen ziehen</span>
+          <span class="dlz-knopf" id="dlz-knopf" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>
+          </span>
+        </div>
+        <button class="btn btn-g dlb-weg" id="dl-abbruch">Behalten</button>
+      </div>
     <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge darunter. -->
     <button class="mrang" id="mrang" data-act="raenge" aria-label="Stufen ansehen">
       <span class="zaehler" id="mr-zaehler" hidden></span>
@@ -3017,6 +3064,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <div class="mfoot">Eine App von <b>Studio MARU 丸</b></div>
   </div>
 </div>
+
+<!-- Liegt beim Zurückgehen ins Menü über der Seite, damit der Hintergrund
+     durchgehend unscharf bleibt und nicht kurz scharf aufblitzt. -->
+<div class="blurhalt" id="blurhalt" aria-hidden="true"></div>
 
 <!-- Kleiner Balken für den Passkey: fragt kurz nach, statt eine ganze Seite
      aufzuziehen. Beschriftung und Farbe richten sich nach dem Zustand. -->
@@ -3281,35 +3332,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
      Adresse oder Firmenbuchnummer kennt die App nicht. -->
 <!-- Profil löschen — zweite Rückfrage mit Schieberegler.
      Ein Knopf lässt sich verrutschen, ein Zug über die ganze Breite nicht. -->
-<div class="sheet" id="dlsheet">
-  <div class="sheet-bd" data-close="dlsheet"></div>
-  <div class="sheet-card" id="dlcard">
-    <div class="sheet-grab" id="dl-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
-    <h3>Wirklich alles löschen?</h3>
-    <p class="sd">Das lässt sich nicht rückgängig machen.</p>
-
-    <div class="dl-liste" id="dl-liste"></div>
-
-    <div class="dl-warn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18.2A2 2 0 0 0 3.5 21h17a2 2 0 0 0 1.7-2.8L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
-      <span>Es gibt keine Sicherung. Wer die Aufzeichnungen noch braucht,
-      <b>exportiert sie vorher als PDF</b>.</span>
-    </div>
-
-    <div class="dlz" id="dlz" role="slider" tabindex="0"
-         aria-label="Zum Löschen nach rechts ziehen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-      <span class="dlz-text" id="dlz-text">Zum Löschen ziehen</span>
-      <span class="dlz-knopf" id="dlz-knopf" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>
-      </span>
-    </div>
-
-    <div class="sheet-actions">
-      <button class="btn btn-g" id="dl-abbruch">Behalten</button>
-    </div>
-  </div>
-</div>
-
 <!-- Wer das Löschen abbricht, bekommt kurz ein Danke auf den geblurrten
      Hintergrund. Nur beim Bleiben, nie nach dem Löschen. -->
 <div id="bleib" aria-hidden="true">
@@ -3487,7 +3509,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2157';
+const APP_STAND = '2026-08-05-2209';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6376,6 +6398,7 @@ function kontenAuf(an){
   const auf = (an === undefined) ? !kontenOffen() : !!an;
   if(auf && avOffen()) avWahl(false);
   if(auf && rangboxOffen()) rangboxAuf(false);
+  if(auf && dlOffen()) dlZu(false);
   k.classList.toggle('kauf', auf);
   kontenFrei(false);              /* immer gesperrt beginnen */
   if(auf) malKonten(true);
@@ -6980,7 +7003,6 @@ window.__mReset     = wireSheetDrag('m-grab',  'msheet', msZu);
 window.__pfReset    = wireSheetDrag('pf-grab', 'pfsheet', pfZu, 'pf-liste');
 window.__rReset     = wireSheetDrag('r-grab',  'rsheet',  rangZu);
 window.__vReset     = wireSheetDrag('v-grab',  'vsheet',  verlaufZu);
-window.__dlReset    = wireSheetDrag('dl-grab', 'dlsheet', dlZu);
 $('#sh-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
   /* Nochmal auf die gewählte Art tippen holt die anderen drei zurück. */
@@ -7735,10 +7757,20 @@ let _menuZu = null;
    Menü stehen — sonst landet man ohne Grund im Kalender. Diese Merkfahne
    wird beim Öffnen gesetzt und beim Zurückkehren verbraucht. */
 let _vonMenu = false;
+function blurHalten(an){
+  const el = $('#blurhalt'); if(!el) return;
+  el.classList.toggle('on', !!an);
+}
 function zurueckInsMenu(){
   if(!_vonMenu) return;
   _vonMenu = false;
-  setTimeout(menuAuf, 190);      /* erst wenn das Blatt weg ist */
+  /* Erst die Trübung halten, dann wechseln — sonst blitzt die Seite scharf
+     auf, bevor das Menü mit seinem eigenen Hintergrund wieder aufgeht. */
+  blurHalten(true);
+  setTimeout(() => {
+    menuAuf();
+    setTimeout(() => blurHalten(false), 300);
+  }, 170);
 }
 function menuAuf(){
   clearTimeout(_menuZu);
@@ -7760,6 +7792,7 @@ function menuZu(){
   if(avOffen()) avWahl(false);
   if(kontenOffen()) kontenAuf(false);
   if(rangboxOffen()) rangboxAuf(false);
+  if(dlOffen()) dlZu(false);
   m.classList.add('zu');
   document.body.classList.remove('menuauf');
   clearTimeout(_menuZu);
@@ -7785,6 +7818,7 @@ $('#menu').addEventListener('click', e => {
   if(b.dataset.act === 'konten'){ kontenAuf(); return; }
   if(b.dataset.act === 'erinnerung'){ erinUmschalten(); return; }
   if(b.dataset.act === 'raenge' && !aufOffen()){ rangboxAuf(); return; }
+  if(b.dataset.act === 'delete'){ doDelete(); return; }
   menuZu();
   const a = b.dataset.act;
   if(a === 'hours'){
@@ -7859,23 +7893,27 @@ function dlZeilen(){
 }
 
 let _dlReif = false;
+function dlOffen(){
+  const k = $('#menu .menu-card');
+  return !!(k && k.classList.contains('dlauf'));
+}
 function dlAuf(){
-  if($('#dlsheet').classList.contains('on')) return;
-  if(window.__dlReset) window.__dlReset();
+  const k = $('#menu .menu-card'); if(!k || dlOffen()) return;
+  if(avOffen()) avWahl(false);
+  if(kontenOffen()) kontenAuf(false);
+  if(rangboxOffen()) rangboxAuf(false);
   $('#dl-liste').innerHTML = dlZeilen();
   dlZurueck();
-  $('#dlcard').scrollTop = 0;
-  $('#dlsheet').classList.add('on');
-  document.body.classList.add('locked');
+  $('#dlbox').scrollTop = 0;
+  k.classList.add('dlauf');
 }
-/* mitDank=false nur dort, wo tatsächlich gelöscht wurde. */
+/* mitDank=false nur dort, wo tatsächlich gelöscht wurde. Das Menü bleibt
+   offen — der Hintergrund also durchgehend unscharf. */
 function dlZu(mitDank){
-  if(!$('#dlsheet').classList.contains('on')) return;
-  $('#dlsheet').classList.remove('on');
-  document.body.classList.remove('locked');
+  if(!dlOffen()) return;
+  $('#menu .menu-card').classList.remove('dlauf');
   dlZurueck();
   if(mitDank !== false) bleibZeigen();
-  zurueckInsMenu();
 }
 
 /* Das Schweinchen kommt vom linken Rand hereingetrötet und geht von
@@ -7961,13 +7999,9 @@ function dlZurueck(){
 })();
 
 $('#dl-abbruch').addEventListener('click', dlZu);
-$('#dlsheet').addEventListener('click', e => { if(e.target.dataset.close === 'dlsheet') dlZu(); });
 
 /* Erste Stufe: das Blatt. Kein confirm() mehr — das war zu schnell weggetippt. */
-function doDelete(){
-  _vonMenu = true;
-  dlAuf();
-}
+function doDelete(){ dlAuf(); }
 
 /* Zweite Stufe: nach dem Zug. Vorher lag alles hinter einem einzigen
    confirm(); und die Cloud-Löschung war nur ein Aufräumen nebenbei.
@@ -7987,8 +8021,8 @@ async function loeschenJetzt(){
     try{ localStorage.removeItem(pkHostSchluessel()); }catch(e){}
     try{ await sb.auth.signOut(); }catch(e){}
     UID = null; MAIL = ''; ME = null; PK_LISTE = null;
-    if(window.__dlReset) window.__dlReset();
-    $('#dlsheet').classList.remove('on');
+    dlZu(false);
+    menuZu();
     document.body.classList.remove('locked');
     _vonMenu = false;
     $('#avwrap').style.display = 'none'; $('#sync').style.display = 'none'; malZaehler();
@@ -7997,8 +8031,8 @@ async function loeschenJetzt(){
   }
   DB.profiles = DB.profiles.filter(p => p.id !== ME.id); DB.activeId = null;
   ME = null; save();
-  if(window.__dlReset) window.__dlReset();
-  $('#dlsheet').classList.remove('on');
+  dlZu(false);
+  menuZu();
   document.body.classList.remove('locked');
   _vonMenu = false;
   $('#avwrap').style.display = 'none'; malZaehler();
