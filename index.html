@@ -1325,20 +1325,13 @@ body.nobar #v-onboard{padding-top:14px}
 .neuv{position:fixed;inset:0;z-index:70;display:none;place-items:center;cursor:pointer;
   background:rgba(6,10,26,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .neuv.on{display:grid;animation:fade .32s}
-/* Der Rahmen ist ein eigener Kasten: darin dreht sich ein Farbkeil, sichtbar
-   bleibt davon nur der schmale Rand um die Karte. So hebt sie sich vom
-   Hintergrund ab, ohne ihn zu verdecken. */
-.neuv-rahmen{position:relative;width:min(84vw,304px);padding:1.6px;border-radius:26px;overflow:hidden;
-  box-shadow:0 26px 60px -26px rgba(0,0,0,.85),0 0 34px -14px rgba(247,215,116,.45);
+/* Dieselbe Karte wie im Kalender: durchscheinend, gleicher Rand, gleiche
+   Rundung — sie soll wie ein Teil der App wirken, nicht wie ein Fremdkörper. */
+.neuv-karte{position:relative;width:min(84vw,304px);padding:22px 22px 20px;text-align:center;
+  background:linear-gradient(165deg,rgba(27,40,86,.40),rgba(12,20,48,.28));
+  border:1px solid var(--line);border-radius:var(--r-l);box-shadow:var(--shadow);
+  backdrop-filter:blur(18px) saturate(1.25);-webkit-backdrop-filter:blur(18px) saturate(1.25);
   animation:neuvRein .52s var(--ease-out) both}
-.neuv-rahmen::before{content:'';position:absolute;left:50%;top:50%;width:190%;aspect-ratio:1;
-  translate:-50% -50%;
-  background:conic-gradient(from 0deg,rgba(247,215,116,0) 0 46%,rgba(247,215,116,.22) 56%,
-    var(--butter) 68%,rgba(247,215,116,.22) 80%,rgba(247,215,116,0) 90% 100%);
-  animation:neuvRing 3.6s linear infinite}
-@keyframes neuvRing{to{rotate:360deg}}
-.neuv-karte{position:relative;padding:22px 22px 20px;border-radius:24.5px;text-align:center;
-  background:rgba(13,20,48,.66);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 @keyframes neuvRein{
   0%{opacity:0;transform:scale(.88) translateY(14px)}
   62%{opacity:1;transform:scale(1.02)}
@@ -2567,7 +2560,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
      der Moment nicht wie ein Absturz aussieht. -->
 <div class="neuv" id="neuv" role="button" tabindex="0" aria-hidden="true"
      aria-label="Neue Version laden">
-  <div class="neuv-rahmen">
   <div class="neuv-karte">
     <span class="neuv-ico" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8.1 8.1 0 00-15.5-2"/><path d="M4 5v4h4"/><path d="M4 13a8.1 8.1 0 0015.5 2"/><path d="M20 19v-4h-4"/></svg>
@@ -2575,7 +2567,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <b>Es gibt eine neue Version</b>
     <small id="neuv-sub">Tippen um neu zu laden</small>
     <span class="neuv-bar" aria-hidden="true"><i></i></span>
-  </div>
   </div>
 </div>
 
@@ -2751,7 +2742,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1141';
+const APP_STAND = '2026-08-05-1148';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
