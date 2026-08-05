@@ -30,10 +30,10 @@ Supabase in Frankfurt als Datenspeicher, gebaut fürs Handy.
 **Einrichtung** *(einmalig, größtenteils erledigt)*
 
 11. [Supabase-Projekt und Datenbank](#11--supabase-projekt-und-datenbank)
-12. [Mailversand](#12--mailversand)
+12. [Mailversand über Resend](#12--mailversand-über-resend-erledigt)
 13. [Mailvorlagen und Code](#13--mailvorlagen-und-code)
 14. [Passkeys](#14--passkeys)
-15. [Monats-Erinnerung automatisch verschicken](#15--monats-erinnerung-automatisch-verschicken)
+15. [Monats-Erinnerung automatisch verschicken](#15--monats-erinnerung-automatisch-verschicken) *(läuft)*
 16. [Mitarbeiter aufnehmen und Konten verwalten](#16--mitarbeiter-aufnehmen-und-konten-verwalten)
 
 **Anhang**
@@ -218,8 +218,9 @@ zu prüfen. Kurz mit der Datenschutzberatung abklopfen.
 Alles gratis. Konten anlegen und Passwörter eintragen bleibt bei dir — Zugangsdaten gebe ich
 grundsätzlich nirgends ein.
 
-> **Stand:** Abschnitte 11 bis 14 sind erledigt. Offen ist allein Abschnitt 15,
-> die automatische Monats-Erinnerung.
+> **Stand:** Abschnitte 11 bis 15 sind erledigt und geprüft — Datenbank, Zugriffsregeln,
+> Resend als Absender `no-reply@moji-app.at`, Mailvorlagen, Passkeys und die automatische
+> Monats-Erinnerung. Der Zeitplan `moji-monatsmail` ist aktiv, der Testlauf lief mit Status 200.
 
 ## 11 · Supabase-Projekt und Datenbank
 
@@ -289,36 +290,61 @@ Diese Regeln sind der eigentliche Datenschutz. Sie greifen in der Datenbank, nic
 
 ---
 
-## 12 · Mailversand *(erledigt)*
+## 12 · Mailversand über Resend *(erledigt)*
 
 Supabase verschickt selbst nur zwei Mails pro Stunde und nur an Adressen aus dem eigenen
-Projektteam. Für echte Mitarbeiter braucht es einen eigenen Versand — derzeit Gmail über
-`maru.arbeitszeiten@gmail.com`.
+Projektteam. Für echte Mitarbeiter braucht es einen eigenen Versand — MOJI nutzt **Resend**,
+sowohl für die Anmeldecodes als auch für die Monats-Erinnerung.
 
-**Authentication** → **Emails** → **SMTP Settings** → **Enable custom SMTP**:
+**Absender: `MOJI <no-reply@moji-app.at>`.** Dahinter liegt kein Postfach — Senden und
+Empfangen sind getrennt, für den Versand genügen die DNS-Einträge. Antworten laufen über
+Reply-To auf eine echte Adresse.
+
+### 12.1 Domain bei Resend
+
+`moji-app.at` ist als Sending-Domain verifiziert, Region **Ireland (eu-west-1)**. Drei
+DNS-Einträge bei GoDaddy, die Website bleibt davon unberührt:
+
+| Typ | Name | Wert | Priorität |
+|---|---|---|---|
+| TXT | `resend._domainkey` | `p=MIGfMA0GCSqG…QwIDAQAB` (DKIM, 216 Zeichen) | — |
+| MX | `send` | `feedback-smtp.eu-west-1.amazonses.com` | 10 |
+| TXT | `send` | `v=spf1 include:amazonses.com ~all` | — |
+
+Dazu kommt der von GoDaddy vorgegebene `_dmarc`-Eintrag (`p=quarantine`, relaxed) — der passt
+zu DKIM auf derselben Domain.
+
+> **Der Gratis-Plan erlaubt nur eine Domain.** Deshalb wurde `studiomaru.at` bei Resend
+> entfernt, als `moji-app.at` dazukam. Von `studiomaru.at` kann über Resend nichts mehr
+> gesendet werden. Grenzen im Gratis-Plan: 3.000 Mails pro Monat, 100 pro Tag.
+
+### 12.2 API-Schlüssel
+
+**Schlüssel sind in Resend auf eine Domain beschränkt.** Ein Schlüssel für `studiomaru.at`
+funktioniert nach dem Umzug nicht mehr — deshalb gibt es den Schlüssel **„MOJI moji-app.at"**
+(Sending access, Domain `moji-app.at`). Er steckt an zwei Stellen:
+
+- Supabase → Authentication → Emails → SMTP Settings → **Password**
+- Supabase → Project Settings → Edge Functions → Secrets → **`RESEND_API_KEY`**
+
+Resend zeigt einen Schlüssel nur einmal an. Wer ihn verliert, legt einen neuen an und tauscht
+ihn an beiden Stellen.
+
+### 12.3 SMTP in Supabase
+
+**Authentication** → **Emails** → **SMTP Settings** → *Enable custom SMTP*:
 
 | Feld | Wert |
 |---|---|
-| Sender email address | `maru.arbeitszeiten@gmail.com` |
+| Sender email address | `no-reply@moji-app.at` |
 | Sender name | `MOJI` |
-| Host | `smtp.gmail.com` |
+| Host | `smtp.resend.com` |
 | Port number | `587` |
-| Username | `maru.arbeitszeiten@gmail.com` |
-| Password | App-Passwort, 16 Zeichen, ohne Leerzeichen |
+| Minimum interval per user | `60` Sekunden |
+| Username | `resend` |
+| Password | der API-Schlüssel aus 12.2 |
 
-Absender und Benutzername **müssen dieselbe Adresse** sein — Gmail erlaubt nur die Adresse des
-angemeldeten Kontos. Das App-Passwort entsteht unter
-[myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) und setzt die
-Zwei-Faktor-Bestätigung im **selben** Konto voraus.
-
-**Warum nicht Resend für die Anmeldemails?** Resend liefert ohne verifizierte Domain nur ans
-eigene Kontopostfach. Und `miller.at` hat den SPF-Eintrag
-`v=spf1 include:spf.protection.outlook.com -all` — das `-all` weist jeden fremden Versandserver
-hart ab. Als `@miller.at` über Resend zu senden würde im Spam landen. Sauber wäre später der
-Firmen-Mailserver oder Resend mit freigeschalteter eigener Domain — `moji-app.at` gehört uns
-inzwischen, das wäre der nächste Schritt.
-
-Gmail-Grenze: etwa 500 Mails pro Tag. Für den Dauerbetrieb ist der Firmen-Mailserver besser.
+Projekt-Ref: `kzduwbmiytusvlbotrrr`.
 
 ---
 
@@ -328,21 +354,14 @@ Vorlagen lassen sich **erst nach dem Speichern des SMTP-Zugangs** bearbeiten.
 
 **Authentication** → **Emails** → **Templates** → **Magic link or OTP**:
 
-- Betreff: `Deine Anmeldung bei MOJI`
+- Betreff: `{{ .Token }} ist dein MOJI-Code`
 
-```html
-<h2>Anmeldung bei MOJI</h2>
-<p>Tippe auf den Link — kein Passwort nötig:</p>
-<p><a href="{{ .ConfirmationURL }}">Jetzt anmelden</a></p>
-<p>Oder gib diesen Code in der App ein:</p>
-<p style="font-size:28px;letter-spacing:6px"><strong>{{ .Token }}</strong></p>
-<p>Gültig eine Stunde, einmal verwendbar. Nicht angefordert? Einfach ignorieren.</p>
-<p>MOJI — Mehr Zeit fürs Wesentliche.</p>
-```
+Der `{{ .Token }}` ist entscheidend: wer MOJI vom iPhone-Startbildschirm öffnet, kann den Link
+nicht nutzen — der landet in Safari, und eine Startbildschirm-App hat auf iOS einen eigenen
+Speicher. Mit dem Code funktioniert die Anmeldung auch dort.
 
-Der `{{ .Token }}` ist der Grund, warum die Anmeldung auch vom iPhone-Startbildschirm
-funktioniert. Die gestalteten Fassungen liegen als `mail-anmeldung.html` und
-`mail-registrierung.html` im Projekt.
+Die gestalteten Fassungen liegen als `mail-anmeldung.html` und `mail-registrierung.html` im
+Projekt.
 
 ---
 
@@ -374,27 +393,33 @@ Fertig im Projekt liegen:
 - `monatsmail.ts` — die Edge Function samt Mailvorlage im MOJI-Design
 - `monatsmail.sql` — Tabelle `mail_log` gegen Doppelmails und der Zeitplan
 
-### 15.1 Absender bei Resend freischalten
+### 15.1 Absender *(erledigt)*
 
-1. Bei [resend.com](https://resend.com) anmelden → **Domains** → **Add Domain** → `moji-app.at`
-2. Resend zeigt drei DNS-Einträge (DKIM, SPF, optional DMARC) → bei GoDaddy eintragen
-3. Nach der Prüfung **Verified** → **API Keys** → neuen Schlüssel erzeugen und kopieren
+Domain, DNS-Einträge und Schlüssel stehen schon — siehe [Abschnitt 12](#12--mailversand-über-resend-erledigt).
+Es fehlen nur noch die Secrets, die Function und der Zeitplan.
 
-### 15.2 Schlüssel in Supabase hinterlegen
+### 15.2 Schlüssel in Supabase hinterlegen *(erledigt)*
 
 **Project Settings** → **Edge Functions** → **Secrets**:
 
 | Name | Wert |
 |---|---|
-| `RESEND_API_KEY` | der Schlüssel aus 15.1 |
-| `MAIL_VON` | `MOJI <hallo@moji-app.at>` |
+| `RESEND_API_KEY` | der Schlüssel „MOJI moji-app.at" aus 12.2 |
+| `MAIL_VON` | `MOJI <no-reply@moji-app.at>` |
+| `MAIL_ANTWORT` | eine Adresse, die du liest — Standard `maru.arbeitszeiten@gmail.com` |
 
-`SUPABASE_URL` und `SUPABASE_SERVICE_ROLE_KEY` sind automatisch vorhanden.
+`SUPABASE_URL` und `SUPABASE_SERVICE_ROLE_KEY` sind automatisch vorhanden. `MAIL_VON` und
+`MAIL_ANTWORT` sind nur nötig, wenn du von den Standardwerten abweichen willst.
 
-### 15.3 Funktion veröffentlichen
+### 15.3 Funktion veröffentlichen *(erledigt)*
 
-Im **Dashboard**: **Edge Functions** → **Deploy a new function** → Name `monatsmail` → den
-Inhalt von `monatsmail.ts` einfügen → **Deploy**.
+Läuft als `monatsmail` unter
+`https://kzduwbmiytusvlbotrrr.supabase.co/functions/v1/monatsmail`, *Verify JWT with legacy
+secret* eingeschaltet. Zusätzlich prüft die Funktion selbst, ob der Aufruf den
+`service_role`-Schlüssel mitbringt — der öffentliche anon-Schlüssel genügt nicht.
+
+Neu veröffentlichen im **Dashboard**: **Edge Functions** → `monatsmail` → **Code** → Inhalt von
+`monatsmail.ts` einfügen → **Deploy updates**.
 
 Oder auf dem Rechner mit der CLI:
 
@@ -406,12 +431,28 @@ npx supabase link --project-ref PROJEKT_REF
 npx supabase functions deploy monatsmail
 ```
 
-### 15.4 Tabelle und Zeitplan
+### 15.4 Tabelle und Zeitplan *(erledigt)*
 
-`monatsmail.sql` im **SQL Editor** ausführen. Vorher die zwei Platzhalter ersetzen:
-`PROJEKT_REF` und `SERVICE_ROLE_KEY`. Der Zeitplan steht auf `10 5 1 * *` — am Ersten um
-05:10 UTC, im Sommer 07:10 Wiener Zeit. Im Winter wird es 06:10; falls das stören sollte,
-zweimal im Jahr die Stunde anpassen.
+Tabelle `mail_log`, `pg_cron`, `pg_net` und der Zeitplan `moji-monatsmail` sind angelegt und
+aktiv. Der Plan steht auf `10 5 1 * *` — am Ersten um 05:10 UTC, im Sommer 07:10 Wiener Zeit.
+Im Winter wird es 06:10; falls das stören sollte, zweimal im Jahr die Stunde anpassen.
+
+Neu aufsetzen ginge über `monatsmail.sql`; darin ist nur `SERVICE_ROLE_KEY` zu ersetzen.
+
+> **Der Schlüssel im Zeitplan ist der *legacy* `service_role`-JWT**
+> (Settings → API Keys → *Legacy anon, service_role API keys*), nicht `sb_secret_…`.
+> Er steht im Klartext in `cron.job.command` — dort kommt nur die `postgres`-Rolle hin.
+
+**Diese zwei Einstellungen müssen bleiben, sonst steht die Automatik:**
+
+- Function `monatsmail` → Settings → **Verify JWT with legacy secret** bleibt **an**.
+  Sie prüft die Signatur; die Funktion prüft danach nur noch die Rolle.
+- Settings → API Keys → **„Disable JWT-based API keys" nicht drücken.**
+
+**Stolperstein, den wir hatten:** in der Umgebung der Edge Function liefert
+`SUPABASE_SERVICE_ROLE_KEY` inzwischen den **neuen** `sb_secret`-Schlüssel (41 Zeichen), der
+Zeitplan schickt aber den **Legacy-JWT** (219 Zeichen). Ein direkter Vergleich schlug deshalb
+mit `401 nein` fehl. `darfRein()` in `monatsmail.ts` akzeptiert jetzt beide Formen.
 
 ### 15.5 Vorher einmal trocken prüfen
 
@@ -424,11 +465,38 @@ where r.data->>'mailOk' = 'true'
   and not (r.data->'exp' ? '2026-6');   -- 2026-6 = Juli 2026, Monat ab 0 gezählt
 ```
 
-Danach die Funktion einmal von Hand anstoßen (**Edge Functions** → `monatsmail` → **Invoke**).
-Sie antwortet mit `{ monat, lauf, gesendet, uebersprungen, fehler }`. Ein zweiter Aufruf im
-selben Monat schickt nichts mehr — dafür ist `mail_log` da.
+Danach die Funktion einmal von Hand anstoßen (**Edge Functions** → `monatsmail` → **Test**,
+Header `Authorization: Bearer <service_role>`). Sie antwortet mit
+`{ monat, lauf, gesendet, uebersprungen, fehler }`. Ein zweiter Aufruf im selben Monat schickt
+nichts mehr — dafür ist `mail_log` da.
 
-### 15.6 Wie die Erinnerung abgeschaltet wird
+**Antworten der Funktion beim Prüfen:**
+
+| Antwort | Bedeutung |
+|---|---|
+| `401 nein` | Aufruf ohne `service_role`-Rolle — Sperre greift, Code läuft |
+| `500 SUPABASE_SERVICE_ROLE_KEY nicht verfuegbar` | Dienstschlüssel fehlt in der Umgebung |
+| `500 RESEND_API_KEY fehlt` | Secret nicht gesetzt |
+| `200` mit Bericht | alles in Ordnung |
+
+### 15.6 Prüfstand vom 5. August 2026
+
+Testlauf über denselben Befehl, den der Zeitplan ausführt:
+
+```
+{ "monat": "Juli", "lauf": "2026-07", "gesendet": 0, "uebersprungen": 6, "fehler": [] }
+```
+
+Status 200, keine Mail verschickt — richtig, denn **bei allen bestehenden Konten fehlt `mailOk`
+im Profil**. Die Profile wurden gespeichert, bevor es die Einwilligung gab; die Funktion
+überspringt alles, was nicht ausdrücklich `true` ist.
+
+**Daraus folgt:** die fünf bestehenden Nutzer bekommen nichts, bis sie im Profilmenü
+*Monats-Erinnerung* selbst einschalten. Das Häkchen im Funnel sehen nur neue Konten. Wer die
+Automatik für die bestehenden Leute nutzen will, braucht einen einmaligen Hinweis in der App —
+ist noch nicht gebaut.
+
+### 15.7 Wie die Erinnerung abgeschaltet wird
 
 Profilmenü → **Monats-Erinnerung**. Der Punkt zeigt *ein · per E-Mail an …* oder *aus* und
 schreibt `mailOk` ins Profil; die Funktion überspringt beim nächsten Lauf alle mit `false`.
@@ -482,11 +550,18 @@ Geräte die alten Bilder aus dem Zwischenspeicher.
 
 ## 18 · Offene Punkte
 
-- **Abschnitt 15** einrichten: Resend-Domain, Secrets, Funktion, Zeitplan
+- **Einmaliger Hinweis in der App**, damit die fünf bestehenden Nutzer die Monats-Erinnerung
+  einschalten können — sie sehen das Häkchen aus dem Funnel nie (→ Abschnitt 15.6)
 - Alter **MX-Eintrag** auf der Wurzel von `moji-app.at` ist verwaist und kann weg
-- Zwei **unbenutzte Resend-Schlüssel** löschen
+- Die zwei alten Resend-Schlüssel **„MARU SMTP"** und **„MARU Anmeldemails"** löschen — sie
+  hängen an `studiomaru.at` und funktionieren nicht mehr. Der Schlüssel **„simply"**
+  (Full access) wird ebenfalls nicht gebraucht
 - Die alte **GitHub-Rückkehradresse** in Supabase in einigen Wochen entfernen
 - **Dienstzeiten mit Datum versehen**, damit alte Monate mit dem damals gültigen Plan gerechnet
   werden — heute gilt immer der aktuelle Plan
-- Eigene **Absenderdomain** auch für die Anmeldemails, statt Gmail
-- Der **Gmail-Zugang** und alle früher einmal offen gezeigten Schlüssel gehören erneuert
+- **Antworten empfangen** ist nicht eingerichtet und derzeit auch nicht nötig. Falls doch:
+  GoDaddy kann Mail an `moji-app.at` auf ein bestehendes Postfach weiterleiten
+- **`studiomaru.at`** kann über Resend nicht mehr senden. Wird das gebraucht, braucht es den
+  Pro-Plan ($20/Monat) oder ein zweites Resend-Konto
+- Alle früher einmal offen gezeigten Schlüssel gehören erneuert — insbesondere der
+  Supabase-`service_role` und das Gmail-App-Passwort, das inzwischen nicht mehr gebraucht wird

@@ -26,15 +26,15 @@ select cron.unschedule('moji-monatsmail')
 where exists (select 1 from cron.job where jobname = 'moji-monatsmail');
 
 -- 4 · Am Ersten jedes Monats um 07:10 Wien (= 05:10 UTC im Sommer)
---     Vor dem Ausführen die beiden Platzhalter ersetzen:
---       PROJEKT_REF        z. B. abcdefghijklmno
---       SERVICE_ROLE_KEY   Settings → API → service_role
+--     Vor dem Ausführen nur noch SERVICE_ROLE_KEY ersetzen:
+--       Settings → API → service_role (der geheime Schlüssel).
+--     Die Projektadresse ist schon eingesetzt.
 select cron.schedule(
   'moji-monatsmail',
   '10 5 1 * *',
   $$
   select net.http_post(
-    url     := 'https://PROJEKT_REF.supabase.co/functions/v1/monatsmail',
+    url     := 'https://kzduwbmiytusvlbotrrr.supabase.co/functions/v1/monatsmail',
     headers := jsonb_build_object(
                  'Content-Type',  'application/json',
                  'Authorization', 'Bearer SERVICE_ROLE_KEY'),

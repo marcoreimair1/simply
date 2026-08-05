@@ -11,9 +11,18 @@
 
    Nötige Secrets in Supabase:
      RESEND_API_KEY      Schlüssel von resend.com
-     MAIL_VON            Absender, z. B. "MOJI <hallo@moji-app.at>"
+     MAIL_VON            Absender, Standard "MOJI <no-reply@moji-app.at>"
+     MAIL_ANTWORT        Adresse für Antworten, Standard maru.arbeitszeiten@gmail.com
+
+   Hinter no-reply@moji-app.at steckt kein Postfach — für den Versand
+   genügen die DNS-Einträge von Resend. Damit eine Antwort trotzdem
+   irgendwo ankommt, geht Reply-To an eine echte Adresse.
    Automatisch vorhanden:
      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+     Achtung: SUPABASE_SERVICE_ROLE_KEY enthaelt inzwischen den
+     neuen sb_secret-Schluessel (41 Zeichen), nicht den Legacy-JWT
+     (219 Zeichen), den der Zeitplan mitschickt. Deshalb prueft
+     darfRein() beide Formen.
    ══════════════════════════════════════════════════════════════ */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -79,16 +88,48 @@ function htmlFassung(vorname: string, monat: string){
 }
 
 Deno.serve(async (req) => {
-  /* Nur mit Service-Rolle oder Cron-Geheimnis aufrufbar. */
-  const auth = req.headers.get('authorization') || '';
+  /* ── Wer darf die Funktion aufrufen? ───────────────────────────
+     Am Gateway ist "Verify JWT with legacy secret" eingeschaltet,
+     die Signatur ist also schon geprueft, wenn wir hier ankommen.
+     Der anon-Schluessel steht aber offen in index.html — deshalb
+     muss zusaetzlich die Rolle stimmen.
+
+     Zwei erlaubte Formen:
+       a) der Schluessel aus SUPABASE_SERVICE_ROLE_KEY (neues
+          sb_secret-Format, direkter Vergleich)
+       b) der Legacy-JWT mit role = service_role
+
+     WICHTIG: "Verify JWT with legacy secret" muss eingeschaltet
+     bleiben. Ohne die Signaturpruefung am Gateway koennte sonst
+     jeder ein JWT mit role=service_role zusammenbasteln.
+     ─────────────────────────────────────────────────────────── */
   const dienst = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-  if(!dienst || auth !== 'Bearer ' + dienst){
+  if(!dienst){
+    return new Response('SUPABASE_SERVICE_ROLE_KEY nicht verfuegbar', { status: 500 });
+  }
+
+  const mitgebracht = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
+
+  function darfRein(t: string): boolean {
+    if(!t) return false;
+    if(t === dienst) return true;                 /* a) */
+    const teile = t.split('.');                   /* b) */
+    if(teile.length !== 3) return false;
+    try{
+      const roh = teile[1].replace(/-/g, '+').replace(/_/g, '/');
+      const p = JSON.parse(atob(roh + '='.repeat((4 - roh.length % 4) % 4)));
+      return p.role === 'service_role';
+    }catch(_e){ return false; }
+  }
+
+  if(!darfRein(mitgebracht)){
     return new Response('nein', { status: 401 });
   }
 
   const sb = createClient(Deno.env.get('SUPABASE_URL')!, dienst);
   const key = Deno.env.get('RESEND_API_KEY');
-  const von = Deno.env.get('MAIL_VON') || 'MOJI <hallo@moji-app.at>';
+  const von = Deno.env.get('MAIL_VON') || 'MOJI <no-reply@moji-app.at>';
+  const antwortAn = Deno.env.get('MAIL_ANTWORT') || 'maru.arbeitszeiten@gmail.com';
   if(!key) return new Response('RESEND_API_KEY fehlt', { status: 500 });
 
   const heute = new Date();
@@ -129,6 +170,7 @@ Deno.serve(async (req) => {
         headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: von, to: [mail],
+          reply_to: [antwortAn],
           subject: betreff(monat),
           text: textFassung(vorname, monat),
           html: htmlFassung(vorname, monat)
