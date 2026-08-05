@@ -1301,38 +1301,119 @@ body.nobar #v-onboard{padding-top:14px}
 .mrang small{display:block;font-size:10.5px;color:var(--tx-3);letter-spacing:0}
 .mrang.gold .mr-lvl{box-shadow:0 0 16px -2px var(--rf)}
 
-.mk{position:relative;overflow:hidden;border-radius:20px;padding:16px 16px 14px;margin-top:4px;
-  border:1px solid var(--rfl,rgba(143,160,200,.5));
-  background:
-    radial-gradient(120% 90% at 8% 0%,var(--rft2,rgba(143,160,200,.26)),transparent 62%),
-    linear-gradient(160deg,var(--rfd,rgba(92,106,148,.42)),#0B1026 78%)}
-.mk-glanz{position:absolute;inset:0;pointer-events:none;opacity:0;
-  background:linear-gradient(105deg,transparent 34%,rgba(255,255,255,.16) 48%,transparent 62%)}
-.mk.glanz .mk-glanz{opacity:1}
-.mk.lauf .mk-glanz{animation:mkGlanz 4.6s linear infinite}
-@keyframes mkGlanz{from{transform:translateX(-70%)}to{transform:translateX(70%)}}
-.mk.gold{box-shadow:0 0 44px -18px var(--rf),inset 0 0 40px -22px var(--rf)}
-.mk-kopf{position:relative;display:flex;align-items:center;gap:12px}
-.mk-bild{flex:none;width:60px;height:60px;border-radius:30%;overflow:hidden;background:#fff;
-  border:1.5px solid var(--rfl,rgba(143,160,200,.5));
-  box-shadow:0 10px 22px -12px rgba(0,0,0,.8)}
+/* ─── Mitgliedschaftskarte, Vollformat ─────────────────────────────────
+   Die Karte ist hell und pastellig — das ist der bewusste Bruch zum dunklen
+   Rest der App, damit sie wie ein Gegenstand wirkt und nicht wie eine
+   weitere Ansicht. Farben kommen aus der Stufe: --pa hell, --pb etwas
+   satter, --rf voll für Akzente. */
+.mkv{position:fixed;inset:0;z-index:58;display:none;place-items:center;
+  background:radial-gradient(circle at 50% 30%,rgba(20,32,74,.96),rgba(6,10,26,.99) 70%);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.mkv.on{display:grid;animation:mkvRein .42s var(--ease-out)}
+.mkv.weg{animation:mkvWeg .3s var(--ease) forwards}
+@keyframes mkvRein{from{opacity:0}}
+@keyframes mkvWeg{to{opacity:0}}
+/* Drei weiche Farbwolken im Hintergrund, die sehr langsam wandern. */
+.mkv-luft{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.mkv-luft i{position:absolute;display:block;border-radius:50%;filter:blur(46px);opacity:.5}
+.mkv-luft i:nth-child(1){width:58vw;height:58vw;left:-18vw;top:-8vh;background:var(--pb,#9fb6e8);
+  animation:wolke1 19s ease-in-out infinite alternate}
+.mkv-luft i:nth-child(2){width:46vw;height:46vw;right:-14vw;top:28vh;background:var(--rf,#8FA0C8);
+  animation:wolke2 23s ease-in-out infinite alternate}
+.mkv-luft i:nth-child(3){width:52vw;height:52vw;left:6vw;bottom:-16vh;background:var(--pa,#e6ecfa);
+  animation:wolke3 27s ease-in-out infinite alternate;opacity:.34}
+@keyframes wolke1{to{transform:translate(9vw,7vh) scale(1.14)}}
+@keyframes wolke2{to{transform:translate(-8vw,-6vh) scale(1.2)}}
+@keyframes wolke3{to{transform:translate(5vw,-5vh) scale(1.1)}}
+
+.mkv-in{position:relative;width:min(92vw,392px);max-height:100vh;overflow-y:auto;padding:14px 0;
+  display:flex;flex-direction:column;gap:14px}
+.mkv-akt{display:flex;gap:10px;padding:0 2px 6px}
+.mkv-akt .btn{flex:1}
+
+.mk{position:relative;overflow:hidden;border-radius:26px;color:#141B3A;
+  background:linear-gradient(168deg,var(--pa,#eef2fb) 0%,var(--pb,#d8e2f7) 58%,var(--pa,#eef2fb) 100%);
+  box-shadow:0 34px 70px -28px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.5) inset;
+  animation:mkRein .78s var(--ease-out) both}
+@keyframes mkRein{
+  0%{opacity:0;transform:scale(.86) rotate(-2.6deg) translateY(18px)}
+  62%{opacity:1;transform:scale(1.02) rotate(.7deg)}
+  100%{opacity:1;transform:none}
+}
+.mk-glanz{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(102deg,transparent 36%,rgba(255,255,255,.55) 48%,transparent 60%);
+  animation:mkGlanz 5.2s 1.1s linear infinite}
+@keyframes mkGlanz{from{transform:translateX(-80%)}to{transform:translateX(80%)}}
+/* Funken nur ganz oben — kleine Sterne, die aufblitzen. */
+.mk-funken{position:absolute;inset:0;pointer-events:none;opacity:0}
+.mk.gold .mk-funken{opacity:1}
+.mk-funken i{position:absolute;width:7px;height:7px;background:#fff;opacity:0;
+  clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);
+  animation:funke 2.8s ease-in-out infinite}
+.mk-funken i:nth-child(1){left:14%;top:22%;animation-delay:.2s}
+.mk-funken i:nth-child(2){right:18%;top:38%;animation-delay:1.1s;width:9px;height:9px}
+.mk-funken i:nth-child(3){left:62%;top:12%;animation-delay:1.9s}
+@keyframes funke{0%,72%,100%{opacity:0;transform:scale(.4)}84%{opacity:.95;transform:scale(1)}}
+
+.mk-kopf{position:relative;display:flex;align-items:center;gap:13px;padding:18px 18px 0}
+.mk-bild{flex:none;width:74px;height:74px;border-radius:30%;overflow:hidden;background:#fff;
+  border:2.5px solid rgba(255,255,255,.9);
+  box-shadow:0 12px 26px -12px rgba(20,27,58,.55),0 0 0 3px var(--rf,#8FA0C8);
+  animation:mkWippe 3.4s ease-in-out infinite alternate}
+@keyframes mkWippe{from{transform:translateY(0) rotate(-1.4deg)}to{transform:translateY(-5px) rotate(1.6deg)}}
 .mk-bild img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block}
 .mk-txt{flex:1;min-width:0}
-.mk-txt b{display:block;font-family:var(--font-dis);font-weight:400;font-size:19px;letter-spacing:-.01em;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mk-txt i{display:block;font-style:normal;font-size:11.5px;color:var(--rf,#8FA0C8);
-  letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
-.mk-lvl{flex:none;align-self:flex-start;font-size:10px;font-weight:700;letter-spacing:.12em;
-  padding:4px 8px;border-radius:8px;color:#0B1026;background:var(--rf,#8FA0C8)}
-.mk-zeilen{position:relative;margin-top:14px;border-top:1px solid rgba(255,255,255,.09);padding-top:4px}
-.mkz{display:flex;align-items:baseline;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.055)}
+.mk-txt i{display:block;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.19em;
+  text-transform:uppercase;color:var(--rd,#5C6A94)}
+.mk-txt b{display:block;font-family:var(--font-dis);font-weight:400;font-size:22px;line-height:1.1;
+  letter-spacing:-.015em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mk-txt small{display:block;font-size:11px;color:rgba(20,27,58,.55);margin-top:2px}
+.mk-lvl{flex:none;align-self:flex-start;font-size:10px;font-weight:800;letter-spacing:.1em;
+  padding:5px 9px;border-radius:9px;color:#fff;background:var(--rd,#5C6A94);
+  box-shadow:0 6px 16px -8px var(--rd,#5C6A94)}
+.mk.gold .mk-lvl{color:#3A2A00;background:linear-gradient(140deg,#FFE9A3,var(--rf));
+  box-shadow:0 0 18px -3px var(--rf)}
+
+/* Die Zeitersparnis ist die Hauptsache — also größer als alles andere. */
+.mk-held{position:relative;display:flex;align-items:center;gap:13px;margin:16px 18px 0;
+  padding:13px 14px;border-radius:18px;background:rgba(255,255,255,.66);
+  box-shadow:0 10px 24px -18px rgba(20,27,58,.7)}
+.mk-ico{flex:none;width:44px;height:44px;display:grid;place-items:center;border-radius:14px;
+  background:var(--rf,#8FA0C8);color:#fff;animation:mkWackel 2.6s ease-in-out infinite}
+.mk-ico svg{width:24px;height:24px}
+@keyframes mkWackel{0%,100%{transform:rotate(-7deg) scale(1)}50%{transform:rotate(7deg) scale(1.07)}}
+.mk-held-t{flex:1;min-width:0}
+.mk-held-t u{display:block;text-decoration:none;font-size:8.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(20,27,58,.45)}
+.mk-held-t b{display:block;font-family:var(--font-dis);font-weight:400;font-size:26px;line-height:1.1;
+  letter-spacing:-.02em;margin:1px 0 2px}
+.mk-held-t em{display:block;font-family:var(--font-dis);font-style:italic;font-size:13px;line-height:1.35;
+  color:rgba(20,27,58,.72)}
+
+.mk-leiter{position:relative;margin:13px 18px 0}
+.mk-schiene{display:block;height:7px;border-radius:99px;overflow:hidden;background:rgba(20,27,58,.1)}
+.mk-bar{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--rd,#5C6A94),var(--rf,#8FA0C8));
+  transition:width 1.1s .35s var(--ease-out)}
+.mk-leiter small{display:block;margin-top:5px;font-size:10px;color:rgba(20,27,58,.5)}
+
+.mk-zeilen{position:relative;margin:12px 18px 16px}
+.mkz{display:flex;align-items:baseline;gap:10px;padding:7px 0;
+  border-bottom:1px solid rgba(20,27,58,.09);opacity:0;
+  animation:fadeUp .5s var(--ease-out) both}
+.mkz:nth-child(1){animation-delay:.3s}
+.mkz:nth-child(2){animation-delay:.38s}
+.mkz:nth-child(3){animation-delay:.46s}
+.mkz:nth-child(4){animation-delay:.54s}
 .mkz:last-child{border-bottom:0}
-.mkz u{flex:none;width:118px;text-decoration:none;font-size:9.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--tx-3)}
+.mkz u{flex:none;width:112px;text-decoration:none;font-size:8.5px;letter-spacing:.17em;
+  text-transform:uppercase;color:rgba(20,27,58,.45)}
 .mkz b{flex:1;font-size:13px;font-weight:600}
-.mk-fuss{position:relative;margin-top:12px;display:flex;flex-direction:column;gap:5px}
-.mk-fuss span{font-family:var(--font-dis);font-style:italic;font-size:13px;color:var(--tx-2)}
-.mk-fuss em{font-style:normal;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3)}
+
+.mk-band{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 18px;background:#0C1228}
+.mk-wort{height:17px;width:auto;display:block}
+.mk-band span{font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;color:rgba(238,242,255,.5)}
 
 .rl{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:13px;margin-bottom:7px;
   border:1px solid var(--line-2);
@@ -2111,25 +2192,52 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   </div>
 </div>
 
-<!-- Mitgliedschaftskarte -->
-<div class="sheet" id="ksheet">
-  <div class="sheet-bd" data-close="ksheet"></div>
-  <div class="sheet-card" id="kcard">
-    <div class="sheet-grab" id="k-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
-    <h3>Mitgliedschaftskarte</h3>
-    <p class="sd">Dein Stand in MOJI, auf einer Karte.</p>
+<!-- Mitgliedschaftskarte, Vollformat. Pastell, weil sie neben dem dunklen
+     Rest der App wie eine echte Karte in der Hand wirken soll. -->
+<div class="mkv" id="mkv" aria-hidden="true">
+  <div class="mkv-luft" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="mkv-in">
     <div class="mk" id="mk">
       <div class="mk-glanz" aria-hidden="true"></div>
+      <div class="mk-funken" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="mk-kopf">
         <span class="mk-bild"><img id="mk-img" alt=""></span>
-        <span class="mk-txt"><b id="mk-name">—</b><i id="mk-rang">—</i></span>
+        <span class="mk-txt">
+          <i id="mk-rang">—</i>
+          <b id="mk-name">—</b>
+          <small id="mk-firma">—</small>
+        </span>
         <span class="mk-lvl" id="mk-lvl">LVL 1</span>
       </div>
+
+      <div class="mk-held">
+        <span class="mk-ico" id="mk-ico"></span>
+        <span class="mk-held-t">
+          <u>Zeit gespart</u>
+          <b id="mk-zeit">—</b>
+          <em id="mk-verg">—</em>
+        </span>
+      </div>
+
+      <div class="mk-leiter">
+        <span class="mk-schiene"><span class="mk-bar" id="mk-bar"></span></span>
+        <small id="mk-rest">—</small>
+      </div>
+
       <div class="mk-zeilen" id="mk-zeilen"></div>
-      <div class="mk-fuss"><span id="mk-wort">—</span><em>MOJI · Studio MARU 丸</em></div>
+
+      <div class="mk-band">
+        <img class="mk-wort" id="mk-wort" alt="MOJI">
+        <span>Mehr Zeit fürs Wesentliche.</span>
+      </div>
     </div>
-    <div class="sheet-actions">
-      <button class="btn btn-g" data-close="ksheet">Schließen</button>
+
+    <div class="mkv-akt">
+      <button class="btn btn-p" id="mk-teilen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v4.5A1.5 1.5 0 006.5 20h11a1.5 1.5 0 001.5-1.5V14"/></svg>
+        Karte teilen
+      </button>
+      <button class="btn btn-g" id="mk-zu">Schließen</button>
     </div>
   </div>
 </div>
@@ -3795,10 +3903,21 @@ function rgba(hex, a){
   const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
   return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
 }
+/* Für die helle Karte braucht es Pastelltöne: dieselbe Farbe, aber weit
+   in Richtung Weiß gezogen. Und ein dunkler Ton für Text auf Hellgrund. */
+function mischWeiss(hex, weiss){
+  const h = hex.replace('#','');
+  const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+  const m = k => Math.round(k + (255 - k) * weiss);
+  const q = k => ('0' + k.toString(16)).slice(-2);
+  return '#' + q(m((n >> 16) & 255)) + q(m((n >> 8) & 255)) + q(m(n & 255));
+}
 function rangVars(r){
   return { '--rf':r.a, '--rf2':r.b,
     '--rft':rgba(r.a, .16), '--rft2':rgba(r.a, .26),
-    '--rfl':rgba(r.a, .5),  '--rfd':rgba(r.b, .42) };
+    '--rfl':rgba(r.a, .5),  '--rfd':rgba(r.b, .42),
+    '--pa':mischWeiss(r.a, .84), '--pb':mischWeiss(r.a, .58),
+    '--rd':r.b };
 }
 function faerbe(el, nr){
   const r = rang(nr);
@@ -3837,38 +3956,289 @@ function malRang(){
   malVerlaufKnopf();
 }
 
+/* Kleine Symbole für die Vergleiche — bewusst schlicht, damit sie in einem
+   Kästchen von 24 Pixeln noch lesbar sind. */
+const VS = {
+  uhr:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  eis:'<path d="M8 9.5a4 4 0 018 0"/><path d="M7.6 10.5h8.8L12 21z"/><circle cx="12" cy="6.2" r="2.2"/>',
+  kaffee:'<path d="M4 8h12v5a5 5 0 01-5 5H9a5 5 0 01-5-5z"/><path d="M16 9.5h2.4a2.1 2.1 0 010 4.2H16"/><path d="M5 21h11"/>',
+  kuchen:'<path d="M4 20h16v-6H4z"/><path d="M4 14c0-2 3.6-3.2 8-3.2s8 1.2 8 3.2"/><path d="M12 10.5V7"/><circle cx="12" cy="5.4" r="1.5"/>',
+  tv:'<rect x="3" y="7" width="18" height="11.5" rx="2.2"/><path d="M8.5 4l3.5 3 3.5-3"/>',
+  mond:'<path d="M20 14.5A8 8 0 019.5 4a8.2 8.2 0 1010.5 10.5z"/>',
+  film:'<rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="M8 5.5v13M16 5.5v13M3 12h18"/>',
+  berg:'<path d="M3 19l6-11 4 7 2-3 6 7z"/><path d="M9 8l2.2 4"/>',
+  buch:'<path d="M4 5.5h6a2.5 2.5 0 012.5 2.5V20a2 2 0 00-2-2H4z"/><path d="M20 5.5h-6A2.5 2.5 0 0011.5 8V20a2 2 0 012-2H20z"/>',
+  welle:'<path d="M3 9c2.5-2 4.5 2 7 0s4.5 2 7 0"/><path d="M3 14c2.5-2 4.5 2 7 0s4.5 2 7 0"/><path d="M3 19c2.5-2 4.5 2 7 0s4.5 2 7 0"/>',
+  koffer:'<rect x="3" y="8" width="18" height="11" rx="2.2"/><path d="M9 8V6a2 2 0 012-2h2a2 2 0 012 2v2"/><path d="M3 13h18"/>',
+  auto:'<path d="M4 16v-3.2L6 8h12l2 4.8V16"/><path d="M3 16h18"/><circle cx="7.5" cy="18" r="1.6"/><circle cx="16.5" cy="18" r="1.6"/>',
+  sonne:'<circle cx="12" cy="12" r="4.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/>',
+  herz:'<path d="M12 20s-7-4.4-7-9.2A3.9 3.9 0 0112 8.4 3.9 3.9 0 0119 10.8c0 4.8-7 9.2-7 9.2z"/>'
+};
+function vsIco(k){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
+    + 'stroke-linecap="round" stroke-linejoin="round">' + (VS[k] || VS.uhr) + '</svg>';
+}
+
+/* Was hätte man in der gesparten Zeit anstellen können? Immer nur der eine
+   Vergleich, der gerade passt — die nächsten bleiben eine Überraschung.
+   Die Leiter reicht absichtlich weit hinauf. */
+const VERGLEICHE = [
+  [0,     'uhr',    'Der erste Export wartet noch auf dich.'],
+  [5,     'eis',    'eine Kugel Eis in Ruhe schlecken'],
+  [13,    'eis',    'zwei Kugeln Eis, ganz ohne Hetze'],
+  [20,    'eis',    'vier Kugeln Eis essen'],
+  [30,    'kaffee', 'einen Kaffee trinken und aus dem Fenster schauen'],
+  [45,    'kuchen', 'einen Kuchen backen'],
+  [60,    'tv',     'eine Folge deiner Serie schauen'],
+  [90,    'mond',   'ein Nickerchen, das sich auszahlt'],
+  [120,   'film',   'einen ganzen Kinofilm ansehen'],
+  [180,   'berg',   'auf den Hausberg wandern'],
+  [240,   'buch',   'ein halbes Buch lesen'],
+  [300,   'welle',  'einen Nachmittag am See'],
+  [420,   'mond',   'einmal richtig ausschlafen'],
+  [600,   'koffer', 'einen ganzen Arbeitstag freinehmen'],
+  [900,   'auto',   'die Fahrt an die Adria'],
+  [1440,  'sonne',  'einen Tag ohne einen einzigen Termin'],
+  [2880,  'koffer', 'ein langes Wochenende'],
+  [4320,  'welle',  'drei Tage Urlaub'],
+  [10080, 'sonne',  'eine ganze Woche Urlaub'],
+  [20160, 'herz',   'zwei Wochen Urlaub — und MOJI trägt sie mit']
+];
+function vergleich(min){
+  let v = VERGLEICHE[0];
+  for(let i = 0; i < VERGLEICHE.length; i++) if(min >= VERGLEICHE[i][0]) v = VERGLEICHE[i];
+  return { ico:v[1], text:v[2] };
+}
+
 /* Die Karte */
 function malKarte(){
   const nr = stufe(), r = rang(nr), anzahl = expAnzahl();
-  const karte = $('#mk');
+  const karte = $('#mk'), buehne = $('#mkv');
   faerbe(karte, nr);
+  faerbe(buehne, nr);                      /* die Farbwolken im Hintergrund */
   $('#mk-img').src = avDatei(avNummer());
   $('#mk-name').textContent = ME.vorname + ' ' + ME.nachname;
-  $('#mk-rang').textContent = r.n;
+  $('#mk-rang').textContent = 'Stufe ' + nr + ' · ' + r.n;
+  $('#mk-firma').textContent = EMPLOYER;
   $('#mk-lvl').textContent = 'LVL ' + nr;
+  if(!$('#mk-wort').getAttribute('src')) $('#mk-wort').src = LOGO_WORD;
+
+  const min = gespartMin(), v = vergleich(min);
+  $('#mk-zeit').textContent = anzahl ? fmtDauer(min) : 'noch nichts';
+  $('#mk-verg').textContent = anzahl ? 'Das reicht für ' + v.text + '.' : v.text;
+  $('#mk-ico').innerHTML = vsIco(v.ico);
+
+  $('#mk-bar').style.width = '0%';
+  const rest = nochBis();
+  $('#mk-rest').textContent = rest
+    ? 'noch ' + rest + (rest === 1 ? ' Monat' : ' Monate') + ' bis ' + rang(nr + 1).n
+    : 'höchste Stufe erreicht — mehr geht nicht';
+
   const letzter = expVerlauf(1)[0];
-  const zeilen = [
-    ['Firma', EMPLOYER],
+  $('#mk-zeilen').innerHTML = [
     ['Mitglied seit', seitText()],
     ['Aufzeichnungen', anzahl + (anzahl === 1 ? ' Monat' : ' Monate')],
-    ['Zeit gespart', anzahl ? fmtDauer(gespartMin()) : '—'],
-    ['Zuletzt', letzter ? fmtMonatJahr(letzter.y, letzter.m) : 'noch nichts exportiert']
-  ];
-  $('#mk-zeilen').innerHTML = zeilen.map(z =>
-    '<div class="mkz"><u>' + z[0] + '</u><b>' + esc(z[1]) + '</b></div>').join('');
-  $('#mk-wort').textContent = r.w;
+    ['Zuletzt', letzter ? fmtMonatJahr(letzter.y, letzter.m) : 'noch nichts abgegeben'],
+    ['Rang', r.w]
+  ].map(z => '<div class="mkz"><u>' + z[0] + '</u><b>' + esc(z[1]) + '</b></div>').join('');
 }
 function karteAuf(){
-  if($('#ksheet').classList.contains('on')) return;
+  const b = $('#mkv');
+  if(b.classList.contains('on')) return;
   malKarte();
-  if(window.__kReset) window.__kReset();
-  $('#kcard').scrollTop = 0;
-  $('#ksheet').classList.add('on');
+  b.classList.remove('weg');
+  const karte = $('#mk');
+  karte.style.animation = 'none'; void karte.offsetWidth; karte.style.animation = '';
+  b.classList.add('on');
   document.body.classList.add('locked');
+  /* Die Leiste füllt sich erst, wenn die Karte steht — dann sieht man es. */
+  requestAnimationFrame(() => {
+    $('#mk-bar').style.width = Math.round(stufeAnteil() * 100) + '%';
+  });
 }
 function karteZu(){
-  $('#ksheet').classList.remove('on');
+  const b = $('#mkv');
+  if(!b.classList.contains('on')) return;
+  b.classList.add('weg');
+  setTimeout(() => { b.classList.remove('on','weg'); }, 310);
   document.body.classList.remove('locked');
+}
+
+/* ─── Teilen ───────────────────────────────────────────────────────────
+   Am liebsten als Bild: das ist das, was man herzeigen will. Kann das Gerät
+   keine Dateien teilen, geht der Text raus, und im Notfall in die Ablage. */
+const MOJI_LINK = 'https://marcoreimair1.github.io/simply/';
+function teilText(){
+  const nr = stufe(), r = rang(nr), anzahl = expAnzahl(), v = vergleich(gespartMin());
+  const zeilen = [
+    'Ich bin bei MOJI auf Stufe ' + nr + ' — ' + r.n + '.',
+    anzahl
+      ? anzahl + (anzahl === 1 ? ' Monat' : ' Monate') + ' Arbeitszeit ohne einen einzigen Zettel. '
+        + 'Gespart: ' + fmtDauer(gespartMin()) + ' — genug für ' + v.text + '.'
+      : 'Gerade erst beigetreten.',
+    '',
+    'Magst du auch? MOJI zeichnet deine Arbeitszeit auf und macht daraus ein fertiges PDF.',
+    'Gratis, ohne Passwort, direkt am Handy: ' + MOJI_LINK,
+    'Mehr Zeit fürs Wesentliche. — Eine App von Studio MARU 丸'
+  ];
+  return zeilen.join('\n');
+}
+/* Zeichnet die Karte auf eine Leinwand. Alles von Hand — so sieht das Bild
+   überall gleich aus, egal wie das Gerät die Seite darstellt. */
+async function karteBild(){
+  const B = 1080, H = 1350, nr = stufe(), r = rang(nr), anzahl = expAnzahl();
+  const cv = document.createElement('canvas');
+  cv.width = B; cv.height = H;
+  const c = cv.getContext('2d');
+  if(!c) return null;
+  try{ if(document.fonts && document.fonts.ready) await document.fonts.ready; }catch(e){}
+
+  const pa = mischWeiss(r.a, .84), pb = mischWeiss(r.a, .58);
+  /* Hintergrund */
+  const g = c.createLinearGradient(0, 0, B, H);
+  g.addColorStop(0, mischWeiss(r.b, .22)); g.addColorStop(1, '#0B1026');
+  c.fillStyle = g; c.fillRect(0, 0, B, H);
+  const wolke = (x, y, rad, farbe, a) => {
+    const rg = c.createRadialGradient(x, y, 0, x, y, rad);
+    rg.addColorStop(0, rgba(farbe, a)); rg.addColorStop(1, rgba(farbe, 0));
+    c.fillStyle = rg; c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.fill();
+  };
+  wolke(150, 190, 460, r.a, .5); wolke(950, 560, 420, r.b, .45); wolke(560, 1240, 500, r.a, .3);
+
+  /* Karte */
+  const kx = 84, ky = 150, kb = B - 168, kh = 1010, rad = 58;
+  const rrect = (x, y, w, h, rr) => {
+    c.beginPath();
+    c.moveTo(x + rr, y); c.lineTo(x + w - rr, y); c.quadraticCurveTo(x + w, y, x + w, y + rr);
+    c.lineTo(x + w, y + h - rr); c.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+    c.lineTo(x + rr, y + h); c.quadraticCurveTo(x, y + h, x, y + h - rr);
+    c.lineTo(x, y + rr); c.quadraticCurveTo(x, y, x + rr, y); c.closePath();
+  };
+  c.save();
+  c.shadowColor = 'rgba(0,0,0,.55)'; c.shadowBlur = 90; c.shadowOffsetY = 36;
+  const kg = c.createLinearGradient(kx, ky, kx + kb, ky + kh);
+  kg.addColorStop(0, pa); kg.addColorStop(.58, pb); kg.addColorStop(1, pa);
+  c.fillStyle = kg; rrect(kx, ky, kb, kh, rad); c.fill();
+  c.restore();
+
+  /* Profilbild */
+  const bild = await new Promise(res => {
+    const i = new Image();
+    i.onload = () => res(i); i.onerror = () => res(null);
+    i.src = avDatei(avNummer());
+  });
+  const bx = kx + 56, by = ky + 62, bs = 200;
+  c.save(); rrect(bx, by, bs, bs, 62); c.clip();
+  c.fillStyle = '#fff'; c.fillRect(bx, by, bs, bs);
+  if(bild){
+    /* derselbe Ausschnitt wie überall: Breite füllt, senkrecht bei 86 % */
+    const f = bs / bild.width, hh = bild.height * f;
+    c.drawImage(bild, bx, by - (hh - bs) * .86, bs, hh);
+  }
+  c.restore();
+  c.lineWidth = 9; c.strokeStyle = r.a; rrect(bx - 5, by - 5, bs + 10, bs + 10, 66); c.stroke();
+
+  /* Kopftexte */
+  const tx = bx + bs + 34;
+  c.fillStyle = r.b; c.font = '700 26px Inter, sans-serif'; c.textBaseline = 'alphabetic';
+  c.fillText(('Stufe ' + nr + ' · ' + r.n).toUpperCase(), tx, by + 46);
+  c.fillStyle = '#141B3A'; c.font = '400 62px Fraunces, Georgia, serif';
+  c.fillText(ME.vorname + ' ' + ME.nachname, tx, by + 118);
+  c.fillStyle = 'rgba(20,27,58,.55)'; c.font = '400 28px Inter, sans-serif';
+  c.fillText(EMPLOYER, tx, by + 164);
+
+  /* Zeitersparnis */
+  const hx = kx + 56, hy = by + bs + 56, hb = kb - 112, hh2 = 210;
+  c.fillStyle = 'rgba(255,255,255,.7)'; rrect(hx, hy, hb, hh2, 44); c.fill();
+  c.fillStyle = 'rgba(20,27,58,.45)'; c.font = '600 22px Inter, sans-serif';
+  c.fillText('ZEIT GESPART', hx + 40, hy + 56);
+  c.fillStyle = '#141B3A'; c.font = '400 68px Fraunces, Georgia, serif';
+  c.fillText(anzahl ? fmtDauer(gespartMin()) : 'noch nichts', hx + 40, hy + 126);
+  const v = vergleich(gespartMin());
+  c.fillStyle = 'rgba(20,27,58,.72)'; c.font = 'italic 400 30px Fraunces, Georgia, serif';
+  const satz = anzahl ? 'Das reicht für ' + v.text + '.' : v.text;
+  /* Umbruch von Hand, damit nichts über den Rand läuft */
+  const worte = satz.split(' ');
+  let zeile = '', zy = hy + 176;
+  worte.forEach(wo => {
+    const probe = zeile ? zeile + ' ' + wo : wo;
+    if(c.measureText(probe).width > hb - 80 && zeile){
+      c.fillText(zeile, hx + 40, zy); zeile = wo; zy += 38;
+    } else zeile = probe;
+  });
+  if(zeile) c.fillText(zeile, hx + 40, zy);
+
+  /* Kennzahlen */
+  const letzter = expVerlauf(1)[0];
+  const zeilen = [
+    ['MITGLIED SEIT', seitText()],
+    ['AUFZEICHNUNGEN', anzahl + (anzahl === 1 ? ' Monat' : ' Monate')],
+    ['ZULETZT', letzter ? fmtMonatJahr(letzter.y, letzter.m) : 'noch nichts abgegeben']
+  ];
+  let zy2 = Math.max(zy + 96, hy + hh2 + 84);
+  zeilen.forEach(z => {
+    c.fillStyle = 'rgba(20,27,58,.45)'; c.font = '600 21px Inter, sans-serif';
+    c.fillText(z[0], hx + 4, zy2);
+    c.fillStyle = '#141B3A'; c.font = '600 30px Inter, sans-serif';
+    c.fillText(z[1], hx + 300, zy2);
+    c.strokeStyle = 'rgba(20,27,58,.1)'; c.lineWidth = 2;
+    c.beginPath(); c.moveTo(hx + 4, zy2 + 24); c.lineTo(hx + hb - 4, zy2 + 24); c.stroke();
+    zy2 += 74;
+  });
+
+  /* Band unten mit der Wortmarke */
+  const band = 96, byy = ky + kh - band;
+  c.save(); rrect(kx, ky, kb, kh, rad); c.clip();
+  c.fillStyle = '#0C1228'; c.fillRect(kx, byy, kb, band);
+  const wort = await new Promise(res => {
+    const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = LOGO_WORD;
+  });
+  if(wort){
+    const wh = 40, ww = wort.width / wort.height * wh;
+    c.drawImage(wort, kx + 44, byy + (band - wh) / 2, ww, wh);
+  }
+  c.fillStyle = 'rgba(238,242,255,.5)'; c.font = '600 20px Inter, sans-serif';
+  c.textAlign = 'right';
+  c.fillText('MEHR ZEIT FÜRS WESENTLICHE', kx + kb - 44, byy + band / 2 + 8);
+  c.textAlign = 'left';
+  c.restore();
+
+  /* Einladung unter der Karte */
+  c.fillStyle = 'rgba(255,255,255,.92)'; c.font = '600 34px Inter, sans-serif';
+  c.textAlign = 'center';
+  c.fillText('Auch mitmachen? Gratis unter', B / 2, ky + kh + 76);
+  c.fillStyle = r.a; c.font = '700 34px Inter, sans-serif';
+  c.fillText('marcoreimair1.github.io/simply', B / 2, ky + kh + 126);
+  c.textAlign = 'left';
+
+  return await new Promise(res => {
+    try{
+      cv.toBlob(b => res(b ? new File([b], 'moji-karte.png', { type:'image/png' }) : null), 'image/png');
+    }catch(e){ res(null); }
+  });
+}
+async function teileKarte(){
+  const text = teilText();
+  let datei = null;
+  try{ datei = await karteBild(); }catch(e){ console.warn('Kartenbild nicht möglich', e); }
+  if(datei && navigator.canShare && navigator.share){
+    try{
+      if(navigator.canShare({ files:[datei] })){
+        await navigator.share({ files:[datei], text:text });
+        return;
+      }
+    }catch(e){ if(e && e.name === 'AbortError') return; console.warn(e); }
+  }
+  if(navigator.share){
+    try{ await navigator.share({ text:text, url:MOJI_LINK }); return; }
+    catch(e){ if(e && e.name === 'AbortError') return; console.warn(e); }
+  }
+  try{
+    await navigator.clipboard.writeText(text);
+    toast('Text kopiert — jetzt einfügen und abschicken');
+    return;
+  }catch(e){}
+  toast('Teilen geht auf diesem Gerät leider nicht');
 }
 
 /* Alle Ränge untereinander */
@@ -4021,7 +4391,8 @@ function pfZu(){
   document.body.classList.remove('locked');
 }
 $('#postfach').addEventListener('click', pfAuf);
-$('#ksheet').addEventListener('click', e => { if(e.target.dataset.close === 'ksheet') karteZu(); });
+$('#mk-zu').addEventListener('click', karteZu);
+$('#mk-teilen').addEventListener('click', teileKarte);
 $('#rsheet').addEventListener('click', e => { if(e.target.dataset.close === 'rsheet') rangZu(); });
 $('#vsheet').addEventListener('click', e => { if(e.target.dataset.close === 'vsheet') verlaufZu(); });
 $('#ex-histbtn').addEventListener('click', verlaufAuf);
@@ -4541,7 +4912,6 @@ window.__sheetReset = wireSheetDrag('sh-grab', 'sheet', closeSheet);
 window.__qReset     = wireSheetDrag('q-grab',  'qsheet', quickClose);
 window.__mReset     = wireSheetDrag('m-grab',  'msheet', msZu);
 window.__pfReset    = wireSheetDrag('pf-grab', 'pfsheet', pfZu);
-window.__kReset     = wireSheetDrag('k-grab',  'ksheet',  karteZu);
 window.__rReset     = wireSheetDrag('r-grab',  'rsheet',  rangZu);
 window.__vReset     = wireSheetDrag('v-grab',  'vsheet',  verlaufZu);
 $('#sh-opts').addEventListener('click', e => {
