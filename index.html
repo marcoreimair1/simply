@@ -1277,6 +1277,79 @@ body.nobar #v-onboard{padding-top:14px}
 .hallo-s{display:block;margin-top:10px;font-size:clamp(14px,4vw,16px);color:var(--tx-2);
   animation:fadeUp .6s .5s var(--ease-out) both}
 
+/* ─── Stufe, Karte, Rangliste ───────────────────────────────────────────
+   Jede Stufe bringt zwei Farben mit (--rf hell, --rf2 dunkel). Ab Stufe 8
+   kommt ein Schimmer dazu, ab 10 wandert er, bei 12 ist er golden. So
+   unterscheiden sich die Ränge ohne zwölf Sonderregeln. */
+.mrang{display:block;width:100%;text-align:left;padding:12px 13px 11px;border-radius:var(--r-s);
+  border:1px solid var(--line-2);margin-bottom:6px;transition:.2s;
+  background:linear-gradient(135deg,var(--rft,rgba(143,160,200,.16)),transparent 70%)}
+.mrang:hover{border-color:var(--rf,#8FA0C8)}
+.mrang:active{transform:scale(.985)}
+.mr-kopf{display:flex;align-items:center;gap:9px}
+.mr-lvl{flex:none;font-size:9.5px;font-weight:700;letter-spacing:.13em;padding:3px 7px;border-radius:7px;
+  color:#0B1026;background:var(--rf,#8FA0C8)}
+.mr-kopf b{font-size:13.5px;color:var(--tx)}
+.mr-schiene{display:block;height:6px;border-radius:99px;margin:9px 0 7px;overflow:hidden;
+  background:rgba(255,255,255,.08)}
+.mr-bar{display:block;height:100%;border-radius:99px;width:0;
+  background:linear-gradient(90deg,var(--rf2,#5C6A94),var(--rf,#8FA0C8));
+  transition:width .9s var(--ease-out)}
+.mrang small{display:block;font-size:10.5px;color:var(--tx-3);letter-spacing:0}
+.mrang.gold .mr-lvl{box-shadow:0 0 16px -2px var(--rf)}
+
+.mk{position:relative;overflow:hidden;border-radius:20px;padding:16px 16px 14px;margin-top:4px;
+  border:1px solid var(--rfl,rgba(143,160,200,.5));
+  background:
+    radial-gradient(120% 90% at 8% 0%,var(--rft2,rgba(143,160,200,.26)),transparent 62%),
+    linear-gradient(160deg,var(--rfd,rgba(92,106,148,.42)),#0B1026 78%)}
+.mk-glanz{position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:linear-gradient(105deg,transparent 34%,rgba(255,255,255,.16) 48%,transparent 62%)}
+.mk.glanz .mk-glanz{opacity:1}
+.mk.lauf .mk-glanz{animation:mkGlanz 4.6s linear infinite}
+@keyframes mkGlanz{from{transform:translateX(-70%)}to{transform:translateX(70%)}}
+.mk.gold{box-shadow:0 0 44px -18px var(--rf),inset 0 0 40px -22px var(--rf)}
+.mk-kopf{position:relative;display:flex;align-items:center;gap:12px}
+.mk-bild{flex:none;width:60px;height:60px;border-radius:30%;overflow:hidden;background:#fff;
+  border:1.5px solid var(--rfl,rgba(143,160,200,.5));
+  box-shadow:0 10px 22px -12px rgba(0,0,0,.8)}
+.mk-bild img{width:100%;height:100%;object-fit:cover;object-position:center 86%;display:block}
+.mk-txt{flex:1;min-width:0}
+.mk-txt b{display:block;font-family:var(--font-dis);font-weight:400;font-size:19px;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mk-txt i{display:block;font-style:normal;font-size:11.5px;color:var(--rf,#8FA0C8);
+  letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+.mk-lvl{flex:none;align-self:flex-start;font-size:10px;font-weight:700;letter-spacing:.12em;
+  padding:4px 8px;border-radius:8px;color:#0B1026;background:var(--rf,#8FA0C8)}
+.mk-zeilen{position:relative;margin-top:14px;border-top:1px solid rgba(255,255,255,.09);padding-top:4px}
+.mkz{display:flex;align-items:baseline;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.055)}
+.mkz:last-child{border-bottom:0}
+.mkz u{flex:none;width:118px;text-decoration:none;font-size:9.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--tx-3)}
+.mkz b{flex:1;font-size:13px;font-weight:600}
+.mk-fuss{position:relative;margin-top:12px;display:flex;flex-direction:column;gap:5px}
+.mk-fuss span{font-family:var(--font-dis);font-style:italic;font-size:13px;color:var(--tx-2)}
+.mk-fuss em{font-style:normal;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3)}
+
+.rl{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:13px;margin-bottom:7px;
+  border:1px solid var(--line-2);
+  background:linear-gradient(120deg,var(--rft),transparent 74%)}
+.rl.zu{opacity:.42}
+.rl.hier{border-color:var(--rf);box-shadow:0 0 0 1px var(--rfl)}
+.rl-nr{flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;
+  font-size:11px;font-weight:700;color:#0B1026;background:var(--rf)}
+.rl-t{flex:1;min-width:0}
+.rl-t b{display:block;font-size:13px}
+.rl-t small{display:block;font-size:10px;color:var(--tx-3)}
+.rl-hier{flex:none;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--rf)}
+
+.exhist{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-2)}
+.exhist u{display:block;text-decoration:none;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--tx-3);margin-bottom:6px}
+.exh-z{display:flex;align-items:baseline;gap:10px;padding:4px 0}
+.exh-z b{flex:1;font-size:12.5px;font-weight:600;color:var(--tx-2)}
+.exh-z i{flex:none;font-style:normal;font-size:10.5px;color:var(--tx-3)}
+
 /* ─── Postfach ────────────────────────────────────────────────────────
    Eine Nachricht je Karte. Ungelesene tragen links einen goldenen
    Streifen und den Knopf zum Abhaken; gelesene treten zurück. */
@@ -1958,6 +2031,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         </div>
         <div class="mgrid" id="ex-months"></div>
         <p class="hint" style="margin-top:16px" id="ex-note"></p>
+        <div class="exhist" id="ex-hist" hidden></div>
         <div style="margin-top:18px">
           <button class="btn btn-p" id="ex-go">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg>
@@ -2012,6 +2086,13 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       </div>
       <div class="avgrid" id="avgrid"></div>
     </div>
+    <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge. -->
+    <button class="mrang" id="mrang" data-act="raenge" aria-label="Stufen ansehen">
+      <span class="mr-kopf"><span class="mr-lvl" id="mr-lvl">LVL 1</span><b id="mr-name">—</b></span>
+      <span class="mr-schiene"><span class="mr-bar" id="mr-bar"></span></span>
+      <small id="mr-rest">—</small>
+    </button>
+    <button class="mi" data-act="karte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.6"/><path d="M3 10h18M7 14.5h4"/></svg>Mitgliedschaftskarte</button>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
     <button class="mi" data-act="passkey" id="mi-pk" style="display:none"><span class="miico" id="mi-pk-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span><span id="mi-pk-t">Passkey anlegen</span></button>
     <button class="mi" data-act="pkreset" id="mi-pkreset" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Passkey zurücksetzen</button>
@@ -2019,6 +2100,44 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     
     <button class="mi danger" data-act="delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Profil löschen</button>
     <div class="mfoot">Eine App von <b>Studio MARU 丸</b></div>
+  </div>
+</div>
+
+<!-- Mitgliedschaftskarte -->
+<div class="sheet" id="ksheet">
+  <div class="sheet-bd" data-close="ksheet"></div>
+  <div class="sheet-card" id="kcard">
+    <div class="sheet-grab" id="k-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
+    <h3>Mitgliedschaftskarte</h3>
+    <p class="sd">Dein Stand in MOJI, auf einer Karte.</p>
+    <div class="mk" id="mk">
+      <div class="mk-glanz" aria-hidden="true"></div>
+      <div class="mk-kopf">
+        <span class="mk-bild"><img id="mk-img" alt=""></span>
+        <span class="mk-txt"><b id="mk-name">—</b><i id="mk-rang">—</i></span>
+        <span class="mk-lvl" id="mk-lvl">LVL 1</span>
+      </div>
+      <div class="mk-zeilen" id="mk-zeilen"></div>
+      <div class="mk-fuss"><span id="mk-wort">—</span><em>MOJI · Studio MARU 丸</em></div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-g" data-close="ksheet">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Alle Stufen -->
+<div class="sheet" id="rsheet">
+  <div class="sheet-bd" data-close="rsheet"></div>
+  <div class="sheet-card" id="rcard">
+    <div class="sheet-grab" id="r-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
+    <h3>Stufen</h3>
+    <p class="sd" id="rl-sub">—</p>
+    <div id="rl-liste"></div>
+    <p class="hint" style="margin-top:14px">Jeder exportierte Monat zählt einmal. Alle vier Monate geht es eine Stufe hoch.</p>
+    <div class="sheet-actions">
+      <button class="btn btn-g" data-close="rsheet">Schließen</button>
+    </div>
   </div>
 </div>
 
@@ -2415,6 +2534,17 @@ function save(){
 let DB = load();
 let ME = null;
 
+/* 'p' + Date.now().toString(36) + vier Zufallszeichen — daraus lässt sich
+   der Beitritt zurückrechnen. Ergibt das keinen plausiblen Tag, gilt heute. */
+function seitAusId(id){
+  const jetzt = Date.now();
+  if(typeof id === 'string' && id.length > 9){
+    const ms = parseInt(id.slice(1, 9), 36);
+    if(isFinite(ms) && ms > Date.UTC(2024, 0, 1) && ms < jetzt + 864e5) return ms;
+  }
+  return jetzt;
+}
+
 function normalize(p){
   if(!p.sched) p.sched = defaultSched();
   if(!p.sched.weeks || p.sched.weeks.length < 4){
@@ -2425,6 +2555,12 @@ function normalize(p){
   if(typeof p.sched.offset !== 'number') p.sched.offset = 0;
   if(!p.events) p.events = {};
   if(!p.months) p.months = [];
+  /* Exportbuch: Monat → Zeitstempel des letzten Exports. Jeder Monat steht
+     nur einmal darin, doppeltes Exportieren zählt also nicht doppelt. */
+  if(!p.exp || typeof p.exp !== 'object' || Array.isArray(p.exp)) p.exp = {};
+  /* Mitglied seit. Alte Profile haben das Feld nicht — die Kennung trägt den
+     Zeitstempel ihrer Entstehung in sich, der reicht als Ersatz. */
+  if(typeof p.seit !== 'number' || !isFinite(p.seit)) p.seit = seitAusId(p.id);
   /* Nur die Nummer des Motivs, kein Bild — die Zeile in der Cloud bleibt klein. */
   const av = +p.avatar;
   if(!(av >= 1 && av <= 12)) delete p.avatar;
@@ -3511,6 +3647,7 @@ function enterApp(){
   CAL.y = first ? first.y : PREV.getFullYear();
   CAL.m = first ? first.m : PREV.getMonth();
   Q.from = Q.to = null; Q.y = CAL.y; Q.m = CAL.m;
+  malRang();
   exYear(); renderCal(); renderQCal();
   go('v-cal');
 }
@@ -3566,6 +3703,192 @@ function grussEnde(){
   clearTimeout(_halloT);
   el.classList.add('weg');
   _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); }, 560);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MITGLIEDSCHAFT — Stufen, Karte, Zeitersparnis
+
+   Gezählt wird das Exportbuch: jeder Monat, für den je eine
+   Aufzeichnung erstellt wurde, genau einmal. Alle vier Monate
+   geht es eine Stufe hoch, bei zwölf ist Schluss. Die Farbe und
+   der Effekt wachsen mit — unten schlicht, oben Gold.
+   ═══════════════════════════════════════════════════════════ */
+const RAENGE = [
+  { n:'Frisch dabei',    a:'#8FA0C8', b:'#5C6A94', w:'Die erste Aufzeichnung ist gemacht.' },
+  { n:'Warmgelaufen',    a:'#7FB6D9', b:'#4D7EA8', w:'Vier Monate stehen im Buch.' },
+  { n:'Eingespielt',     a:'#6FC7C0', b:'#3E8F92', w:'Das läuft jetzt von selbst.' },
+  { n:'Verlässlich',     a:'#6FC98F', b:'#3B8C60', w:'Ein Jahr ohne Lücke.' },
+  { n:'Routiniert',      a:'#9AC96F', b:'#618C3B', w:'Keine Frage mehr offen.' },
+  { n:'Fleißbiene',      a:'#E3C55A', b:'#A88A2A', w:'Zwei Jahre gesammelt.' },
+  { n:'Uhrwerk',         a:'#EFA85C', b:'#B06D22', w:'Pünktlich wie ein Zeiger.' },
+  { n:'Stundensammler',  a:'#EE8A64', b:'#B0512C', w:'Die Stunden füllen Regale.' },
+  { n:'Aktenfuchs',      a:'#E9707F', b:'#AC3B4C', w:'Drei Jahre und kein Zettel zu viel.' },
+  { n:'Zeitmeister',     a:'#C878C8', b:'#8C3E8C', w:'Wer so lange zählt, kennt jeden Trick.' },
+  { n:'Ordnungsheld',    a:'#9A85E8', b:'#5C46AC', w:'Fast am Ende der Leiter.' },
+  { n:'MOJI-Legende',    a:'#F7D774', b:'#C79A18', w:'Höher geht es nicht. Danke für die Treue.' }
+];
+const JE_MONAT_MIN = 6.5;     /* händisch geschrieben: fünf bis acht Minuten */
+const PRO_STUFE = 4;          /* vier exportierte Monate je Stufe */
+
+function expBuch(){ return (ME && ME.exp) ? ME.exp : {}; }
+function expAnzahl(){ return Object.keys(expBuch()).length; }
+/* Zuletzt exportierte Monate, neueste zuerst */
+function expVerlauf(grenze){
+  const v = Object.keys(expBuch()).map(k => {
+    const [y, m] = k.split('-');
+    return { y:+y, m:+m, ts:expBuch()[k] };
+  }).sort((x, z) => z.ts - x.ts);
+  return grenze ? v.slice(0, grenze) : v;
+}
+function stufe(){ return Math.min(RAENGE.length, Math.floor(expAnzahl() / PRO_STUFE) + 1); }
+function rang(nr){ return RAENGE[(nr || stufe()) - 1]; }
+function stufeAb(nr){ return (nr - 1) * PRO_STUFE; }
+function nochBis(){
+  const s = stufe();
+  return s >= RAENGE.length ? 0 : stufeAb(s + 1) - expAnzahl();
+}
+/* Anteil innerhalb der Stufe, 0 bis 1 — auf der letzten Stufe immer voll */
+function stufeAnteil(){
+  const s = stufe();
+  if(s >= RAENGE.length) return 1;
+  return (expAnzahl() - stufeAb(s)) / PRO_STUFE;
+}
+function gespartMin(){ return expAnzahl() * JE_MONAT_MIN; }
+function fmtDauer(min){
+  const g = Math.round(min);
+  if(g < 60) return g + ' Min';
+  const h = Math.floor(g / 60), r = g % 60;
+  return h + ' Std' + (r ? ' ' + r + ' Min' : '');
+}
+function fmtMonatJahr(y, m){ return MONTHS[m] + ' ' + y; }
+function seitText(){
+  const d = new Date((ME && ME.seit) || Date.now());
+  return fmtMonatJahr(d.getFullYear(), d.getMonth());
+}
+/* Die Stufenfarben landen als Variablen am Element, damit das Stylesheet
+   klein bleibt und jede Stufe denselben Regeln folgt. Die durchsichtigen
+   Abstufungen werden hier gemischt — color-mix() kennt nicht jedes Handy. */
+function rgba(hex, a){
+  const h = hex.replace('#','');
+  const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+  return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+}
+function rangVars(r){
+  return { '--rf':r.a, '--rf2':r.b,
+    '--rft':rgba(r.a, .16), '--rft2':rgba(r.a, .26),
+    '--rfl':rgba(r.a, .5),  '--rfd':rgba(r.b, .42) };
+}
+function faerbe(el, nr){
+  const r = rang(nr);
+  const v = rangVars(r);
+  Object.keys(v).forEach(k => el.style.setProperty(k, v[k]));
+  el.classList.toggle('glanz', nr >= 8);
+  el.classList.toggle('lauf', nr >= 10);
+  el.classList.toggle('gold', nr >= 12);
+}
+
+/* Nach jedem fertigen PDF: die Monate ins Buch, Stufenaufstieg melden. */
+function merkeExporte(list){
+  if(!ME || !Array.isArray(list) || !list.length) return;
+  const vorher = stufe();
+  if(!ME.exp) ME.exp = {};
+  const jetzt = Date.now();
+  list.forEach(o => { ME.exp[o.y + '-' + o.m] = jetzt; });
+  save();
+  malRang();
+  const nachher = stufe();
+  if(nachher > vorher) setTimeout(() => toast('Neue Stufe: ' + rang(nachher).n), 900);
+}
+
+/* Die Zeile im Profilmenü */
+function malRang(){
+  const zeile = $('#mrang'); if(!zeile) return;
+  const nr = stufe(), r = rang(nr);
+  faerbe(zeile, nr);
+  $('#mr-lvl').textContent = 'LVL ' + nr;
+  $('#mr-name').textContent = r.n;
+  $('#mr-bar').style.width = Math.round(stufeAnteil() * 100) + '%';
+  const rest = nochBis();
+  $('#mr-rest').textContent = rest
+    ? 'noch ' + rest + (rest === 1 ? ' Monat' : ' Monate') + ' bis ' + rang(nr + 1).n
+    : 'höchste Stufe erreicht';
+  const k = $('#ex-hist'); if(k) malVerlauf();
+}
+
+/* Die Karte */
+function malKarte(){
+  const nr = stufe(), r = rang(nr), anzahl = expAnzahl();
+  const karte = $('#mk');
+  faerbe(karte, nr);
+  $('#mk-img').src = avDatei(avNummer());
+  $('#mk-name').textContent = ME.vorname + ' ' + ME.nachname;
+  $('#mk-rang').textContent = r.n;
+  $('#mk-lvl').textContent = 'LVL ' + nr;
+  const letzter = expVerlauf(1)[0];
+  const zeilen = [
+    ['Firma', EMPLOYER],
+    ['Mitglied seit', seitText()],
+    ['Aufzeichnungen', anzahl + (anzahl === 1 ? ' Monat' : ' Monate')],
+    ['Zeit gespart', anzahl ? fmtDauer(gespartMin()) : '—'],
+    ['Zuletzt', letzter ? fmtMonatJahr(letzter.y, letzter.m) : 'noch nichts exportiert']
+  ];
+  $('#mk-zeilen').innerHTML = zeilen.map(z =>
+    '<div class="mkz"><u>' + z[0] + '</u><b>' + esc(z[1]) + '</b></div>').join('');
+  $('#mk-wort').textContent = r.w;
+}
+function karteAuf(){
+  if($('#ksheet').classList.contains('on')) return;
+  malKarte();
+  if(window.__kReset) window.__kReset();
+  $('#kcard').scrollTop = 0;
+  $('#ksheet').classList.add('on');
+  document.body.classList.add('locked');
+}
+function karteZu(){
+  $('#ksheet').classList.remove('on');
+  document.body.classList.remove('locked');
+}
+
+/* Alle Ränge untereinander */
+function malRangliste(){
+  const nr = stufe();
+  $('#rl-sub').textContent = 'Du stehst auf Stufe ' + nr + ' von ' + RAENGE.length
+    + ' · ' + expAnzahl() + (expAnzahl() === 1 ? ' Monat' : ' Monate') + ' exportiert';
+  $('#rl-liste').innerHTML = RAENGE.map((r, i) => {
+    const n = i + 1, hier = n === nr, offen = n > nr;
+    const v = rangVars(r);
+    const stil = Object.keys(v).map(k => k + ':' + v[k]).join(';');
+    return '<div class="rl' + (hier ? ' hier' : '') + (offen ? ' zu' : '')
+      + '" style="' + stil + '">'
+      + '<span class="rl-nr">' + n + '</span>'
+      + '<span class="rl-t"><b>' + r.n + '</b><small>ab ' + stufeAb(n)
+      + (stufeAb(n) === 1 ? ' Monat' : ' Monaten') + '</small></span>'
+      + (hier ? '<span class="rl-hier">hier</span>' : '')
+      + '</div>';
+  }).join('');
+}
+function rangAuf(){
+  if($('#rsheet').classList.contains('on')) return;
+  malRangliste();
+  if(window.__rReset) window.__rReset();
+  $('#rcard').scrollTop = 0;
+  $('#rsheet').classList.add('on');
+  document.body.classList.add('locked');
+}
+function rangZu(){
+  $('#rsheet').classList.remove('on');
+  document.body.classList.remove('locked');
+}
+
+/* Der Verlauf in der Exportansicht */
+function malVerlauf(){
+  const box = $('#ex-hist'); if(!box) return;
+  const v = expVerlauf(6);
+  if(!v.length){ box.innerHTML = ''; box.hidden = true; return; }
+  box.hidden = false;
+  box.innerHTML = '<u>Zuletzt exportiert</u>'
+    + v.map(o => '<div class="exh-z"><b>' + fmtMonatJahr(o.y, o.m) + '</b>'
+        + '<i>' + fmtDate(new Date(o.ts).toISOString().slice(0,10)) + '</i></div>').join('');
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3651,6 +3974,8 @@ function pfZu(){
   document.body.classList.remove('locked');
 }
 $('#postfach').addEventListener('click', pfAuf);
+$('#ksheet').addEventListener('click', e => { if(e.target.dataset.close === 'ksheet') karteZu(); });
+$('#rsheet').addEventListener('click', e => { if(e.target.dataset.close === 'rsheet') rangZu(); });
 $('#pfsheet').addEventListener('click', e => {
   if(e.target.dataset.close === 'pfsheet'){ pfZu(); return; }
   const b = e.target.closest('[data-gelesen]');
@@ -4167,6 +4492,8 @@ window.__sheetReset = wireSheetDrag('sh-grab', 'sheet', closeSheet);
 window.__qReset     = wireSheetDrag('q-grab',  'qsheet', quickClose);
 window.__mReset     = wireSheetDrag('m-grab',  'msheet', msZu);
 window.__pfReset    = wireSheetDrag('pf-grab', 'pfsheet', pfZu);
+window.__kReset     = wireSheetDrag('k-grab',  'ksheet',  karteZu);
+window.__rReset     = wireSheetDrag('r-grab',  'rsheet',  rangZu);
 $('#sh-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
   SH.type = SH.type === b.dataset.t ? null : b.dataset.t;
@@ -4385,6 +4712,7 @@ function exYear(){
     : 'Wähle mindestens einen Monat.';
   $('#ex-go').disabled = !list.length;
   $('#ex-single').disabled = !list.length;
+  malVerlauf();
   fitAll();
 }
 function exList(){
@@ -4796,6 +5124,8 @@ async function buildPdf(list, separate){
       await wait(1250);
       doc.save(name);
     }
+    /* Erst jetzt zählt der Monat: die Datei ist geschrieben. */
+    merkeExporte(list);
     await wait(1100);
     ov.el.remove();
   }catch(err){
@@ -4826,6 +5156,7 @@ function menuAuf(){
   if(PASSKEY && UID) pkRefresh().catch(() => {});
   const m = $('#menu');
   m.classList.remove('zu');
+  malRang();
   m.classList.add('on');
   document.body.classList.add('menuauf');
 }
@@ -4865,6 +5196,8 @@ $('#menu').addEventListener('click', e => {
       pkAdd(null);
     }
   }
+  if(a === 'karte') karteAuf();
+  if(a === 'raenge') rangAuf();
   if(a === 'pkreset') pkReset();
   if(a === 'logout') doLogout();
   if(a === 'delete') doDelete();
