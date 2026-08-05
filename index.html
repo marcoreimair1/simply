@@ -564,6 +564,29 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .seg{display:inline-flex;padding:4px;gap:3px;border-radius:14px;background:rgba(6,10,26,.6);border:1px solid var(--line-2)}
 .seg button{padding:9px 16px;border-radius:10px;font-size:12.5px;font-weight:500;color:var(--tx-3);transition:.2s}
 .seg button.on{background:var(--butter);color:#221904;font-weight:600}
+/* Gesperrt: die Auswahl wird grau und nimmt keine Tipper an. */
+.seg.gesperrt{opacity:.5}
+.seg.gesperrt button{color:var(--tx-3);cursor:default}
+.seg.gesperrt button.on{background:rgba(255,255,255,.14);color:var(--tx-2)}
+
+/* Das Schloss. Der Bügel hebt sich und kippt zur Seite, wenn es aufgeht. */
+.wlock{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
+  border:1px solid var(--line-2);color:var(--tx-3);transition:.24s var(--ease)}
+.wlock svg{width:19px;height:19px;overflow:visible}
+.wlock .buegel{transform-origin:8.2px 10.5px;transition:transform .44s var(--ease-out)}
+.wlock.zu{color:var(--butter);border-color:var(--butter-dim);background:rgba(247,215,116,.1)}
+.wlock.auf{color:var(--c-eigen);border-color:rgba(121,232,198,.4);background:rgba(121,232,198,.08)}
+.wlock.auf .buegel{transform:translate(1px,-2.6px) rotate(-32deg)}
+.wlock:active{transform:scale(.93)}
+/* Kurzer Ruck beim Zuschnappen. */
+.wlock.klack{animation:lockKlack .46s var(--ease-out)}
+@keyframes lockKlack{
+  0%{transform:scale(1)}
+  28%{transform:scale(.9) rotate(-4deg)}
+  58%{transform:scale(1.06) rotate(2deg)}
+  100%{transform:none}
+}
+.wlockhint{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-3)}
 
 /* ============================================================
    KARUSSELL
@@ -2643,7 +2666,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-0911';
+const APP_STAND = '2026-08-05-0919';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -2705,7 +2728,8 @@ function defaultWeek(){
   return w;
 }
 function defaultSched(){
-  return { weekCount:1, offset:0, tab:0, weeks:[defaultWeek(), defaultWeek(), defaultWeek(), defaultWeek()] };
+  return { weekCount:1, offset:0, tab:0, wcLock:false,
+           weeks:[defaultWeek(), defaultWeek(), defaultWeek(), defaultWeek()] };
 }
 function segH(on, from, to){
   if(!on) return 0;
@@ -3254,10 +3278,26 @@ function renderSched(host, sched, onChange){
   const w = sched.weeks[tab];
 
   let html = '<div class="card"><h3>Wochenintervall</h3><p class="hint">Wiederholt sich dein Dienstplan jede Woche gleich? Dann eine Woche. Sonst bis zu vier.</p>';
-  html += '<div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center"><div class="seg" id="wc-seg">';
-  [1,2,3,4].forEach(n => html += '<button data-wc="'+n+'"'+(n===wc?' class="on"':'')+'>'+n+(n===1?' Woche':' Wochen')+'</button>');
+  /* Ist das Intervall einmal gesetzt, wird es verschlossen. Sonst verstellt
+     es sich beim Blättern zu leicht — und wer vier Wochen arbeitet, hat
+     plötzlich eine. Das Schloss lässt sich antippen. */
+  const zu = sched.wcLock !== false;
+  html += '<div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">';
+  html += '<div class="seg'+(zu?' gesperrt':'')+'" id="wc-seg">';
+  [1,2,3,4].forEach(n => html += '<button data-wc="'+n+'"'+(n===wc?' class="on"':'')
+    + (zu?' disabled':'')+'>'+n+(n===1?' Woche':' Wochen')+'</button>');
   html += '</div>';
+  html += '<button class="wlock '+(zu?'zu':'auf')+(sched._klack?' klack':'')+'" data-lock="1"'
+       +  ' aria-pressed="'+(zu?'true':'false')+'"'
+       +  ' aria-label="'+(zu?'Wochenintervall entsperren':'Wochenintervall sperren')+'"'
+       +  ' title="'+(zu?'Zum Ändern antippen':'Offen — antippen zum Sperren')+'">'
+       +  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+       +  '<g class="buegel"><path d="M8.2 10.5V7.6a3.8 3.8 0 017.6 0v2.9"/></g>'
+       +  '<rect x="4.6" y="10.5" width="14.8" height="9.9" rx="2.6"/>'
+       +  '<path d="M12 14.2v2.6"/></svg></button>';
+  html += '<small class="wlockhint">'+(zu ? 'gesperrt' : 'offen')+'</small>';
   html += '</div>';
+  sched._klack = false;
   if(wc > 1){
     const kw = isoWeek(new Date());
     const cur = (((kw - 1 + (sched.offset||0)) % wc) + wc) % wc;
@@ -3353,8 +3393,20 @@ function renderSched(host, sched, onChange){
 
   host.onclick = (e) => {
     const t = e.target;
+    const lk = t.closest('[data-lock]');
+    if(lk){
+      sched.wcLock = !(sched.wcLock !== false);      /* umschalten */
+      if(sched.wcLock) sched._klack = true;          /* zuschnappen zeigen */
+      renderSched(host, sched, onChange);
+      return;                                        /* das Schloss allein ist keine Änderung */
+    }
     const wcb = t.closest('[data-wc]');
-    if(wcb){ sched.weekCount = +wcb.dataset.wc; sched.tab = 0; renderSched(host, sched, onChange); onChange && onChange(); return; }
+    if(wcb){
+      if(sched.wcLock !== false){ toast('Erst das Schloss öffnen'); return; }
+      sched.weekCount = +wcb.dataset.wc; sched.tab = 0;
+      sched.wcLock = true; sched._klack = true;      /* gesetzt heißt wieder zu */
+      renderSched(host, sched, onChange); onChange && onChange(); return;
+    }
     const rot = t.closest('[data-rot]');
     if(rot){
       const want = +rot.dataset.rot, kw = isoWeek(new Date());
@@ -6053,6 +6105,9 @@ $('#menu').addEventListener('click', e => {
   const a = b.dataset.act;
   if(a === 'hours'){
     DRAFT = JSON.parse(JSON.stringify(ME.sched)); DRAFT.tab = 0;
+    /* Zum Bearbeiten immer verschlossen beginnen — das Intervall soll man
+       bewusst ändern, nicht im Vorbeiwischen. */
+    DRAFT.wcLock = true;
     renderSched($('#sched-edit'), DRAFT, null);
     go('v-hours');
   }
