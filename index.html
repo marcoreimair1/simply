@@ -2622,7 +2622,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-0845';
+const APP_STAND = '2026-08-05-0902';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3066,10 +3066,11 @@ function playIntro(){
   if(v){ v.muted = true; v.defaultMuted = true;
          const p = v.play(); if(p && p.catch) p.catch(() => {}); }
   window.__introLaeuft = true;
+  window.__introStart = Date.now();
   try{ startParticles(); }catch(e){ console.warn('Partikel nicht verfügbar', e); }
   /* Die letzte Einblendung im Vorspann endet nach 2,75 s — länger stehen
      lassen heißt nur warten. Mit dem Ausblenden ist er nach 3,9 s weg. */
-  playIntro._a = setTimeout(endIntro, 3000);
+  playIntro._a = setTimeout(endIntro, INTRO_HALT);
 }
 function endIntro(){
   const sp = $('#splash');
@@ -3082,12 +3083,7 @@ function endIntro(){
     sp.style.display = 'none'; stopParticles();
     window.__introLaeuft = false;
     const v = $('#spvid'); if(v){ try{ v.pause(); }catch(e){} }
-    /* Jetzt ist die Bühne frei — eine angestellte Begrüßung darf auftreten. */
-    if(_grussWartet){
-      const art = _grussWartet; _grussWartet = null;
-      setTimeout(() => zeigeGruss(art), 260);
-    }
-  }, 950);
+  }, INTRO_WEG + 50);
 }
 let _pAnim = null;
 /* ─── Licht in der Luft ───
@@ -3975,10 +3971,12 @@ function enterApp(){
    Kalender steht darunter bereits fertig, die Begrüßung liegt nur
    davor und löst sich von selbst auf.
    ═══════════════════════════════════════════════════════════ */
-let _halloT = null, _grussWartet = null;
-/* Läuft der Vorspann noch, wird die Begrüßung angestellt statt darüber
-   gelegt — sonst überschneiden sich beide beim Neuladen. */
+let _halloT = null;
 function introLaeuft(){ return window.__introLaeuft === true; }
+/* Der Vorspann hält INTRO_HALT und blendet dann INTRO_WEG lang aus. */
+const INTRO_HALT = 3000, INTRO_WEG = 900;
+const GRUSS_WEG = 560;              /* Ausblenden der Begrüßung */
+const GRUSS_MIN = 1500;             /* kürzer als das wäre nicht lesbar */
 
 /* Dieselbe Bühne für Kommen und Gehen. Beim Abmelden muss sie vor dem
    Abmelden aufgehen — danach ist ME leer und niemand mehr zu grüßen. */
@@ -3993,7 +3991,6 @@ const GRUSS = {
 };
 function zeigeGruss(art){
   if(!ME || !ME.vorname) return;
-  if(introLaeuft()){ _grussWartet = art; return; }   /* erst nach dem Vorspann */
   const g = GRUSS[art] || GRUSS.an;
   const el = $('#hallo');
   clearTimeout(_halloT);
@@ -4006,10 +4003,26 @@ function zeigeGruss(art){
   el.classList.add('on');
   /* Erst jetzt: vorher ist die Leinwand nicht sichtbar und damit null groß. */
   if(g.konfetti) konfetti($('#hkanvas'), gruessend, { starts:[140,540,1120], regen:2100 });
+  /* Läuft der Vorspann noch, dürfen sich beide überschneiden — aber sie
+     müssen zugleich enden, sonst bleibt eines allein stehen. Also wird ein
+     gemeinsamer Schlusszeitpunkt bestimmt und der Vorspann darauf
+     umgestellt. */
+  let halten = g.dauer;
+  if(introLaeuft()){
+    const jetzt = Date.now();
+    /* Der Vorspann wird nie abgeschnitten — er hat seine eigene Dramaturgie.
+       Kommt die Begrüßung früh, wartet sie eben mit ihm; kommt sie spät,
+       darf der Vorspann kurz länger stehen. Geblendet wird gemeinsam. */
+    const introEnde = (window.__introStart || jetzt) + INTRO_HALT + INTRO_WEG;
+    const ende = Math.max(introEnde, jetzt + GRUSS_MIN + GRUSS_WEG);
+    halten = Math.max(GRUSS_MIN, ende - GRUSS_WEG - jetzt);
+    clearTimeout(playIntro._a);
+    playIntro._a = setTimeout(endIntro, Math.max(0, ende - INTRO_WEG - jetzt));
+  }
   _halloT = setTimeout(() => {
     el.classList.add('weg');
-    _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); }, 560);
-  }, g.dauer);
+    _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); }, GRUSS_WEG);
+  }, halten);
 }
 function zeigeHallo(){ zeigeGruss('an'); }
 
