@@ -2742,7 +2742,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1148';
+const APP_STAND = '2026-08-05-1157';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3121,7 +3121,7 @@ function pkVeraltet(){
 }
 
 /* Anlegen. Gibt true zurück, wenn danach ein Passkey vorhanden ist. */
-async function pkAdd(knopf){
+async function pkAdd(knopf, zweiterVersuch){
   if(!PASSKEY) return false;
   const alt = knopf ? knopf.innerHTML : '';
   if(knopf){ knopf.disabled = true; knopf.textContent = 'Warte auf Bestätigung …'; }
@@ -3133,11 +3133,45 @@ async function pkAdd(knopf){
     await pkRefresh();
     return true;
   }catch(e){
+    const txt = ((e && e.code) || '') + ' ' + ((e && e.name) || '') + ' ' + ((e && e.message) || '');
+    console.warn('[MOJI] Passkey anlegen:', e);
+    /* „Habe ich schon" heißt: am Konto hängt noch ein alter Eintrag, den der
+       Server beim Anlegen ausschließt. Einmal aufräumen und neu versuchen —
+       das ist genau der Fall nach dem Umzug auf die neue Adresse. */
+    if(!zweiterVersuch && /InvalidStateError|credential_exists|already/i.test(txt)){
+      if(knopf){ knopf.disabled = false; knopf.innerHTML = alt; }
+      const weg = await pkAlleLoeschen();
+      if(weg) return pkAdd(knopf, true);
+    }
     toast(pkText(e));
     return false;
   }finally{
     if(knopf){ knopf.disabled = false; knopf.innerHTML = alt; }
   }
+}
+
+/* Alle am Konto hinterlegten Passkeys entfernen. Gibt zurück, ob danach
+   wirklich keiner mehr gelistet ist. */
+async function pkAlleLoeschen(){
+  try{
+    const r = await sb.auth.passkey.list();
+    const liste = (r && !r.error && r.data) ? r.data : (Array.isArray(PK_LISTE) ? PK_LISTE : []);
+    for(const p of liste.slice()){
+      try{ await sb.auth.passkey.delete({ passkeyId: p.id }); }
+      catch(e){ console.warn('[MOJI] alter Passkey blieb', e); }
+    }
+    await pkRefresh();
+    return !(Array.isArray(PK_LISTE) && PK_LISTE.length);
+  }catch(e){ console.warn('[MOJI] Aufräumen nicht möglich', e); return false; }
+}
+
+/* Nach dem Umzug: erst die alten Einträge am Server löschen, dann anlegen.
+   Sonst schließt der Server sie beim Anlegen aus („excludeCredentials"), das
+   Gerät erkennt seinen eigenen alten Eintrag und verweigert mit
+   InvalidStateError — genau die Meldung, die nach nichts aussieht. */
+async function pkErneuern(knopf){
+  await pkAlleLoeschen();
+  return pkAdd(knopf);
 }
 
 /* Passkey wieder loswerden. Der Eintrag im Schlüsselbund des Geräts bleibt —
@@ -3188,7 +3222,16 @@ function pkText(e){
   if(/passkey_disabled/i.test(t))      return 'Passkeys sind für MOJI nicht freigeschaltet.';
   if(/challenge_expired/i.test(t))     return 'Zu lange gewartet — bitte nochmal.';
   if(/NotSupportedError|not supported/i.test(t)) return 'Dieses Gerät kann keine Passkeys.';
-  return 'Mit dem Passkey hat es nicht geklappt.';
+  /* Der häufigste Stolperstein nach dem Umzug: im Schlüsselbund liegt noch
+     der alte Passkey. Das Gerät antwortet dann „habe ich schon" und legt
+     keinen neuen an. */
+  if(/InvalidStateError/i.test(t))
+    return 'Im Schlüsselbund liegt noch ein alter MOJI-Passkey. Bitte in den '
+         + 'Geräte-Einstellungen unter Passwörter den Eintrag für '
+         + 'marcoreimair1.github.io löschen — dann geht es.';
+  /* Bleibt es unbekannt, wird der Name mitgeschickt — sonst rätselt man. */
+  const kurz = ((e && e.name) || (e && e.code) || '').toString().slice(0, 28);
+  return 'Mit dem Passkey hat es nicht geklappt' + (kurz ? ' (' + kurz + ')' : '') + '.';
 }
 
 /* Knöpfe und Texte an den Stand anpassen — Menü und Funnel-Karte. */
@@ -6287,7 +6330,7 @@ $('#menu').addEventListener('click', e => {
     /* Nach dem Umzug ist der gelistete Passkey wertlos — dann muss der Tipp
        einen neuen anlegen und darf nicht melden, es liege schon einer vor. */
     if(pkVeraltet()){
-      pkAdd(null);
+      pkErneuern(null);
     } else if(Array.isArray(PK_LISTE) && PK_LISTE.length){
       const d = PK_LISTE[0];
       toast('Passkey liegt bereits' + (d.friendly_name ? ' in ' + d.friendly_name : '') + '.');
