@@ -2622,7 +2622,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-0812';
+const APP_STAND = '2026-08-05-0831';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3064,8 +3064,11 @@ function playIntro(){
   const v = $('#spvid');
   if(v){ v.muted = true; v.defaultMuted = true;
          const p = v.play(); if(p && p.catch) p.catch(() => {}); }
+  window.__introLaeuft = true;
   try{ startParticles(); }catch(e){ console.warn('Partikel nicht verfügbar', e); }
-  playIntro._a = setTimeout(endIntro, 4000);
+  /* Die letzte Einblendung im Vorspann endet nach 2,75 s — länger stehen
+     lassen heißt nur warten. Mit dem Ausblenden ist er nach 3,9 s weg. */
+  playIntro._a = setTimeout(endIntro, 3000);
 }
 function endIntro(){
   const sp = $('#splash');
@@ -3076,7 +3079,13 @@ function endIntro(){
   document.body.classList.remove('locked');
   playIntro._b = setTimeout(() => {
     sp.style.display = 'none'; stopParticles();
+    window.__introLaeuft = false;
     const v = $('#spvid'); if(v){ try{ v.pause(); }catch(e){} }
+    /* Jetzt ist die Bühne frei — eine angestellte Begrüßung darf auftreten. */
+    if(_grussWartet){
+      const art = _grussWartet; _grussWartet = null;
+      setTimeout(() => zeigeGruss(art), 260);
+    }
   }, 950);
 }
 let _pAnim = null;
@@ -3939,7 +3948,10 @@ function enterApp(){
    Kalender steht darunter bereits fertig, die Begrüßung liegt nur
    davor und löst sich von selbst auf.
    ═══════════════════════════════════════════════════════════ */
-let _halloT = null;
+let _halloT = null, _grussWartet = null;
+/* Läuft der Vorspann noch, wird die Begrüßung angestellt statt darüber
+   gelegt — sonst überschneiden sich beide beim Neuladen. */
+function introLaeuft(){ return window.__introLaeuft === true; }
 
 /* Dieselbe Bühne für Kommen und Gehen. Beim Abmelden muss sie vor dem
    Abmelden aufgehen — danach ist ME leer und niemand mehr zu grüßen. */
@@ -3954,6 +3966,7 @@ const GRUSS = {
 };
 function zeigeGruss(art){
   if(!ME || !ME.vorname) return;
+  if(introLaeuft()){ _grussWartet = art; return; }   /* erst nach dem Vorspann */
   const g = GRUSS[art] || GRUSS.an;
   const el = $('#hallo');
   clearTimeout(_halloT);
@@ -6207,14 +6220,19 @@ $('#pk-ask-skip').addEventListener('click', () => {
   GEBOOTET = true;
   const ok = await cloudBoot();
   if(!ok){ bootLocal(); return; }
+  /* Beim Start meldet die Bibliothek die wiederhergestellte Sitzung selbst
+     als Anmeldung. Das ist keine: sonst würde beim Neuladen begrüßt. Erst
+     wenn die erste Sitzung abgehandelt ist, zählt SIGNED_IN als frisch. */
+  let startFertig = false;
   sb.auth.onAuthStateChange((evt, session) => {
-    if(evt === 'SIGNED_IN' && session && !UID) afterLogin(session, true);
+    if(evt === 'SIGNED_IN' && session && !UID) afterLogin(session, startFertig);
     if(evt === 'SIGNED_OUT' && ME){ ME = null; UID = null; loginScreen(); }
   });
   let session = null;
   try{ const r = await sb.auth.getSession(); session = r.data.session; }catch(e){ console.warn(e); }
   if(session) await afterLogin(session);
   else loginScreen();
+  startFertig = true;
 })();
 </script>
 </body>
