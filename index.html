@@ -893,6 +893,7 @@ body.nobar #v-onboard{padding-top:14px}
 .cell[data-t="krank"]{border-color:rgba(255,142,110,.6);background:rgba(255,142,110,.13)}
 .cell[data-t="feier"]{border-color:rgba(169,155,255,.6);background:rgba(169,155,255,.13)}
 .cell[data-t="eigen"]{border-color:rgba(121,232,198,.6);background:rgba(121,232,198,.13)}
+.cell[data-t="zeit"]{border-color:rgba(191,208,242,.6);background:rgba(191,208,242,.13)}
 .cell[data-t] .hrs{color:var(--tx-2)}
 @media(max-width:520px){.cell{border-radius:11px;padding:5px 3px 4px}.cell .num{font-size:12px}.cell .hrs{font-size:8.5px}.cell .ico{width:13px;height:13px}}
 
@@ -1248,6 +1249,8 @@ body.nobar #v-onboard{padding-top:14px}
 .tpill[data-t=urlaub].on{background:rgba(247,215,116,.18);border-color:var(--c-urlaub);color:var(--c-urlaub)}
 .tpill[data-t=krank].on{background:rgba(255,142,110,.18);border-color:var(--c-krank);color:var(--c-krank)}
 .tpill[data-t=eigen].on{background:rgba(121,232,198,.18);border-color:var(--c-eigen);color:var(--c-eigen)}
+.opt[data-t=zeit] .oi{background:rgba(191,208,242,.16);color:var(--c-arbeit)}
+.opt[data-t=zeit].on{border-color:var(--c-arbeit);background:rgba(191,208,242,.08)}
 
 /* Bereichskalender im Schnelleintrag */
 .qcal{border:1px solid var(--line-2);border-radius:var(--r-m);padding:14px;background:rgba(6,10,26,.22);
@@ -1427,6 +1430,28 @@ body.nobar #v-onboard{padding-top:14px}
 .fiz b small{display:block;margin-top:2px;font-size:11.5px;font-weight:400;
   color:var(--tx-3);line-height:1.45}
 .fihint{margin:14px 0 0;font-size:11.5px;line-height:1.5;color:var(--tx-3)}
+
+/* Zeitausgleich im Tagesblatt: Richtung, Zähler, Schnellwerte */
+.shlab{display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--tx-3);margin:16px 0 8px}
+.zastepper{display:flex;align-items:center;gap:12px}
+.zabtn{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;
+  border:1px solid var(--line-2);color:var(--tx-2);background:rgba(6,10,26,.45);
+  transition:.18s var(--ease)}
+.zabtn:hover{border-color:var(--butter-dim);color:var(--butter)}
+.zabtn:active{transform:scale(.94)}
+.zabtn:disabled{opacity:.3;cursor:not-allowed}
+.zabtn svg{width:20px;height:20px}
+.zawert{flex:1;display:flex;align-items:baseline;justify-content:center;gap:6px;
+  padding:9px 0;border-radius:16px;background:rgba(6,10,26,.35);border:1px solid var(--line-2)}
+.zawert b{font-family:var(--font-dis);font-weight:400;font-size:30px;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--tx)}
+.zawert u{text-decoration:none;font-size:12px;color:var(--tx-3)}
+.zaschnell{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.zaschnell button{padding:8px 12px;border-radius:11px;font-size:12px;font-weight:600;
+  border:1px solid var(--line-2);color:var(--tx-2);transition:.18s var(--ease)}
+.zaschnell button:hover{border-color:var(--butter-dim);color:var(--butter)}
+.zahint{margin:11px 0 0;font-size:12px;line-height:1.5;color:var(--tx-3)}
 
 /* Bottom-Sheet */
 .sheet{position:fixed;inset:0;z-index:50;display:none}
@@ -2815,7 +2840,28 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         <button data-s="nm">Nur Nachmittag</button>
       </div>
     </div>
-    <div id="sh-textwrap" style="display:none">
+    <!-- Zeitausgleich: Richtung und Menge. Der Umfang oben bleibt aus,
+         weil hier die Zahl entscheidet, nicht Vormittag oder Nachmittag. -->
+    <div id="sh-zawrap" style="display:none">
+      <small class="shlab">Richtung</small>
+      <div class="scope" id="sh-zadir">
+        <button data-dir="minus">Einlösen</button>
+        <button data-dir="plus">Sammeln</button>
+      </div>
+      <small class="shlab" style="margin-top:15px">Stunden</small>
+      <div class="zastepper">
+        <button class="zabtn" id="sh-zaminus" aria-label="Weniger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>
+        </button>
+        <span class="zawert"><b id="sh-zah">0,00</b><u>h</u></span>
+        <button class="zabtn" id="sh-zaplus" aria-label="Mehr">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="zaschnell" id="sh-zaschnell"></div>
+      <p class="zahint" id="sh-zahint">—</p>
+    </div>
+<div id="sh-textwrap" style="display:none">
       <small style="display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3);margin:4px 0 8px">Vermerk</small>
       <textarea id="sh-text" placeholder="z. B. Zeitausgleich, Schulung, Behördenweg …"></textarea>
     </div>
@@ -3064,10 +3110,14 @@ const TYPES = {
   urlaub: { label:'Urlaub',       color:'#F7D774', pdf:[214,168,40],  desc:'Urlaubstag' },
   krank:  { label:'Krankenstand', color:'#FF8E6E', pdf:[214,96,64],   desc:'Krankenstand' },
   feier:  { label:'Feiertag',     color:'#A99BFF', pdf:[124,108,214], desc:'Gesetzlicher Feiertag' },
-  eigen:  { label:'Eigener Text', color:'#79E8C6', pdf:[38,166,132],  desc:'Freier Vermerk' }
+  eigen:  { label:'Eigener Text', color:'#79E8C6', pdf:[38,166,132],  desc:'Freier Vermerk' },
+  /* Zeitausgleich trägt eine Zahl mit Vorzeichen: plus heißt gesammelt,
+     minus heißt eingelöst. Beides in Viertelstunden. */
+  zeit:   { label:'Zeitausgleich', color:'#BFD0F2', pdf:[96,124,196],  desc:'Sammeln oder einlösen' }
 };
 
 const ICONS = {
+  zeit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3.2 1.9"/></svg>',
   urlaub:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M5 5l1.8 1.8M17.2 17.2L19 19M19 5l-1.8 1.8M6.8 17.2L5 19"/></svg>',
   krank:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   feier:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.1 6-5.3-3-5.3 3 1.1-6L3.3 9.4l6.1-.8z"/></svg>',
@@ -3108,7 +3158,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1930';
+const APP_STAND = '2026-08-05-1944';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3282,6 +3332,8 @@ function evalDay(profile, y, m, d){
     k:k, date:date, dow:date.getDay(), day:d,
     vmFrom:'', vmTo:'', nmFrom:'', nmTo:'',
     pause:0, work:0, urlaub:0, krank:0, feier:0, sonst:0,
+    zeit:0,        /* eingelöste Stunden — zählen nicht als Arbeitszeit */
+    za:0,          /* Wirkung auf den Zeitausgleich, mit Vorzeichen */
     type:null, note:'', scope:'full'
   };
   const c = plan.cfg;
@@ -3296,6 +3348,35 @@ function evalDay(profile, y, m, d){
     out.type = 'feier'; out.note = hol; out.scope = 'full';
     out.feier = plan.vm + plan.nm; out.work = 0; out.pause = 0;
     out.vmFrom = out.vmTo = out.nmFrom = out.nmTo = '';
+    return out;
+  }
+  /* ── Zeitausgleich ──────────────────────────────────────────────
+     Kein Umfang wie bei Urlaub, sondern eine Zahl. Minus heißt
+     einlösen: die Stunden werden von der Arbeitszeit abgezogen,
+     höchstens so viele, wie an dem Tag geplant waren. Plus heißt
+     sammeln: die Stunden kommen zur Arbeitszeit dazu, denn sie
+     wurden tatsächlich gearbeitet. */
+  if(ev && ev.t === 'zeit'){
+    const za = r25(+ev.za || 0);
+    out.type = 'zeit'; out.scope = 'full';
+    if(za < 0){
+      const geplant = plan.vm + plan.nm;
+      const weg = Math.min(-za, geplant);
+      out.zeit = weg;
+      out.work = r25(geplant - weg);
+      out.za = -weg;                       /* nur was wirklich abgeht */
+      if(out.work <= 0){
+        out.work = 0; out.pause = 0;
+        out.vmFrom = out.vmTo = out.nmFrom = out.nmTo = '';
+      }
+      out.note = 'Zeitausgleich · ' + fmtH(weg) + ' h eingelöst';
+    } else if(za > 0){
+      out.work = r25(plan.vm + plan.nm + za);
+      out.za = za;
+      out.note = 'Zeitausgleich · ' + fmtH(za) + ' h gesammelt';
+    } else {
+      out.type = null;
+    }
     return out;
   }
   if(ev){
@@ -3326,24 +3407,26 @@ function monthRows(profile, y, m){
   return rows;
 }
 function monthSums(rows){
-  const s = { work:0, urlaub:0, krank:0, feier:0, sonst:0, pause:0,
-              dWork:0, dUrlaub:0, dKrank:0, dFeier:0, dSonst:0, dTotal:0 };
+  const s = { work:0, urlaub:0, krank:0, feier:0, sonst:0, zeit:0, pause:0, za:0,
+              dWork:0, dUrlaub:0, dKrank:0, dFeier:0, dSonst:0, dZeit:0, dTotal:0 };
   rows.forEach(r => {
     s.work += r.work; s.urlaub += r.urlaub; s.krank += r.krank;
-    s.feier += r.feier; s.sonst += r.sonst; s.pause += r.pause;
+    s.feier += r.feier; s.sonst += r.sonst; s.zeit += r.zeit;
+    s.pause += r.pause; s.za += r.za;
     /* Tage anteilig: ein halber Urlaubstag zählt 0,5. Der Anteil ergibt sich
        aus den Stunden gegenüber dem, was an diesem Tag geplant war. */
-    const tag = r.work + r.urlaub + r.krank + r.feier + r.sonst;
+    const tag = r.work + r.urlaub + r.krank + r.feier + r.sonst + r.zeit;
     if(tag > 0){
       s.dWork   += r.work   / tag;
       s.dUrlaub += r.urlaub / tag;
       s.dKrank  += r.krank  / tag;
       s.dFeier  += r.feier  / tag;
       s.dSonst  += r.sonst  / tag;
+      s.dZeit   += r.zeit   / tag;
       s.dTotal  += 1;
     }
   });
-  s.total = s.work + s.urlaub + s.krank + s.feier + s.sonst;
+  s.total = s.work + s.urlaub + s.krank + s.feier + s.sonst + s.zeit;
   return s;
 }
 /* 1 -> "1 Tag", 4 -> "4 Tage", 3,5 -> "3,5 Tage" */
@@ -5783,7 +5866,8 @@ const MX_FARBE = {
   urlaub: ['var(--c-urlaub)', 'rgba(247,215,116,.13)'],
   krank:  ['var(--c-krank)',  'rgba(255,142,110,.14)'],
   feier:  ['var(--c-feier)',  'rgba(169,155,255,.14)'],
-  eigen:  ['var(--c-eigen)',  'rgba(121,232,198,.14)']
+  eigen:  ['var(--c-eigen)',  'rgba(121,232,198,.14)'],
+  zeit:   ['var(--c-arbeit)', 'rgba(191,208,242,.16)']
 };
 /* ─── Monatsdetails ────────────────────────────────────────────────────
    Der Balken zeigt die Anteile, das Blatt die Zahlen. MSUM hält die
@@ -5795,7 +5879,7 @@ function malBalken(){
   $('#mb-v').innerHTML = '<b>' + nurT(s.dTotal) + '</b><u>T</u><i>'
     + (s.total > 0 ? fmtH(s.total) + ' h' : '–') + '</i>';
   const teile = [['arbeit', s.dWork], ['urlaub', s.dUrlaub], ['krank', s.dKrank],
-                 ['feier', s.dFeier], ['eigen', s.dSonst]];
+                 ['feier', s.dFeier], ['eigen', s.dSonst], ['zeit', s.dZeit]];
   const summe = teile.reduce((a, x) => a + x[1], 0);
   let h = '';
   if(summe <= 0){
@@ -5818,6 +5902,7 @@ function msZeilen(){
   h += msZeile('krank',  'Krankenstand', s.krank,  s.dKrank);
   h += msZeile('feier',  'Feiertag',     s.feier,  s.dFeier);
   if(s.sonst > 0) h += msZeile('eigen', 'Sonstige', s.sonst, s.dSonst);
+  if(s.zeit  > 0) h += msZeile('zeit',  'Zeitausgleich', s.zeit, s.dZeit);
   h += msZeile('', 'Gesamt', s.total, s.dTotal, true);
   $('#ms-rows').innerHTML = h;
 }
@@ -6004,7 +6089,9 @@ function konfetti(cv, lebt, plan){
 /* ═══════════════════════════════════════════════════════════
    TAGES-SHEET
    ═══════════════════════════════════════════════════════════ */
-const SH = { y:0, m:0, d:0, type:null, scope:'full', text:'', aw:false };
+const SH = { y:0, m:0, d:0, type:null, scope:'full', text:'', aw:false,
+             zaDir:'minus', zaH:0 };
+const ZA_SCHRITT = 0.25;
 function openSheet(y, m, d){
   const k = key(y, m, d);
   const ev = ME.events[k];
@@ -6013,6 +6100,18 @@ function openSheet(y, m, d){
   SH.y = y; SH.m = m; SH.d = d;
   SH.type = ev ? ev.t : null; SH.scope = ev ? (ev.s || 'full') : 'full';
   SH.text = ev ? (ev.text || '') : ''; SH.aw = ev ? !!ev.aw : false;
+  /* Zeitausgleich: Vorzeichen in Richtung und Menge trennen. Voreinstellung
+     beim Einlösen sind die Stunden, die an dem Tag geplant waren. */
+  const geplant = r25(plan.vm + plan.nm);
+  if(ev && ev.t === 'zeit'){
+    const za = r25(+ev.za || 0);
+    SH.zaDir = za >= 0 ? 'plus' : 'minus';
+    SH.zaH = Math.abs(za);
+  } else {
+    SH.zaDir = 'minus';
+    SH.zaH = geplant > 0 ? geplant : 4;
+  }
+  SH._geplant = geplant;
 
   $('#sh-title').textContent = DOWSHORT[new Date(y,m,d).getDay()] + ', ' + d + '. ' + MONTHS[m] + ' ' + y;
   const planTxt = plan.vm + plan.nm > 0
@@ -6025,7 +6124,7 @@ function openSheet(y, m, d){
   $('#sh-holiday').style.display = hol ? 'flex' : 'none';
   if(hol) $('#sh-holiday-t').innerHTML = '<b>' + hol + '</b> — gesetzlicher Feiertag, wird automatisch gezählt.';
 
-  $('#sh-opts').innerHTML = ['urlaub','krank','eigen'].map(t =>
+  $('#sh-opts').innerHTML = ['urlaub','krank','zeit','eigen'].map(t =>
     '<button class="opt'+(SH.type===t?' on':'')+'" data-t="'+t+'">'
     + '<span class="oi">'+ICONS[t]+'</span>'
     + '<span><b>'+TYPES[t].label+'</b><small>'+TYPES[t].desc+'</small></span></button>').join('');
@@ -6035,12 +6134,53 @@ function openSheet(y, m, d){
   document.body.classList.add('locked');
 }
 function paintSheet(){
-  $('#sh-scopewrap').style.display = SH.type ? 'block' : 'none';
+  const za = SH.type === 'zeit';
+  /* Beim Zeitausgleich entscheidet die Zahl, nicht Vormittag oder Nachmittag. */
+  $('#sh-scopewrap').style.display = (SH.type && !za) ? 'block' : 'none';
   $$('#sh-scope button').forEach(b => b.classList.toggle('on', b.dataset.s === SH.scope));
   $('#sh-textwrap').style.display = SH.type === 'eigen' ? 'block' : 'none';
   $('#sh-text').value = SH.text;
   const aw = $('#sh-aw'); if(aw) aw.classList.toggle('on', SH.aw);
-  $('#sh-save').disabled = !SH.type;
+
+  $('#sh-zawrap').style.display = za ? 'block' : 'none';
+  if(za) malZa();
+  $('#sh-save').disabled = !SH.type || (za && SH.zaH <= 0);
+}
+
+/* Zähler, Schnellwerte und der Satz darunter. Der Stand bezieht sich auf
+   den angezeigten Monat — ein Gesamtkonto führt MOJI bewusst nicht. */
+function malZa(){
+  const geplant = SH._geplant || 0;
+  $$('#sh-zadir button').forEach(b => b.classList.toggle('on', b.dataset.dir === SH.zaDir));
+  $('#sh-zah').textContent = fmtH(SH.zaH);
+  $('#sh-zaminus').disabled = SH.zaH <= 0;
+
+  /* Schnellwerte: die üblichen Größen plus der ganze Tag, wenn es einen gibt. */
+  const werte = [0.25, 0.5, 1, 2, 4];
+  if(geplant > 0 && werte.indexOf(geplant) < 0) werte.push(geplant);
+  $('#sh-zaschnell').innerHTML = werte.sort((a,b) => a-b).map(v =>
+    '<button data-za="' + v + '">' + (v === geplant ? 'ganzer Tag · ' : '') + fmtH(v) + ' h</button>'
+  ).join('');
+
+  const weg = Math.min(SH.zaH, geplant || SH.zaH);
+  let satz;
+  if(SH.zaDir === 'plus'){
+    satz = fmtH(SH.zaH) + ' h kommen zur Arbeitszeit dieses Tages dazu.';
+  } else if(geplant <= 0){
+    satz = 'An diesem Tag ist laut Dienstplan nichts geplant — es gibt also nichts einzulösen. '
+         + 'Wähle einen Diensttag oder trage die Stunden als gesammelt ein.';
+  } else {
+    satz = fmtH(weg) + ' h weniger Arbeitszeit an diesem Tag'
+         + (SH.zaH > geplant ? ' — mehr als die geplanten ' + fmtH(geplant) + ' h gehen nicht' : '') + '.';
+  }
+  /* Was der Monat bisher sagt, ohne den Eintrag, der gerade entsteht. */
+  const bisher = monthSums(monthRows(ME, SH.y, SH.m)).za;
+  const wirkung = SH.zaDir === 'plus' ? SH.zaH : -weg;
+  const alt = (ME.events[key(SH.y, SH.m, SH.d)] || {}).t === 'zeit'
+    ? r25(+ME.events[key(SH.y, SH.m, SH.d)].za || 0) : 0;
+  const nachher = r25(bisher - alt + wirkung);
+  $('#sh-zahint').textContent = satz + ' ' + MONTHS[SH.m] + ' danach: '
+    + (nachher > 0 ? '+' : nachher < 0 ? '−' : '') + fmtH(Math.abs(nachher)) + ' h.';
 }
 function closeSheet(){ $('#sheet').classList.remove('on'); document.body.classList.remove('locked'); }
 
@@ -6178,10 +6318,41 @@ $('#sh-scope').addEventListener('click', e => {
   SH.scope = b.dataset.s; paintSheet();
 });
 $('#sh-text').addEventListener('input', e => SH.text = e.target.value);
+$('#sh-zadir').addEventListener('click', e => {
+  const b = e.target.closest('[data-dir]'); if(!b) return;
+  SH.zaDir = b.dataset.dir;
+  /* Beim Wechsel auf Einlösen den ganzen Tag vorschlagen, wenn nichts steht. */
+  if(SH.zaDir === 'minus' && SH.zaH <= 0 && SH._geplant > 0) SH.zaH = SH._geplant;
+  paintSheet();
+});
+$('#sh-zaminus').addEventListener('click', () => {
+  SH.zaH = Math.max(0, r25(SH.zaH - ZA_SCHRITT)); paintSheet();
+});
+$('#sh-zaplus').addEventListener('click', () => {
+  SH.zaH = Math.min(24, r25(SH.zaH + ZA_SCHRITT)); paintSheet();
+});
+$('#sh-zaschnell').addEventListener('click', e => {
+  const b = e.target.closest('[data-za]'); if(!b) return;
+  SH.zaH = r25(+b.dataset.za); paintSheet();
+});
+
 $('#sh-save').addEventListener('click', () => {
   if(!SH.type) return;
   const k = key(SH.y, SH.m, SH.d);
-  ME.events[k] = { t:SH.type, s:SH.scope, text:SH.type === 'eigen' ? SH.text.trim() : '', aw:SH.type === 'eigen' ? SH.aw : false };
+  if(SH.type === 'zeit'){
+    if(SH.zaH <= 0){ toast('Bitte Stunden wählen'); return; }
+    if(SH.zaDir === 'minus' && (SH._geplant || 0) <= 0){
+      toast('An einem dienstfreien Tag gibt es nichts einzulösen');
+      return;
+    }
+    const za = SH.zaDir === 'plus' ? SH.zaH : -SH.zaH;
+    ME.events[k] = { t:'zeit', za:r25(za) };
+    save(); closeSheet(); renderCal();
+    toast(SH.zaDir === 'plus'
+      ? fmtH(SH.zaH) + ' h gesammelt'
+      : fmtH(Math.min(SH.zaH, SH._geplant)) + ' h eingelöst');
+    return;
+  }  ME.events[k] = { t:SH.type, s:SH.scope, text:SH.type === 'eigen' ? SH.text.trim() : '', aw:SH.type === 'eigen' ? SH.aw : false };
   save(); closeSheet(); renderCal();
   toast('Eintrag gespeichert');
 });
@@ -6621,6 +6792,7 @@ function drawPage(doc, p, y, m, sigs){
                  ['Krankenstand',s.krank,  s.dKrank,  TYPES.krank.pdf],
                  ['Feiertag',    s.feier,  s.dFeier,  TYPES.feier.pdf]];
   if(s.sonst > 0) boxes.push(['Sonstige', s.sonst, s.dSonst, TYPES.eigen.pdf]);
+  if(s.zeit  > 0) boxes.push(['Zeitausgleich', s.zeit, s.dZeit, TYPES.zeit.pdf]);
   boxes.push(['Gesamt', s.total, s.dTotal, [214,168,40]]);
   const by = tEnd + 9.5, bh = 18.4, bw = W / boxes.length;
   boxes.forEach((b, i) => {
@@ -6658,7 +6830,7 @@ function drawPage(doc, p, y, m, sigs){
     doc.text(fmtT(b[2]), bx + bwi/2, by + 16.6, { align:'center' });
   });
   doc.setFont('helvetica','normal'); doc.setFontSize(6.3); doc.setTextColor.apply(doc, GREY);
-  doc.text('Arbeitsstunden = tatsächlich geleistete Arbeitszeit ohne Pausen. Urlaub, Krankenstand, Feiertag und Sonstige sind im Vermerk und in den Summen getrennt ausgewiesen.', L, by + bh + 4.4);
+  doc.text('Arbeitsstunden = tatsächlich geleistete Arbeitszeit ohne Pausen. Urlaub, Krankenstand, Feiertag, Sonstige und eingelöster Zeitausgleich sind im Vermerk und in den Summen getrennt ausgewiesen.', L, by + bh + 4.4);
   doc.text('Stunden gerundet auf 0,25 h  ·  Tage anteilig, ein halber Tag zählt 0,5  ·  Pausen gesamt: '
     + fmtH(s.pause) + ' h', L, by + bh + 8);
 
