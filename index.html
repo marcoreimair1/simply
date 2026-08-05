@@ -455,10 +455,54 @@ body.menuauf #avatar{transform:scale(.92)}
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
 .menu-card.avauf .avgrid{opacity:1;visibility:visible;transform:none}
-/* Die Zeilen darunter treten ganz zurück, solange gewählt wird — sonst
-   scheinen sie zwischen den Bildern durch. */
-.menu-card.avauf .mbody > :not(.avgrid){opacity:0;pointer-events:none}
-.mbody > :not(.avgrid){transition:opacity .26s var(--ease)}
+/* Die Zeilen darunter treten ganz zurück, solange etwas darüber liegt —
+   sonst scheinen sie zwischen den Bildern durch. */
+.menu-card.avauf .mbody > :not(.avgrid),
+.menu-card.kauf  .mbody > :not(.konten){opacity:0;pointer-events:none}
+.mbody > *{transition:opacity .26s var(--ease)}
+
+/* ─── Zeitausgleich und Urlaubstage ───────────────────────────────────
+   Dieselbe Fläche wie bei den Bildern, darauf zwei Stände. Die Zahlen
+   zählen beim Öffnen hoch, damit man sieht, dass sie gerechnet sind. */
+.konten{position:absolute;inset:-4px -6px;z-index:3;display:flex;flex-direction:column;
+  gap:11px;justify-content:center;padding:10px 5px;border-radius:var(--r-s);overflow:auto;
+  background:rgba(18,28,66,.97);
+  opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
+  transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
+.menu-card.kauf .konten{opacity:1;visibility:visible;transform:none}
+.kbox{border:1px solid var(--line-2);border-radius:18px;padding:13px 14px 11px;
+  background:linear-gradient(165deg,rgba(27,40,86,.55),rgba(12,20,48,.30))}
+.menu-card.kauf .kbox{animation:kIn .5s var(--ease-out) both}
+.menu-card.kauf .kbox:nth-child(2){animation-delay:.09s}
+@keyframes kIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.kkopf{display:flex;align-items:center;gap:10px}
+.kico{flex:none;width:30px;height:30px;border-radius:11px;display:grid;place-items:center;
+  border:1px solid var(--line-2);color:var(--tx-2)}
+.kico svg{width:15px;height:15px}
+.kbox[data-k=za] .kico{color:var(--c-arbeit);background:rgba(191,208,242,.12)}
+.kbox[data-k=ur] .kico{color:var(--c-urlaub);background:rgba(247,215,116,.12)}
+.ktxt b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.ktxt small{display:block;font-size:10.5px;color:var(--tx-3);margin-top:1px}
+.kzahl{display:flex;align-items:baseline;gap:7px;margin:9px 0 0}
+.kzahl b{font-family:var(--font-dis);font-weight:400;font-size:34px;line-height:1.05;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;transition:color .3s}
+.kzahl u{text-decoration:none;font-size:11.5px;color:var(--tx-3)}
+.kbox[data-k=za] .kzahl b{color:var(--tx)}
+.kbox[data-k=za].plus  .kzahl b{color:var(--za-plus)}
+.kbox[data-k=za].minus .kzahl b{color:var(--za-minus)}
+.kbox[data-k=ur] .kzahl b{color:var(--c-urlaub)}
+.kbar{height:5px;border-radius:99px;background:rgba(238,242,255,.09);margin:10px 0 0;overflow:hidden}
+.kbar i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--c-urlaub),var(--butter-2));
+  transition:width .7s var(--ease-out)}
+.kfuss{display:flex;align-items:center;gap:10px;margin-top:9px}
+.kfuss small{flex:1;min-width:0;font-size:10.5px;line-height:1.45;color:var(--tx-3)}
+.kstep{flex:none;display:flex;gap:6px}
+.kstep button{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;
+  border:1px solid var(--line-2);color:var(--tx-2);font-size:16px;line-height:1;
+  transition:.16s var(--ease)}
+.kstep button:hover{border-color:var(--butter-dim);color:var(--butter)}
+.kstep button:active{transform:scale(.9)}
 /* Dieselbe Rundung im Verhältnis wie beim kleinen Bild oben rechts —
    34 % der Kante. So sind die Pastellecken gleich weit weggenommen und
    die Kachel wirkt in jeder Größe wie dieselbe Form. */
@@ -2763,6 +2807,38 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
          darüber, damit das Menü beim Öffnen nicht in die Länge wächst. -->
     <div class="mbody" id="mbody">
       <div class="avgrid" id="avgrid" role="group" aria-label="Profilbild wählen"></div>
+      <!-- Zweite Fläche im selben Blau: die beiden Stände. -->
+      <div class="konten" id="konten" role="group" aria-label="Zeitausgleich und Urlaubstage">
+        <div class="kbox" data-k="za">
+          <div class="kkopf">
+            <span class="kico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+            <span class="ktxt"><b>Zeitausgleich</b><small>Stand heute</small></span>
+          </div>
+          <div class="kzahl" id="k-za-wrap"><b id="k-za">0,00</b><u>h</u></div>
+          <div class="kfuss">
+            <small id="k-za-sub">—</small>
+            <span class="kstep">
+              <button data-kstep="za-" aria-label="Eine Viertelstunde weniger">−</button>
+              <button data-kstep="za+" aria-label="Eine Viertelstunde mehr">+</button>
+            </span>
+          </div>
+        </div>
+        <div class="kbox" data-k="ur">
+          <div class="kkopf">
+            <span class="kico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg></span>
+            <span class="ktxt"><b>Urlaubstage</b><small id="k-ur-jahr">—</small></span>
+          </div>
+          <div class="kzahl"><b id="k-ur">0</b><u>Tage offen</u></div>
+          <div class="kbar"><i id="k-ur-bar"></i></div>
+          <div class="kfuss">
+            <small id="k-ur-sub">—</small>
+            <span class="kstep">
+              <button data-kstep="ur-" aria-label="Einen halben Tag weniger">−</button>
+              <button data-kstep="ur+" aria-label="Einen halben Tag mehr">+</button>
+            </span>
+          </div>
+        </div>
+      </div>
     <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge. -->
     <button class="mrang" id="mrang" data-act="raenge" aria-label="Stufen ansehen">
       <span class="zaehler" id="mr-zaehler" hidden></span>
@@ -2776,6 +2852,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     </button>
     <button class="mi" data-act="karte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.6"/><path d="M3 10h18M7 14.5h4"/></svg>Mitgliedschaftskarte</button>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
+    <button class="mi" data-act="konten">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M7 8H4l3-4 3 4H7zm0 0v3a5 5 0 005 5"/><path d="M17 20h3l-3 -4 -3 4h3zm0 0v-3a5 5 0 00-5-5"/></svg>
+      Zeitausgleich &amp; Urlaubstage
+    </button>
     <button class="mi" data-act="erinnerung" id="mi-erin" style="display:none">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 10-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.3 20a2 2 0 003.4 0"/></svg>
       <span id="mi-erin-t">Monats-Erinnerung</span>
@@ -3281,7 +3361,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2057';
+const APP_STAND = '2026-08-05-2121';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3560,12 +3640,47 @@ function fmtT(d){
   return txt + (r === 1 ? ' Tag' : ' Tage');
 }
 
+/* ─── Zeitausgleich und Urlaub ────────────────────────────────────────
+   Zeitausgleich läuft durch: alle Einträge zählen, egal aus welchem Jahr,
+   dazu der Grundwert. Urlaub zählt je Kalenderjahr gegen den Anspruch.
+   Das Ergebnis landet in p.stand und wird mitgespeichert, damit der
+   Ist-Stand auch in der Datenbank steht und nicht nur am Bildschirm. */
+const r05 = x => Math.round(x * 2) / 2;
+function kontenRechnen(p){
+  p = p || ME; if(!p || !p.konten) return null;
+  let za = 0;
+  Object.keys(p.events || {}).forEach(k => {
+    const e = p.events[k]; if(!e || e.t !== 'zeit') return;
+    const teile = k.split('-');
+    const y = +teile[0], m = +teile[1] - 1, d = +teile[2];
+    if(!(y >= 1970 && m >= 0 && m <= 11 && d >= 1)) return;
+    try{ za += evalDay(p, y, m, d).za; }catch(_e){}
+  });
+  const jahr = new Date().getFullYear();
+  let tage = 0;
+  for(let m = 0; m < 12; m++) tage += monthSums(monthRows(p, jahr, m)).dUrlaub;
+  tage = r05(tage);
+  const anspruch = r05(p.konten.urlaubJahr);
+  p.stand = {
+    za:      r25(za + p.konten.zaStart),
+    zaRoh:   r25(za),
+    urlaub:  r05(anspruch - tage),
+    genommen:tage,
+    anspruch: anspruch,
+    jahr:    jahr,
+    ts:      Date.now()
+  };
+  return p.stand;
+}
+
 /* ─── Speicher ─────────────────────────────────────────────── */
 function load(){
   try{ const raw = localStorage.getItem(STORE); if(raw) return JSON.parse(raw); }catch(e){}
   return { profiles:[], activeId:null };
 }
 function save(){
+  /* Vor jedem Sichern den Stand nachziehen — so trägt ihn auch die Cloud. */
+  try{ if(ME) kontenRechnen(ME); }catch(e){ console.warn('[MOJI] Konten', e); }
   try{ localStorage.setItem(STORE, JSON.stringify(DB)); }catch(e){ toast('Speichern nicht möglich'); }
   cloudQueue();
 }
@@ -3618,6 +3733,14 @@ function normalize(p){
   if(typeof p.pkHost !== 'string') p.pkHost = '';
   /* Einwilligung in die Monats-Erinnerung. Fehlt sie, gilt: nein. */
   if(typeof p.mailOk !== 'boolean') p.mailOk = false;
+  /* Zeitausgleich und Urlaub. Gespeichert werden nur die beiden Grundwerte
+     — was du mitgebracht hast und wie viele Tage dir im Jahr zustehen.
+     Der Stand darunter wird gerechnet und bei jedem Speichern mitgeführt,
+     damit er auch in der Cloud steht. */
+  if(!p.konten || typeof p.konten !== 'object' || Array.isArray(p.konten)) p.konten = {};
+  if(typeof p.konten.zaStart   !== 'number' || !isFinite(p.konten.zaStart))   p.konten.zaStart = 0;
+  if(typeof p.konten.urlaubJahr!== 'number' || !isFinite(p.konten.urlaubJahr))p.konten.urlaubJahr = 25;
+  if(!p.stand || typeof p.stand !== 'object' || Array.isArray(p.stand)) p.stand = {};
   p.ort = EMPLOYER;
   return p;
 }
@@ -5988,9 +6111,89 @@ function avOffen(){
 function avWahl(an){
   const k = $('#menu .menu-card'); if(!k) return;
   const auf = (an === undefined) ? !avOffen() : !!an;
+  if(auf && typeof kontenOffen === 'function' && kontenOffen()) kontenAuf(false);
   k.classList.toggle('avauf', auf);
   const b = $('#avbig'); if(b) b.setAttribute('aria-expanded', auf ? 'true' : 'false');
 }
+/* ─── Die beiden Stände im Menü ───────────────────────────────────────
+   Zahlen zählen von ihrem letzten Wert zum neuen — beim Öffnen von null,
+   danach von Schritt zu Schritt. Das macht sichtbar, dass die Zahl aus
+   den Einträgen kommt und nicht bloß dasteht. */
+function zaehlAuf(el, bis, fmt, dauer){
+  if(!el) return;
+  const von = parseFloat(el.dataset.wert || '0') || 0;
+  el.dataset.wert = bis;
+  clearInterval(el._lauf);
+  const weite = bis - von, start = performance.now(), ms = dauer || 620;
+  if(Math.abs(weite) < 0.001 || ms <= 0){ el.textContent = fmt(bis); return; }
+  const schritt = jetzt => {
+    const t = Math.min(1, (jetzt - start) / ms);
+    const e = 1 - Math.pow(1 - t, 3);           /* weich auslaufen */
+    el.textContent = fmt(von + weite * e);
+    if(t < 1) el._raf = requestAnimationFrame(schritt);
+    else el.textContent = fmt(bis);
+  };
+  cancelAnimationFrame(el._raf);
+  el._raf = requestAnimationFrame(schritt);
+}
+function malKonten(vonNull){
+  if(!ME) return;
+  const st = kontenRechnen(ME) || {};
+  const za = st.za || 0;
+
+  const boxZa = $('.kbox[data-k=za]');
+  if(boxZa){
+    boxZa.classList.toggle('plus',  za >  0.001);
+    boxZa.classList.toggle('minus', za < -0.001);
+  }
+  const elZa = $('#k-za');
+  if(vonNull && elZa) elZa.dataset.wert = '0';
+  zaehlAuf(elZa, za, v => (v > 0.001 ? '+' : v < -0.001 ? '−' : '') + fmtH(Math.abs(v)));
+  $('#k-za-sub').textContent = 'Aus deinen Einträgen ' +
+      ((st.zaRoh || 0) > 0 ? '+' : (st.zaRoh || 0) < 0 ? '−' : '') + fmtH(Math.abs(st.zaRoh || 0)) + ' h'
+    + (Math.abs(ME.konten.zaStart) > 0.001
+        ? ' · Grundwert ' + (ME.konten.zaStart > 0 ? '+' : '−') + fmtH(Math.abs(ME.konten.zaStart)) + ' h'
+        : ' · kein Grundwert');
+
+  $('#k-ur-jahr').textContent = 'Jahr ' + st.jahr;
+  const elUr = $('#k-ur');
+  if(vonNull && elUr) elUr.dataset.wert = '0';
+  zaehlAuf(elUr, st.urlaub || 0, v => {
+    const r = Math.round(v * 2) / 2;
+    return (r % 1 === 0 ? String(r) : String(r).replace('.', ','));
+  });
+  $('#k-ur-sub').textContent = fmtT(st.genommen || 0).replace('keine Tage', 'noch keine Tage')
+    + ' genommen · Anspruch ' + fmtT(st.anspruch || 0);
+  const bar = $('#k-ur-bar');
+  if(bar){
+    const anteil = st.anspruch > 0 ? Math.max(0, Math.min(1, (st.urlaub || 0) / st.anspruch)) : 0;
+    if(vonNull) bar.style.width = '0%';
+    requestAnimationFrame(() => { bar.style.width = (anteil * 100).toFixed(1) + '%'; });
+  }
+}
+function kontenOffen(){
+  const k = $('#menu .menu-card');
+  return !!(k && k.classList.contains('kauf'));
+}
+function kontenAuf(an){
+  const k = $('#menu .menu-card'); if(!k || !ME) return;
+  const auf = (an === undefined) ? !kontenOffen() : !!an;
+  if(auf && avOffen()) avWahl(false);
+  k.classList.toggle('kauf', auf);
+  if(auf) malKonten(true);
+}
+$('#konten').addEventListener('click', e => {
+  const b = e.target.closest('[data-kstep]');
+  /* Ein Tipp auf die Fläche daneben schließt wieder. */
+  if(!b){ if(!e.target.closest('.kbox')) kontenAuf(false); return; }
+  const w = b.dataset.kstep;
+  if(w === 'za-') ME.konten.zaStart = r25(ME.konten.zaStart - 0.25);
+  if(w === 'za+') ME.konten.zaStart = r25(ME.konten.zaStart + 0.25);
+  if(w === 'ur-') ME.konten.urlaubJahr = Math.max(0,  r05(ME.konten.urlaubJahr - 0.5));
+  if(w === 'ur+') ME.konten.urlaubJahr = Math.min(90, r05(ME.konten.urlaubJahr + 0.5));
+  save();
+  malKonten(false);
+});
 $('#avbig').addEventListener('click', () => avWahl());
 $('#avgrid').addEventListener('click', e => {
   const b = e.target.closest('[data-av]');
@@ -7271,8 +7474,9 @@ function menuAuf(){
 function menuZu(){
   const m = $('#menu');
   if(!m.classList.contains('on') || m.classList.contains('zu')) return;
-  /* Die Bildauswahl beginnt beim nächsten Öffnen wieder geschlossen. */
+  /* Bildauswahl und Stände beginnen beim nächsten Öffnen wieder geschlossen. */
   if(avOffen()) avWahl(false);
+  if(kontenOffen()) kontenAuf(false);
   m.classList.add('zu');
   document.body.classList.remove('menuauf');
   clearTimeout(_menuZu);
@@ -7292,6 +7496,8 @@ $('#avatar').addEventListener('click', () => {
 $('#menu').addEventListener('click', e => {
   if(e.target.dataset.close === 'menu'){ menuZu(); return; }
   const b = e.target.closest('[data-act]'); if(!b) return;
+  /* Die Stände bleiben im Menü — dafür wird es nicht geschlossen. */
+  if(b.dataset.act === 'konten'){ kontenAuf(); return; }
   menuZu();
   const a = b.dataset.act;
   if(a === 'hours'){
