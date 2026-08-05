@@ -3055,7 +3055,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1554';
+const APP_STAND = '2026-08-05-1902';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3219,7 +3219,11 @@ function evalDay(profile, y, m, d){
   const k = key(y, m, d);
   const plan = dayPlan(profile.sched, date);
   const hol  = holidays(y)[k];
-  const ev   = profile.events ? profile.events[k] : null;
+  const roh  = profile.events ? profile.events[k] : null;
+  /* Kennt diese Fassung die Art nicht — etwa weil ein Eintrag aus einer
+     neueren Fassung stammt und wir zurückgegangen sind —, wird er
+     übergangen statt die Ansicht abstürzen zu lassen. */
+  const ev   = (roh && TYPES[roh.t]) ? roh : null;
 
   const out = {
     k:k, date:date, dow:date.getDay(), day:d,
@@ -3339,6 +3343,14 @@ function normalize(p){
   /* Mitglied seit. Alte Profile haben das Feld nicht — die Kennung trägt den
      Zeitstempel ihrer Entstehung in sich, der reicht als Ersatz. */
   if(typeof p.seit !== 'number' || !isFinite(p.seit)) p.seit = seitAusId(p.id);
+  /* Einträge, deren Art diese Fassung nicht kennt, fliegen beim Laden
+     heraus. Ohne das bliebe unsichtbarer Ballast im Profil liegen. */
+  if(p.events && typeof p.events === 'object'){
+    Object.keys(p.events).forEach(k => {
+      const e = p.events[k];
+      if(!e || !e.t || !TYPES[e.t]) delete p.events[k];
+    });
+  }
   /* Nur die Nummer des Motivs, kein Bild — die Zeile in der Cloud bleibt klein. */
   const av = +p.avatar;
   if(!(av >= 1 && av <= 12)) delete p.avatar;
