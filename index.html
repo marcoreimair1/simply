@@ -669,6 +669,22 @@ h1.dis i{font-style:italic;color:var(--butter)}
   border-color:var(--line-2);box-shadow:none;transform:translateY(-50%)}
 .inline-go:disabled:hover{transform:translateY(-50%)}
 .inline-go svg{width:21px;height:21px}
+/* Häkchen mit eigenem Kästchen — das Systemkästchen lässt sich am Handy
+   nicht anständig einfärben. */
+.okbox{display:flex;align-items:flex-start;gap:12px;margin:18px 0 4px;padding:13px 14px;
+  border-radius:var(--r-m);border:1px solid var(--line-2);background:rgba(6,10,26,.4);
+  cursor:pointer;transition:.2s;max-width:430px}
+.okbox:hover{border-color:var(--butter-dim)}
+.okbox input{position:absolute;opacity:0;width:0;height:0}
+.okmark{flex:none;width:24px;height:24px;margin-top:1px;border-radius:8px;display:grid;
+  place-items:center;border:1px solid var(--line-2);color:transparent;transition:.22s var(--ease)}
+.okmark svg{width:15px;height:15px}
+.okbox input:checked ~ .okmark{background:var(--butter);border-color:var(--butter);color:#221904}
+.okbox input:focus-visible ~ .okmark{box-shadow:0 0 0 3px rgba(247,215,116,.3)}
+.oktext{min-width:0}
+.oktext b{display:block;font-size:13.5px;font-weight:600}
+.oktext small{display:block;margin-top:3px;font-size:11.5px;line-height:1.55;color:var(--tx-3)}
+
 .autonext{display:flex;align-items:center;gap:9px;margin-top:16px;font-size:12.5px;color:var(--butter)}
 .autonext .dots{display:inline-flex;gap:4px}
 .autonext .dots i{width:5px;height:5px;border-radius:50%;background:var(--butter);animation:blink 1.1s infinite}
@@ -686,6 +702,9 @@ h1.dis i{font-style:italic;color:var(--butter)}
    in der Profilauswahl bleiben unberührt. */
 .mgrid .chip{min-height:54px;display:flex;align-items:center;justify-content:center;
   font-size:13.5px;letter-spacing:.01em}
+/* Noch nicht dran: sichtbar, aber deutlich zurückgenommen. */
+.mgrid .chip.zu{opacity:.3;color:var(--tx-3);border-style:dashed;cursor:default}
+.mgrid .chip.zu:hover{background:none;transform:none}
 .yearnav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px}
 .yearnav b{font-family:var(--font-dis);font-size:26px;font-weight:400;font-variant-numeric:tabular-nums}
 .rnd{width:38px;height:38px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;transition:.2s}
@@ -2217,6 +2236,21 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
             <h1 class="dis">Das war's <i>schon</i>.</h1>
             <p class="lede" id="done-text"></p>
 
+            <!-- Erinnerung per E-Mail. Freiwillig, standardmäßig aus — ohne
+                 Häkchen wird nichts verschickt. -->
+            <label class="okbox" id="mailok-box">
+              <input type="checkbox" id="mailok">
+              <span class="okmark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>
+              </span>
+              <span class="oktext">
+                <b>Erinnere mich per E-Mail</b>
+                <small>Einmal im Monat, wenn der Vormonat zum Abgeben bereit ist.
+                  Nur dafür — kein Newsletter, keine Weitergabe. Du kannst es im
+                  Profilmenü jederzeit abschalten.</small>
+              </span>
+            </label>
+
             <!-- zuerst das Dokument, danach die Funktionen zum Ziehen -->
             <div class="pdfprev" id="pdfprev"></div>
 
@@ -2402,6 +2436,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <span class="mr-kopf"><span class="mr-lvl" id="mr-lvl">LVL 1</span><b id="mr-name">—</b></span>
       <span class="mr-schiene"><span class="mr-bar" id="mr-bar"></span></span>
       <small id="mr-rest">—</small>
+    </button>
+    <button class="mi" data-act="erinnerung" id="mi-erin" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 10-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.3 20a2 2 0 003.4 0"/></svg>
+      <span id="mi-erin-t">Monats-Erinnerung</span>
     </button>
     <button class="mi" data-act="karte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.6"/><path d="M3 10h18M7 14.5h4"/></svg>Mitgliedschaftskarte</button>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
@@ -2761,7 +2799,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1306';
+const APP_STAND = '2026-08-05-1320';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3051,6 +3089,8 @@ function normalize(p){
   if(!Array.isArray(p.gelesen)) p.gelesen = [];
   if(!Array.isArray(p.post)) p.post = [];
   if(typeof p.pkHost !== 'string') p.pkHost = '';
+  /* Einwilligung in die Monats-Erinnerung. Fehlt sie, gilt: nein. */
+  if(typeof p.mailOk !== 'boolean') p.mailOk = false;
   p.ort = EMPLOYER;
   return p;
 }
@@ -3820,6 +3860,10 @@ function obPaint(){
     : 'Weiter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   if(OB.step === STEPS-1){
     const vn = $('#in-vn').value.trim(), nn = $('#in-nn').value.trim();
+    /* Ohne Cloud gibt es keine E-Mail-Adresse — dann auch kein Häkchen. */
+    const box = $('#mailok-box');
+    if(box) box.style.display = (CLOUD_ON && MAIL) ? 'flex' : 'none';
+    $('#mailok').checked = !!(OB.mailOk || (ME && ME.mailOk));
     /* Hier ist alles beisammen — also jetzt speichern, nicht erst beim Knopf */
     try{ sichereProfil(); }catch(e){ console.warn('Sichern nicht möglich', e); }
     $('#done-text').textContent = CLOUD_ON
@@ -4035,6 +4079,15 @@ $('#ob-next').addEventListener('click', () => {
 $('#ob-back').addEventListener('click', () => { if(OB.step > 0) obGo(OB.step - 1); });
 $('#go-name').addEventListener('click', () => { if(stepValid(0)) obGo(1); });
 $('#go-ort').addEventListener('click', () => obGo(3));
+/* Häkchen sofort ins Profil schreiben — der Funnel speichert schon beim
+   Betreten des letzten Schritts, ein späterer Klick muss also nachziehen. */
+$('#mailok').addEventListener('change', () => {
+  const an = $('#mailok').checked;
+  if(ME){ ME.mailOk = an; save(); }
+  if(OB) OB.mailOk = an;
+  malErinnerung();
+  toast(an ? 'Erinnerung eingeschaltet' : 'Erinnerung aus');
+});
 const _nPrev = { 'in-vn':'', 'in-nn':'' };
 ['in-vn','in-nn'].forEach(id => {
   $('#'+id).addEventListener('input', e => {
@@ -4064,12 +4117,14 @@ function sichereProfil(){
   if(_funnelId && ME && ME.id === _funnelId){
     ME.vorname = vn; ME.nachname = nn; ME.dob = dob;
     ME.sched = sched; ME.months = months;
+    if(typeof OB.mailOk === 'boolean') ME.mailOk = OB.mailOk;
     normalize(ME);
   } else {
     ME = normalize({
       id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
       vorname: vn, nachname: nn, dob: dob, ort: EMPLOYER,
       sched: sched, months: months, events: (ME && ME.events) || {},
+      mailOk: !!OB.mailOk,
       created: new Date().toISOString()
     });
     _funnelId = ME.id;
@@ -4335,6 +4390,7 @@ function enterApp(){
   CAL.m = heute.getMonth();
   Q.from = Q.to = null; Q.y = CAL.y; Q.m = CAL.m;
   malRang();
+  malErinnerung();
   exYear(); renderCal(); renderQCal();
   setTimeout(pruefeStand, 3500);
   go('v-cal');
@@ -4524,6 +4580,21 @@ function merkeExporte(list){
 }
 
 /* Die Zeile im Profilmenü */
+/* Zustand der Monats-Erinnerung im Menü. Nur sichtbar, wenn eine
+   E-Mail-Adresse bekannt ist — ohne Konto gibt es niemanden zu erinnern. */
+function malErinnerung(){
+  const mi = $('#mi-erin'); if(!mi) return;
+  const moeglich = !!(CLOUD_ON && UID && MAIL);
+  mi.style.display = moeglich ? 'flex' : 'none';
+  const an = !!(ME && ME.mailOk);
+  $('#mi-erin-t').innerHTML = 'Monats-Erinnerung <small>'
+    + (an ? 'ein · per E-Mail an ' + esc(MAIL) : 'aus')
+    + '</small>';
+  mi.classList.toggle('done', an);
+  const box = $('#mailok');
+  if(box) box.checked = an;
+}
+
 function malRang(){
   const zeile = $('#mrang'); if(!zeile) return;
   const nr = stufe(), r = rang(nr);
@@ -5852,10 +5923,32 @@ $('#q-clear').addEventListener('click', () => {
 /* ═══════════════════════════════════════════════════════════
    EXPORT-AUSWAHL
    ═══════════════════════════════════════════════════════════ */
+/* Was in der Zukunft liegt, kann noch niemand aufgezeichnet haben. Der
+   laufende Monat ist erlaubt — wer vor Monatsende abgibt, soll das können. */
+function monatOffen(y, m){
+  const h = new Date();
+  return y < h.getFullYear() || (y === h.getFullYear() && m <= h.getMonth());
+}
 function exYear(){
+  const h = new Date();
   $('#ex-year').textContent = EX.year;
-  $('#ex-months').innerHTML = MONTHS.map((n,i) =>
-    '<button class="chip'+(EX.set.has(EX.year+'-'+i)?' on':'')+'" data-m="'+i+'">'+MSHORT[i]+'</button>').join('');
+  /* Sollte doch ein künftiger Monat in der Auswahl liegen — etwa aus einem
+     alten Profil —, fliegt er hier heraus. */
+  let entfernt = false;
+  Array.from(EX.set).forEach(k => {
+    const [y, m] = k.split('-').map(Number);
+    if(!monatOffen(y, m)){ EX.set.delete(k); entfernt = true; }
+  });
+  if(entfernt && ME){ ME.months = exList(); save(); }
+  $('#ex-months').innerHTML = MONTHS.map((n,i) => {
+    const offen = monatOffen(EX.year, i);
+    return '<button class="chip'+(EX.set.has(EX.year+'-'+i)?' on':'')+(offen?'':' zu')+'"'
+      + ' data-m="'+i+'"'+(offen?'':' disabled aria-label="'+n+' '+EX.year+' liegt noch in der Zukunft"')
+      + '>'+MSHORT[i]+'</button>';
+  }).join('');
+  /* Kein Blättern in Jahre, in denen ohnehin nichts wählbar ist. */
+  const vor = $('[data-exyr="1"]');
+  if(vor) vor.disabled = EX.year >= h.getFullYear();
   const list = exList();
   $('#ex-note').textContent = list.length
     ? list.length + (list.length === 1 ? ' Monat' : ' Monate') + ' gewählt · ' +
@@ -5872,6 +5965,10 @@ function exList(){
 }
 $('#ex-months').addEventListener('click', e => {
   const b = e.target.closest('[data-m]'); if(!b) return;
+  if(b.disabled || !monatOffen(EX.year, +b.dataset.m)){
+    toast('Dieser Monat liegt noch vor uns.');
+    return;
+  }
   const k = EX.year + '-' + b.dataset.m;
   EX.set.has(k) ? EX.set.delete(k) : EX.set.add(k);
   ME.months = exList(); save(); exYear();
@@ -6317,6 +6414,7 @@ function menuAuf(){
   const m = $('#menu');
   m.classList.remove('zu');
   malRang();
+  malErinnerung();
   m.classList.add('on');
   document.body.classList.add('menuauf');
 }
@@ -6365,6 +6463,16 @@ $('#menu').addEventListener('click', e => {
   }
   if(a === 'karte'){ _vonMenu = true; karteAuf(); }
   if(a === 'raenge'){ _vonMenu = true; if(aufOffen()) aufFeier(); else rangAuf(); }
+  if(a === 'erinnerung'){
+    if(ME){
+      ME.mailOk = !ME.mailOk;
+      save();
+      malErinnerung();
+      toast(ME.mailOk
+        ? 'Wir erinnern dich künftig am Monatsersten.'
+        : 'Erinnerung ausgeschaltet.');
+    }
+  }
   if(a === 'pkreset') pkReset();
   if(a === 'logout') doLogout();
   if(a === 'delete') doDelete();
