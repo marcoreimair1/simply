@@ -493,6 +493,15 @@ body.menuauf #avatar{transform:scale(.92)}
 .mi:hover{background:rgba(247,215,116,.1);color:var(--butter)}
 .mi.danger:hover{background:rgba(255,142,110,.12);color:var(--coral)}
 .mi svg{width:16px;height:16px;flex:none;opacity:.8}
+/* Passkey: dasselbe Symbolmaß wie überall, der Zustand steckt in der Farbe
+   der Zeile darunter — grün aktiv, orange noch nicht, rot bei einem Problem. */
+.mi.pk-ok   .miico{color:var(--za-plus)}
+.mi.pk-ok   small{color:var(--za-plus)}
+.mi.pk-warn .miico{color:var(--butter)}
+.mi.pk-warn small{color:var(--butter)}
+.mi.pk-bad  .miico{color:var(--za-minus)}
+.mi.pk-bad  small{color:var(--za-minus)}
+
 /* Zweizeiliger Eintrag: oben die Sache, darunter ihr Zustand. */
 .mi small{display:block;font-size:10.5px;color:var(--tx-3);margin-top:1px;letter-spacing:0}
 .mi.done small{color:var(--c-eigen)}
@@ -971,9 +980,50 @@ body.nobar #v-onboard{padding-top:14px}
 .mfoot{margin:11px 2px 2px;padding-top:12px;border-top:1px solid var(--line-2);
   font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-3);text-align:center}
 .mfoot b{color:var(--butter);font-weight:600;letter-spacing:.08em}
-.mi .miico{display:grid;place-items:center;width:24px;height:24px;flex:none}
-.mi .miico svg{width:24px;height:24px}
-#mi-pkreset svg{opacity:.6}
+
+/* ─── Passkey-Balken ──────────────────────────────────────────────────
+   Sitzt unten, deckt nur wenig zu und fragt eine Sache. Der Hintergrund
+   dahinter ist antippbar, damit man ihn schnell wieder los ist. */
+.pkbar{position:fixed;inset:0;z-index:80;display:none}
+.pkbar.on{display:block}
+.pkbar-hg{position:absolute;inset:0;background:rgba(4,7,20,.5);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  opacity:0;transition:opacity .22s var(--ease)}
+.pkbar.da .pkbar-hg{opacity:1}
+.pkbar-in{position:absolute;left:12px;right:12px;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  display:flex;align-items:center;gap:12px;padding:13px 14px;
+  border-radius:20px;border:1px solid var(--line);
+  background:linear-gradient(165deg,rgba(27,40,86,.97),rgba(12,20,48,.97));
+  box-shadow:var(--shadow);
+  transform:translateY(130%);transition:transform .34s var(--ease-out)}
+.pkbar.da .pkbar-in{transform:none}
+@media(min-width:560px){ .pkbar-in{left:50%;right:auto;width:474px;margin-left:-237px} }
+.pkbar-i{flex:none;width:38px;height:38px;border-radius:13px;display:grid;place-items:center;
+  border:1px solid var(--line-2);color:var(--tx-2)}
+.pkbar-i svg{width:19px;height:19px}
+.pkbar.aktiv  .pkbar-i{color:var(--za-plus);border-color:rgba(95,224,160,.4);background:rgba(95,224,160,.1)}
+.pkbar.aus    .pkbar-i{color:var(--butter);border-color:var(--butter-dim);background:rgba(247,215,116,.09)}
+.pkbar.problem .pkbar-i{color:var(--za-minus);border-color:rgba(255,112,96,.4);background:rgba(255,112,96,.1)}
+.pkbar-txt{flex:1;min-width:0}
+.pkbar-txt b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.pkbar-txt small{display:block;margin-top:2px;font-size:11px;line-height:1.4;color:var(--tx-3)}
+.pkbar-btns{flex:none;display:flex;align-items:center;gap:7px}
+.pkbar-btns button{padding:9px 13px;border-radius:12px;font-size:12.5px;font-weight:600;
+  border:1px solid var(--line-2);color:var(--tx-2);transition:.18s var(--ease)}
+.pkbar-no:hover{border-color:var(--line);color:var(--tx)}
+.pkbar-ja{background:var(--butter);border-color:var(--butter)!important;color:#20180A!important}
+.pkbar-ja:hover{background:var(--butter-2)}
+.pkbar.aktiv .pkbar-ja{background:rgba(255,112,96,.16);border-color:rgba(255,112,96,.5)!important;
+  color:var(--za-minus)!important}
+.pkbar.aktiv .pkbar-ja:hover{background:rgba(255,112,96,.26)}
+.pkbar-btns button:disabled{opacity:.55;cursor:progress}
+@media(max-width:420px){
+  .pkbar-in{flex-wrap:wrap}
+  .pkbar-btns{width:100%;justify-content:flex-end}
+}
+.mi .miico{display:grid;place-items:center;width:16px;height:16px;flex:none}
+.mi .miico svg{width:16px;height:16px;opacity:.9}
 /* ─── Begrüßungsseite ─────────────────────────────────────
    Drei Merkmale, jedes mit einem Musterbild. Die Bilder sind aus Formen
    gebaut statt aus Dateien — nichts lädt nach, nichts blitzt auf. */
@@ -2722,12 +2772,28 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 10-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.3 20a2 2 0 003.4 0"/></svg>
       <span id="mi-erin-t">Monats-Erinnerung</span>
     </button>
-    <button class="mi" data-act="passkey" id="mi-pk" style="display:none"><span class="miico" id="mi-pk-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span><span id="mi-pk-t">Passkey anlegen</span></button>
-    <button class="mi" data-act="pkreset" id="mi-pkreset" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Passkey zurücksetzen</button>
+    <button class="mi" data-act="passkey" id="mi-pk" style="display:none">
+      <span class="miico" id="mi-pk-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span>
+      <span id="mi-pk-t">Passkey<small id="mi-pk-s">—</small></span>
+    </button>
         <button class="mi" data-act="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12H4M8 8l-4 4 4 4M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/></svg>Abmelden</button>
     
     <button class="mi danger" data-act="delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Profil löschen</button>
     <div class="mfoot">Eine App von <b>Studio MARU 丸</b></div>
+  </div>
+</div>
+
+<!-- Kleiner Balken für den Passkey: fragt kurz nach, statt eine ganze Seite
+     aufzuziehen. Beschriftung und Farbe richten sich nach dem Zustand. -->
+<div class="pkbar" id="pkbar" aria-hidden="true">
+  <div class="pkbar-hg" data-close="pkbar"></div>
+  <div class="pkbar-in" role="dialog" aria-modal="true" aria-labelledby="pkbar-b">
+    <span class="pkbar-i" id="pkbar-i"></span>
+    <span class="pkbar-txt"><b id="pkbar-b">—</b><small id="pkbar-s">—</small></span>
+    <span class="pkbar-btns">
+      <button class="pkbar-no" id="pkbar-no">Abbrechen</button>
+      <button class="pkbar-ja" id="pkbar-ja">Weiter</button>
+    </span>
   </div>
 </div>
 
@@ -3206,7 +3272,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2022';
+const APP_STAND = '2026-08-05-2034';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3594,6 +3660,8 @@ async function cloudBoot(){
    Ein Passkey liegt im Gerät bzw. im Schlüsselbund und ersetzt Code und Link.
    Anlegen geht nur angemeldet — die erste Anmeldung bleibt die E-Mail.     */
 let PK_LISTE = null;                       /* null = noch nicht nachgesehen */
+let PK_GEPRUEFT = false;                   /* einmal nachgesehen worden */
+let PK_FEHLER = '';                        /* letzter Fehlversuch, für Rot */
 let _pkHostNachLogin = false;              /* gerade per Passkey angemeldet */
 const PK_KEY   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>';
 const PK_GESCHENK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5h16v8.5a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 20z"/><path d="M3 8h18v3.5H3z"/><path d="M12 8v13.5"/><path d="M12 8S10.6 4 8.6 4a2.3 2.3 0 000 4.6z"/><path d="M12 8s1.4-4 3.4-4a2.3 2.3 0 010 4.6z"/></svg>';
@@ -3603,8 +3671,16 @@ async function pkRefresh(){
   if(!PASSKEY || !UID){ PK_LISTE = null; return null; }
   try{
     const r = await sb.auth.passkey.list();
-    PK_LISTE = r.error ? null : (r.data || []);
-  }catch(e){ console.warn('Passkeys nicht abrufbar', e); PK_LISTE = null; }
+    if(r.error) throw r.error;
+    PK_LISTE = r.data || [];
+  }catch(e){
+    console.warn('Passkeys nicht abrufbar', e);
+    /* Ein Aussetzer beim Abruf darf einen bekannten Passkey nicht in Frage
+       stellen — dann bleibt der letzte Stand stehen. Rot wird es nur, wenn
+       wir nie einen gesehen haben. */
+    if(!(Array.isArray(PK_LISTE) && PK_LISTE.length)) PK_LISTE = null;
+  }
+  PK_GEPRUEFT = true;
   paintPasskey();
   return PK_LISTE;
 }
@@ -3631,6 +3707,19 @@ function pkVeraltet(){
   return pkHostVermerk() !== location.hostname;
 }
 
+/* Vier Zustände, an einer Stelle festgelegt:
+   aktiv   — liegt vor und gilt für diese Adresse          (grün)
+   aus     — liegt nicht vor, kann angelegt werden         (orange)
+   problem — veraltet, nicht abrufbar oder letzter Versuch schiefgegangen (rot)
+   laden   — noch nicht nachgesehen                        (grau) */
+function pkStand(){
+  if(!PK_GEPRUEFT && PK_LISTE === null) return 'laden';
+  if(PK_LISTE === null) return 'problem';
+  if(pkVeraltet())      return 'problem';
+  if(PK_FEHLER && !PK_LISTE.length) return 'problem';
+  return PK_LISTE.length ? 'aktiv' : 'aus';
+}
+
 /* Anlegen. Gibt true zurück, wenn danach ein Passkey vorhanden ist. */
 async function pkAdd(knopf, zweiterVersuch){
   if(!PASSKEY) return false;
@@ -3640,6 +3729,7 @@ async function pkAdd(knopf, zweiterVersuch){
     const r = await sb.auth.registerPasskey();
     if(r.error) throw r.error;
     pkHostMerken();                                   /* gilt für diese Adresse */
+    PK_FEHLER = '';
     toast('Passkey angelegt');
     await pkRefresh();
     return true;
@@ -3654,7 +3744,9 @@ async function pkAdd(knopf, zweiterVersuch){
       const weg = await pkAlleLoeschen();
       if(weg) return pkAdd(knopf, true);
     }
-    toast(pkText(e));
+    PK_FEHLER = pkText(e);
+    toast(PK_FEHLER);
+    paintPasskey();
     return false;
   }finally{
     if(knopf){ knopf.disabled = false; knopf.innerHTML = alt; }
@@ -3688,9 +3780,7 @@ async function pkErneuern(knopf){
 /* Passkey wieder loswerden. Der Eintrag im Schlüsselbund des Geräts bleibt —
    den räumt man dort auf, MOJI kommt nicht daran. */
 async function pkReset(){
-  if(!Array.isArray(PK_LISTE) || !PK_LISTE.length) return;
-  if(!confirm('Passkey zurücksetzen? Danach meldest du dich wieder per E-Mail an. '
-            + 'Einen neuen kannst du jederzeit anlegen.')) return;
+  if(!Array.isArray(PK_LISTE) || !PK_LISTE.length) return false;
   try{
     for(const p of PK_LISTE.slice()){
       const r = await sb.auth.passkey.delete({ passkeyId: p.id });
@@ -3699,9 +3789,70 @@ async function pkReset(){
     try{ localStorage.removeItem('maru.pkask.' + UID); }catch(e){}
     try{ localStorage.removeItem(pkHostSchluessel()); }catch(e){}
     if(ME && ME.pkHost){ ME.pkHost = ''; save(); }
+    PK_FEHLER = '';
     await pkRefresh();
-    toast('Passkey zurückgesetzt');
-  }catch(e){ toast('Zurücksetzen nicht möglich'); }
+    toast('Passkey deaktiviert');
+    return true;
+  }catch(e){ toast('Deaktivieren nicht möglich'); return false; }
+}
+
+/* ─── Der kleine Balken ───────────────────────────────────────────────
+   Ein Tipp auf die Menüzeile fragt genau eine Sache: aktiv → deaktivieren,
+   orange → aktivieren, rot → nochmal versuchen. Sonst nichts. */
+function pkBarAuf(){
+  const el = $('#pkbar'); if(!el) return;
+  const stand = pkStand();
+  if(stand === 'laden'){ pkRefresh(); toast('Passkey wird geprüft …'); return; }
+
+  el.classList.remove('aktiv','aus','problem');
+  el.classList.add(stand);
+  $('#pkbar-i').innerHTML = PK_KEY;
+
+  if(stand === 'aktiv'){
+    $('#pkbar-b').textContent = 'Passkey deaktivieren?';
+    $('#pkbar-s').textContent = 'Danach meldest du dich wieder mit Code per E-Mail an.';
+    $('#pkbar-ja').textContent = 'Deaktivieren';
+    $('#pkbar-no').textContent = 'Behalten';
+  } else if(stand === 'problem'){
+    $('#pkbar-b').textContent = 'Passkey neu einrichten?';
+    $('#pkbar-s').textContent = PK_FEHLER
+      || (pkVeraltet() ? 'Der alte Passkey gilt noch für die frühere Adresse.'
+                       : 'Der Stand ließ sich nicht abrufen.');
+    $('#pkbar-ja').textContent = 'Neu versuchen';
+    $('#pkbar-no').textContent = 'Abbrechen';
+  } else {
+    $('#pkbar-b').textContent = 'Passkey aktivieren?';
+    $('#pkbar-s').textContent = 'Beim nächsten Anmelden genügt Face ID oder Fingerabdruck.';
+    $('#pkbar-ja').textContent = 'Aktivieren';
+    $('#pkbar-no').textContent = 'Später';
+  }
+  $('#pkbar-ja').disabled = false;
+  $('#pkbar-no').disabled = false;
+  el.classList.add('on');
+  el.setAttribute('aria-hidden','false');
+  requestAnimationFrame(() => el.classList.add('da'));
+}
+function pkBarZu(){
+  const el = $('#pkbar'); if(!el || !el.classList.contains('on')) return;
+  el.classList.remove('da');
+  el.setAttribute('aria-hidden','true');
+  setTimeout(() => el.classList.remove('on'), 300);
+}
+async function pkBarJa(){
+  const stand = pkStand();
+  const ja = $('#pkbar-ja'), no = $('#pkbar-no');
+  ja.disabled = no.disabled = true;
+  const vorher = ja.textContent;
+  ja.textContent = 'Warte …';
+  try{
+    if(stand === 'aktiv')       await pkReset();
+    else if(stand === 'problem')await pkErneuern(null);
+    else                        await pkAdd(null);
+  } finally {
+    ja.textContent = vorher;
+    ja.disabled = no.disabled = false;
+    pkBarZu();
+  }
 }
 
 /* ─── Gleich nach der ersten Anmeldung fragen ───
@@ -3749,20 +3900,23 @@ function pkText(e){
 function paintPasskey(){
   const hat = Array.isArray(PK_LISTE) && PK_LISTE.length > 0;
   const alt = pkVeraltet();
-  const mi = $('#mi-pk'), mr = $('#mi-pkreset');
+  const stand = pkStand();
+  const mi = $('#mi-pk');
   if(mi){
     mi.style.display = (PASSKEY && UID) ? 'flex' : 'none';
-    $('#mi-pk-t').innerHTML = alt
-      ? 'Passkey neu anlegen <small>Nach dem Umzug auf moji-app.at nötig</small>'
-      : (hat
-          ? 'Passkey aktuell <small>Anmelden ohne Code</small>'
-          : 'Passkey anlegen <small>Anmelden ohne Code</small>');
-    $('#mi-pk-i').innerHTML = (hat && !alt) ? PK_HAKEN : PK_KEY;
-    mi.classList.toggle('done', hat && !alt);
-    mi.classList.toggle('achtung', alt);
+    /* Immer dasselbe Schlüsselsymbol in Normalgröße — der Zustand steht
+       darunter und trägt die Farbe. */
+    $('#mi-pk-i').innerHTML = PK_KEY;
+    $('#mi-pk-s').textContent =
+        stand === 'aktiv'   ? 'Anmelden ohne Code aktiv'
+      : stand === 'problem' ? 'Anmelden ohne Code – Problem'
+      : stand === 'laden'   ? 'Anmelden ohne Code – wird geprüft …'
+      :                       'Anmelden ohne Code – noch nicht aktiviert';
+    mi.classList.toggle('pk-ok',   stand === 'aktiv');
+    mi.classList.toggle('pk-warn', stand === 'aus');
+    mi.classList.toggle('pk-bad',  stand === 'problem');
+    mi.classList.remove('done', 'achtung');
   }
-  /* Zurücksetzen nur zeigen, wenn es auch etwas zurückzusetzen gibt */
-  if(mr) mr.style.display = (PASSKEY && UID && hat) ? 'flex' : 'none';
 
   const karte = $('#pk-card'), knopf = $('#pk-card-go'), txt = $('#pk-card-t');
   if(karte){
@@ -7130,6 +7284,14 @@ function menuZu(){
   clearTimeout(_menuZu);
   _menuZu = setTimeout(() => { m.classList.remove('on','zu'); }, 210);
 }
+$('#pkbar').addEventListener('click', e => {
+  if(e.target.dataset.close === 'pkbar'){ pkBarZu(); return; }
+  if(e.target.closest('#pkbar-no')){ pkBarZu(); return; }
+  if(e.target.closest('#pkbar-ja')) pkBarJa();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && $('#pkbar').classList.contains('on')) pkBarZu();
+});
 $('#avatar').addEventListener('click', () => {
   $('#menu').classList.contains('on') ? menuZu() : menuAuf();
 });
@@ -7146,18 +7308,9 @@ $('#menu').addEventListener('click', e => {
     renderSched($('#sched-edit'), DRAFT, null);
     go('v-hours');
   }
-  if(a === 'passkey'){
-    /* Nach dem Umzug ist der gelistete Passkey wertlos — dann muss der Tipp
-       einen neuen anlegen und darf nicht melden, es liege schon einer vor. */
-    if(pkVeraltet()){
-      pkErneuern(null);
-    } else if(Array.isArray(PK_LISTE) && PK_LISTE.length){
-      const d = PK_LISTE[0];
-      toast('Passkey liegt bereits' + (d.friendly_name ? ' in ' + d.friendly_name : '') + '.');
-    } else {
-      pkAdd(null);
-    }
-  }
+  /* Ein Tipp fragt kurz nach, statt sofort etwas zu tun — je nach Zustand
+     deaktivieren, aktivieren oder neu versuchen. */
+  if(a === 'passkey') setTimeout(pkBarAuf, 180);
   if(a === 'firma'){ _vonMenu = true; firmaAuf(); }
   if(a === 'karte'){ _vonMenu = true; karteAuf(); }
   if(a === 'raenge'){ _vonMenu = true; if(aufOffen()) aufFeier(); else rangAuf(); }
@@ -7171,7 +7324,6 @@ $('#menu').addEventListener('click', e => {
         : 'Erinnerung ausgeschaltet.');
     }
   }
-  if(a === 'pkreset') pkReset();
   if(a === 'logout') doLogout();
   if(a === 'delete') doDelete();
 });
