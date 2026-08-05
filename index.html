@@ -1385,37 +1385,49 @@ body.nobar #v-onboard{padding-top:14px}
    Die Kachel oben ist ruhig grau, nur das Plus ist golden. Ein Tipp klappt
    die drei Arten aus; ist eine gewählt, fällt die Kachel zusammen und der
    Kalender rückt um genau ihre Höhe nach oben. */
-.zrk{overflow:hidden;margin:0 0 11px;border-radius:16px;
+.zrk{position:relative;height:36px;margin:0 0 11px;border-radius:12px;overflow:hidden;
   border:1px solid var(--line-2);background:rgba(6,10,26,.35);
-  max-height:220px;transition:max-height .4s var(--ease),opacity .28s var(--ease),
-    margin .4s var(--ease),border-color .28s}
-.zrk.weg{max-height:0;opacity:0;margin-bottom:0;border-width:0;pointer-events:none}
-.zrk-kopf{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
-  height:36px;box-sizing:border-box;padding:6px 13px 6px 6px;
-  font-size:13px;font-weight:600;color:var(--tx-2);transition:.2s var(--ease)}
-.zrk-kopf .qi{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;
+  transition:height .38s var(--ease),opacity .26s var(--ease),
+             margin .38s var(--ease),border-color .26s}
+/* Ist eine Art gewählt, fällt die Leiste zusammen und der Kalender rückt nach. */
+.zrk.weg{height:0;opacity:0;margin-bottom:0;border-width:0;pointer-events:none}
+.zrk-kopf{position:absolute;inset:0;display:flex;align-items:center;gap:9px;
+  padding:0 12px 0 5px;text-align:left;font-size:12.5px;font-weight:600;
+  color:var(--tx-2);transition:color .2s var(--ease)}
+.zrk-kopf .qi{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;
   background:linear-gradient(120deg,var(--butter-2),var(--butter));color:#221904;
-  transition:transform .42s var(--ease)}
+  transition:transform .44s var(--ease)}
 .zrk-kopf .qi svg{width:14px;height:14px;stroke-width:2.6}
-.zrk.auf .zrk-kopf{color:var(--tx)}
 .zrk.auf .zrk-kopf .qi{transform:rotate(135deg)}
-/* Die drei Arten stehen nebeneinander — ein Blick, eine Wahl. */
-.zrk-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;
-  max-height:0;opacity:0;padding:0 9px;overflow:hidden;
-  transition:max-height .4s var(--ease),opacity .26s var(--ease),padding .4s var(--ease)}
-.zrk.auf .zrk-opts{max-height:120px;opacity:1;padding:0 9px 10px}
-.zrk-opts button{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:6px;padding:11px 6px;border-radius:12px;border:1px solid var(--line-2);
-  font-size:11.5px;font-weight:600;line-height:1.25;text-align:center;
-  color:var(--tx-2);transition:.18s var(--ease);hyphens:auto}
-.zrk-opts button:active{transform:scale(.97)}
-.zo-i{width:9px;height:9px;border-radius:50%;flex:none}
-.zrk-opts [data-zt=urlaub] .zo-i{background:var(--c-urlaub)}
-.zrk-opts [data-zt=krank]  .zo-i{background:var(--c-krank)}
-.zrk-opts [data-zt=eigen]  .zo-i{background:var(--c-eigen)}
+/* Die Beschriftung weicht nach rechts, die drei Kacheln kommen an ihre
+   Stelle — die Leiste behält dabei ihre Höhe, es verschiebt sich nichts. */
+.zrk-txt{transition:opacity .22s var(--ease),transform .38s var(--ease-out)}
+.zrk.auf .zrk-txt{opacity:0;transform:translateX(18px)}
+.zrk-opts{position:absolute;left:38px;right:5px;top:0;bottom:0;z-index:2;
+  display:flex;align-items:center;gap:6px;
+  opacity:0;pointer-events:none;transform:translateX(12px);
+  transition:opacity .26s var(--ease),transform .4s var(--ease-out)}
+.zrk.auf .zrk-opts{opacity:1;pointer-events:auto;transform:none}
+.zrk-opts button{flex:1;min-width:0;height:26px;border-radius:8px;border:1px solid var(--line-2);
+  font-size:11px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;transition:.18s var(--ease)}
+.zrk-opts button:active{transform:scale(.96)}
+.zrk-opts [data-zt=urlaub]{color:var(--c-urlaub);border-color:rgba(247,215,116,.45);
+  background:rgba(247,215,116,.13)}
+.zrk-opts [data-zt=krank]{color:var(--za-minus);border-color:rgba(255,112,96,.45);
+  background:rgba(255,112,96,.13)}
+.zrk-opts [data-zt=eigen]{color:var(--za-plus);border-color:rgba(95,224,160,.45);
+  background:rgba(95,224,160,.13)}
+/* Die drei laufen kurz nacheinander ein. */
+.zrk.auf .zrk-opts button{animation:zoIn .36s var(--ease-out) both}
+.zrk.auf .zrk-opts button:nth-child(2){animation-delay:.05s}
+.zrk.auf .zrk-opts button:nth-child(3){animation-delay:.1s}
+@keyframes zoIn{from{opacity:0;transform:translateX(10px) scale(.96)}to{opacity:1;transform:none}}
 @media (hover:hover) and (pointer:fine){
   .zrk-kopf:hover{color:var(--butter)}
-  .zrk-opts button:hover{border-color:var(--butter-dim);color:var(--butter)}
+  .zrk-opts [data-zt=urlaub]:hover{background:rgba(247,215,116,.22)}
+  .zrk-opts [data-zt=krank]:hover{background:rgba(255,112,96,.22)}
+  .zrk-opts [data-zt=eigen]:hover{background:rgba(95,224,160,.22)}
 }
 
 /* Das Feld unter dem Kalender, an der Stelle der Monatsdetails. */
@@ -2908,12 +2920,12 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <div class="zrk" id="zrk">
         <button class="zrk-kopf" id="qopen" aria-expanded="false">
           <span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
-          <span>Zeitraum eintragen</span>
+          <span class="zrk-txt">Zeitraum eintragen</span>
         </button>
         <div class="zrk-opts" id="zrk-opts">
-          <button data-zt="urlaub"><span class="zo-i"></span>Urlaub</button>
-          <button data-zt="krank"><span class="zo-i"></span>Kranken&shy;stand</button>
-          <button data-zt="eigen"><span class="zo-i"></span>Eigener Text</button>
+          <button data-zt="urlaub">Urlaub</button>
+          <button data-zt="krank">Krankenstand</button>
+          <button data-zt="eigen">Eigener Text</button>
         </div>
       </div>
 
@@ -3575,7 +3587,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2321';
+const APP_STAND = '2026-08-05-2332';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
