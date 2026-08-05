@@ -1431,27 +1431,47 @@ body.nobar #v-onboard{padding-top:14px}
   color:var(--tx-3);line-height:1.45}
 .fihint{margin:14px 0 0;font-size:11.5px;line-height:1.5;color:var(--tx-3)}
 
-/* Zeitausgleich im Tagesblatt: Richtung, Zähler, Schnellwerte */
+/* ─── Tagesblatt ──────────────────────────────────────────────────────
+   Kompakter als vorher, und sobald eine Art gewählt ist, treten die
+   anderen drei weg. Die Höhe wird mitanimiert, damit das Blatt nicht
+   springt; ein Tipp auf die gewählte Art holt die anderen zurück. */
+#sheet .sheet-card{padding:10px 18px calc(18px + env(safe-area-inset-bottom))}
+#sheet h3{font-size:21px}
+#sheet .sd{margin:0 0 13px}
+#sheet .sheet-actions{margin-top:15px}
+/* Zeitausgleich: ein Zähler mit Vorzeichen, darunter ganzer und halber Tag */
 .shlab{display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--tx-3);margin:16px 0 8px}
-.zastepper{display:flex;align-items:center;gap:12px}
-.zabtn{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;
+  color:var(--tx-3);margin:14px 0 8px}
+.zastepper{display:flex;align-items:center;gap:10px}
+.zabtn{flex:none;width:50px;height:56px;border-radius:15px;display:grid;place-items:center;
   border:1px solid var(--line-2);color:var(--tx-2);background:rgba(6,10,26,.45);
   transition:.18s var(--ease)}
 .zabtn:hover{border-color:var(--butter-dim);color:var(--butter)}
-.zabtn:active{transform:scale(.94)}
-.zabtn:disabled{opacity:.3;cursor:not-allowed}
+.zabtn:active{transform:scale(.93)}
 .zabtn svg{width:20px;height:20px}
-.zawert{flex:1;display:flex;align-items:baseline;justify-content:center;gap:6px;
-  padding:9px 0;border-radius:16px;background:rgba(6,10,26,.35);border:1px solid var(--line-2)}
-.zawert b{font-family:var(--font-dis);font-weight:400;font-size:30px;line-height:1;
-  font-variant-numeric:tabular-nums;color:var(--tx)}
-.zawert u{text-decoration:none;font-size:12px;color:var(--tx-3)}
-.zaschnell{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-.zaschnell button{padding:8px 12px;border-radius:11px;font-size:12px;font-weight:600;
+.zawert{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1px;height:56px;border-radius:15px;
+  background:rgba(6,10,26,.35);border:1px solid var(--line-2);
+  -webkit-user-select:none;user-select:none}
+.zaz{display:flex;align-items:baseline;gap:5px}
+.zaz b{font-family:var(--font-dis);font-weight:400;font-size:27px;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--tx);transition:color .2s}
+.zaz u{text-decoration:none;font-size:11.5px;color:var(--tx-3)}
+.zawert i{font-style:normal;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--tx-3)}
+.zawert.plus .zaz b{color:var(--c-eigen)}
+.zawert.minus .zaz b{color:var(--c-arbeit)}
+.zatag{display:flex;gap:8px;margin-top:9px}
+.zatag button{flex:1;padding:10px 8px;border-radius:13px;text-align:center;
   border:1px solid var(--line-2);color:var(--tx-2);transition:.18s var(--ease)}
-.zaschnell button:hover{border-color:var(--butter-dim);color:var(--butter)}
-.zahint{margin:11px 0 0;font-size:12px;line-height:1.5;color:var(--tx-3)}
+.zatag button b{display:block;font-size:12.5px;font-weight:600}
+.zatag button small{display:block;margin-top:2px;font-size:10.5px;color:var(--tx-3)}
+.zatag button:hover:not(:disabled){border-color:var(--butter-dim);color:var(--butter)}
+.zatag button.on{border-color:var(--c-arbeit);background:rgba(191,208,242,.1);color:var(--c-arbeit)}
+.zatag button:disabled{opacity:.3;cursor:not-allowed}
+".zahint{margin:10px 0 0;font-size:11.5px;line-height:1.5;color:var(--tx-3)}
+@keyframes shEin{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.sheinein{animation:shEin .3s var(--ease) both}
 
 /* Bottom-Sheet */
 .sheet{position:fixed;inset:0;z-index:50;display:none}
@@ -1490,6 +1510,22 @@ body.nobar #v-onboard{padding-top:14px}
 .opt[data-t=eigen] .oi{background:rgba(121,232,198,.16);color:var(--c-eigen)}
 .opt[data-t=eigen].on{border-color:var(--c-eigen);background:rgba(121,232,198,.08)}
 .opt svg{width:19px;height:19px}
+
+/* Ist eine Art gewählt, treten die anderen weg — über die Höhe animiert. */
+.opt{overflow:hidden;max-height:120px;
+  transition:max-height .34s var(--ease), opacity .2s var(--ease),
+             margin .34s var(--ease), padding .34s var(--ease),
+             border-color .2s, background .2s, transform .26s var(--ease)}
+.opt.weg{max-height:0;opacity:0;margin-bottom:0;padding-top:0;padding-bottom:0;
+  border-width:0;transform:translateY(-8px);pointer-events:none}
+/* Die allein stehende Art zeigt mit dem Pfeil, dass ein Tipp zurückführt. */
+.opt.allein{margin-bottom:14px}
+.opt .zurueck{flex:none;width:26px;height:26px;border-radius:9px;display:none;
+  place-items:center;color:var(--tx-3);border:1px solid var(--line-2)}
+.opt.allein .zurueck{display:grid}
+.opt .zurueck svg{width:13px;height:13px}
+.opt.allein:hover .zurueck{color:var(--butter);border-color:var(--butter-dim)}
+
 .scope{display:flex;gap:7px;margin:4px 0 16px}
 .scope button{flex:1;padding:11px 4px;border-radius:12px;border:1px solid var(--line-2);font-size:12px;font-weight:500;
   color:var(--tx-3);transition:.2s}
@@ -2833,36 +2869,35 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     </div>
     <div id="sh-opts"></div>
     <div id="sh-scopewrap" style="display:none">
-      <small style="display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3);margin:16px 0 8px">Umfang</small>
+      <small class="shlab">Umfang</small>
       <div class="scope" id="sh-scope">
         <button data-s="full">Ganzer Tag</button>
         <button data-s="vm">Nur Vormittag</button>
         <button data-s="nm">Nur Nachmittag</button>
       </div>
     </div>
-    <!-- Zeitausgleich: Richtung und Menge. Der Umfang oben bleibt aus,
-         weil hier die Zahl entscheidet, nicht Vormittag oder Nachmittag. -->
+    <!-- Zeitausgleich: eine Zahl mit Vorzeichen. Minus heißt einlösen,
+         plus heißt sammeln — deshalb braucht es keine Richtungsknöpfe.
+         Die Zahl ist bewusst kein Eingabefeld: sie wird nur über die
+         beiden Knöpfe in Viertelstunden verstellt. -->
     <div id="sh-zawrap" style="display:none">
-      <small class="shlab">Richtung</small>
-      <div class="scope" id="sh-zadir">
-        <button data-dir="minus">Einlösen</button>
-        <button data-dir="plus">Sammeln</button>
-      </div>
-      <small class="shlab" style="margin-top:15px">Stunden</small>
       <div class="zastepper">
-        <button class="zabtn" id="sh-zaminus" aria-label="Weniger">
+        <button class="zabtn" id="sh-zaminus" aria-label="Eine Viertelstunde weniger">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>
         </button>
-        <span class="zawert"><b id="sh-zah">0,00</b><u>h</u></span>
-        <button class="zabtn" id="sh-zaplus" aria-label="Mehr">
+        <span class="zawert" role="status" aria-live="polite">
+          <span class="zaz"><b id="sh-zah">+1,00</b><u>h</u></span>
+          <i id="sh-zart">gesammelt</i>
+        </span>
+        <button class="zabtn" id="sh-zaplus" aria-label="Eine Viertelstunde mehr">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
-      <div class="zaschnell" id="sh-zaschnell"></div>
+      <div class="zatag" id="sh-zatag"></div>
       <p class="zahint" id="sh-zahint">—</p>
     </div>
-<div id="sh-textwrap" style="display:none">
-      <small style="display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3);margin:4px 0 8px">Vermerk</small>
+    <div id="sh-textwrap" style="display:none">
+      <small class="shlab">Vermerk</small>
       <textarea id="sh-text" placeholder="z. B. Zeitausgleich, Schulung, Behördenweg …"></textarea>
     </div>
     <div class="sheet-actions">
@@ -3158,7 +3193,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-1944';
+const APP_STAND = '2026-08-05-1959';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6089,9 +6124,9 @@ function konfetti(cv, lebt, plan){
 /* ═══════════════════════════════════════════════════════════
    TAGES-SHEET
    ═══════════════════════════════════════════════════════════ */
-const SH = { y:0, m:0, d:0, type:null, scope:'full', text:'', aw:false,
-             zaDir:'minus', zaH:0 };
+const SH = { y:0, m:0, d:0, type:null, scope:'full', text:'', aw:false, za:1 };
 const ZA_SCHRITT = 0.25;
+const ZA_START = 1;
 function openSheet(y, m, d){
   const k = key(y, m, d);
   const ev = ME.events[k];
@@ -6100,17 +6135,9 @@ function openSheet(y, m, d){
   SH.y = y; SH.m = m; SH.d = d;
   SH.type = ev ? ev.t : null; SH.scope = ev ? (ev.s || 'full') : 'full';
   SH.text = ev ? (ev.text || '') : ''; SH.aw = ev ? !!ev.aw : false;
-  /* Zeitausgleich: Vorzeichen in Richtung und Menge trennen. Voreinstellung
-     beim Einlösen sind die Stunden, die an dem Tag geplant waren. */
+  /* Zeitausgleich: eine Zahl mit Vorzeichen. Neu beginnt sie bei +1,00 h. */
   const geplant = r25(plan.vm + plan.nm);
-  if(ev && ev.t === 'zeit'){
-    const za = r25(+ev.za || 0);
-    SH.zaDir = za >= 0 ? 'plus' : 'minus';
-    SH.zaH = Math.abs(za);
-  } else {
-    SH.zaDir = 'minus';
-    SH.zaH = geplant > 0 ? geplant : 4;
-  }
+  SH.za = (ev && ev.t === 'zeit') ? r25(+ev.za || 0) : ZA_START;
   SH._geplant = geplant;
 
   $('#sh-title').textContent = DOWSHORT[new Date(y,m,d).getDay()] + ', ' + d + '. ' + MONTHS[m] + ' ' + y;
@@ -6127,61 +6154,92 @@ function openSheet(y, m, d){
   $('#sh-opts').innerHTML = ['urlaub','krank','zeit','eigen'].map(t =>
     '<button class="opt'+(SH.type===t?' on':'')+'" data-t="'+t+'">'
     + '<span class="oi">'+ICONS[t]+'</span>'
-    + '<span><b>'+TYPES[t].label+'</b><small>'+TYPES[t].desc+'</small></span></button>').join('');
+    + '<span style="flex:1;min-width:0"><b>'+TYPES[t].label+'</b><small>'+TYPES[t].desc+'</small></span>'
+    + '<span class="zurueck" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l-5 5 5 5"/><path d="M4 10h11a5 5 0 0 1 0 10h-3"/></svg></span>'
+    + '</button>').join('');
   paintSheet();
   if(window.__sheetReset) window.__sheetReset();   /* unverschoben beginnen */
   $('#sheet').classList.add('on');
   document.body.classList.add('locked');
 }
+/* Zeigt oder versteckt einen Bereich im Tagesblatt. Beim Zeigen blendet er
+   sanft ein, damit der Wechsel zu den passenden Knöpfen nicht hart wirkt. */
+function zeigen(sel, an){
+  const el = $(sel); if(!el) return;
+  const war = el.style.display !== 'none';
+  if(an === war) return;
+  el.style.display = an ? 'block' : 'none';
+  if(an){
+    el.classList.remove('sheinein');
+    void el.offsetWidth;              /* Neustart der Animation erzwingen */
+    el.classList.add('sheinein');
+  }
+}
 function paintSheet(){
   const za = SH.type === 'zeit';
+  /* Ist eine Art gewählt, treten die anderen weg — mitanimiert über die
+     Höhe, damit das Blatt nicht springt. Ein Tipp auf die gewählte Art
+     holt alle zurück. */
+  $$('#sh-opts .opt').forEach(o => {
+    const dran = o.dataset.t === SH.type;
+    o.classList.toggle('on', dran);
+    o.classList.toggle('weg', !!SH.type && !dran);
+    o.classList.toggle('allein', dran);
+  });
   /* Beim Zeitausgleich entscheidet die Zahl, nicht Vormittag oder Nachmittag. */
-  $('#sh-scopewrap').style.display = (SH.type && !za) ? 'block' : 'none';
+  zeigen('#sh-scopewrap', !!SH.type && !za);
   $$('#sh-scope button').forEach(b => b.classList.toggle('on', b.dataset.s === SH.scope));
-  $('#sh-textwrap').style.display = SH.type === 'eigen' ? 'block' : 'none';
+  zeigen('#sh-textwrap', SH.type === 'eigen');
   $('#sh-text').value = SH.text;
   const aw = $('#sh-aw'); if(aw) aw.classList.toggle('on', SH.aw);
 
-  $('#sh-zawrap').style.display = za ? 'block' : 'none';
+  zeigen('#sh-zawrap', za);
   if(za) malZa();
-  $('#sh-save').disabled = !SH.type || (za && SH.zaH <= 0);
+  $('#sh-save').disabled = !SH.type || (za && Math.abs(SH.za) < 0.001);
 }
 
-/* Zähler, Schnellwerte und der Satz darunter. Der Stand bezieht sich auf
-   den angezeigten Monat — ein Gesamtkonto führt MOJI bewusst nicht. */
+/* Der Zähler. Minus heißt einlösen, plus heißt sammeln — beides in
+   derselben Zahl, damit es nur einen Balken braucht. Der Stand bezieht
+   sich auf den angezeigten Monat; ein Gesamtkonto führt MOJI nicht. */
 function malZa(){
   const geplant = SH._geplant || 0;
-  $$('#sh-zadir button').forEach(b => b.classList.toggle('on', b.dataset.dir === SH.zaDir));
-  $('#sh-zah').textContent = fmtH(SH.zaH);
-  $('#sh-zaminus').disabled = SH.zaH <= 0;
+  const halb = r25(geplant / 2);
+  const za = SH.za;
 
-  /* Schnellwerte: die üblichen Größen plus der ganze Tag, wenn es einen gibt. */
-  const werte = [0.25, 0.5, 1, 2, 4];
-  if(geplant > 0 && werte.indexOf(geplant) < 0) werte.push(geplant);
-  $('#sh-zaschnell').innerHTML = werte.sort((a,b) => a-b).map(v =>
-    '<button data-za="' + v + '">' + (v === geplant ? 'ganzer Tag · ' : '') + fmtH(v) + ' h</button>'
-  ).join('');
+  $('#sh-zah').textContent = (za > 0 ? '+' : za < 0 ? '−' : '') + fmtH(Math.abs(za));
+  $('#sh-zart').textContent = za > 0 ? 'gesammelt' : za < 0 ? 'eingelöst' : 'nichts';
+  const w = $('#sh-zah').closest('.zawert');
+  w.classList.toggle('plus',  za >  0.001);
+  w.classList.toggle('minus', za < -0.001);
 
-  const weg = Math.min(SH.zaH, geplant || SH.zaH);
+  /* Ganzer und halber Tag lösen ein, rechnen also mit dem Dienstplan. */
+  $('#sh-zatag').innerHTML =
+      '<button data-tag="' + (-geplant) + '"' + (geplant > 0 ? '' : ' disabled')
+      + (Math.abs(za + geplant) < 0.001 && geplant > 0 ? ' class="on"' : '') + '>'
+      + '<b>Ganzer Tag</b><small>' + (geplant > 0 ? '−' + fmtH(geplant) + ' h' : 'dienstfrei') + '</small></button>'
+    + '<button data-tag="' + (-halb) + '"' + (halb > 0 ? '' : ' disabled')
+      + (Math.abs(za + halb) < 0.001 && halb > 0 ? ' class="on"' : '') + '>'
+      + '<b>Halber Tag</b><small>' + (halb > 0 ? '−' + fmtH(halb) + ' h' : 'dienstfrei') + '</small></button>';
+
+  /* Wirkung auf diesen Tag, dann der Monat. */
+  const weg = Math.min(Math.abs(za), geplant || Math.abs(za));
   let satz;
-  if(SH.zaDir === 'plus'){
-    satz = fmtH(SH.zaH) + ' h kommen zur Arbeitszeit dieses Tages dazu.';
-  } else if(geplant <= 0){
-    satz = 'An diesem Tag ist laut Dienstplan nichts geplant — es gibt also nichts einzulösen. '
-         + 'Wähle einen Diensttag oder trage die Stunden als gesammelt ein.';
-  } else {
-    satz = fmtH(weg) + ' h weniger Arbeitszeit an diesem Tag'
-         + (SH.zaH > geplant ? ' — mehr als die geplanten ' + fmtH(geplant) + ' h gehen nicht' : '') + '.';
-  }
-  /* Was der Monat bisher sagt, ohne den Eintrag, der gerade entsteht. */
+  if(za > 0)      satz = fmtH(za) + ' h kommen zur Arbeitszeit dieses Tages dazu.';
+  else if(za < 0) satz = geplant > 0
+      ? fmtH(weg) + ' h weniger Arbeitszeit'
+        + (Math.abs(za) > geplant ? ' — mehr als die geplanten ' + fmtH(geplant) + ' h gehen nicht' : '') + '.'
+      : 'An diesem Tag ist laut Dienstplan nichts geplant — hier gibt es nichts einzulösen.';
+  else            satz = 'Bei null passiert nichts.';
+
   const bisher = monthSums(monthRows(ME, SH.y, SH.m)).za;
-  const wirkung = SH.zaDir === 'plus' ? SH.zaH : -weg;
-  const alt = (ME.events[key(SH.y, SH.m, SH.d)] || {}).t === 'zeit'
+  const vorher = (ME.events[key(SH.y, SH.m, SH.d)] || {}).t === 'zeit'
     ? r25(+ME.events[key(SH.y, SH.m, SH.d)].za || 0) : 0;
-  const nachher = r25(bisher - alt + wirkung);
+  const wirkung = za > 0 ? za : -weg;
+  const nachher = r25(bisher - vorher + wirkung);
   $('#sh-zahint').textContent = satz + ' ' + MONTHS[SH.m] + ' danach: '
     + (nachher > 0 ? '+' : nachher < 0 ? '−' : '') + fmtH(Math.abs(nachher)) + ' h.';
 }
+
 function closeSheet(){ $('#sheet').classList.remove('on'); document.body.classList.remove('locked'); }
 
 /* ─── Nach unten schieben zum Schließen ──────────────────────────────────
@@ -6309,8 +6367,8 @@ window.__dlReset    = wireSheetDrag('dl-grab', 'dlsheet', dlZu);
 window.__fiReset    = wireSheetDrag('fi-grab', 'fisheet', firmaZu);
 $('#sh-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
+  /* Nochmal auf die gewählte Art tippen holt die anderen drei zurück. */
   SH.type = SH.type === b.dataset.t ? null : b.dataset.t;
-  $$('#sh-opts .opt').forEach(o => o.classList.toggle('on', o.dataset.t === SH.type));
   paintSheet();
 });
 $('#sh-scope').addEventListener('click', e => {
@@ -6318,39 +6376,32 @@ $('#sh-scope').addEventListener('click', e => {
   SH.scope = b.dataset.s; paintSheet();
 });
 $('#sh-text').addEventListener('input', e => SH.text = e.target.value);
-$('#sh-zadir').addEventListener('click', e => {
-  const b = e.target.closest('[data-dir]'); if(!b) return;
-  SH.zaDir = b.dataset.dir;
-  /* Beim Wechsel auf Einlösen den ganzen Tag vorschlagen, wenn nichts steht. */
-  if(SH.zaDir === 'minus' && SH.zaH <= 0 && SH._geplant > 0) SH.zaH = SH._geplant;
-  paintSheet();
-});
-$('#sh-zaminus').addEventListener('click', () => {
-  SH.zaH = Math.max(0, r25(SH.zaH - ZA_SCHRITT)); paintSheet();
-});
-$('#sh-zaplus').addEventListener('click', () => {
-  SH.zaH = Math.min(24, r25(SH.zaH + ZA_SCHRITT)); paintSheet();
-});
-$('#sh-zaschnell').addEventListener('click', e => {
-  const b = e.target.closest('[data-za]'); if(!b) return;
-  SH.zaH = r25(+b.dataset.za); paintSheet();
+/* Die Zahl lässt sich nur über diese beiden Knöpfe verstellen, immer in
+   Viertelstunden. Über null hinweg geht es weiter ins Minus — dort heißt
+   dieselbe Zahl einlösen statt sammeln. */
+function zaSetz(v){ SH.za = Math.max(-24, Math.min(24, r25(v))); paintSheet(); }
+$('#sh-zaminus').addEventListener('click', () => zaSetz(SH.za - ZA_SCHRITT));
+$('#sh-zaplus') .addEventListener('click', () => zaSetz(SH.za + ZA_SCHRITT));
+$('#sh-zatag').addEventListener('click', e => {
+  const b = e.target.closest('[data-tag]'); if(!b || b.disabled) return;
+  zaSetz(+b.dataset.tag);
 });
 
 $('#sh-save').addEventListener('click', () => {
   if(!SH.type) return;
   const k = key(SH.y, SH.m, SH.d);
   if(SH.type === 'zeit'){
-    if(SH.zaH <= 0){ toast('Bitte Stunden wählen'); return; }
-    if(SH.zaDir === 'minus' && (SH._geplant || 0) <= 0){
+    const za = r25(SH.za);
+    if(Math.abs(za) < 0.001){ toast('Bitte Stunden wählen'); return; }
+    if(za < 0 && (SH._geplant || 0) <= 0){
       toast('An einem dienstfreien Tag gibt es nichts einzulösen');
       return;
     }
-    const za = SH.zaDir === 'plus' ? SH.zaH : -SH.zaH;
-    ME.events[k] = { t:'zeit', za:r25(za) };
+    ME.events[k] = { t:'zeit', za:za };
     save(); closeSheet(); renderCal();
-    toast(SH.zaDir === 'plus'
-      ? fmtH(SH.zaH) + ' h gesammelt'
-      : fmtH(Math.min(SH.zaH, SH._geplant)) + ' h eingelöst');
+    toast(za > 0
+      ? fmtH(za) + ' h gesammelt'
+      : fmtH(Math.min(-za, SH._geplant)) + ' h eingelöst');
     return;
   }  ME.events[k] = { t:SH.type, s:SH.scope, text:SH.type === 'eigen' ? SH.text.trim() : '', aw:SH.type === 'eigen' ? SH.aw : false };
   save(); closeSheet(); renderCal();
