@@ -2865,6 +2865,31 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       </div>
     </section>
 
+    <!-- ─────────── MEINE FIRMA ─────────── -->
+    <section class="view pt" id="v-firma">
+      <div class="eyebrow">Arbeitgeber</div>
+      <h1 class="dis">Meine <i>Firma</i>.</h1>
+      <p class="lede">Dein Dienstgeber, wie er in MOJI hinterlegt ist.</p>
+
+      <div class="fikopf mt">
+        <span class="fi-logo"><img src="firma-miller.png?v=1" alt="" aria-hidden="true"></span>
+        <b id="fi-name">—</b>
+        <small>Arbeitsort · fix hinterlegt</small>
+      </div>
+
+      <div class="fizeilen" id="fi-zeilen"></div>
+
+      <p class="fihint">Der Dienstgeber ist für alle MOJI-Konten fest eingestellt
+        und lässt sich in der App nicht ändern.</p>
+
+      <div class="navrow sticky" id="fi-nav">
+        <button class="btn btn-g" id="fi-back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+          Zurück
+        </button>
+      </div>
+    </section>
+
     <!-- ─────────── DIENSTZEITEN BEARBEITEN ─────────── -->
     <section class="view pt" id="v-hours">
       <div class="eyebrow">Einstellungen</div>
@@ -3254,30 +3279,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 <!-- Meine Firma. Zeigt nur, was MOJI wirklich über den Dienstgeber weiß:
      Zeichen, Name und wo er in der App auftaucht. Nichts dazuerfunden —
      Adresse oder Firmenbuchnummer kennt die App nicht. -->
-<div class="sheet" id="fisheet">
-  <div class="sheet-bd" data-close="fisheet"></div>
-  <div class="sheet-card" id="ficard">
-    <div class="sheet-grab" id="fi-grab" aria-label="Zum Schließen nach unten schieben"><div class="grip"></div></div>
-    <h3>Meine Firma</h3>
-    <p class="sd">Dein Dienstgeber, wie er in MOJI hinterlegt ist.</p>
-
-    <div class="fikopf">
-      <span class="fi-logo"><img src="firma-miller.png?v=1" alt="" aria-hidden="true"></span>
-      <b id="fi-name">—</b>
-      <small>Arbeitsort · fix hinterlegt</small>
-    </div>
-
-    <div class="fizeilen" id="fi-zeilen"></div>
-
-    <p class="fihint">Der Dienstgeber ist für alle MOJI-Konten fest eingestellt
-      und lässt sich in der App nicht ändern.</p>
-
-    <div class="sheet-actions">
-      <button class="btn btn-g" data-close="fisheet">Schließen</button>
-    </div>
-  </div>
-</div>
-
 <!-- Profil löschen — zweite Rückfrage mit Schieberegler.
      Ein Knopf lässt sich verrutschen, ein Zug über die ganze Breite nicht. -->
 <div class="sheet" id="dlsheet">
@@ -3486,7 +3487,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2152';
+const APP_STAND = '2026-08-05-2157';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5493,7 +5494,7 @@ function erinUmschalten(){
    Firmenbuchnummer steht nirgends hinterlegt — die würde ich hier sonst
    erfinden müssen. */
 function malFirma(){
-  if(!$('#fisheet') || !ME) return;
+  if(!$('#v-firma') || !ME) return;
   $('#fi-name').textContent = EMPLOYER;
 
   /* Wie viele Diensttage hat der Rhythmus, und wie viele Wochen? */
@@ -5522,20 +5523,18 @@ function malFirma(){
     + zeile('Dabei seit', seitText())
     + zeile('Feiertage', 'Österreich', 'Werden inklusive Ostertermin selbst berechnet.');
 }
+/* Ganze Seite statt Blatt — wie die Dienstzeiten. Der Zurück-Knopf unten
+   führt in das Menü zurück, das dabei wieder aufgeht. */
 function firmaAuf(){
-  if($('#fisheet').classList.contains('on')) return;
   malFirma();
-  if(window.__fiReset) window.__fiReset();
-  $('#ficard').scrollTop = 0;
-  $('#fisheet').classList.add('on');
-  document.body.classList.add('locked');
+  go('v-firma');
 }
 function firmaZu(){
-  if(!$('#fisheet').classList.contains('on')) return;
-  $('#fisheet').classList.remove('on');
-  document.body.classList.remove('locked');
+  if(!$('#v-firma').classList.contains('on')) return;
+  go('v-cal');
   zurueckInsMenu();
 }
+$('#fi-back').addEventListener('click', firmaZu);
 
 function malRang(){
   const zeile = $('#mrang'); if(!zeile) return;
@@ -6982,7 +6981,6 @@ window.__pfReset    = wireSheetDrag('pf-grab', 'pfsheet', pfZu, 'pf-liste');
 window.__rReset     = wireSheetDrag('r-grab',  'rsheet',  rangZu);
 window.__vReset     = wireSheetDrag('v-grab',  'vsheet',  verlaufZu);
 window.__dlReset    = wireSheetDrag('dl-grab', 'dlsheet', dlZu);
-window.__fiReset    = wireSheetDrag('fi-grab', 'fisheet', firmaZu);
 $('#sh-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
   /* Nochmal auf die gewählte Art tippen holt die anderen drei zurück. */
@@ -7790,6 +7788,7 @@ $('#menu').addEventListener('click', e => {
   menuZu();
   const a = b.dataset.act;
   if(a === 'hours'){
+    _vonMenu = true;
     DRAFT = JSON.parse(JSON.stringify(ME.sched)); DRAFT.tab = 0;
     /* Zum Bearbeiten immer verschlossen beginnen — das Intervall soll man
        bewusst ändern, nicht im Vorbeiwischen. */
@@ -7961,9 +7960,6 @@ function dlZurueck(){
   });
 })();
 
-$('#fisheet').addEventListener('click', e => {
-  if(e.target.dataset.close === 'fisheet') firmaZu();
-});
 $('#dl-abbruch').addEventListener('click', dlZu);
 $('#dlsheet').addEventListener('click', e => { if(e.target.dataset.close === 'dlsheet') dlZu(); });
 
@@ -8012,9 +8008,10 @@ async function loeschenJetzt(){
 $('#hr-save').addEventListener('click', () => {
   if(!DRAFT) return;
   ME.sched = JSON.parse(JSON.stringify(DRAFT)); save();
+  _vonMenu = false;                       /* nach dem Sichern bleibt das Menü zu */
   renderCal(); go('v-cal'); toast('Dienstzeiten gespeichert');
 });
-$('#hr-cancel').addEventListener('click', () => { DRAFT = null; go('v-cal'); });
+$('#hr-cancel').addEventListener('click', () => { DRAFT = null; go('v-cal'); zurueckInsMenu(); });
 $('#fabbar').addEventListener('click', e => {
   const b = e.target.closest('[data-go]'); if(!b) return;
   if(b.dataset.go === 'v-export') exYear();
