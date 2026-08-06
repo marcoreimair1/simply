@@ -1462,11 +1462,14 @@ body.zrmodus .tbzr{opacity:1;transform:none;
 .tbzr-i{width:30px;height:30px;border-radius:11px;flex:none;display:grid;place-items:center;
   transition:color .3s,background .3s}
 .tbzr-i svg{width:16px;height:16px}
-.tbzr-t{min-width:0}
+.tbzr-t{flex:1;min-width:0;overflow:hidden;padding-right:8px}
 .tbzr-t b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.01em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tbzr-t small{display:block;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--tx-3);margin-top:1px;white-space:nowrap}
+  color:var(--tx-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Der Platzhalter neben dem Logo entfällt, sonst bliebe das Kontingent
+   in der Mitte stehen statt ganz rechts. */
+body.zrmodus .spacer{display:none}
 @media(max-width:420px){ .tbzr-t small{display:none} }
 /* Rechts daneben der Ist-Stand — nur dort, wo es einen gibt. */
 .zrp-ist{flex:none;text-align:right;padding:4px 10px;border-radius:11px;
@@ -3619,7 +3622,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-06-0608';
+const APP_STAND = '2026-08-06-0613';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
