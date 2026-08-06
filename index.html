@@ -1431,18 +1431,42 @@ body.nobar #v-onboard{padding-top:14px}
 }
 
 /* Das Feld unter dem Kalender, an der Stelle der Monatsdetails. */
+/* Der Kalender nimmt die Farbe der Leistung an. */
+#v-cal .card{transition:border-color .4s var(--ease),box-shadow .4s var(--ease)}
+body.zrmodus #v-cal .card{border-color:var(--zrf,var(--line));
+  box-shadow:0 0 0 1px var(--zrf-schwach,transparent),0 22px 60px -34px var(--zrf-schwach,transparent),var(--shadow)}
+
 .zrp{margin-top:15px;padding-top:14px;border-top:1px solid var(--line-2);
   animation:zrpIn .4s var(--ease-out) both}
 @keyframes zrpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.zrp-kopf{display:flex;align-items:center;gap:11px}
-.zrp-t{flex:1;min-width:0}
+/* Die Leistung in der Kopfleiste. Sie löst das Logo ab, solange ein
+   Zeitraum läuft — beides liegt übereinander und blendet weich. */
+.brand{transition:opacity .3s var(--ease),transform .34s var(--ease)}
+body.zrmodus .brand{opacity:0;transform:translateY(-6px);pointer-events:none;
+  position:absolute;left:20px}
+.tbzr{display:flex;align-items:center;gap:10px;min-width:0;
+  opacity:0;transform:translateY(6px);
+  transition:opacity .3s .06s var(--ease),transform .36s .06s var(--ease-out)}
+.tbzr[hidden]{display:none}
+body.zrmodus .tbzr{opacity:1;transform:none}
+.tbzr-i{width:30px;height:30px;border-radius:11px;flex:none;display:grid;place-items:center;
+  transition:color .3s,background .3s}
+.tbzr-i svg{width:16px;height:16px}
+.tbzr-t{min-width:0}
+.tbzr-t b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbzr-t small{display:block;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--tx-3);margin-top:1px;white-space:nowrap}
+@media(max-width:420px){ .tbzr-t small{display:none} }
 /* Rechts daneben der Ist-Stand — nur dort, wo es einen gibt. */
-.zrp-ist{flex:none;text-align:right;padding:5px 11px;border-radius:12px;
-  border:1px solid rgba(247,215,116,.28);background:rgba(247,215,116,.08)}
-.zrp-ist b{display:block;font-family:var(--font-dis);font-weight:400;font-size:19px;
-  line-height:1.1;color:var(--c-urlaub);font-variant-numeric:tabular-nums}
-.zrp-ist u{display:block;text-decoration:none;font-size:9px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--tx-3);margin-top:1px}
+.zrp-ist{flex:none;text-align:right;padding:4px 10px;border-radius:11px;
+  border:1px solid rgba(247,215,116,.28);background:rgba(247,215,116,.08);
+  animation:zrpIn .42s .1s var(--ease-out) both}
+.zrp-ist[hidden]{display:none}
+.zrp-ist b{display:block;font-family:var(--font-dis);font-weight:400;font-size:17px;
+  line-height:1.15;color:var(--c-urlaub);font-variant-numeric:tabular-nums}
+.zrp-ist u{display:block;text-decoration:none;font-size:8.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--tx-3);margin-top:1px;white-space:nowrap}
 .zrp-i{width:30px;height:30px;border-radius:11px;flex:none;display:grid;place-items:center}
 .zrp-i svg{width:16px;height:16px}
 .zrp-t b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.01em}
@@ -2511,6 +2535,13 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         <img class="bword" id="brand-word" alt="MOJI">
         <span class="bs">Mehr Zeit fürs Wesentliche.</span>
       </div>
+      <!-- Während eines Zeitraums steht hier, was eingetragen wird — das
+           macht oben Platz frei und färbt die Ansicht auf die Leistung. -->
+      <div class="tbzr" id="tbzr" hidden>
+        <span class="tbzr-i" id="zrp-i"></span>
+        <span class="tbzr-t"><b id="zrp-b">—</b><small id="zrp-s">—</small></span>
+        <span class="zrp-ist" id="zrp-ist" hidden><b id="zrp-ist-v">—</b><u id="zrp-ist-u">Tage offen</u></span>
+      </div>
       <div class="spacer"></div>
       <!-- Der Zähler kann nicht im Bild selbst liegen, das schneidet für den
            runden Ausschnitt ab. Deshalb eine Hülle darum. -->
@@ -2943,11 +2974,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
         <!-- Während eines Zeitraums steht hier, worum es geht — statt der
              Monatsdetails, die so lange weichen. -->
         <div class="zrp" id="zrp" hidden>
-          <div class="zrp-kopf">
-            <span class="zrp-i" id="zrp-i"></span>
-            <span class="zrp-t"><b id="zrp-b">—</b><small id="zrp-s">—</small></span>
-            <span class="zrp-ist" id="zrp-ist" hidden><b id="zrp-ist-v">—</b><u id="zrp-ist-u">Tage offen</u></span>
-          </div>
           <p class="zrp-sum" id="zr-sum">—</p>
           <div class="zrp-teil" id="zrp-umfang">
             <div class="scope" id="q-scope" style="margin:0">
@@ -3583,7 +3609,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-06-0538';
+const APP_STAND = '2026-08-06-0547';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7218,12 +7244,17 @@ function zrAn(art){
   zrkAuf(false);
   $('#zrk').classList.add('weg');
   $('#zrp').hidden = false;
+  $('#tbzr').hidden = false;
   $('#mbar').style.display = 'none';
   document.body.classList.add('zrmodus');
   zrMalen();
 }
 function zrAus(){
   document.body.classList.remove('zrmodus');
+  /* Erst ausblenden lassen, dann aushängen — sonst springt der Kopf. */
+  setTimeout(() => { if(!zrModus()) $('#tbzr').hidden = true; }, 340);
+  document.body.style.removeProperty('--zrf');
+  document.body.style.removeProperty('--zrf-schwach');
   $('#zrp').hidden = true;
   $('#mbar').style.display = '';
   $('#zrk').classList.remove('weg');
@@ -7239,6 +7270,9 @@ function zrMalen(){
   $('#zrp-i').style.background = rgba(T.color, .14);
   $('#zrp-b').textContent = T.label + ' eintragen';
   $('#zrp-s').textContent = 'Tage im Kalender antippen';
+  /* Der Kalenderrand nimmt die Farbe der Leistung an. */
+  document.body.style.setProperty('--zrf', T.color);
+  document.body.style.setProperty('--zrf-schwach', rgba(T.color, .3));
 
   /* Rechts der Ist-Stand — den gibt es nur beim Urlaub. */
   const ist = $('#zrp-ist');
