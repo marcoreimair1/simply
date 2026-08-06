@@ -1390,7 +1390,7 @@ body.nobar #v-onboard{padding-top:14px}
    Mittel wie bei den Knöpfen. Nur halb so hoch wie die alte Zeile, weil der
    erklärende Satz jetzt im Blatt steht, wo er gebraucht wird. */
 /* Kopfzeile im Export — gleiche Bauhöhe wie die Pille daneben. */
-.exhead{display:flex;align-items:center;gap:10px;height:44px;margin:0 0 11px}
+.exhead{display:flex;align-items:center;gap:10px;height:52px;margin:0 0 11px}
 /* Der Knopf sitzt am rechten Ende der Kopfzeile — dort war schon Platz,
    die Ansicht füllt das Fenster nämlich genau und darf nicht wachsen. */
 .exhbtn{margin-left:auto;flex:none}
@@ -1402,16 +1402,16 @@ body.nobar #v-onboard{padding-top:14px}
    Die Kachel oben ist ruhig grau, nur das Plus ist golden. Ein Tipp klappt
    die drei Arten aus; ist eine gewählt, fällt die Kachel zusammen und der
    Kalender rückt um genau ihre Höhe nach oben. */
-.zrk{position:relative;height:44px;margin:0 0 11px;border-radius:12px;overflow:hidden;
+.zrk{position:relative;height:52px;margin:0 0 11px;border-radius:15px;overflow:hidden;
   border:1px solid var(--line-2);background:rgba(6,10,26,.35);
   transition:height .38s var(--ease),opacity .26s var(--ease),
              margin .38s var(--ease),border-color .26s}
 /* Ist eine Art gewählt, fällt die Leiste zusammen und der Kalender rückt nach. */
 .zrk.weg{height:0;opacity:0;margin-bottom:0;border-width:0;pointer-events:none}
-.zrk-kopf{position:absolute;inset:0;display:flex;align-items:center;gap:9px;
-  padding:0 12px 0 5px;text-align:left;font-size:12.5px;font-weight:600;
+.zrk-kopf{position:absolute;inset:0;display:flex;align-items:center;gap:10px;
+  padding:0 14px 0 7px;text-align:left;font-size:12.5px;font-weight:600;
   color:var(--tx-2);transition:color .2s var(--ease)}
-.zrk-kopf .qi{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;
+.zrk-kopf .qi{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;
   background:linear-gradient(120deg,var(--butter-2),var(--butter));color:#221904;
   transition:transform .44s var(--ease)}
 .zrk-kopf .qi svg{width:14px;height:14px;stroke-width:2.6}
@@ -1420,12 +1420,12 @@ body.nobar #v-onboard{padding-top:14px}
    Stelle — die Leiste behält dabei ihre Höhe, es verschiebt sich nichts. */
 .zrk-txt{transition:opacity .22s var(--ease),transform .38s var(--ease-out)}
 .zrk.auf .zrk-txt{opacity:0;transform:translateX(18px)}
-.zrk-opts{position:absolute;left:41px;right:6px;top:0;bottom:0;z-index:2;
+.zrk-opts{position:absolute;left:45px;right:7px;top:0;bottom:0;z-index:2;
   display:flex;align-items:center;gap:6px;
   opacity:0;pointer-events:none;transform:translateX(12px);
   transition:opacity .26s var(--ease),transform .4s var(--ease-out)}
 .zrk.auf .zrk-opts{opacity:1;pointer-events:auto;transform:none}
-.zrk-opts button{flex:1;min-width:0;height:32px;border-radius:9px;border:1px solid var(--line-2);
+.zrk-opts button{flex:1;min-width:0;height:38px;border-radius:11px;border:1px solid var(--line-2);
   font-size:11px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;
   text-overflow:ellipsis;transition:.18s var(--ease)}
 .zrk-opts button:active{transform:scale(.96)}
@@ -3649,7 +3649,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-06-0648';
+const APP_STAND = '2026-08-06-0856';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
