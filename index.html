@@ -1455,9 +1455,6 @@ body.nobar #v-onboard{padding-top:14px}
 .zrp-teil .shlab{margin:0 0 7px}
 #q-text{width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line-2);
   background:rgba(6,10,26,.6);outline:none;font-size:16px;color:var(--tx)}
-.zrp-weg{display:block;width:100%;margin-top:12px;padding:9px 0;font-size:11.5px;
-  color:var(--tx-3);transition:color .18s}
-.zrp-weg:hover{color:var(--coral)}
 
 /* Im Zeitraum-Modus wird der Kalender zur Auswahlfläche: erster Tipp setzt
    den Anfang, zweiter das Ende. Dazwischen liegt die goldene Spur. */
@@ -2962,7 +2959,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <div class="zrp-teil" id="q-textwrap" style="display:none">
             <input type="text" id="q-text" placeholder="Vermerk, z. B. Schulung">
           </div>
-          <button class="zrp-weg" id="q-clear">Einträge in diesem Zeitraum entfernen</button>
         </div>
 
         <!-- Der Auszug gehört zum Monat, also steht er in dessen Karte. -->
@@ -3587,7 +3583,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-05-2332';
+const APP_STAND = '2026-08-06-0538';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7312,22 +7308,6 @@ $('#zr-ok').addEventListener('click', () => {
           label + ' · ' + fmtDay(Q.from) + (Q.to && +Q.to !== +Q.from ? ' bis ' + fmtDay(Q.to) : ''),
           hit);
 });
-$('#q-clear').addEventListener('click', () => {
-  if(_qBusy) return;
-  if(!qRange()){ toast('Zuerst die Tage im Kalender antippen'); return; }
-  const hit = [];
-  qEach(d => {
-    const k = key(d.getFullYear(), d.getMonth(), d.getDate());
-    if(!ME.events[k]) return false;
-    delete ME.events[k]; hit.push(k); return true;
-  });
-  if(!hit.length){ toast('In diesem Zeitraum war nichts eingetragen'); return; }
-  save();
-  _qBusy = true;
-  qFinish(hit.length + (hit.length === 1 ? ' Eintrag entfernt' : ' Einträge entfernt'),
-          'Diese Tage zählen wieder als normale Arbeitstage.', hit);
-});
-
 /* ═══════════════════════════════════════════════════════════
    EXPORT-AUSWAHL
    ═══════════════════════════════════════════════════════════ */
