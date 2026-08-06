@@ -1514,12 +1514,7 @@ body.zrmodus .cell .hrs,
 body.zrmodus .cell .ico,
 body.zrmodus .cell .gift{opacity:.35}
 body.zrmodus .cell.zr-off{opacity:.4}
-body.zrmodus .cell.zr-mid{background:rgba(247,215,116,.16);border-color:rgba(247,215,116,.3)}
-body.zrmodus .cell.zr-mid .num{color:var(--butter)}
-body.zrmodus .cell.zr-edge{background:linear-gradient(140deg,var(--butter-2),var(--butter));
-  border-color:var(--butter);box-shadow:0 8px 20px -10px rgba(247,215,116,.75)}
-body.zrmodus .cell.zr-edge .num{color:#221904;font-weight:700}
-body.zrmodus .cell.zr-edge .hrs,body.zrmodus .cell.zr-edge .ico{color:#221904;opacity:.55}
+body.zrmodus .cell.zr-edge .num{font-weight:700}
 
 /* Leiste unten: entweder die zwei Ansichten oder die zwei Entscheidungen. */
 .fb-z{display:none}
@@ -3637,7 +3632,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-06-0633';
+const APP_STAND = '2026-08-06-0638';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
