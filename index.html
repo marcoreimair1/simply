@@ -518,7 +518,7 @@ body.menuauf #avatar{transform:scale(.92)}
    Dieselbe Fläche wie bei den Bildern, darauf zwei Stände. Die Zahlen
    zählen beim Öffnen hoch, damit man sieht, dass sie gerechnet sind. */
 .konten{position:absolute;inset:-4px -6px;z-index:3;display:flex;flex-direction:column;
-  gap:11px;justify-content:center;padding:10px 5px;border-radius:var(--r-s);overflow:auto;
+  gap:11px;justify-content:flex-end;padding:10px 5px 2px;border-radius:var(--r-s);overflow:auto;
   background:rgba(18,28,66,.97);
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
@@ -3696,7 +3696,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-06-1426';
+const APP_STAND = '2026-08-06-1550';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
