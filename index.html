@@ -1073,7 +1073,17 @@ body.nobar #v-onboard{padding-top:14px}
 .cell:hover{border-color:var(--butter-dim);transform:translateY(-2px)}
 .cell.pad{opacity:.2;pointer-events:none;border-color:transparent;background:transparent}
 .cell.sun{background:rgba(6,10,26,.14);border-style:dashed}
-.cell.today{border-color:rgba(238,242,255,.42);box-shadow:0 0 0 3px rgba(238,242,255,.07)}
+.cell.today{border-color:rgba(238,242,255,.42);box-shadow:0 0 0 3px rgba(238,242,255,.07);
+  animation:heutePuls 6.5s ease-in-out infinite}
+@keyframes heutePuls{
+  0%,100%{box-shadow:0 0 0 3px rgba(238,242,255,.05);border-color:rgba(238,242,255,.34)}
+  50%    {box-shadow:0 0 0 5px rgba(238,242,255,.13);border-color:rgba(238,242,255,.6)}
+}
+.cell.today::after{animation:heutePunkt 6.5s ease-in-out infinite}
+@keyframes heutePunkt{0%,100%{opacity:.6}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .cell.today,.cell.today::after{animation:none}
+}
 .cell.today .num{color:var(--tx)}
 /* Der Punkt sagt „heute" — er sitzt oben in der Ecke, damit er weder die
    Stunden noch ein Zeichen verdeckt. Die Farben bleiben den Einträgen. */
@@ -3639,7 +3649,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-06-0646';
+const APP_STAND = '2026-08-06-0648';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
