@@ -106,8 +106,21 @@ Profilbildern — und zeigt zwei Stände, die beim Öffnen hochzählen:
 
 - **Zeitausgleich**: alle `zeit`-Einträge zusammen (jahresübergreifend) plus `konten.zaStart`.
   Grün bei plus, rot bei minus, verstellbar in 0,25-h-Schritten.
-- **Urlaubstage**: `konten.urlaubJahr` minus die im laufenden Kalenderjahr genommenen Tage
-  (halbe Tage zählen 0,5). Verstellbar in halben Tagen, Balken zeigt den Rest.
+- **Urlaubstage**: der **Topf** minus alle genommenen Tage seit `konten.startJahr`
+  (halbe Tage zählen 0,5). Die Kachel zeigt nur an — gepflegt wird der Anspruch im
+  eigenen Menüpunkt.
+
+### Urlaubsanspruch
+
+Eigener Punkt im Profilmenü, gleiche blaue Fläche mit Riegel und gelbem Speichern-Knopf.
+Der Jahresanspruch lässt sich in **Tagen oder Stunden** eintragen; Stunden werden über die
+durchschnittlichen Stunden eines Diensttages aus dem Dienstplan in Tage umgerechnet
+(`tagStunden()`).
+
+Jeden **1. Jänner** wird der Anspruch dem Topf gutgeschrieben (`urlaubGutschreiben()`,
+läuft beim Start und bei jedem `save()`, trägt verpasste Jahre nach und schreibt nie doppelt
+gut). Reste verfallen also nicht, der Topf wächst weiter. Gespeichert:
+`konten = { anspruch, anspruchEinheit, topf, gutJahr, startJahr, zaStart }`.
 
 Gespeichert werden nur die beiden **Grundwerte** in `konten`. Der gerechnete Stand steht in
 `stand = { za, zaRoh, urlaub, genommen, anspruch, jahr, ts }` und wird bei **jedem** `save()`
