@@ -1439,16 +1439,26 @@ body.zrmodus #v-cal .card{border-color:var(--zrf,var(--line));
 .zrp{margin-top:15px;padding-top:14px;border-top:1px solid var(--line-2);
   animation:zrpIn .4s var(--ease-out) both}
 @keyframes zrpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-/* Die Leistung in der Kopfleiste. Sie löst das Logo ab, solange ein
-   Zeitraum läuft — beides liegt übereinander und blendet weich. */
-.brand{transition:opacity .3s var(--ease),transform .34s var(--ease)}
-body.zrmodus .brand{opacity:0;transform:translateY(-6px);pointer-events:none;
-  position:absolute;left:20px}
-.tbzr{display:flex;align-items:center;gap:10px;min-width:0;
-  opacity:0;transform:translateY(6px);
-  transition:opacity .3s .06s var(--ease),transform .36s .06s var(--ease-out)}
+/* Beim Beenden geht das Feld nach unten weg, statt einfach zu verschwinden. */
+.zrp.zu{animation:zrpRaus .3s var(--ease) both}
+@keyframes zrpRaus{to{opacity:0;transform:translateY(10px)}}
+/* Die Leistung in der Kopfleiste. Sie löst Logo und Profilbild ab, solange
+   ein Zeitraum läuft — die Leiste gehört dann ganz der Eintragung.
+   Beim Verlassen geht sie nach oben weg, danach kommt das Logo zurück. */
+.brand{transition:opacity .3s .12s var(--ease),transform .4s .12s var(--ease-out)}
+body.zrmodus .brand{opacity:0;transform:translateY(-8px) scale(.97);pointer-events:none;
+  position:absolute;left:20px;transition:opacity .22s var(--ease),transform .28s var(--ease)}
+#avwrap{transition:opacity .24s var(--ease),transform .34s var(--ease-out)}
+body.zrmodus #avwrap{opacity:0;transform:scale(.86) translateX(12px);pointer-events:none;
+  position:absolute;right:20px}
+.tbzr{flex:1;display:flex;align-items:center;gap:10px;min-width:0;
+  opacity:0;transform:translateY(-8px) scale(.98);
+  transition:opacity .2s var(--ease),transform .28s var(--ease)}
 .tbzr[hidden]{display:none}
-body.zrmodus .tbzr{opacity:1;transform:none}
+body.zrmodus .tbzr{opacity:1;transform:none;
+  transition:opacity .32s .1s var(--ease),transform .42s .1s var(--ease-out)}
+/* Das Kontingent rückt an den rechten Rand, wo sonst das Profilbild sitzt. */
+.tbzr .zrp-ist{margin-left:auto}
 .tbzr-i{width:30px;height:30px;border-radius:11px;flex:none;display:grid;place-items:center;
   transition:color .3s,background .3s}
 .tbzr-i svg{width:16px;height:16px}
@@ -3609,7 +3619,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-06-0547';
+const APP_STAND = '2026-08-06-0608';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7251,12 +7261,17 @@ function zrAn(art){
 }
 function zrAus(){
   document.body.classList.remove('zrmodus');
-  /* Erst ausblenden lassen, dann aushängen — sonst springt der Kopf. */
-  setTimeout(() => { if(!zrModus()) $('#tbzr').hidden = true; }, 340);
   document.body.style.removeProperty('--zrf');
   document.body.style.removeProperty('--zrf-schwach');
-  $('#zrp').hidden = true;
-  $('#mbar').style.display = '';
+  /* Erst weggleiten lassen, dann aushängen — sonst springt es. */
+  const zp = $('#zrp');
+  zp.classList.add('zu');
+  setTimeout(() => {
+    if(zrModus()) return;
+    zp.hidden = true; zp.classList.remove('zu');
+    $('#tbzr').hidden = true;
+    $('#mbar').style.display = '';
+  }, 320);
   $('#zrk').classList.remove('weg');
   zrkAuf(false);
   Q.from = Q.to = null;
