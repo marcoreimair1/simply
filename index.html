@@ -1435,6 +1435,21 @@ body.nobar #v-onboard{padding-top:14px}
 #v-cal .card{transition:border-color .4s var(--ease),box-shadow .4s var(--ease)}
 body.zrmodus #v-cal .card{border-color:var(--zrf,var(--line));
   box-shadow:0 0 0 1px var(--zrf-schwach,transparent),0 22px 60px -34px var(--zrf-schwach,transparent),var(--shadow)}
+/* Der gewählte Umfang und der Eintragen-Knopf ebenso. */
+body.zrmodus #q-scope button{transition:.24s var(--ease)}
+body.zrmodus #q-scope button.on{background:var(--zrf-zart);border-color:var(--zrf-schwach);
+  color:var(--zrf)}
+body.zrmodus #zr-ok{background:linear-gradient(120deg,var(--zrf-hell),var(--zrf));
+  border-color:var(--zrf);color:#1B1408;
+  box-shadow:0 12px 34px -12px var(--zrf-schwach)}
+body.zrmodus #zr-ok:hover{box-shadow:0 18px 40px -12px var(--zrf-schwach)}
+/* Auch die Spur im Kalender folgt der Leistung. */
+body.zrmodus .cell.zr-mid{background:var(--zrf-zart);border-color:var(--zrf-schwach)}
+body.zrmodus .cell.zr-mid .num{color:var(--zrf)}
+body.zrmodus .cell.zr-edge{background:linear-gradient(140deg,var(--zrf-hell),var(--zrf));
+  border-color:var(--zrf);box-shadow:0 8px 20px -10px var(--zrf-schwach)}
+body.zrmodus .cell.zr-edge .num{color:#1B1408}
+body.zrmodus .cell.zr-edge .hrs,body.zrmodus .cell.zr-edge .ico{color:#1B1408;opacity:.55}
 
 .zrp{margin-top:15px;padding-top:14px;border-top:1px solid var(--line-2);
   animation:zrpIn .4s var(--ease-out) both}
@@ -3622,7 +3637,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-06-0622';
+const APP_STAND = '2026-08-06-0633';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7265,7 +7280,9 @@ function zrAn(art){
 function zrAus(){
   document.body.classList.remove('zrmodus');
   document.body.style.removeProperty('--zrf');
+  document.body.style.removeProperty('--zrf-hell');
   document.body.style.removeProperty('--zrf-schwach');
+  document.body.style.removeProperty('--zrf-zart');
   /* Erst weggleiten lassen, dann aushängen — sonst springt es. */
   const zp = $('#zrp');
   zp.classList.add('zu');
@@ -7288,9 +7305,12 @@ function zrMalen(){
   $('#zrp-i').style.background = rgba(T.color, .14);
   $('#zrp-b').textContent = T.label + ' eintragen';
   $('#zrp-s').textContent = 'Tage im Kalender antippen';
-  /* Der Kalenderrand nimmt die Farbe der Leistung an. */
+  /* Kalenderrand, gewählter Umfang und der Eintragen-Knopf tragen die Farbe
+     der Leistung — so wirkt die ganze Ansicht aus einem Guss. */
   document.body.style.setProperty('--zrf', T.color);
+  document.body.style.setProperty('--zrf-hell', mischWeiss(T.color, .34));
   document.body.style.setProperty('--zrf-schwach', rgba(T.color, .3));
+  document.body.style.setProperty('--zrf-zart', rgba(T.color, .13));
 
   /* Rechts der Ist-Stand — den gibt es nur beim Urlaub. */
   const ist = $('#zrp-ist');
