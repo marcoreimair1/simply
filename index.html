@@ -1087,7 +1087,14 @@ body.nobar #v-onboard{padding-top:14px}
    und ruhig, damit Monat und Jahr die Zeile führen. */
 .calhead .ct small{display:block;font-family:var(--font-ui);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--tx-3);margin-top:3px}
-.cal{margin-top:16px}
+.cal{margin-top:16px;overflow:hidden;touch-action:pan-y}
+/* Blättern: das Blatt folgt dem Finger, fliegt zur Seite weg und das neue
+   kommt von der anderen Seite herein. Der Kopf zieht leise mit. */
+.cal-grid,.cal-dow{will-change:transform,opacity}
+.cal-grid{transition:transform .34s var(--ease-out),opacity .26s var(--ease)}
+.cal.wischt .cal-grid{transition:none}
+#cal-title{transition:transform .34s var(--ease-out),opacity .26s var(--ease)}
+.cal.blaettert #cal-title{opacity:0;transform:translateY(-4px)}
 .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:7px}
 .cal-dow span{text-align:center;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx-3)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
@@ -3715,7 +3722,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-07-1115';
+const APP_STAND = '2026-08-07-1122';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6962,15 +6969,110 @@ $('#mbar').addEventListener('click', msAuf);
 $('#msheet').addEventListener('click', e => {
   if(e.target.dataset.close === 'msheet') msZu();
 });
-$('#cal-prev').addEventListener('click', () => {
+/* ─── Monat blättern ──────────────────────────────────────────────────
+   Ein Schritt vor oder zurück, mit Wisch oder Pfeil: das alte Blatt fliegt
+   zur Seite weg, das neue kommt von der anderen Seite herein. Ein Schritt
+   zurück über Jänner 2025 hinaus gibt es nicht. */
+let _blaettert = false;
+function monatMoeglich(r){
+  if(r > 0) return true;
   let y = CAL.y, m = CAL.m - 1;
   if(m < 0){ m = 11; y--; }
-  if(vorDemStart(y, m)){ toast('Weiter zurück als Jänner ' + START.y + ' geht es nicht.'); return; }
-  CAL.y = y; CAL.m = m; renderCal();
-});
-$('#cal-next').addEventListener('click', () => { CAL.m++; if(CAL.m > 11){ CAL.m = 0; CAL.y++; } renderCal(); });
+  return !vorDemStart(y, m);
+}
+function monatSetzen(r){
+  let y = CAL.y, m = CAL.m + r;
+  if(m < 0){ m = 11; y--; }
+  if(m > 11){ m = 0; y++; }
+  CAL.y = y; CAL.m = m;
+}
+function monatBlaettern(r, sofortDa){
+  if(_blaettert) return;
+  if(!monatMoeglich(r)){
+    toast('Weiter zurück als Jänner ' + START.y + ' geht es nicht.');
+    blattZurueck();
+    return;
+  }
+  _blaettert = true;
+  const cal = $('#v-cal .cal'), gitter = $('#cal-grid');
+  cal.classList.remove('wischt');
+  cal.classList.add('blaettert');
+  const weg = r > 0 ? -1 : 1;                 /* vorwärts: nach links weg */
+  gitter.style.transition = 'transform .22s var(--ease), opacity .18s var(--ease)';
+  gitter.style.transform = 'translateX(' + (weg * 42) + '%)';
+  gitter.style.opacity = '0';
+  setTimeout(() => {
+    monatSetzen(r);
+    renderCal();
+    const neu = $('#cal-grid');
+    neu.style.transition = 'none';
+    neu.style.transform = 'translateX(' + (-weg * 34) + '%)';
+    neu.style.opacity = '0';
+    requestAnimationFrame(() => {
+      cal.classList.remove('blaettert');
+      neu.style.transition = 'transform .38s var(--ease-out), opacity .3s var(--ease)';
+      neu.style.transform = 'translateX(0)';
+      neu.style.opacity = '1';
+      setTimeout(() => { neu.style.transition = ''; _blaettert = false; }, 400);
+    });
+  }, 200);
+}
+function blattZurueck(){
+  const gitter = $('#cal-grid'); if(!gitter) return;
+  $('#v-cal .cal').classList.remove('wischt');
+  gitter.style.transition = 'transform .34s var(--ease-out), opacity .26s var(--ease)';
+  gitter.style.transform = 'translateX(0)';
+  gitter.style.opacity = '1';
+}
+$('#cal-prev').addEventListener('click', () => monatBlaettern(-1));
+$('#cal-next').addEventListener('click', () => monatBlaettern(1));
 $('#cal-today').addEventListener('click', () => { CAL.y = NOW.getFullYear(); CAL.m = NOW.getMonth(); renderCal(); });
+
+/* Wischen: das Blatt hängt am Finger, ab einem Drittel der Breite kippt es
+   um. Senkrechtes Ziehen bleibt dem Rollen der Seite überlassen. */
+let _wischEnde = 0;
+(function kalenderWischen(){
+  const cal = $('#v-cal .cal'); if(!cal) return;
+  let x0 = 0, y0 = 0, dx = 0, an = false, quer = false, t0 = 0;
+  const gitter = () => $('#cal-grid');
+  cal.addEventListener('pointerdown', e => {
+    if(_blaettert) return;
+    if(e.pointerType === 'mouse' && e.button !== 0) return;
+    x0 = e.clientX; y0 = e.clientY; dx = 0; an = true; quer = false; t0 = performance.now();
+  });
+  cal.addEventListener('pointermove', e => {
+    if(!an) return;
+    const ax = e.clientX - x0, ay = e.clientY - y0;
+    if(!quer){
+      if(Math.abs(ay) > Math.abs(ax) && Math.abs(ay) > 9){ an = false; return; }
+      if(Math.abs(ax) < 9) return;
+      quer = true;
+      cal.classList.add('wischt');
+    }
+    dx = ax;
+    /* Am Anfang der Zeit gibt es nichts mehr — dort zieht es zäher. */
+    const zaeh = (dx > 0 && !monatMoeglich(-1)) ? .22 : .5;
+    const g = gitter();
+    g.style.transform = 'translateX(' + (dx * zaeh) + 'px)';
+    g.style.opacity = String(Math.max(.4, 1 - Math.abs(dx) / 460));
+  });
+  const los = () => {
+    if(!an) return;
+    an = false;
+    if(!quer) return;
+    _wischEnde = performance.now();
+    const breite = cal.clientWidth || 320;
+    const schnell = Math.abs(dx) / Math.max(1, performance.now() - t0) > .5;
+    if(Math.abs(dx) > breite * .28 || (schnell && Math.abs(dx) > 40)) monatBlaettern(dx < 0 ? 1 : -1);
+    else blattZurueck();
+  };
+  cal.addEventListener('pointerup', los);
+  cal.addEventListener('pointercancel', los);
+  cal.addEventListener('pointerleave', los);
+})();
 $('#cal-grid').addEventListener('click', e => {
+  /* Ein Wisch endet mit einem Klick — der darf keinen Tag öffnen. */
+  if(performance.now() - _wischEnde < 320) return;
   /* Das Geschenk fängt den Tipp ab — der Tagesdialog bleibt zu */
   const g = e.target.closest('[data-geb]');
   if(g){ e.stopPropagation(); feiern(+g.dataset.geb); return; }
