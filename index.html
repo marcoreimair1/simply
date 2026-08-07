@@ -1087,7 +1087,9 @@ body.nobar #v-onboard{padding-top:14px}
    und ruhig, damit Monat und Jahr die Zeile führen. */
 .calhead .ct small{display:block;font-family:var(--font-ui);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--tx-3);margin-top:3px}
-.cal{margin-top:16px;overflow:hidden;touch-action:pan-y}
+.cal{margin-top:16px;overflow:hidden}
+/* Auf der ganzen Kalenderseite darf waagrecht gewischt werden. */
+#v-cal{touch-action:pan-y}
 /* Blättern: das Blatt folgt dem Finger, fliegt zur Seite weg und das neue
    kommt von der anderen Seite herein. Der Kopf zieht leise mit. */
 .cal-grid,.cal-dow{will-change:transform,opacity}
@@ -3722,7 +3724,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-07-1122';
+const APP_STAND = '2026-08-07-1128';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6965,7 +6967,10 @@ function msZu(){
   $('#msheet').classList.remove('on');
   document.body.classList.remove('locked');
 }
-$('#mbar').addEventListener('click', msAuf);
+$('#mbar').addEventListener('click', () => {
+  if(performance.now() - _wischEnde < 320) return;   /* das war ein Wisch */
+  msAuf();
+});
 $('#msheet').addEventListener('click', e => {
   if(e.target.dataset.close === 'msheet') msZu();
 });
@@ -7032,15 +7037,20 @@ $('#cal-today').addEventListener('click', () => { CAL.y = NOW.getFullYear(); CAL
    um. Senkrechtes Ziehen bleibt dem Rollen der Seite überlassen. */
 let _wischEnde = 0;
 (function kalenderWischen(){
-  const cal = $('#v-cal .cal'); if(!cal) return;
+  /* Gewischt wird auf der ganzen Kalenderseite, nicht nur auf dem Blatt —
+     mit einer Hand landet der Daumen meist weiter unten. */
+  const flaeche = $('#v-cal'); if(!flaeche) return;
+  const cal = $('#v-cal .cal');
   let x0 = 0, y0 = 0, dx = 0, an = false, quer = false, t0 = 0;
   const gitter = () => $('#cal-grid');
-  cal.addEventListener('pointerdown', e => {
+  flaeche.addEventListener('pointerdown', e => {
     if(_blaettert) return;
     if(e.pointerType === 'mouse' && e.button !== 0) return;
+    /* Eingabefelder und Regler ziehen selbst — die bleiben unberührt. */
+    if(e.target.closest('input, textarea, [role="slider"], .zastepper, .kstep')) return;
     x0 = e.clientX; y0 = e.clientY; dx = 0; an = true; quer = false; t0 = performance.now();
   });
-  cal.addEventListener('pointermove', e => {
+  flaeche.addEventListener('pointermove', e => {
     if(!an) return;
     const ax = e.clientX - x0, ay = e.clientY - y0;
     if(!quer){
@@ -7061,14 +7071,14 @@ let _wischEnde = 0;
     an = false;
     if(!quer) return;
     _wischEnde = performance.now();
-    const breite = cal.clientWidth || 320;
+    const breite = (cal && cal.clientWidth) || flaeche.clientWidth || 320;
     const schnell = Math.abs(dx) / Math.max(1, performance.now() - t0) > .5;
     if(Math.abs(dx) > breite * .28 || (schnell && Math.abs(dx) > 40)) monatBlaettern(dx < 0 ? 1 : -1);
     else blattZurueck();
   };
-  cal.addEventListener('pointerup', los);
-  cal.addEventListener('pointercancel', los);
-  cal.addEventListener('pointerleave', los);
+  flaeche.addEventListener('pointerup', los);
+  flaeche.addEventListener('pointercancel', los);
+  flaeche.addEventListener('pointerleave', los);
 })();
 $('#cal-grid').addEventListener('click', e => {
   /* Ein Wisch endet mit einem Klick — der darf keinen Tag öffnen. */
