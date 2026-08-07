@@ -523,6 +523,18 @@ body.menuauf #avatar{transform:scale(.92)}
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
 .menu-card.kauf #konten{opacity:1;visibility:visible;transform:none}
+/* Ein Pfeil führt aus jeder Fläche zurück ins Menü — oben links, wo er
+   niemandem im Weg ist. */
+.zurueckbtn{position:absolute;left:7px;top:6px;z-index:5;width:30px;height:30px;
+  border-radius:11px;display:grid;place-items:center;border:1px solid var(--line-2);
+  color:var(--tx-3);background:rgba(6,10,26,.5);transition:.18s var(--ease)}
+.zurueckbtn svg{width:15px;height:15px}
+.zurueckbtn:active{transform:scale(.92)}
+@media (hover:hover) and (pointer:fine){
+  .zurueckbtn:hover{color:var(--butter);border-color:var(--butter-dim)}
+}
+#konten,#uabox,.dlbox,.rangbox{padding-top:42px}
+.avgrid{padding-top:42px}
 .menu-card.uaauf #uabox{opacity:1;visibility:visible;transform:none}
 .menu-card.uaauf .mbody > :not(#uabox){opacity:0;pointer-events:none}
 .menu-card.uaauf .kbox{animation:kIn .5s var(--ease-out) both}
@@ -3157,6 +3169,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <div class="avgrid" id="avgrid" role="group" aria-label="Profilbild wählen"></div>
       <!-- Zweite Fläche im selben Blau: die beiden Stände. -->
       <div class="konten" id="konten" role="group" aria-label="Zeitausgleich und Urlaubstage">
+        <button class="zurueckbtn" data-zurueck aria-label="Zurück zum Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
         <!-- Erst schauen, dann ändern: der Riegel oben gibt die Knöpfe frei. -->
         <button class="kschloss" id="k-lock" aria-pressed="false">
           <span class="kschloss-i" id="k-lock-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 018 0v2.7"/></svg></span>
@@ -3185,7 +3198,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
           <div class="kbar"><i id="k-ur-bar"></i></div>
           <div class="kfuss">
             <small id="k-ur-sub">—</small>
-            <span class="kstep kstep-aus"></span>
+            <span class="kstep">
+              <button data-kstep="ur-" aria-label="Einen halben Tag weniger">−</button>
+              <button data-kstep="ur+" aria-label="Einen halben Tag mehr">+</button>
+            </span>
           </div>
         </div>
         <button class="ksave" id="k-save">
@@ -3195,6 +3211,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       </div>
       <!-- Urlaubsanspruch: derselbe blaue Grund, eigener Riegel. -->
       <div class="konten" id="uabox" role="group" aria-label="Urlaubsanspruch">
+        <button class="zurueckbtn" data-zurueck aria-label="Zurück zum Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
         <button class="kschloss" id="ua-lock" aria-pressed="false">
           <span class="kschloss-i" id="ua-lock-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 018 0v2.7"/></svg></span>
           <span class="kschloss-t"><b id="ua-lock-b">Ansicht gesperrt</b><small id="ua-lock-s">Zum Entsperren drücken</small></span>
@@ -3229,6 +3246,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
       <!-- Profil löschen: alles im Menü, in derselben blauen Fläche. -->
       <div class="dlbox" id="dlbox" role="group" aria-label="Profil löschen">
+        <button class="zurueckbtn" data-zurueck aria-label="Zurück zum Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
         <b class="dlb-h">Wirklich alles löschen?</b>
         <small class="dlb-s">Das lässt sich nicht rückgängig machen.</small>
         <div class="dl-liste" id="dl-liste"></div>
@@ -3257,6 +3275,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       <!-- Die Stufen legen sich unter die aktuelle Stufe, bis zur Linie,
            und lassen sich dort rollen. -->
       <div class="rangbox" id="rangbox" role="group" aria-label="Alle Stufen">
+        <button class="zurueckbtn" data-zurueck aria-label="Zurück zum Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
         <p class="rb-sub" id="rb-sub">—</p>
         <div id="rb-liste"></div>
         <p class="rb-fuss">Jeder exportierte Monat zählt einmal. Alle vier Monate geht es eine Stufe hoch.</p>
@@ -3696,7 +3715,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-06-1558';
+const APP_STAND = '2026-08-07-1115';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6515,9 +6534,12 @@ function malAvatar(){
   $('#avbig').innerHTML = '<img src="' + avDatei(n) + '" alt="">';
   malAvGitter();
 }
+const PFEIL_ZURUECK = '<button class="zurueckbtn" data-zurueck aria-label="Zurück zum Menü">'
+  + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" '
+  + 'stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>';
 function malAvGitter(){
   const jetzt = avNummer();
-  let h = '';
+  let h = PFEIL_ZURUECK;
   for(let i = 1; i <= AVATARE; i++)
     h += '<button class="avopt' + (i === jetzt ? ' on' : '') + '" data-av="' + i + '" '
        + 'aria-label="Motiv ' + i + '"><img src="' + avDatei(i) + '" alt=""></button>';
@@ -6658,6 +6680,16 @@ function kontenAuf(an){
   kontenFrei(false);              /* immer gesperrt beginnen */
   if(auf) malKonten(true);
 }
+/* Der Pfeil schließt die Fläche, in der er sitzt. */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-zurueck]'); if(!b) return;
+  e.stopPropagation();
+  if(avOffen()) avWahl(false);
+  else if(kontenOffen()) kontenAuf(false);
+  else if(uaOffen()) uaAuf(false);
+  else if(rangboxOffen()) rangboxAuf(false);
+  else if(dlOffen()) dlZu();
+}, true);
 $('#k-lock').addEventListener('click', () => kontenFrei(!$('#konten').classList.contains('frei')));
 
 /* ─── Urlaubsanspruch ─────────────────────────────────────────────────
@@ -6769,6 +6801,9 @@ $('#konten').addEventListener('click', e => {
   const w = b.dataset.kstep;
   if(w === 'za-') ME.konten.zaStart = r25(ME.konten.zaStart - 0.25);
   if(w === 'za+') ME.konten.zaStart = r25(ME.konten.zaStart + 0.25);
+  /* Halbe Tage von Hand: das verschiebt den Topf, nicht den Jahresanspruch. */
+  if(w === 'ur-') ME.konten.topf = Math.max(0,   r05(ME.konten.topf - 0.5));
+  if(w === 'ur+') ME.konten.topf = Math.min(400, r05(ME.konten.topf + 0.5));
   save();
   malKonten(false);
 });
