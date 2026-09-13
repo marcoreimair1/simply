@@ -305,6 +305,35 @@ Gold war Marke *und* Urlaubsfarbe, ein Fast-Weiß war Schriftfarbe *und* Fläche
 Arbeitszeit *und* Zeitausgleich. Alle drei sind jetzt getrennt benannt. Und: `!important` schlägt
 jede Animation — eine so übersteuerte Eigenschaft friert ein.
 
+### Serien — ein Zeitraum ist mehr als seine Tage
+
+Ein Zeitraum schrieb bisher jeden Tag einzeln in `ME.events`; dass sie zusammengehören, stand
+nirgends. Wer einen davon zurücksetzte, bekam ein Loch mitten im Urlaub und musste die übrigen
+von Hand nachziehen.
+
+Seit 13. September 2026 trägt jeder Tag aus einem Zeitraum eine Kennung: `ser` = erster Tag
+`>` letzter Tag, also `2026-09-14>2026-09-25` — lesbar, auch in der Datenbank. Wird ein Tag
+mit Serie zurückgesetzt, fragt MOJI: **nur diesen Tag** oder **alle N Tage**.
+
+**Zwei Wege, eine Serie zu finden** (`serieVon(y, m, d)`):
+
+1. **Mit Kennung** — alle Tage mit derselben `ser`.
+2. **Ohne** — vom angetippten Tag nach beiden Seiten laufen, solange der Nachbar denselben
+   Eintrag trägt (gleicher Typ, gleicher Umfang, gleicher Text). Das ist nötig, weil alles,
+   was vor dem 13. September eingetragen wurde, keine Kennung hat.
+
+Der zweite Weg hat eine Regel, auf die es ankommt: **Tage ohne Dienst werden übersprungen, ein
+freier Arbeitstag beendet die Serie.** Ein Urlaub über zwei Wochen hat am Sonntag keinen
+Eintrag — er ist trotzdem eine Serie. Ein Arbeitstag ohne Eintrag mittendrin ist dagegen eine
+echte Lücke: dort wäre ein Eintrag zu erwarten gewesen. Was als Dienst gilt, entscheidet
+`qTouched()` aus dem Dienstplan — beim Vorgabeplan von Miller Optik also auch der Samstag.
+
+**Beim Löschen fliegen die Tage weg.** `tageLoeschen(keys, wort)` zeichnet die Kacheln erst mit
+`.weg` (45 ms Versatz je Tag, bei elf gedeckelt), lässt sie schrumpfen und ausblenden — und
+löscht **erst danach**. Umgekehrt schrumpften leere Kacheln: das Zeichen muss noch da sein,
+während es geht. Solange das läuft, sperrt `_wegBusy` das Öffnen eines Tagesblatts — die
+Einträge stehen ja noch, das Blatt zeigte etwas, das es gleich nicht mehr gibt.
+
 ### Dienstzeiten mit Datum
 
 Wer seine Arbeitszeiten ändert, bekommt alte Monate **nicht** mit dem neuen Plan gerechnet.
@@ -1036,6 +1065,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Serien** (13. September 2026): Ein Zeitraum hält jetzt zusammen. Zurücksetzen eines Tages
+  fragt nach — nur dieser Tag oder die ganze Serie —, und die Tage fliegen nacheinander weg.
+  Auch für die Einträge, die es schon gibt: die haben keine Kennung und werden über gleiche
+  Nachbarn erkannt. Einzelheiten in [Abschnitt 3](#3--rechnen), Unterabschnitt *Serien*.
+  Geprüft mit 33 jsdom-Testfällen und im Browser nachgemessen
 - **Kopfleiste und Wischen** (13. September 2026): Der Anlauf der Kopfleiste hängt jetzt am
   freien Schirm statt an einer festen Uhr — er lief seit dem längeren Vorspann hinter dem
   Gruß ab. Dazu Wischen nach rechts im Menü und seinen fünf Untermenüs. Einzelheiten in

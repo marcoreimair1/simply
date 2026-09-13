@@ -1648,6 +1648,32 @@ body.nobar #v-onboard{padding-top:14px}
 #geb-close{margin-top:26px;opacity:0;animation:fadeUp .6s 2.1s var(--ease-out) forwards}
 
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+/* ─── Nur dieser Tag oder die ganze Serie? ───────────────────────
+   Dieselbe Leiste wie beim Passkey, aber mit zwei etwa gleich schweren
+   Entscheidungen. Die passen nicht neben den Text — also bricht sie um:
+   Zeichen und Text oben, die beiden Knoepfe darunter, gleich breit.
+   Der Serienknopf traegt Rot, weil er mehr entfernt; er ist damit die
+   Auskunft, nicht die Empfehlung. */
+/* Die Passkey-Leiste verwischt den Hintergrund, weil dort nichts mehr
+   zu lesen ist. Hier schon: die Frage gilt einem bestimmten Tag, und
+   dessen Datum steht im Blatt darunter. Also nur abdunkeln, nicht
+   verwischen — sonst fragt man ins Blinde. */
+#serbar .pkbar-hg{
+  backdrop-filter:none; -webkit-backdrop-filter:none;
+  background:rgba(var(--s-tief),.3);
+}
+#serbar .pkbar-in{ flex-wrap:wrap; row-gap:11px }
+#serbar .pkbar-txt{ flex:1 1 auto }
+#serbar .pkbar-btns{ flex:1 0 100%; display:flex; gap:8px }
+#serbar .pkbar-btns button{ flex:1; padding:11px 10px }
+#serbar .pkbar-ja{
+  background:rgba(var(--za-minus-rgb-f),.14);
+  border-color:rgba(var(--za-minus-rgb),.5)!important;
+  color:var(--za-minus)!important;
+}
+#serbar .pkbar-ja:hover{ background:rgba(var(--za-minus-rgb-f),.24) }
+#serbar .pkbar-i svg{ width:20px; height:20px }
+
 /* Trenner zwischen Passkey und E-Mail */
 .mi.done svg{color:var(--c-eigen)}
 .mfoot{margin:11px 2px 2px;padding-top:12px;border-top:1px solid var(--line-2);
@@ -2057,6 +2083,16 @@ body.zrmodus .fb-z{display:inline-flex}
   opacity:0;animation:fadeUp .5s .5s var(--ease-out) forwards}
 .qd-in small{color:var(--tx-3);font-size:12.5px;max-width:34ch;
   opacity:0;animation:fadeUp .5s .62s var(--ease-out) forwards}
+/* Ein Tag, der geht. Das Gegenstueck zu cellFlash: dort kommt etwas an
+   und setzt sich, hier holt es kurz Luft und ist weg. Wichtig ist die
+   Reihenfolge im Ablauf — erst zeigen, dann loeschen, damit die Kachel
+   ihr Zeichen noch traegt, waehrend sie verschwindet. */
+.cell.weg{animation:cellWeg .46s var(--ease-blend) both}
+@keyframes cellWeg{
+  0%{transform:none;opacity:1}
+  35%{transform:scale(1.07)}
+  100%{transform:scale(.8);opacity:0}
+}
 .cell.flash{animation:cellFlash .72s var(--ease-out) both}
 @keyframes cellFlash{
   0%{transform:scale(.82);box-shadow:0 0 0 0 rgba(var(--marke-rgb),.5)}
@@ -4372,6 +4408,19 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   </div>
 </div>
 
+<!-- Zurücksetzen eines Tages, der zu einer Serie gehört: erst fragen. -->
+<div class="pkbar" id="serbar" aria-hidden="true">
+  <div class="pkbar-hg" data-close="serbar"></div>
+  <div class="pkbar-in" role="dialog" aria-modal="true" aria-labelledby="ser-b">
+    <span class="pkbar-i" id="ser-i"></span>
+    <span class="pkbar-txt"><b id="ser-b">—</b><small id="ser-s">—</small></span>
+    <span class="pkbar-btns">
+      <button class="pkbar-no" id="ser-tag">Nur diesen Tag</button>
+      <button class="pkbar-ja" id="ser-alle">Ganze Serie</button>
+    </span>
+  </div>
+</div>
+
 <!-- Mitgliedschaftskarte, Vollformat. Pastell, weil sie neben dem dunklen
      Rest der App wie eine echte Karte in der Hand wirken soll. -->
 <div class="mkv" id="mkv" aria-hidden="true">
@@ -4788,7 +4837,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-2006';
+const APP_STAND = '2026-09-13-2034';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -8344,6 +8393,8 @@ $('#avgrid').addEventListener('click', e => {
    KALENDER
    ═══════════════════════════════════════════════════════════ */
 let FLASH = new Set(), FLASH_ORDER = [];
+/* Dasselbe fuer Tage, die gerade verschwinden. */
+let WEG = new Set(), WEG_ORDER = [];
 function renderCal(){
   const y = CAL.y, m = CAL.m;
   /* Am unteren Rand nimmt der Pfeil sich zurück, statt ins Leere zu führen. */
@@ -8364,6 +8415,7 @@ function renderCal(){
     const isSun = r.dow === 0;
     const isToday = today.getFullYear() === y && today.getMonth() === m && today.getDate() === r.day;
     const fl = FLASH.has(r.k);
+    const wg = WEG.has(r.k);
     /* Im Zeitraum-Modus trägt die Zelle zusätzlich ihre Rolle in der Spur. */
     let zr = '';
     if(zrModus()){
@@ -8374,8 +8426,12 @@ function renderCal(){
         if(x >= a && x <= b) zr += (x === a || x === b) ? ' zr-edge' : ' zr-mid';
       } else if(a !== null && x === a) zr += ' zr-edge';
     }
-    html += '<button class="cell'+(isSun?' sun':'')+(isToday?' today':'')+(fl?' flash':'')+zr+'"'
-      + (fl ? ' style="animation-delay:'+(FLASH_ORDER.indexOf(r.k)*55)+'ms"' : '')
+    html += '<button class="cell'+(isSun?' sun':'')+(isToday?' today':'')
+      +(fl?' flash':'')+(wg?' weg':'')+zr+'"'
+      /* Nacheinander, nicht alle auf einmal — gedeckelt, damit ein
+         Urlaub ueber drei Wochen nicht sekundenlang abraeumt. */
+      + (fl ? ' style="animation-delay:'+(FLASH_ORDER.indexOf(r.k)*55)+'ms"'
+        : wg ? ' style="animation-delay:'+(Math.min(WEG_ORDER.indexOf(r.k), 11)*45)+'ms"' : '')
       + (r.type ? ' data-t="'+r.type+'"' : '') + ' data-d="'+r.day+'">';
     html += '<span class="num">'+r.day+'</span>';
     /* Geburtstag: nur ein Zeichen, keine Auswirkung auf Stunden oder Einträge */
@@ -8590,6 +8646,10 @@ let _wischEnde = 0;
 $('#cal-grid').addEventListener('click', e => {
   /* Ein Wisch endet mit einem Klick — der darf keinen Tag öffnen. */
   if(performance.now() - _wischEnde < 320) return;
+  /* Und solange Tage wegfliegen, stehen sie noch in ME.events: ein Tipp
+     wuerde ein Blatt zu einem Eintrag oeffnen, den es gleich nicht mehr
+     gibt. */
+  if(_wegBusy) return;
   /* Das Geschenk fängt den Tipp ab — der Tagesdialog bleibt zu */
   const g = e.target.closest('[data-geb]');
   if(g){ e.stopPropagation(); feiern(+g.dataset.geb); return; }
@@ -9060,10 +9120,126 @@ $('#sh-save').addEventListener('click', () => {
   save(); closeSheet(); renderCal();
   toast('Eintrag gespeichert');
 });
+/* ═════════════════════════════════════════════════════════════════
+   SERIEN — ein Zeitraum ist mehr als seine einzelnen Tage
+   ═════════════════════════════════════════════════════════════════
+
+   Bis jetzt schrieb ein Zeitraum jeden Tag einzeln in ME.events; dass
+   sie zusammengehoeren, stand nirgends. Wer einen davon zuruecksetzte,
+   bekam ein Loch mitten im Urlaub und musste die uebrigen von Hand
+   nachziehen.
+
+   Seit dem 13. September 2026 traegt jeder Tag aus einem Zeitraum eine
+   Kennung (ser) — erster bis letzter Tag, also lesbar. Alles, was davor
+   eingetragen wurde, hat keine und soll trotzdem als Serie gelten.
+   Deshalb zwei Wege:
+
+   · Mit Kennung: alle Tage mit derselben.
+   · Ohne: vom angetippten Tag nach beiden Seiten laufen, solange der
+     Nachbar denselben Eintrag traegt. Tage ohne Dienst werden dabei
+     uebersprungen — ein Urlaub ueber zwei Wochen hat am Sonntag keinen
+     Eintrag, ist aber eine Serie. Ein uebersprungener ARBEITSTAG
+     beendet sie dagegen: dort waere ein Eintrag zu erwarten gewesen. */
+
+const datAusKey = k => { const p = k.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); };
+
+function evGleich(a, b){
+  return !!a && !!b && a.t === b.t && a.s === b.s
+      && (a.text || '') === (b.text || '') && !!a.aw === !!b.aw;
+}
+
+function serieVon(y, m, d){
+  if(!ME || !ME.events) return [];
+  const k0 = key(y, m, d);
+  const e0 = ME.events[k0];
+  if(!e0) return [];
+  if(e0.ser){
+    const mit = Object.keys(ME.events).filter(k => ME.events[k] && ME.events[k].ser === e0.ser);
+    if(mit.length) return mit.sort();
+  }
+  const gefunden = [k0];
+  const start = new Date(y, m, d);
+  const lauf = schritt => {
+    const dd = new Date(y, m, d);
+    for(;;){
+      dd.setDate(dd.getDate() + schritt);
+      /* Nicht endlos suchen: laenger als ein Jahr am Stueck ist kein Urlaub. */
+      if(Math.abs(dd - start) > 400 * 864e5) return;
+      const k = key(dd.getFullYear(), dd.getMonth(), dd.getDate());
+      const e = ME.events[k];
+      if(evGleich(e0, e)){ gefunden.push(k); continue; }
+      if(e) return;                   /* etwas anderes steht da */
+      if(qTouched(new Date(dd))) return;   /* freier Arbeitstag: Serie zu Ende */
+    }
+  };
+  lauf(-1); lauf(1);
+  return gefunden.sort();
+}
+
+/* Tage wegfliegen lassen und erst dann loeschen. Umgekehrt schrumpften
+   leere Kacheln — das Zeichen muss noch da sein, waehrend es geht. */
+let _wegBusy = false;
+function tageLoeschen(keys, wort){
+  if(!keys.length) return;
+  _wegBusy = true;
+  WEG = new Set(keys); WEG_ORDER = keys.slice();
+  renderCal();
+  const dauer = 460 + Math.min(keys.length - 1, 11) * 45 + 60;
+  setTimeout(() => {
+    keys.forEach(k => { delete ME.events[k]; });
+    save();
+    WEG = new Set(); WEG_ORDER = [];
+    renderCal();
+    _wegBusy = false;
+    toast(wort);
+  }, dauer);
+}
+
+/* ─── Die Rueckfrage ─── */
+let SER_KEYS = [];
+function serFrage(keys){
+  const el = $('#serbar'); if(!el) return;
+  SER_KEYS = keys.slice();
+  const e = ME.events[key(SH.y, SH.m, SH.d)] || {};
+  const art = e.t === 'eigen' ? (e.text || 'Vermerk')
+            : (TYPES[e.t] ? TYPES[e.t].label : 'Eintrag');
+  const i = $('#ser-i');
+  i.innerHTML = ICONS[e.t] || '';
+  i.style.color = (TYPES[e.t] && TYPES[e.t].color) || '';
+  $('#ser-b').textContent = art + ' · ' + keys.length + ' Tage';
+  $('#ser-s').textContent = fmtDay(datAusKey(keys[0])) + ' bis '
+                          + fmtDay(datAusKey(keys[keys.length - 1]));
+  $('#ser-alle').textContent = 'Alle ' + keys.length + ' Tage';
+  el.classList.add('on');
+  el.setAttribute('aria-hidden','false');
+  requestAnimationFrame(() => el.classList.add('da'));
+}
+function serBarZu(){
+  const el = $('#serbar'); if(!el || !el.classList.contains('on')) return;
+  el.classList.remove('da');
+  el.setAttribute('aria-hidden','true');
+  setTimeout(() => el.classList.remove('on'), 300);
+}
+$('#serbar').addEventListener('click', e => {
+  if(e.target.closest('[data-close="serbar"]')){ serBarZu(); return; }
+  if(e.target.closest('#ser-tag')){
+    serBarZu(); closeSheet();
+    tageLoeschen([key(SH.y, SH.m, SH.d)], 'Tag zurückgesetzt');
+    return;
+  }
+  if(e.target.closest('#ser-alle')){
+    const n = SER_KEYS.length;
+    serBarZu(); closeSheet();
+    tageLoeschen(SER_KEYS.slice(), n + ' Tage zurückgesetzt');
+  }
+});
+
 $('#sh-del').addEventListener('click', () => {
-  delete ME.events[key(SH.y, SH.m, SH.d)];
-  save(); closeSheet(); renderCal();
-  toast('Tag zurückgesetzt');
+  const serie = serieVon(SH.y, SH.m, SH.d);
+  /* Nur fragen, wenn es etwas zu entscheiden gibt. */
+  if(serie.length > 1){ serFrage(serie); return; }
+  closeSheet();
+  tageLoeschen([key(SH.y, SH.m, SH.d)], 'Tag zurückgesetzt');
 });
 
 /* ═══════════════════════════════════════════════════════════
@@ -9228,10 +9404,16 @@ $('#zr-ok').addEventListener('click', () => {
   if(_qBusy) return;
   if(!qRange()){ toast('Zuerst die Tage im Kalender antippen'); return; }
   const hit = [];
+  /* Die Kennung haelt die Tage zusammen: erster bis letzter Tag, damit
+     sie auch in der Datenbank lesbar bleibt. Daran erkennt das
+     Zuruecksetzen spaeter, dass hier eine Serie liegt. */
+  const bis = Q.to || Q.from;
+  const ser = key(Q.from.getFullYear(), Q.from.getMonth(), Q.from.getDate())
+            + '>' + key(bis.getFullYear(), bis.getMonth(), bis.getDate());
   qEach(d => {
     if(!qTouched(d)) return false;
     const k = key(d.getFullYear(), d.getMonth(), d.getDate());
-    ME.events[k] = { t:Q.type, s:Q.scope, text:Q.type === 'eigen' ? $('#q-text').value.trim() : '', aw:false };
+    ME.events[k] = { t:Q.type, s:Q.scope, text:Q.type === 'eigen' ? $('#q-text').value.trim() : '', aw:false, ser:ser };
     hit.push(k); return true;
   });
   if(!hit.length){ toast('In diesem Zeitraum liegt kein Arbeitstag'); return; }
@@ -9790,6 +9972,7 @@ $('#pkbar').addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape' && $('#pkbar').classList.contains('on')) pkBarZu();
+  if(e.key === 'Escape' && $('#serbar').classList.contains('on')) serBarZu();
   /* Escape bricht die Frage nach dem Gültigkeitsdatum ab — der Entwurf
      bleibt dabei stehen, man landet wieder im Bearbeiten. */
   if(e.key === 'Escape' && $('#sab').classList.contains('on')) sabZu();
