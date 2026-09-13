@@ -445,9 +445,40 @@ Ein Monat = eine A4-Seite: Name, Geburtsdatum, Dienstgeber, Zeitraum, alle Tage 
 Nachmittag, Pause, Arbeitsstunden und Vermerk, die getrennten Summen, dazu zwei
 Unterschriftsleisten in Schreibschrift.
 
-- **PDF erstellen** → alle gewählten Monate in einer Datei, ein Monat pro Seite
-- **Lieber pro Monat eine eigene Datei** → eine PDF je Monat. Chrome fragt beim ersten Mal,
-  ob mehrere Downloads erlaubt sind
+**Ein Knopf, eine Datei:** alle gewählten Monate zusammen, ein Monat pro Seite. Daneben stand
+bis 13. September 2026 *Lieber pro Monat eine eigene Datei* — der hat mehr Fragen aufgeworfen
+(welchen nehme ich? was ist der Unterschied?) als beantwortet und ist samt seinem Zweig in
+`buildPdf()` entfernt. Wer ihn zurückholen will, findet ihn in der Historie.
+
+### Was schon abgegeben ist
+
+Zwei Dinge, die leicht verwechselt werden und **beide zugleich** an der Monatskachel stehen:
+
+| | woher | wie es aussieht |
+|---|---|---|
+| **gewählt** | `EX.set`, gespiegelt in `ME.months` | violett gefüllt |
+| **abgegeben** | `ME.exp` — Monat → Zeitstempel | grüner Haken in der Ecke |
+
+Das Exportbuch `ME.exp` gab es schon, geschrieben von `merkeExporte()` nach jedem fertigen PDF
+und über `data: ME` mit in die Cloud. Nur **sehen** konnte man es nicht: die Kachel zeigte
+allein die Auswahl, und ein Jahrgang erledigter Monate sah aus wie ein leerer. Deshalb der
+Eindruck, es werde nichts mitgeführt. Seit 13. September 2026 trägt die Kachel den Haken, und
+die Zeile darunter nennt, wie viele der gewählten Monate schon draußen sind.
+
+Ein abgegebener Monat darf erneut raus — das kommt vor, wenn nachträglich etwas korrigiert
+wurde. Gezählt wird er kein zweites Mal: `ME.exp` hält je Monat einen Eintrag.
+
+**Der Verlauf** (Uhrsymbol oben rechts) listet alles mit Zeitstempel. Er zeigte früher zwei
+Daten nebeneinander ohne ein Wort dazwischen — *Dezember* links, *27.11.2025* rechts —, was
+sich las wie ein Widerspruch. Links steht aber der aufgezeichnete Monat und rechts der Tag der
+Abgabe, und die liegen fast immer auseinander. Jetzt steht es untereinander und
+ausgeschrieben: **Dezember** / *abgegeben am 27. Nov 2025 um 20:31*.
+
+**Datum in Ortszeit, nicht UTC.** Sowohl der Verlauf als auch die Fußzeile *Erstellt am* im PDF
+rechneten über `new Date().toISOString().slice(0,10)`. Das ist UTC — in Wien zeigte jeder
+Export zwischen Mitternacht und ein bis zwei Uhr den Vortag. Auf einer Arbeitsaufzeichnung, die
+zum Dienstgeber geht, ist das kein Schönheitsfehler. Beide nehmen jetzt `heuteIso()`
+beziehungsweise `fmtStempel()` mit Ortszeit-Gettern.
 
 **Künftige Monate sind gesperrt.** Wählbar ist alles bis einschließlich des laufenden Monats;
 spätere Monate stehen blass und gestrichelt da. Am Monatsersten wird der abgeschlossene Monat
@@ -1065,6 +1096,12 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Exportseite** (13. September 2026): Abgegebene Monate tragen jetzt einen grünen Haken auf
+  der Kachel — bisher war das nur im Verlauf hinter einem kleinen Knopf zu sehen, daher der
+  Eindruck, es werde nichts mitgeführt. Der Verlauf schreibt aus, welches Datum was ist. Der
+  Knopf *Lieber pro Monat eine eigene Datei* ist entfernt. Dabei fiel ein UTC-Fehler auf: das
+  *Erstellt am* im PDF zeigte nachts den Vortag. Einzelheiten in
+  [Abschnitt 4](#4--pdf-export). Geprüft mit 29 jsdom-Testfällen, Sichtprüfung hell und dunkel
 - **Serien** (13. September 2026): Ein Zeitraum hält jetzt zusammen. Zurücksetzen eines Tages
   fragt nach — nur dieser Tag oder die ganze Serie —, und die Tage fliegen nacheinander weg.
   Auch für die Einträge, die es schon gibt: die haben keine Kennung und werden über gleiche

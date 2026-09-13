@@ -1363,6 +1363,43 @@ h1.dis i{font-style:italic;color:var(--butter)}
 /* Noch nicht dran: sichtbar, aber deutlich zurückgenommen. */
 .mgrid .chip.zu{opacity:.3;color:var(--tx-3);border-style:dashed;cursor:default}
 .mgrid .chip.zu:hover{background:none;transform:none}
+
+/* ─── Schon abgegeben ─────────────────────────────────────────────
+   Bisher sagte die Kachel nur, ob der Monat gerade GEWÄHLT ist. Ob er
+   schon einmal abgegeben wurde, stand ausschliesslich im Verlauf
+   hinter einem kleinen Knopf — man sah einen Jahrgang voller
+   erledigter Monate und keinen Unterschied zum leeren.
+
+   Das sind zwei voneinander unabhaengige Zustaende, und beide muessen
+   zugleich ablesbar sein: gewaehlt traegt die Kachel wie bisher,
+   abgegeben kommt als gruener Haken in der Ecke dazu. Gruen, weil es
+   dieselbe Bedeutung hat wie beim Sicherungsstand im Menue. */
+.mgrid .chip{position:relative}
+/* :not(.on) ist hier nicht Zierde, sondern noetig. .mgrid .chip.fertig
+   steht spaeter in der Datei als .chip.on und ist gleich stark — die
+   blasse gruene Flaeche gewann also gegen das Violett der Auswahl,
+   waehrend die weisse Schrift der Auswahl blieb. Ein gewaehlter und
+   zugleich abgegebener Monat war dadurch unlesbar. So beschreibt die
+   Regel genau den Fall, fuer den sie gilt: abgegeben und NICHT gewaehlt. */
+.mgrid .chip.fertig:not(.on){
+  border-color:rgba(var(--za-plus-rgb),.42);
+  background:rgba(var(--za-plus-rgb-f),.09);
+}
+.mgrid .chip .exhaken{
+  position:absolute; top:6px; right:6px; width:16px; height:16px;
+  border-radius:50%; display:grid; place-items:center;
+  background:var(--za-plus); color:var(--ink);
+  opacity:0; transform:scale(.5);
+  transition:opacity .22s var(--ease), transform .26s var(--ease-out);
+}
+.mgrid .chip.fertig .exhaken{opacity:1; transform:none}
+.mgrid .chip .exhaken svg{width:10px; height:10px}
+/* Auf der gewaehlten Kachel liegt der Haken auf Violett — dort traegt
+   er Weiss und einen eigenen Ring, sonst verschwimmt er. */
+.mgrid .chip.on .exhaken{
+  background:var(--on-primary); color:var(--butter);
+  box-shadow:0 0 0 1px rgba(var(--s-tief),.18);
+}
 .yearnav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px}
 .yearnav b{font-family:var(--font-dis);font-size:26px;font-weight:400;font-variant-numeric:tabular-nums}
 .rnd{width:38px;height:38px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;transition:.2s}
@@ -2815,10 +2852,24 @@ body.zrmodus .fb-z{display:inline-flex}
 .exh-jahr{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--tx-3);margin:14px 0 4px}
 .exh-jahr:first-child{margin-top:2px}
-.exh-z{display:flex;align-items:baseline;gap:10px;padding:7px 0;
+/* Die Zeile trug zwei Daten nebeneinander ohne ein Wort dazwischen:
+   "Dezember" links, "27.11.2025" rechts. Das liest sich, als waere der
+   Dezember der 27. November. Links steht aber der aufgezeichnete Monat
+   und rechts der Tag, an dem er abgegeben wurde — und die beiden
+   liegen fast immer auseinander.
+
+   Jetzt steht es untereinander und ausgeschrieben, wie die Zeilen im
+   Profilmenue: Monat gross, darunter wann. Dazu der gruene Haken, der
+   auch auf der Kachel steht. */
+.exh-z{display:flex;align-items:center;gap:11px;padding:9px 0;
   border-bottom:1px solid rgba(var(--s-auf),.055)}
-.exh-z b{flex:1;font-size:13px;font-weight:600;color:var(--tx-2)}
-.exh-z i{flex:none;font-style:normal;font-size:10.5px;color:var(--tx-3)}
+.exh-z:last-child{border-bottom:none}
+.exh-hk{flex:none;width:26px;height:26px;border-radius:9px;display:grid;place-items:center;
+  background:rgba(var(--za-plus-rgb-f),.13);color:var(--za-plus)}
+.exh-hk svg{width:14px;height:14px}
+.exh-t{flex:1;min-width:0}
+.exh-t b{display:block;font-size:13.5px;font-weight:600;line-height:1.3;color:var(--tx)}
+.exh-t small{display:block;margin-top:1px;font-size:11px;line-height:1.4;color:var(--tx-3)}
 
 /* ─── Postfach ────────────────────────────────────────────────────────
    Vorher wuchs das Blatt mit dem Inhalt nach oben und der Griff wanderte
@@ -4138,9 +4189,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
             PDF erstellen
           </button>
         </div>
-        <div style="margin-top:14px">
-          <button class="linkbtn" id="ex-single">Lieber pro Monat eine eigene Datei</button>
-        </div>
       </div>
     </section>
 
@@ -4824,6 +4872,11 @@ function rhythmusWoche(sched, d){
   return (((wochenNr(d) + ((sched && sched.offset) || 0)) % wc) + wc) % wc;
 }
 function fmtDate(iso){ if(!iso) return '—'; const p = iso.split('-'); return p[2]+'.'+p[1]+'.'+p[0]; }
+/* Heutiges Datum als ISO — in Ortszeit. new Date().toISOString() ist UTC
+   und liefert in Wien zwischen Mitternacht und ein bis zwei Uhr noch den
+   Vortag. Auf einer Arbeitsaufzeichnung, die zum Dienstgeber geht, ist
+   ein falsches Erstellungsdatum kein Schoenheitsfehler. */
+const heuteIso = () => { const d = new Date(); return key(d.getFullYear(), d.getMonth(), d.getDate()); };
 function toast(msg, bleib){
   const el = $('#toast'); $('#toast-t').textContent = msg;
   el.classList.add('on');
@@ -4837,7 +4890,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-2034';
+const APP_STAND = '2026-09-13-2133';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7717,6 +7770,16 @@ function rangZu(){
 /* Der Verlauf: in der Exportansicht steckt nur ein Knopf, die Liste liegt
    in einem Blatt. Die Ansicht füllt das Fenster genau — jede zusätzliche
    Zeile würde sie zum Rollen bringen. */
+/* Wann ein Monat abgegeben wurde — in Ortszeit, mit Uhrzeit.
+
+   Hier stand new Date(ts).toISOString().slice(0,10). Das ist UTC: wer
+   um halb eins nachts exportiert, bekam den Vortag angezeigt. In Wien
+   sind das je nach Jahreszeit ein bis zwei Stunden jede Nacht. */
+function fmtStempel(ts){
+  const d = new Date(ts);
+  return d.getDate() + '. ' + MSHORT[d.getMonth()] + ' ' + d.getFullYear()
+       + ' um ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+}
 function malVerlaufKnopf(){
   const b = $('#ex-histbtn'); if(!b) return;
   b.hidden = expAnzahl() === 0;
@@ -7732,8 +7795,10 @@ function malVerlauf(){
   let jahr = null, h = '';
   v.forEach(o => {
     if(o.y !== jahr){ jahr = o.y; h += '<span class="exh-jahr">' + jahr + '</span>'; }
-    h += '<div class="exh-z"><b>' + MONTHS[o.m] + '</b>'
-      + '<i>' + fmtDate(new Date(o.ts).toISOString().slice(0,10)) + '</i></div>';
+    h += '<div class="exh-z">'
+      + '<span class="exh-hk" aria-hidden="true">' + PK_HAKEN + '</span>'
+      + '<span class="exh-t"><b>' + MONTHS[o.m] + '</b>'
+      + '<small>abgegeben am ' + fmtStempel(o.ts) + '</small></span></div>';
   });
   box.innerHTML = h;
 }
@@ -9445,12 +9510,21 @@ function exYear(){
     if(!monatOffen(y, m)){ EX.set.delete(k); entfernt = true; }
   });
   if(entfernt && ME){ ME.months = exList(); save(); }
+  const buch = expBuch();
   $('#ex-months').innerHTML = MONTHS.map((n,i) => {
     const offen = monatOffen(EX.year, i);
-    return '<button class="chip'+(EX.set.has(EX.year+'-'+i)?' on':'')+(offen?'':' zu')+'"'
-      + ' data-m="'+i+'"'+(offen?'':' disabled aria-label="'+n+' '+EX.year
-          + (vorDemStart(EX.year, i) ? ' liegt vor dem Start von MOJI' : ' liegt noch in der Zukunft')+'"')
-      + '>'+MSHORT[i]+'</button>';
+    const gewaehlt = EX.set.has(EX.year+'-'+i);
+    const fertig = !!buch[EX.year+'-'+i];
+    /* Zwei Zustaende nebeneinander: gewaehlt und schon abgegeben.
+       Vorlesegeraete bekommen beides als Text, der Haken ist stumm. */
+    const sagt = n + ' ' + EX.year
+      + (!offen ? (vorDemStart(EX.year, i) ? ' liegt vor dem Start von MOJI' : ' liegt noch in der Zukunft')
+                : (fertig ? ' – schon abgegeben' : '') + (gewaehlt ? ' – gewählt' : ''));
+    return '<button class="chip'+(gewaehlt?' on':'')+(offen?'':' zu')+(fertig?' fertig':'')+'"'
+      + ' data-m="'+i+'" aria-label="'+esc(sagt)+'"'+(offen?'':' disabled')+'>'
+      + MSHORT[i]
+      + (fertig ? '<span class="exhaken" aria-hidden="true">'+PK_HAKEN+'</span>' : '')
+      + '</button>';
   }).join('');
   /* Kein Blättern in Jahre, in denen ohnehin nichts wählbar ist. */
   const vor = $('[data-exyr="1"]');
@@ -9458,12 +9532,18 @@ function exYear(){
   const zurueck = $('[data-exyr="-1"]');
   if(zurueck) zurueck.disabled = EX.year <= START.y;
   const list = exList();
+  /* Ein schon abgegebener Monat darf erneut raus — das kommt vor, wenn
+     nachträglich etwas korrigiert wurde. Zählen tut er kein zweites
+     Mal, und hier steht, dass es einer ist. */
+  const schon = list.filter(o => !!buch[o.y+'-'+o.m]).length;
   $('#ex-note').textContent = list.length
-    ? list.length + (list.length === 1 ? ' Monat' : ' Monate') + ' gewählt · ' +
-      list.map(o => MSHORT[o.m]+' '+o.y).join(', ')
+    ? list.length + (list.length === 1 ? ' Monat' : ' Monate') + ' gewählt · '
+      + list.map(o => MSHORT[o.m]+' '+o.y).join(', ')
+      + (schon ? ' · ' + (schon === list.length
+            ? (list.length === 1 ? 'schon abgegeben' : 'alle schon abgegeben')
+            : schon + ' davon schon abgegeben') : '')
     : 'Wähle mindestens einen Monat.';
   $('#ex-go').disabled = !list.length;
-  $('#ex-single').disabled = !list.length;
   malVerlaufKnopf();
   fitAll();
 }
@@ -9488,8 +9568,7 @@ $$('[data-exyr]').forEach(b => b.addEventListener('click', () => {
   if(z < START.y) return;
   EX.year = z; exYear();
 }));
-$('#ex-go').addEventListener('click', () => buildPdf(exList(), false));
-$('#ex-single').addEventListener('click', () => buildPdf(exList(), true));
+$('#ex-go').addEventListener('click', () => buildPdf(exList()));
 
 /* ═══════════════════════════════════════════════════════════
    PDF
@@ -9730,7 +9809,7 @@ function drawPage(doc, p, y, m, sigs){
   doc.setDrawColor(232,234,240); doc.setLineWidth(0.25);
   doc.line(L, 281, R, 281);
   doc.setFontSize(5.8); doc.setTextColor.apply(doc, GREY);
-  doc.text('Erstellt am ' + fmtDate(new Date().toISOString().slice(0,10))
+  doc.text('Erstellt am ' + fmtDate(heuteIso())
     + ' mit MOJI — Mehr Zeit fürs Wesentliche.   ·   Eine App von Studio MARU', L, 285.4);
   doc.text(MONTHS[m] + ' ' + y + '  ·  ' + p.vorname + ' ' + p.nachname, R, 285.4, { align:'right' });
 }
@@ -9809,13 +9888,17 @@ function exOverlay(){
   };
 }
 
-async function buildPdf(list, separate){
+/* Ein Weg, eine Datei. Es gab daneben einen Knopf "Lieber pro Monat
+   eine eigene Datei" — der hat mehr Fragen aufgeworfen als beantwortet
+   (welche nehme ich? was ist der Unterschied?) und ist samt seinem
+   Zweig entfallen. Wer ihn zurueckholen will, findet ihn in der
+   Historie vor dem 13. September 2026. */
+async function buildPdf(list){
   if(_busy) return;
   if(!list.length){ toast('Kein Monat gewählt'); return; }
   if(!window.jspdf || !window.jspdf.jsPDF){ toast('PDF-Bibliothek nicht geladen — bitte online neu laden'); return; }
   _busy = true;
-  const btnA = $('#ex-go'), btnB = $('#ex-single');
-  btnA.disabled = btnB.disabled = true;
+  $('#ex-go').disabled = true;
   const ov = exOverlay(), t0 = performance.now();
 
   /* Der Balken läuft nach der Zeit bis 95 % und wartet dort, falls das Setzen
@@ -9842,29 +9925,7 @@ async function buildPdf(list, separate){
     const total = list.length;
     let name = '';
 
-    if(separate){
-      const fertig = [];
-      for(let i = 0; i < total; i++){
-        const o = list[i];
-        ov.step(i, total, 'Seite ' + (i+1) + ' von ' + total, MONTHS[o.m] + ' ' + o.y + ' wird gesetzt …');
-        await wait(60);
-        const doc = new JSP({ unit:'mm', format:'a4', orientation:'portrait', compress:true });
-        drawPage(doc, ME, o.y, o.m, sigs);
-        fertig.push([doc, base + '_' + o.y + '-' + p2(o.m+1) + '.pdf']);
-      }
-      /* Der Balken läuft weiter, während wir auf die Mindestzeit warten —
-         sonst stünde er die ganze Zeit auf zwei Prozent. */
-      const rest = MIN_MS - (performance.now() - t0);
-      if(rest > 0) await wait(rest);
-      clearInterval(takt);
-      name = total + (total === 1 ? ' Datei' : ' Dateien') + ' im Download-Ordner';
-      /* Erst das Glas vollmachen und Prost zeigen, dann speichern. Vorher
-         legte sich die PDF-Anzeige des Browsers sofort darüber und man sah
-         das Prost nie. */
-      ov.finish(total + (total === 1 ? ' PDF erstellt' : ' PDFs erstellt'), name);
-      await wait(1250);
-      fertig.forEach(p => p[0].save(p[1]));
-    } else {
+    {
       const doc = new JSP({ unit:'mm', format:'a4', orientation:'portrait', compress:true });
       for(let i = 0; i < total; i++){
         const o = list[i];
