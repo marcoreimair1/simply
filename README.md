@@ -40,6 +40,7 @@ Supabase in Frankfurt als Datenspeicher, gebaut fürs Handy.
 
 17. [Dateien im Projekt](#17--dateien-im-projekt)
 18. [Offene Punkte](#18--offene-punkte)
+19. [Übergabe an einen anderen Rechner oder Account](#19--übergabe-an-einen-anderen-rechner-oder-account)
 
 ---
 
@@ -624,3 +625,57 @@ Geräte die alten Bilder aus dem Zwischenspeicher.
   Pro-Plan ($20/Monat) oder ein zweites Resend-Konto
 - Alle früher einmal offen gezeigten Schlüssel gehören erneuert — insbesondere der
   Supabase-`service_role` und das Gmail-App-Passwort, das inzwischen nicht mehr gebraucht wird
+
+---
+
+## 19 · Übergabe an einen anderen Rechner oder Account
+
+Alles, was zählt, liegt im Repo und in den beiden Diensten — nichts hängt an einem bestimmten
+Rechner oder Claude-Konto. Ein Gesprächsverlauf zieht dagegen nicht mit um: Diese Datei ist das
+Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
+
+### 19.1 Was wo liegt
+
+| Was | Wo | Hängt am Konto? |
+|---|---|---|
+| App, Dokumentation, Bilder, Mailvorlagen, Edge Function | GitHub `marcoreimair1/simply` | GitHub-Login |
+| Live-Seite | GitHub Pages → `moji-app.at` | — |
+| Profile, Anmeldung, Passkeys, Monatsmail-Zeitplan | Supabase-Projekt `kzduwbmiytusvlbotrrr` (Frankfurt) | Supabase-Login |
+| Domain und DNS | GoDaddy | GoDaddy-Login |
+| Mailversand | Resend, Absender `no-reply@moji-app.at` | Resend-Login |
+
+### 19.2 In fünf Schritten umziehen
+
+1. Repo auf den Rechner holen:
+   `git clone https://github.com/marcoreimair1/simply.git ~/Dokumente/MOJI`
+2. Diesen Ordner im neuen Account als Arbeitsordner verbinden
+3. Im Browserprofil einmal bei GitHub und Supabase anmelden
+4. **Empfohlen:** `git` lokal mit SSH-Schlüssel oder Zugriffstoken einrichten. Dann geht
+   Veröffentlichen über `git commit` und `git push` statt über die Weboberfläche — das ist
+   schneller und übersteht auch die Tage, an denen GitHub beim Hochladen zickt
+5. Diese Datei von vorne lesen; Abschnitt 8 erklärt das Veröffentlichen, 17 die Dateien
+
+### 19.3 Wie gearbeitet wird
+
+- **Eine Datei.** `index.html` enthält Aufbau, Gestaltung und Logik. Kein Build, kein Paketmanager
+- **`APP_STAND`** ganz oben im Skriptblock wird bei jeder Veröffentlichung hochgezählt
+  (Format `JJJJ-MM-TT-hhmm`). Die Kachel im Kalender vergleicht ihn mit der Datei auf dem Server
+- **Vor jeder Veröffentlichung:** den Skriptblock aus der Datei ziehen und mit `node --check`
+  prüfen, dazu die Testläufe unten. Sie liegen nicht im Repo, sondern werden je Sitzung neu
+  geschrieben — jeder lädt `index.html` in jsdom, spielt Bedienschritte durch und prüft Zustände
+- **Testläufe, die es gab:** Kalender und Zeitraum, Profilmenü mit seinen Flächen, Konten,
+  Passkey-Balken, Löschen, Firma, Export, Mitgliedskarte, Wochenrhythmus
+- **Sichtprüfung nur abgemeldet.** Nie App-Code in einer angemeldeten Sitzung ausführen:
+  `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
+
+### 19.4 Woran gerade gearbeitet wurde
+
+- **Wochenrhythmus korrigiert** (September 2026): Der Zyklus hing an der Kalenderwoche und
+  stolperte in Jahren mit 53 Wochen — auf KW 53 folgte KW 1, also zweimal dieselbe Woche.
+  Jetzt zählt `wochenNr()` die Wochen fortlaufend ab Montag, 1. Jänner 2024. Bestehende Profile
+  bekommen in `normalize()` einmalig einen umgerechneten Versatz (`sched.basis = 'lauf'`),
+  damit die laufende Woche dieselbe bleibt
+- **Noch nicht gebaut:** Versionierung mit einer Vorschau-Datei. Gedacht war: `vorschau.html`
+  neben `index.html`, dort wird entwickelt und am Handy getestet; auf Zuruf wird sie nach
+  `index.html` kopiert, Versionsnummer hoch, Änderungen in eine `VERSIONEN.md`. Dazu eine
+  Schema-Nummer im Profil, damit eine zu alte App zum Neuladen auffordert statt falsch zu rechnen

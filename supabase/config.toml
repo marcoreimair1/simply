@@ -1,0 +1,10 @@
+# MOJI · Supabase CLI
+# Verbindet diesen Ordner mit dem Projekt in Frankfurt.
+# Angelegt, damit `npx supabase functions deploy monatsmail` vom Rechner aus geht,
+# statt den Code im Dashboard einzufügen (README, Abschnitt 15.3).
+project_id = "kzduwbmiytusvlbotrrr"
+
+[functions.monatsmail]
+# Der Zeitplan ruft mit dem service_role-Schlüssel an; die Function prüft die Rolle
+# danach selbst. Diese Einstellung muss an bleiben (README, Abschnitt 15.4).
+verify_jwt = true

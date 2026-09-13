@@ -1,0 +1,8 @@
+.DS_Store
+
+# Supabase CLI: Arbeitsdateien und die Kopie der Edge Function.
+# Die Quelle ist monatsmail.ts im Wurzelverzeichnis — nur die wird versioniert,
+# damit es keine zweite, abweichende Fassung gibt.
+supabase/.temp/
+supabase/.branches/
+supabase/functions/
