@@ -343,6 +343,36 @@ Die Bewegung nimmt `--ease-blend`, nicht `--ease-out` — siehe *Überblendungen
 dafür*. Mit Expo war das Gitter nach 150 von 500 ms schon bei 90 % Deckkraft und das Neuladen
 las sich als Blinzeln. Jetzt: 0,15 / 0,27 / 0,57 / 0,88 / 1,00 über 550 ms.
 
+### Hell und Dunkel umschalten
+
+**Der Schalter lädt die Seite neu.** Zwei Gründe:
+
+1. Die **Statusleiste des Betriebssystems** übernimmt `theme-color` nur beim Laden. Ändert man
+   das Meta später, bleibt sie am Startbildschirm in der alten Farbe stehen.
+2. Der Wechsel wird dadurch ein Schnitt statt eines Umspringens von hundert Einzelteilen.
+
+Damit das nicht wie ein Absturz aussieht, läuft es in dieser Reihenfolge: Fassung anlegen (der
+Schalter bewegt sich, die App färbt um) → Wahl sichern → ein Deckel in der **neuen** Farbe
+blendet auf → neu laden. Ein Vermerk in `sessionStorage` (`moji.fassung`) sorgt dafür, dass
+danach **weder Vorspann noch Gruß** kommen — acht Sekunden für eine Schalterumlegung wären
+absurd. `FASSUNG_NEU` liest ihn beim Start einmal und löscht ihn sofort.
+
+Vor dem Neuladen wird noch **hochgeladen**, falls etwas offen ist: die Sammelroutine sendet
+verzögert, sonst fände ein zweites Gerät die alte Fassung vor. Hängt die Verbindung, geht es
+nach 1,4 s trotzdem weiter — die Wahl liegt ja schon im Gerätespeicher und im Profil.
+
+**Die Fassung steht jetzt vor dem ersten Anstrich.** Ein kleines Skript im `<head>`, noch vor
+dem Stilblock, liest `moji.erscheinung` und setzt `data-theme` *und* `theme-color`. Bisher tat
+das ein Skript ganz am Ende der Seite — bis dahin war schon hell gezeichnet, und wer dunkel
+eingestellt hat, sah bei **jedem** Start ein weißes Aufblitzen. Beim Umschalten, das die Seite
+absichtlich neu lädt, wäre das der auffälligste Moment überhaupt gewesen.
+
+> **Offen:** `apple-mobile-web-app-status-bar-style` steht fest auf `black-translucent`. Das
+> heißt: am Startbildschirm läuft der Inhalt unter die Statusleiste und deren Schrift ist
+> weiß — in der hellen Fassung also weiß auf hell. Ein Umstellen auf `default` würde das lösen,
+> ändert aber das Layout (`env(safe-area-inset-top)` fällt auf 0) und ließ sich hier nicht am
+> echten Gerät prüfen.
+
 ### Das Osterei
 
 Ein Tipp auf den **MOJI-Schriftzug** oben: der macht Platz nach rechts, das Maskottchen kommt
@@ -1235,6 +1265,12 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Fassungswechsel lädt neu** (13. September 2026): Hell/Dunkel-Umschalten lädt die Seite neu,
+  gedeckt und ohne Vorspann und Gruß, damit die Statusleiste die neue Farbe übernimmt. Dabei
+  kam ein alter Fehler heraus: die Fassung wurde erst am Seitenende gesetzt, dunkle Nutzer
+  sahen bei jedem Start ein weißes Aufblitzen. Einzelheiten in [Abschnitt 3](#3--rechnen),
+  Unterabschnitt *Hell und Dunkel umschalten*. Geprüft mit 56 jsdom-Testfällen und einem echten
+  Umlauf im Browser
 - **Osterei im Schriftzug** (13. September 2026): Ein Tipp auf den MOJI-Schriftzug lässt das
   Maskottchen von links vorbeischauen. Dafür wurde das Männchen aus der Icon-Vorlage
   freigestellt — ohne Kachel, ohne Hintergrund. Einzelheiten in [Abschnitt 3](#3--rechnen),

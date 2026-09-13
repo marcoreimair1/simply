@@ -5,6 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>MOJI — Arbeitszeitaufzeichnung</title>
 <meta name="theme-color" content="#F4F1FA">
+<script>
+/* Die Fassung MUSS vor dem ersten Anstrich stehen.
+
+   Bisher setzte sie ein Skript ganz am Ende der Seite. Bis dahin war
+   schon hell gezeichnet — wer dunkel eingestellt hat, sah bei jedem
+   Start ein weisses Aufblitzen. Beim Umschalten der Fassung, das die
+   Seite absichtlich neu laedt, waere das der auffaelligste Moment
+   ueberhaupt gewesen.
+
+   Hier oben, noch vor dem Stilblock, passiert es nicht. Und
+   theme-color steht damit von Anfang an richtig: die Statusleiste
+   uebernimmt sie nur beim Laden, nicht wenn man sie spaeter aendert.  */
+(function(){try{
+  var d = localStorage.getItem('moji.erscheinung') === 'dark';
+  document.documentElement.dataset.theme = d ? 'dark' : 'light';
+  var m = document.querySelector('meta[name=theme-color]');
+  if (m) m.content = d ? '#0B0711' : '#F4F1FA';
+}catch(e){}})();
+</script>
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2070,6 +2089,19 @@ body.zrmodus .cell.zr-edge .hrs,body.zrmodus .cell.zr-edge .ico{color:var(--f-3)
 /* Die Leistung in der Kopfleiste. Sie löst Logo und Profilbild ab, solange
    ein Zeitraum läuft — die Leiste gehört dann ganz der Eintragung.
    Beim Verlassen geht sie nach oben weg, danach kommt das Logo zurück. */
+/* ─── Fassungswechsel ─────────────────────────────────────────────
+   Deckt den Neustart. Er traegt die Farbe der NEUEN Fassung — die
+   liegt beim Aufblenden schon an, weil anwenden() vorher laeuft. So
+   liest sich der Wechsel als ein Zug und nicht als Ausfall. */
+.fassungsdeckel{
+  position:fixed; inset:0; z-index:95; background:var(--ink);
+  opacity:0; transition:opacity .3s var(--ease-blend); pointer-events:none;
+}
+.fassungsdeckel.da{ opacity:1 }
+/* Zurueck aus dem Neustart: die App blendet kurz auf statt der ueblichen
+   1,1 s — es soll sich wie ein Umschalten anfuehlen, nicht wie ein Start. */
+body.fassung-neu #app{ transition:opacity .42s var(--ease-blend) }
+
 /* ─── Osterei: das Maennchen schaut vorbei ────────────────────────
    Ein Tipp auf den Schriftzug. Der macht Platz nach rechts, das
    Maennchen kommt von links heraus, wackelt kurz und verschwindet
@@ -4991,7 +5023,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-2345';
+const APP_STAND = '2026-09-13-2357';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -10840,8 +10872,34 @@ try{ console.info('[MOJI] Gerät:', JSON.stringify({
 
 if(!AM_HANDY) zeigeSperre(true);
 
+/* Wurde die Seite gerade wegen eines Fassungswechsels neu geladen?
+   Einmal lesen, den Vermerk sofort loeschen — er gilt fuer genau diesen
+   Start. Danach ist wieder alles wie immer. */
+const FASSUNG_NEU = (function(){
+  try{
+    const ja = sessionStorage.getItem('moji.fassung') === '1';
+    if(ja) sessionStorage.removeItem('moji.fassung');
+    return ja;
+  }catch(e){ return false; }
+})();
+
+/* Kein Vorspann nach einem Fassungswechsel. Die App blendet kurz auf,
+   das war es — es soll sich wie ein Umschalten anfuehlen. */
+function vorspannUeberspringen(){
+  const sp = $('#splash');
+  if(sp) sp.style.display = 'none';
+  window.__introLaeuft = false;
+  document.body.classList.remove('locked');
+  document.body.classList.add('fassung-neu');
+  $('#app').classList.add('on');
+  setTimeout(() => document.body.classList.remove('fassung-neu'), 700);
+}
+
 wireDob('ob'); wireDob('lg');
-if(AM_HANDY){ try{ playIntro(); }catch(e){ console.warn(e); endIntro(); } }
+if(AM_HANDY){
+  if(FASSUNG_NEU) vorspannUeberspringen();
+  else try{ playIntro(); }catch(e){ console.warn(e); endIntro(); }
+}
 DB.profiles.forEach(normalize);
 
 /* ─── Start ─── */
@@ -10969,7 +11027,9 @@ $('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
   });
   let session = null;
   try{ const r = await sb.auth.getSession(); session = r.data.session; }catch(e){ console.warn(e); }
-  if(session) await afterLogin(session, true);
+  /* Nach einem Fassungswechsel kein Gruss: man hat gerade einen
+     Schalter umgelegt, nicht sich angemeldet. */
+  if(session) await afterLogin(session, !FASSUNG_NEU);
   else loginScreen();
 })();
 </script>
@@ -11014,14 +11074,48 @@ $('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
     zeileMalen();
   };
 
+  /* Umschalten laedt die Seite neu.
+
+     Zwei Gruende. Die Statusleiste des Betriebssystems uebernimmt
+     theme-color nur beim Laden — am Startbildschirm bliebe sie sonst in
+     der alten Farbe stehen. Und der Wechsel wird dadurch ein Schnitt
+     statt eines Umspringens von hundert Einzelteilen.
+
+     Damit das nicht wie ein Absturz aussieht, laeuft es in dieser
+     Reihenfolge: Fassung anlegen (der Schalter bewegt sich, die App
+     faerbt um), Wahl sichern, ein Deckel in der neuen Farbe blendet
+     auf, dann erst neu laden. Ein Vermerk in sessionStorage sorgt
+     dafuer, dass danach weder Vorspann noch Gruss kommen — acht
+     Sekunden fuer eine Schalterumlegung waeren absurd. */
+  var _laedt = false;
   window.erscheinungUmschalten = function(){
+    if (_laedt) return;
     var jetzt = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
     var neu = jetzt === 'dark' ? 'light' : 'dark';
+    _laedt = true;
     try { localStorage.setItem(SCHLUESSEL, neu); } catch(e){}
     if (typeof ME !== 'undefined' && ME) { ME.erscheinung = neu; try { save(); } catch(e){} }
     anwenden(neu);
     zeileMalen();
-    try { toast(neu === 'dark' ? 'Dunkle Fassung' : 'Helle Fassung'); } catch(e){}
+
+    var deckel = document.createElement('div');
+    deckel.className = 'fassungsdeckel';
+    document.body.appendChild(deckel);
+    requestAnimationFrame(function(){ deckel.classList.add('da'); });
+    try { sessionStorage.setItem('moji.fassung', '1'); } catch(e){}
+
+    /* Erst hochladen, dann neu laden: die Sammelroutine sendet
+       verzoegert, sonst faende ein zweites Geraet die alte Fassung vor.
+       Haengt die Verbindung, geht es nach 1,4 s trotzdem weiter — die
+       Wahl liegt ja schon im Geraetespeicher und im Profil. */
+    var weg = false;
+    var neuLaden = function(){ if (weg) return; weg = true; location.reload(); };
+    var hoch = null;
+    try { if (typeof _dirty !== 'undefined' && _dirty && typeof cloudFlush === 'function') hoch = cloudFlush(); } catch(e){}
+    setTimeout(function(){
+      if (hoch && hoch.then) hoch.then(neuLaden, neuLaden); else neuLaden();
+    }, 340);
+    setTimeout(neuLaden, 1400);
   };
 
   function zeileMalen(){
