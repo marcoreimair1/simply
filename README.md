@@ -163,10 +163,44 @@ malt dieselben fünf Farbwolken wie der App-Hintergrund, aber als **ein** Elemen
 fünf radiale Verläufe, die über `background-position` wandern. Die Töne kommen aus `--aura-1`
 bis `-5` und wechseln damit von selbst mit Hell und Dunkel.
 
-Im Vorspann läuft die Bewegung mit 5 Sekunden statt 26 — das Fenster ist nur rund drei
+Im Vorspann läuft die Bewegung mit 5 Sekunden statt 26 — das Fenster ist nur wenige
 Sekunden lang, langsamer nimmt man die Farbwanderung gar nicht wahr. Das Wolkenvideo
 `wolken.mp4` ist dafür entfallen; die Kachel im Vorspann zeigt jetzt das App-Symbol selbst,
 die Wortmarke steht darunter.
+
+### Der Vorspann
+
+Er läuft **der Reihe nach**, nicht übereinander: erst Symbol und Ladebalken, dann erst der
+Gruß mit dem Profilbild. Vorher lagen beide übereinander und endeten gemeinsam — vom Symbol
+blieb dabei oft nur das Profilbild darüber zu sehen.
+
+Das App-Symbol steht als `LOGO_ICON` fest in `index.html` (256 px, base64). Als Datei geladen
+kam es regelmäßig zu spät: `icon-512.png` wiegt 250 KB, und der Vorspann ist vorbei, bevor das
+Netz antwortet.
+
+**Der Ladebalken zeigt den echten Start, keine Uhr.** `introBalken(ms, auf)` setzt die Breite
+als Inline-Wert, die Bewegung macht ein CSS-Übergang. Zwei Züge:
+
+1. `playIntro()` schickt ihn auf **86 % in 2,9 s** — das ist die Schätzung.
+2. Sobald eine Ansicht steht, meldet `go()` das über `introAppSteht()`. Erst dann laufen die
+   letzten Prozent, und zwar über die **verbleibende Standzeit** gedehnt, damit der Balken
+   genau mit dem Vorspann fertig wird statt vorher voll herumzustehen.
+
+Ein unterbrochener CSS-Übergang läuft von der gerade erreichten Breite weiter — deshalb sieht
+man keinen Sprung, egal wann der Start durch ist. Der Glanzstreifen im Balken wandert auch
+dann weiter, wenn die Breite steht; ohne ihn sieht ein wartender Balken aus wie ein hängender.
+
+Wie lange der Vorspann steht, hängt daran, wer da ist:
+
+| | Standzeit | warum |
+|---|---|---|
+| angemeldet | `INTRO_MIN` 4,4 s | danach kommt der Gruß, es geht weiter |
+| nicht angemeldet | `INTRO_LANG` 5,4 s | es folgt nichts mehr, also keine Eile |
+| Start hängt | `INTRO_MAX` 9,0 s | Notbremse, damit es nicht ewig steht |
+
+`nachIntro(fn)` stellt etwas in eine Schlange, die `endIntro()` abarbeitet, wenn der Vorspann
+restlos weg ist (`display:none`, nach `INTRO_WEG` + 50 ms). Läuft kein Vorspann, läuft `fn`
+sofort. `zeigeGruss()` geht diesen Weg — deshalb kommt das Profilbild nie über das Symbol.
 
 **Das Profilmenü ist Vollbild** und nach Themen gegliedert — Konto, Arbeitszeit, Einstellungen,
 Sitzung. Das Menü blieb dabei dasselbe DOM: Alle Klick-Handler hängen delegiert an `#menu`, und
@@ -909,6 +943,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Vorspann neu getaktet** (13. September 2026): Ladebalken, der auf den echten Start wartet,
+  und der Gruß mit dem Profilbild kommt jetzt *nach* dem Vorspann statt darüber. Das App-Symbol
+  liegt als base64 in der Datei, weil es als Datei zu spät kam. Einzelheiten in
+  [Abschnitt 3](#3--rechnen), Unterabschnitt *Der Vorspann*. Geprüft mit 22 jsdom-Testfällen
+  und einer Sichtprüfung in beiden Fassungen, abgemeldet
 - **Umbranden auf Violett** (13. September 2026): neue Marke `#C643FE` aus dem App-Symbol,
   Hell als Vorgabe mit Umschalter im Profilmenü, Kategoriefarben in OKLCH gerechnet, Profilmenü
   als Vollbild, neues App-Symbol. Einzelheiten in Abschnitt 3. Gebaut wurde es über ein
