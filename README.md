@@ -480,8 +480,51 @@ Knopf zeigt das an. Dasselbe gilt für Urlaub, Krankenstand und Eigener Text.
 ## 4 · PDF-Export
 
 Ein Monat = eine A4-Seite: Name, Geburtsdatum, Dienstgeber, Zeitraum, alle Tage mit Vormittag,
-Nachmittag, Pause, Arbeitsstunden und Vermerk, die getrennten Summen, dazu zwei
-Unterschriftsleisten in Schreibschrift.
+Nachmittag, Pause, Arbeitsstunden und Vermerk, die getrennten Summen, dazu die Unterschrift.
+
+### Wie die Seite gebaut ist
+
+Sie muss **zwei Dinge zugleich** sein: eine Aufzeichnung nach § 26 AZG, die beim Dienstgeber
+und notfalls beim Arbeitsinspektorat besteht — und etwas, das man gern in der Hand hält.
+Deshalb bleibt jede Pflichtangabe, wo sie war, und die Gestaltung passiert daneben.
+
+| | |
+|---|---|
+| **Kopfband** (0–37 mm) | Pastellfläche mit weichen Farbwolken. Links das App-Symbol, der Titel und *Aufzeichnung gemäß § 26 AZG*. Rechts die Einladung in Handschrift und der QR-Code auf einer weißen Karte |
+| **Vier Karten** (42–57) | Dienstnehmer/in, Geburtsdatum, Dienstgeber, Zeitraum — je mit einem Streifen in einem der fünf Wolkentöne |
+| **Tabelle** (ab 61,6) | Kein Kasten um alles. Eine Kopfpille in Lavendel, darunter Zeilen mit haarfeinen Trennern. Zeilen mit Eintrag im Pastellton ihrer Kategorie, die volle Farbe trägt ein Streifen an der Kante |
+| **Legende, Summen** | Pastellchips, dann Karten mit farbigem Streifen oben; *Gesamt* in Violett |
+| **Unterschrift** (274) | Der Name in Blockhandschrift |
+
+**Farbflächen nur in schmalen Bändern, nie ganzseitig.** Das Blatt wird gedruckt, und Toner
+kostet. Die weichen Wolken zeichnet `wolke()` über `GState`; kann das PDF keine Transparenz,
+bleiben sie weg — eine hartkantige Scheibe wäre schlimmer als gar keine.
+
+**Die Farben sind dieselben wie in der App.** `TYPES[x].pdf` ist die kräftige Farbe,
+`TYPES[x].pdfF` der Pastellton — beide aus `--c-urlaub` und `--c-urlaub-rgb-f` und so fort.
+Vorher stammten sie aus der Zeit vor dem Umbranden (Gold, Orange, Blauviolett), und wer die App
+neben den Ausdruck legte, sah zwei verschiedene Urlaubsfarben.
+
+### Die Handschrift
+
+`HAND_TTF` ist **Architects Daughter**, auf Latin-1 und Latin Extended-A zusammengestrichen —
+309 Glyphen, 24 KB, als base64 in `index.html`. Eine echte Blockhandschrift: gedruckte
+Buchstaben mit leicht unruhiger Grundlinie. `handAn(doc)` meldet sie einmal je Dokument an;
+schlägt das fehl, fällt die Unterschrift auf Kursiv zurück.
+
+Vorher wurde die Unterschrift auf eine Leinwand gemalt, in *Dancing Script* mit `cursive` als
+Ausweichschrift. Die Schrift liegt aber nirgends im Projekt — am iPhone kam Snell Roundhand
+heraus, am Mac etwas anderes, unter Windows wieder etwas anderes.
+
+### Der QR-Code
+
+`QR_PNG` führt auf `moji-app.at`. Fest eingebaut statt zur Laufzeit gerechnet: die Adresse
+ändert sich nicht, und so braucht es keine zweite Bibliothek. Version 2, Fehlerkorrektur Q,
+487 Bytes.
+
+Er sitzt auf einer **weißen Karte**, und das ist kein Zierrat: ein QR braucht rundum eine helle
+Ruhezone, sonst findet ihn die Kamera nicht — und das Kopfband ist lavendel. Im Bild stecken
+zwei Module Ruhezone, empfohlen sind vier; die Karte legt den Rest dazu.
 
 **Ein Knopf, eine Datei:** alle gewählten Monate zusammen, ein Monat pro Seite. Daneben stand
 bis 13. September 2026 *Lieber pro Monat eine eigene Datei* — der hat mehr Fragen aufgeworfen
@@ -1134,6 +1177,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **PDF neu gestaltet** (13. September 2026): Kopfband in Pastell mit App-Symbol, Einladung in
+  Handschrift und QR-Code; Tabelle ohne Kasten, Kategorien in den Farben der App; Unterschrift
+  in eingebetteter Blockhandschrift (Architects Daughter, 24 KB). `sigImage()` und
+  `logoBlack()` sind entfallen. Einzelheiten in [Abschnitt 4](#4--pdf-export). Geprüft mit 43
+  jsdom-Testfällen und zwei gerenderten Seiten (30 und 31 Tage)
 - **Kalender neu laden** (13. September 2026): Nochmal auf den Kalender-Tab tippen holt den
   laufenden Monat zurück, mit kurzer Bewegung. Der Heute-Knopf teilt sich die Funktion.
   Einzelheiten in [Abschnitt 3](#3--rechnen). Geprüft mit 19 jsdom-Testfällen und im Browser
