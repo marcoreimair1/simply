@@ -323,6 +323,26 @@ Gold war Marke *und* Urlaubsfarbe, ein Fast-Weiß war Schriftfarbe *und* Fläche
 Arbeitszeit *und* Zeitausgleich. Alle drei sind jetzt getrennt benannt. Und: `!important` schlägt
 jede Animation — eine so übersteuerte Eigenschaft friert ein.
 
+### Nochmal auf den Kalender tippen
+
+Steht man schon auf dem Kalender und tippt den Tab unten erneut, kommt der **laufende Monat**
+zurück und lädt sich sichtbar neu — dieselbe Geste wie in jeder Tab-Leiste. Der Heute-Knopf
+oben rechts ruft dieselbe Funktion, `kalenderFrisch()`; zwei Wege, ein Verhalten.
+
+Drei Dinge, die dabei zählen:
+
+- **Nur wenn man schon darauf steht.** Wer vom Export kommt, will die Ansicht wechseln und den
+  Monat wiederfinden, in dem er war. Gemerkt wird das *vor* `go()`.
+- **Nicht im Zeitraum-Modus und nicht mitten im Blättern.** Dort ist der Kalender die
+  Auswahlfläche; ein Monatssprung wäre ein Verlust.
+- **Das Datum wird frisch geholt**, nicht aus `NOW`. `NOW` steht seit dem Laden fest; wer MOJI
+  als Symbol am Bildschirm hat, lässt die App über Wochen offen und landete sonst im falschen
+  Monat. `renderCal()` rechnet den heutigen Tag ohnehin frisch aus.
+
+Die Bewegung nimmt `--ease-blend`, nicht `--ease-out` — siehe *Überblendungen und die Kurve
+dafür*. Mit Expo war das Gitter nach 150 von 500 ms schon bei 90 % Deckkraft und das Neuladen
+las sich als Blinzeln. Jetzt: 0,15 / 0,27 / 0,57 / 0,88 / 1,00 über 550 ms.
+
 ### Serien — ein Zeitraum ist mehr als seine Tage
 
 Ein Zeitraum schrieb bisher jeden Tag einzeln in `ME.events`; dass sie zusammengehören, stand
@@ -1114,6 +1134,10 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Kalender neu laden** (13. September 2026): Nochmal auf den Kalender-Tab tippen holt den
+  laufenden Monat zurück, mit kurzer Bewegung. Der Heute-Knopf teilt sich die Funktion.
+  Einzelheiten in [Abschnitt 3](#3--rechnen). Geprüft mit 19 jsdom-Testfällen und im Browser
+  nachgemessen
 - **Gruß deckt den Wechsel** (13. September 2026): Beim An- und Abmelden lag der Gruß bisher
   *nach* dem Ansichtswechsel — man sah den Kalender aufblitzen, und die Bewegung in der
   Kopfleiste lief dahinter ab. Jetzt blendet er zuerst auf, und erst wenn er deckt, wechselt
