@@ -4788,7 +4788,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-1953';
+const APP_STAND = '2026-09-13-2006';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5823,6 +5823,26 @@ function nachIntro(fn){
   _nachIntro.push(fn);
 }
 
+/* ─── Und wann ist der Schirm ueberhaupt frei? ───
+   Zwei Lagen koennen die App verdecken: der Vorspann und der Gruss mit
+   dem Profilbild. Was darunter geschieht, sieht niemand — eine
+   Bewegung in der Kopfleiste ist dann verschenkt. */
+let _wennFrei = [];
+function schirmBelegt(){
+  const h = document.getElementById('hallo');
+  return introLaeuft() || !!(h && h.classList.contains('on'));
+}
+function wennFrei(fn){
+  if(!schirmBelegt()){ fn(); return; }
+  _wennFrei.push(fn);
+}
+/* Rufen die beiden Lagen, wenn sie abtreten. */
+function schirmPruefen(){
+  if(schirmBelegt() || !_wennFrei.length) return;
+  const q = _wennFrei; _wennFrei = [];
+  q.forEach(fn => { try{ fn(); }catch(e){ console.warn(e); } });
+}
+
 /* Der Start ist durch. Jede Ansicht meldet sich hier ueber go(). */
 function introAppSteht(){
   if(_appSteht) return;
@@ -5911,6 +5931,8 @@ function endIntro(){
   playIntro._b = setTimeout(() => {
     sp.style.display = 'none'; stopParticles();
     window.__introLaeuft = false;
+    /* Ohne Gruss dahinter ist der Schirm jetzt frei. */
+    schirmPruefen();
   }, INTRO_WEG + 50);
 }
 let _pAnim = null;
@@ -6978,7 +7000,7 @@ function zeigeGruss(art){
   const halten = g.dauer;
   _halloT = setTimeout(() => {
     el.classList.add('weg');
-    _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); }, GRUSS_WEG);
+    _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); schirmPruefen(); }, GRUSS_WEG);
   }, halten);
 }
 function zeigeHallo(){ zeigeGruss('an'); }
@@ -6993,7 +7015,7 @@ function grussEnde(){
   if(!el.classList.contains('on') || el.classList.contains('weg')) return;
   clearTimeout(_halloT);
   el.classList.add('weg');
-  _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); }, GRUSS_WEG);
+  _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); schirmPruefen(); }, GRUSS_WEG);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -7803,12 +7825,28 @@ function malZaehler(){
   const w = $('#avwrap');
   if(w) w.classList.toggle('meldung', _zaehlerFrei && oben > 0);
 }
-/* Wird beim Betreten der App aufgerufen. */
+/* Wird beim Betreten der App aufgerufen.
+
+   Das Tier rutscht im Rahmen nach unten und die rote Zahl poppt auf —
+   0,62 s, die man gesehen haben muss, sonst war sie umsonst. Frueher
+   stand hier stur "4,5 s nach dem Betreten". Das war auf den alten
+   Vorspann gerechnet: der endete nach 3,9 s, der Gruss lag darueber und
+   ging mit ihm. Seit der Vorspann laenger steht und der Gruss erst
+   danach kommt, lief die Bewegung genau hinter dem Profilbild ab —
+   niemand sah sie mehr.
+
+   Jetzt wartet sie, bis der Schirm wirklich frei ist, und laesst dann
+   noch einen Atemzug, damit sie als etwas Neues auffaellt und nicht
+   schon dagewesen wirkt. */
+const ZAEHLER_ATEM = 700;
 function zaehlerAnlauf(){
   clearTimeout(_zaehlerT);
   _zaehlerFrei = false;
   malZaehler();
-  _zaehlerT = setTimeout(() => { _zaehlerFrei = true; malZaehler(); }, 4500);
+  wennFrei(() => {
+    clearTimeout(_zaehlerT);
+    _zaehlerT = setTimeout(() => { _zaehlerFrei = true; malZaehler(); }, ZAEHLER_ATEM);
+  });
 }
 function malPostfach(){
   const g = pfGelesen();
@@ -8086,6 +8124,88 @@ document.addEventListener('click', e => {
   else if(rangboxOffen()) rangboxAuf(false);
   else if(dlOffen()) dlZu();
 }, true);
+
+/* ─── Wischen im Menü ───────────────────────────────────────────────
+   Nach rechts heißt zurück: aus einem Untermenü ins Menü, aus dem Menü
+   in den Kalender. Nur nach rechts, nicht in beide Richtungen — das ist
+   die Richtung, in die der Pfeil oben links zeigt, und dieselbe, die das
+   Betriebssystem für "zurück" benutzt.
+
+   Die Fläche hängt dabei am Finger. Ein Viertel der Breite oder ein
+   schneller Stups lösen aus, alles darunter federt zurück. Senkrecht
+   bleibt dem Rollen überlassen: erst wenn 9 px quer zusammenkommen und
+   das mehr ist als senkrecht, übernimmt der Wisch.
+
+   Dasselbe Muster wie beim Monatsblättern im Kalender.                */
+(function menueWischen(){
+  const menu = $('#menu'); if(!menu) return;
+  let x0 = 0, y0 = 0, dx = 0, an = false, quer = false, t0 = 0, ziel = null, tun = null;
+
+  /* Was liegt gerade oben, und was schließt es? Dieselbe Reihenfolge
+     wie beim Zurück-Pfeil — sonst schlössen die beiden Verschiedenes. */
+  function lage(){
+    if(avOffen())      return { el: $('#avgrid'),  tun: () => avWahl(false) };
+    if(kontenOffen())  return { el: $('#konten'),  tun: () => kontenAuf(false) };
+    if(uaOffen())      return { el: $('#uabox'),   tun: () => uaAuf(false) };
+    if(rangboxOffen()) return { el: $('#rangbox'), tun: () => rangboxAuf(false) };
+    if(dlOffen())      return { el: $('#dlbox'),   tun: () => dlZu() };
+    const k = $('#menu .menu-card');
+    return k ? { el: k, tun: menuZu } : null;
+  }
+
+  menu.addEventListener('pointerdown', e => {
+    if(!menu.classList.contains('on') || menu.classList.contains('zu')) return;
+    if(e.pointerType === 'mouse' && e.button !== 0) return;
+    /* Der Löschen-Griff wird selbst nach rechts gezogen — der bleibt
+       unberührt, sonst schöbe man beim Löschen das Fenster weg.
+       Regler und Eingabefelder ziehen ebenfalls selbst. */
+    if(e.target.closest('.dlz, input, textarea, [role="slider"], .zastepper, .kstep')) return;
+    const l = lage(); if(!l) return;
+    ziel = l.el; tun = l.tun;
+    x0 = e.clientX; y0 = e.clientY; dx = 0; an = true; quer = false; t0 = performance.now();
+  });
+
+  menu.addEventListener('pointermove', e => {
+    if(!an || !ziel) return;
+    const ax = e.clientX - x0, ay = e.clientY - y0;
+    if(!quer){
+      if(Math.abs(ay) > Math.abs(ax) && Math.abs(ay) > 9){ an = false; return; }
+      if(Math.abs(ax) < 9) return;
+      quer = true;
+      ziel.style.transition = 'none';
+    }
+    dx = ax;
+    /* Nach links gibt es nichts zu holen — dort zieht es zäh, damit man
+       merkt, dass die Richtung nicht stimmt. */
+    ziel.style.transform = 'translateX(' + (dx > 0 ? dx : dx * .14) + 'px)';
+  });
+
+  const los = () => {
+    if(!an || !ziel) return;
+    an = false;
+    const el = ziel, schliessen = tun;
+    ziel = null; tun = null;
+    if(!quer) return;
+    const breite = el.clientWidth || innerWidth || 320;
+    const schnell = dx / Math.max(1, performance.now() - t0) > .45;
+    if(dx > breite * .25 || (schnell && dx > 45)){
+      el.style.transition = 'transform .22s var(--ease-out)';
+      el.style.transform = 'translateX(100%)';
+      schliessen();
+      /* Nach dem Ausblenden aufräumen, sonst steht die Fläche beim
+         nächsten Öffnen verschoben da. */
+      setTimeout(() => { el.style.transition = ''; el.style.transform = ''; }, 340);
+    } else {
+      el.style.transition = 'transform .26s var(--ease-out)';
+      el.style.transform = '';
+      setTimeout(() => { el.style.transition = ''; }, 280);
+    }
+  };
+  menu.addEventListener('pointerup', los);
+  menu.addEventListener('pointercancel', los);
+  menu.addEventListener('pointerleave', los);
+})();
+
 $('#k-lock').addEventListener('click', () => kontenFrei(!$('#konten').classList.contains('frei')));
 
 /* ─── Urlaubsanspruch ─────────────────────────────────────────────────

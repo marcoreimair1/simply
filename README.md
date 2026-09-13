@@ -201,6 +201,15 @@ Wie lange der Vorspann steht, hängt daran, wer da ist:
 `nachIntro(fn)` stellt etwas in eine Schlange. `zeigeGruss()` geht diesen Weg — deshalb kommt
 das Profilbild nie über das Symbol.
 
+**`wennFrei(fn)` ist die zweite Schlange:** sie wartet, bis *weder* Vorspann *noch* Gruß den
+Schirm verdecken. Beide melden ihr Abtreten über `schirmPruefen()`. Daran hängt der Anlauf der
+Kopfleiste — das Tier rutscht im Rahmen nach unten und die rote Zahl poppt auf, 0,62 s, die
+man gesehen haben muss. Vorher stand dort stur *4,5 s nach dem Betreten*: gerechnet auf den
+alten Vorspann, der nach 3,9 s endete und den Gruß gleich mitnahm. Seit der Vorspann länger
+steht und der Gruß erst danach kommt, lief die Bewegung genau hinter dem Profilbild ab. Nach
+dem freien Schirm folgt noch `ZAEHLER_ATEM` (700 ms), damit sie als etwas Neues auffällt und
+nicht schon dagewesen wirkt.
+
 **`endIntro()` endet auf zwei Arten.** Wartet nichts in der Schlange, blendet der Vorspann aus
 und gibt die App frei. Wartet ein Gruß, wird **übergeben**: der Vorspann bleibt stehen und der
 Gruß blendet darüber auf. Beide tragen dieselbe Farbfläche, es wechselt also nichts am
@@ -244,6 +253,16 @@ damit es nicht viermal dasteht.
 Sitzung. Das Menü blieb dabei dasselbe DOM: Alle Klick-Handler hängen delegiert an `#menu`, und
 die Untermenüs liegen als Flächen darin. Kopiert man die Knöpfe woandershin, ist nichts mehr
 verdrahtet.
+
+**Nach rechts wischen heißt zurück** — aus einem Untermenü ins Menü, aus dem Menü in den
+Kalender. Nur nach rechts: das ist die Richtung, in die der Pfeil oben links zeigt, und
+dieselbe, die das Betriebssystem für *zurück* benutzt. Die Fläche hängt am Finger, ein Viertel
+der Breite oder ein schneller Stups lösen aus, alles darunter federt zurück. Senkrecht bleibt
+dem Rollen überlassen. Dasselbe Muster wie beim Monatsblättern im Kalender.
+
+Ausgenommen ist der **Löschen-Griff** (`.dlz`) — der wird selbst nach rechts gezogen. Startet
+der Wisch dort, passiert nichts; startet er daneben, geht das Löschen-Fenster zu. Das ist die
+sichere Richtung: ein danebengegriffener Zug bricht die Löschung ab, statt sie auszulösen.
 
 Drei Zeilen tragen einen **Schieberegler** statt eines Pfeils: Erscheinungsbild,
 Monats-Erinnerung und Passkey. Der Stand steht in `aria-pressed` an der Zeile — das treibt das
@@ -1017,6 +1036,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Kopfleiste und Wischen** (13. September 2026): Der Anlauf der Kopfleiste hängt jetzt am
+  freien Schirm statt an einer festen Uhr — er lief seit dem längeren Vorspann hinter dem
+  Gruß ab. Dazu Wischen nach rechts im Menü und seinen fünf Untermenüs. Einzelheiten in
+  [Abschnitt 3](#3--rechnen). Geprüft mit 8 neuen jsdom-Testfällen und im Browser mit echten
+  Zeigerereignissen nachgespielt
 - **Menü durchgesehen** (13. September 2026): Seitenmaße, Untermenüs als eigene Bildschirme,
   Schließen-Knopf, Rücksprung ohne Blitzer, Schieberegler für Monats-Erinnerung und Passkey,
   Profilbildrahmen ohne weiße Fuge. Sieben Ursachen, aufgelistet in
