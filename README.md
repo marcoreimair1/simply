@@ -31,8 +31,8 @@ Supabase in Frankfurt als Datenspeicher, gebaut fürs Handy.
 
 11. [Supabase-Projekt und Datenbank](#11--supabase-projekt-und-datenbank)
 12. [Mailversand über Resend](#12--mailversand-über-resend-erledigt)
-13. [Mailvorlagen und Code](#13--mailvorlagen-und-code)
-14. [Passkeys](#14--passkeys)
+13. [Mailvorlagen und Code](#13--mailvorlagen-und-code-erledigt)
+14. [Passkeys](#14--passkeys-erledigt)
 15. [Monats-Erinnerung automatisch verschicken](#15--monats-erinnerung-automatisch-verschicken) *(läuft)*
 16. [Mitarbeiter aufnehmen und Konten verwalten](#16--mitarbeiter-aufnehmen-und-konten-verwalten)
 
@@ -621,46 +621,114 @@ order by u.created_at;
 
 ## 17 · Dateien im Projekt
 
+Stand 13. September 2026, gegen `git ls-files` geprüft — 28 Dateien.
+
+**Die App**
+
 | Datei | Wofür |
 |---|---|
-| `index.html` | die ganze App |
-| `CNAME` | `moji-app.at` für GitHub Pages |
-| `manifest.webmanifest`, `icon-180.png`, `icon-512.png` | Symbol und Name am Startbildschirm |
-| `moji-favicon.svg`, `moji-wortmarke-*.svg`, `moji-icon-marke.svg` | Marke |
+| `index.html` | die ganze App: Aufbau, Gestaltung, Logik |
+| `manifest.webmanifest` | Name und Symbol am Startbildschirm |
+| `icon-180.png`, `icon-512.png` | ebendieses Symbol, zwei Größen |
 | `av-1.png` … `av-12.png` | die zwölf Profilbilder |
 | `firma-miller.png` | Logo Miller Optik, nur bei der Firmenauswahl |
+| `schwein-troete.png` | Schwein mit Tröte. Erscheint im Block `#bleib`, wenn jemand das Löschen des Profils abbricht — „Schön, dass du dich nochmal umentschieden hast" |
 | `wolken.mp4` | Hintergrund im Ladebild |
-| `mail-anmeldung.html`, `mail-registrierung.html` | Vorlagen für Supabase |
-| `monatsmail.ts` | Monats-Erinnerung, Code der Edge Function |
-| `monatsmail.sql` | Tabelle und Zeitplan dazu |
-| `monatsmail-deploy.sh` | veröffentlicht die Edge Function vom Rechner aus |
-| `supabase/config.toml` | bindet den Ordner an das Supabase-Projekt |
+
+**Veröffentlichen**
+
+| Datei | Wofür |
+|---|---|
+| `CNAME` | `moji-app.at` für GitHub Pages |
+| `.nojekyll` | leer, schaltet die Jekyll-Verarbeitung bei Pages ab |
 | `.gitignore` | hält `.DS_Store` und Arbeitsdateien aus dem Repo |
+
+**Monats-Erinnerung**
+
+| Datei | Wofür |
+|---|---|
+| `monatsmail.ts` | Code der Edge Function |
+| `monatsmail.sql` | Tabelle `mail_log` und Zeitplan dazu |
+| `monatsmail-deploy.sh` | veröffentlicht die Function vom Rechner aus |
+| `supabase/config.toml` | bindet den Ordner an das Supabase-Projekt |
+| `moji-mail-wortmarke.png` | Wortmarke im Mailkopf. Im Quelltext steht sie nirgends — die Mailvorlagen holen sie über `https://moji-app.at/moji-mail-wortmarke.png`. Nicht löschen |
+
+**Dokumentation**
+
+| Datei | Wofür |
+|---|---|
+| `README.md` | diese Datei, das Gedächtnis des Projekts |
 
 Profilbilder haben ihre eigene Fassung: `AV_STAND` in `index.html` hochsetzen, sonst zeigen
 Geräte die alten Bilder aus dem Zwischenspeicher.
+
+> **Was hier früher stand und nicht stimmte:** `moji-favicon.svg`, `moji-wortmarke-*.svg` und
+> `moji-icon-marke.svg` liegen nicht im Repo und werden auch nirgends aufgerufen — die Marke
+> steckt als SVG direkt in `index.html`. Ebenso fehlen `mail-anmeldung.html` und
+> `mail-registrierung.html`: die Mailvorlagen sind in Supabase eingetragen, hier liegt keine
+> Kopie davon. Wer sie im Repo haben will, muss sie aus dem Dashboard herausholen
+> (→ [Abschnitt 13](#13--mailvorlagen-und-code-erledigt)).
 
 ---
 
 ## 18 · Offene Punkte
 
-- **Nachschauen, ob die Frage angekommen ist.** Die einmalige Frage nach der Monats-Erinnerung
-  ist gebaut (→ Abschnitt 15.7), aber sie greift erst, wenn die fünf bestehenden Nutzer die App
-  das nächste Mal öffnen. Mit der Abfrage aus 15.5 lässt sich zählen, wer inzwischen zugestimmt
-  hat. Erst danach ist der Punkt wirklich erledigt
-- Alter **MX-Eintrag** auf der Wurzel von `moji-app.at` ist verwaist und kann weg
-- Die zwei alten Resend-Schlüssel **„MARU SMTP"** und **„MARU Anmeldemails"** löschen — sie
-  hängen an `studiomaru.at` und funktionieren nicht mehr. Der Schlüssel **„simply"**
-  (Full access) wird ebenfalls nicht gebraucht
-- Die alte **GitHub-Rückkehradresse** in Supabase in einigen Wochen entfernen
-- **Dienstzeiten mit Datum versehen**, damit alte Monate mit dem damals gültigen Plan gerechnet
-  werden — heute gilt immer der aktuelle Plan
-- **Antworten empfangen** ist nicht eingerichtet und derzeit auch nicht nötig. Falls doch:
-  GoDaddy kann Mail an `moji-app.at` auf ein bestehendes Postfach weiterleiten
-- **`studiomaru.at`** kann über Resend nicht mehr senden. Wird das gebraucht, braucht es den
-  Pro-Plan ($20/Monat) oder ein zweites Resend-Konto
-- Alle früher einmal offen gezeigten Schlüssel gehören erneuert — insbesondere der
-  Supabase-`service_role` und das Gmail-App-Passwort, das inzwischen nicht mehr gebraucht wird
+Durchgesehen am 13. September 2026. Was nachprüfbar war, wurde nachgeprüft — bei jedem Punkt
+steht, woran man das erkennt.
+
+### Zu tun, mit Priorität
+
+**1 · Im Code: der Passkey-Hinweis nennt die alte Adresse.**
+[index.html:4518](index.html:4518) sagt bei einem `InvalidStateError`, man solle im
+Schlüsselbund den Eintrag für `marcoreimair1.github.io` löschen. Das stimmte unmittelbar nach
+dem Umzug, heute nicht mehr: Die RP ID ist `moji-app.at`, und genau dafür meldet das Gerät
+„habe ich schon". Wer dem Hinweis folgt, sucht den falschen Eintrag. Eine Zeile, schnell
+behoben — aber sie steht in der Live-App und führt gerade in die Irre.
+
+**2 · Nachschauen, ob die Frage angekommen ist.**
+Die einmalige Frage nach der Monats-Erinnerung ist gebaut und seit 13. September live
+(→ Abschnitt 15.7). Sie greift aber erst, wenn die fünf bestehenden Nutzer die App das nächste
+Mal öffnen. Mit der Abfrage aus 15.5 lässt sich zählen, wer inzwischen zugestimmt hat — erst
+danach ist der Punkt wirklich erledigt.
+
+**3 · Schlüssel erneuern.** Alle früher einmal offen gezeigten Schlüssel gehören getauscht,
+insbesondere der Supabase-`service_role` und das Gmail-App-Passwort, das inzwischen nicht mehr
+gebraucht wird. Beim `service_role` daran denken: er steht auch im Zeitplan `moji-monatsmail`
+im Klartext (→ Abschnitt 15.4), muss dort also mitgetauscht werden — sonst steht die Automatik.
+
+**4 · Aufräumen in Resend.** Die zwei alten Schlüssel **„MARU SMTP"** und
+**„MARU Anmeldemails"** löschen — sie hängen an `studiomaru.at` und funktionieren nicht mehr.
+Der Schlüssel **„simply"** (Full access) wird ebenfalls nicht gebraucht.
+
+**5 · Die alte GitHub-Rückkehradresse** in Supabase entfernen. Der Umzug ist über einen Monat
+her; wer noch einen alten Anmeldelink im Postfach liegen hat, wird ihn nicht mehr brauchen.
+
+**6 · Dienstzeiten mit Datum versehen**, damit alte Monate mit dem damals gültigen Plan
+gerechnet werden. Heute gilt für jeden Monat der aktuelle Plan — wer seine Arbeitszeiten
+ändert, bekommt rückwirkend falsche Summen. Der größte Brocken auf dieser Liste und der
+einzige, der am Rechnen selbst etwas ändert.
+
+### Erledigt seit der letzten Durchsicht
+
+- ~~**Einmaliger Hinweis in der App** für die Monats-Erinnerung~~ — gebaut und live,
+  → Abschnitt 15.7. Es bleibt nur das Nachzählen, siehe Punkt 2
+- ~~**Alter MX-Eintrag** auf der Wurzel von `moji-app.at`~~ — ist weg.
+  `dig +short MX moji-app.at` antwortet leer, während `dig +short MX send.moji-app.at`
+  weiterhin `feedback-smtp.eu-west-1.amazonses.com` liefert. Der Versand über Resend
+  ist also unberührt
+- ~~**Dateiliste in Abschnitt 17**~~ — gegen `git ls-files` richtiggestellt
+- ~~**`EINRICHTUNG.md`**~~ — gelöscht, ihr Inhalt steht seit längerem in Abschnitt 11 bis 16
+
+### Kein Handlungsbedarf, nur zum Wissen
+
+- **Antworten empfangen** ist nicht eingerichtet und derzeit auch nicht nötig — Reply-To zeigt
+  auf eine echte Adresse. Falls doch: GoDaddy kann Mail an `moji-app.at` auf ein bestehendes
+  Postfach weiterleiten
+- **`studiomaru.at`** kann über Resend nicht mehr senden, weil der Gratis-Plan nur eine Domain
+  erlaubt. Wird das gebraucht, braucht es den Pro-Plan ($20/Monat) oder ein zweites Resend-Konto
+- **Noch nicht gebaut:** die Versionierung mit Vorschau-Datei aus Abschnitt 19.4. Seit der
+  Arbeitsordner am Rechner hängt, ließe sich das leichter bauen als früher — ein Branch neben
+  `main` täte im Zweifel dasselbe, ganz ohne zweite Datei
 
 ---
 
