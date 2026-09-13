@@ -633,8 +633,11 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
     rgba(var(--s-tief),.72) 0%,rgba(var(--s-tief),.46) 42%,rgba(var(--s-tief),.14) 100%);
   animation:veilIn 1.6s var(--ease-out) both}
 @keyframes veilIn{from{opacity:.55}to{opacity:1}}
-#splash.done{animation:splashOut .9s var(--ease-out) forwards}
-@keyframes splashOut{to{opacity:0;transform:scale(1.07);filter:blur(14px);visibility:hidden}}
+/* Weicher als frueher: 1,1 s statt 0,9, und deutlich weniger Bewegung.
+   Vergroessern auf 1,07 plus 14 px Unschaerfe war ein Ruck — jetzt loest
+   sich der Vorspann eher auf, als dass er wegfaehrt. */
+#splash.done{animation:splashOut 1.1s var(--ease-blend) forwards}
+@keyframes splashOut{to{opacity:0;transform:scale(1.03);filter:blur(7px);visibility:hidden}}
 #pcanvas{position:absolute;inset:0;width:100%;height:100%}
 .sp-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0}
 .mark-wrap{position:relative;display:grid;place-items:center}
@@ -732,7 +735,7 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 /* ============================================================
    SHELL
    ============================================================ */
-#app{position:relative;z-index:2;opacity:0;transition:opacity .8s var(--ease-out)}
+#app{position:relative;z-index:2;opacity:0;transition:opacity 1.1s var(--ease-out)}
 #app.on{opacity:1}
 .wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 20px}
 /* Platz für die Tab-Leiste nur dort, wo sie auch steht */
@@ -2489,10 +2492,15 @@ body.zrmodus .fb-z{display:inline-flex}
 .hallo{position:fixed;inset:0;z-index:60;display:none;place-items:center;
   background:radial-gradient(circle at 50% 42%,rgba(var(--s-hoch),.97),rgba(var(--s-tief),.99) 68%);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);cursor:pointer}
-.hallo.on{display:grid;animation:halloRein .5s var(--ease-out)}
-.hallo.weg{animation:halloWeg .55s var(--ease) forwards}
+/* Der Gruss blendet ueber dem noch stehenden Vorspann auf — beide tragen
+   dieselbe Farbflaeche, man sieht also nur, wie das Symbol zum Profilbild
+   wird. Siehe endIntro(). */
+.hallo.on{display:grid;animation:halloRein .62s var(--ease-blend)}
+/* Und loest sich zum Schluss lange auf. Der Kalender darunter steht da
+   schon fertig, es wird also nichts mehr aufgebaut — nur freigegeben. */
+.hallo.weg{animation:halloWeg .9s var(--ease-blend) forwards}
 @keyframes halloRein{from{opacity:0}}
-@keyframes halloWeg{to{opacity:0}}
+@keyframes halloWeg{to{opacity:0;transform:scale(1.03)}}
 .hallo-in{text-align:center;padding:24px;position:relative;z-index:1}
 /* Beim Anlegen steigen Raketen — dasselbe Konfetti wie am Geburtstag,
    nur auf dieser Leinwand und mit kürzerem Programm. */
@@ -3267,11 +3275,12 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     radial-gradient(28% 24% at 52% 48%, var(--aura-5), transparent 66%),
     var(--ink);
 }
+:root{ --aura-anim:auraWandern 26s ease-in-out infinite alternate }
 .aurahg, #bleib.aurahg, #geb.aurahg, #hallo.aurahg{
   background:var(--aura-flaeche);
   background-size:220% 220%,220% 220%,220% 220%,220% 220%,220% 220%,auto;
   background-position:20% 24%, 78% 16%, 72% 80%, 28% 72%, 50% 50%, 0 0;
-  animation:auraWandern 26s ease-in-out infinite alternate;
+  animation:var(--aura-anim);
 }
 @keyframes auraWandern{
   to{ background-position:32% 12%, 66% 28%, 60% 68%, 40% 84%, 44% 58%, 0 0 }
@@ -3279,7 +3288,38 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 /* Im Vorspann ist nur ein kleines Fenster Zeit — dort deutlich schneller,
    damit die Bewegung ueberhaupt wahrnehmbar wird. */
 #splash.aurahg{ animation-duration:5s }
-@media (prefers-reduced-motion:reduce){ .aurahg{ animation:none } }
+
+/* ─── Die verlorenen Ueberblendungen ─────────────────────────────
+   Vier Flaechen blenden auf und ab: Vorspann, Gruss, Geburtstagskarte
+   und das Schweinchen. Ihre Regeln stehen weiter oben als .on / .weg —
+   und wurden beim Umbranden von .aurahg ueberschrieben. `animation` ist
+   ein Kurzschreiben: wer nur das Wandern der Farben hineinschreibt,
+   loescht damit das Auf- und Abblenden. Und #hallo.aurahg (eine ID)
+   schlaegt .hallo.on (zwei Klassen).
+
+   Nachgemessen war das Ergebnis: der Vorspann lief splashOut ueber 5 s
+   statt 1,1 s — die 5 s kamen aus #splash.aurahg, gleich stark und
+   weiter unten — und wurde nach 1,15 s einfach abgeraeumt, also mitten
+   im Bild. Gruss, Geburtstagskarte und Schweinchen hatten gar keine
+   Ueberblendung mehr, sie sprangen.
+
+   Jetzt tragen die Flaechen beide Animationen nebeneinander. Der
+   Vorspann verzichtet beim Ausblenden auf das Farbwandern: 1,1 s reichen
+   dafuer ohnehin nicht. */
+#splash.aurahg.done{ animation:splashOut 1.1s var(--ease-blend) forwards }
+#hallo.aurahg.on  { animation:var(--aura-anim), halloRein .62s var(--ease-blend) }
+#hallo.aurahg.weg { animation:var(--aura-anim), halloWeg .9s var(--ease-blend) forwards }
+#geb.aurahg.on    { animation:var(--aura-anim), qdoneIn .3s var(--ease-blend) }
+#bleib.aurahg.on  { animation:var(--aura-anim), bleibRein .3s var(--ease-blend) both }
+#bleib.aurahg.weg { animation:var(--aura-anim), bleibRaus .5s ease-in both }
+
+@media (prefers-reduced-motion:reduce){
+  .aurahg, #splash.aurahg.done, #hallo.aurahg.on, #hallo.aurahg.weg,
+  #geb.aurahg.on, #bleib.aurahg.on, #bleib.aurahg.weg{ animation:none }
+  /* Ohne Animation haelt kein forwards die Deckkraft — von Hand setzen,
+     sonst bleibt das Abgeblendete sichtbar stehen. */
+  #splash.done, #hallo.weg, #bleib.weg{ opacity:0 }
+}
 
 
 /* Vorspann: die Kachel traegt das App-Symbol formatfuellend, die
@@ -3339,6 +3379,38 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 }
 @keyframes ladeGlanz{ to{ transform:translateX(100%) } }
 @media (prefers-reduced-motion:reduce){ .sp-lade i::after{ animation:none } }
+
+/* ─── Die Kurve fuer Ueberblendungen ─────────────────────────────
+   --ease-out ist cubic-bezier(.16,1,.3,1), also Expo: nach einem
+   Sechstel der Zeit ist schon fast alles passiert. Fuer Bewegung ist
+   das richtig — etwas kommt an und legt sich hin. Fuer Deckkraft ist es
+   falsch: das Bild ist sofort halb weg und zieht dann lange nach, was
+   als Zucken gelesen wird. Ueberblendungen brauchen eine symmetrische
+   Kurve, die in der Mitte am schnellsten ist. */
+:root{ --ease-blend:cubic-bezier(.4,0,.6,1) }
+
+/* Bei der Uebergabe bleibt die Farbflaeche des Vorspanns stehen, nur
+   sein Inhalt weicht. Der laeuft aber nicht in einem Stueck ab:
+
+   Das Symbol sitzt fast genau dort, wo gleich das Profilbild steht —
+   nachgemessen 195 px an y 254 gegen 212 px an y 255. Es blendet
+   deshalb ueber dieselben 0,62 s ab, ueber die der Gruss aufblendet:
+   was das eine verliert, gewinnt das andere, die Deckung bleibt
+   durchgehend gleich. Das liest sich als ein Bild, das sich wandelt.
+
+   Wortmarke, Unterzeile und Balken raeumen dagegen in 0,3 s. Blieben
+   sie so lange wie das Symbol, laegen sie eine halbe Sekunde lang ueber
+   "Hallo <Name>" — nur 13 px daneben, das wird Matsch. */
+#splash[data-uebergabe] .mark-wrap{ animation:uebergabeRaus .62s var(--ease-blend) forwards }
+#splash[data-uebergabe] .subline,
+#splash[data-uebergabe] .sp-lade{ animation:uebergabeRaus .3s var(--ease-blend) forwards }
+@keyframes uebergabeRaus{ to{ opacity:0 } }
+
+/* Die Begruessung liegt seit dem Umbranden auf der deckenden Farbflaeche
+   (--ink als unterste Lage). Der Backdrop-Filter von frueher hat dahinter
+   nichts mehr zu verwischen, kostet auf dem Handy aber eine ganze
+   Vollbildlage — weg damit, das macht den Uebergang ruhiger. */
+#hallo.aurahg{ backdrop-filter:none; -webkit-backdrop-filter:none }
 
 /* Der Schleier machte die Mitte fast undurchsichtig, damit die Kachel
    stand. Vor den Farbwolken darf er viel leiser sein — sonst sieht man
@@ -4608,7 +4680,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-1915';
+const APP_STAND = '2026-09-13-1931';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5619,7 +5691,8 @@ const LOGO_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAAD
 const INTRO_MIN  = 4400;   /* angemeldet — danach kommt der Gruss       */
 const INTRO_LANG = 5400;   /* nicht angemeldet — es folgt nichts mehr   */
 const INTRO_MAX  = 9000;   /* Notbremse: haengt der Start, geht es weiter */
-const INTRO_WEG  = 900;    /* Ausblenden                                 */
+const INTRO_WEG  = 1100;   /* Ausblenden, wenn kein Gruss folgt          */
+const UEBERGABE  = 700;    /* ... folgt einer: so lange blendet er auf   */
 const BALKEN_VOR = 320;    /* voll, kurz bevor geblendet wird            */
 const BALKEN_MIN = 420;    /* so lange braucht der letzte Zug mindestens */
 
@@ -5668,6 +5741,7 @@ function playIntro(){
   const sp = $('#splash');
   clearTimeout(playIntro._a); clearTimeout(playIntro._b);
   sp.classList.remove('done');
+  delete sp.dataset.uebergabe;
   sp.style.display = 'grid'; sp.style.visibility = '';
   sp.innerHTML = INTRO_HTML;            // setzt alle CSS-Animationen zurück
   document.body.classList.add('locked');
@@ -5687,19 +5761,41 @@ function playIntro(){
   /* Nur die Notbremse. Im Normalfall setzt introSchliessen() die Zeit. */
   playIntro._a = setTimeout(endIntro, INTRO_MAX);
 }
+/* Der Vorspann endet auf zwei Arten.
+
+   Wartet ein Gruss, wird uebergeben: der Vorspann bleibt stehen und der
+   Gruss blendet darueber auf. Beide tragen dieselbe Farbflaeche, man
+   sieht also keinen Wechsel des Hintergrunds — nur, wie das Symbol zum
+   Profilbild wird. Erst wenn der Gruss deckt, wird der Vorspann still
+   abgeraeumt. Frueher blendete er erst ganz aus, gab dabei den Kalender
+   frei, und der Gruss legte sich danach wieder darueber: drei Bewegungen
+   fuer einen Uebergang.
+
+   Wartet nichts, blendet er aus und gibt die App frei. */
 function endIntro(){
   const sp = $('#splash');
-  if(sp.classList.contains('done')) return;
+  if(sp.classList.contains('done') || sp.dataset.uebergabe) return;
   clearTimeout(playIntro._a);
-  sp.classList.add('done');
   $('#app').classList.add('on');
   document.body.classList.remove('locked');
+
+  if(_nachIntro.length){
+    sp.dataset.uebergabe = '1';
+    /* Zuerst abmelden, sonst stellt sich der Gruss gleich wieder an. */
+    window.__introLaeuft = false;
+    const q = _nachIntro; _nachIntro = [];
+    q.forEach(fn => { try{ fn(); }catch(e){ console.warn(e); } });
+    playIntro._b = setTimeout(() => {
+      sp.style.display = 'none'; stopParticles();
+      delete sp.dataset.uebergabe;
+    }, UEBERGABE);
+    return;
+  }
+
+  sp.classList.add('done');
   playIntro._b = setTimeout(() => {
     sp.style.display = 'none'; stopParticles();
     window.__introLaeuft = false;
-    /* Jetzt erst das Profilbild: der Vorspann ist restlos weg. */
-    const q = _nachIntro; _nachIntro = [];
-    q.forEach(fn => { try{ fn(); }catch(e){ console.warn(e); } });
   }, INTRO_WEG + 50);
 }
 let _pAnim = null;
@@ -6729,7 +6825,7 @@ function enterApp(){
 let _halloT = null;
 /* introLaeuft() und die Zeiten des Vorspanns stehen weiter oben, bei
    playIntro() — dort werden sie gebraucht, bevor es hier weitergeht. */
-const GRUSS_WEG = 560;              /* Ausblenden der Begrüßung */
+const GRUSS_WEG = 900;              /* Ausblenden der Begrüßung */
 
 /* Dieselbe Bühne für Kommen und Gehen. Beim Abmelden muss sie vor dem
    Abmelden aufgehen — danach ist ME leer und niemand mehr zu grüßen. */
@@ -6782,7 +6878,7 @@ function grussEnde(){
   if(!el.classList.contains('on') || el.classList.contains('weg')) return;
   clearTimeout(_halloT);
   el.classList.add('weg');
-  _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); }, 560);
+  _halloT = setTimeout(() => { el.classList.remove('on','weg','ab','neu'); }, GRUSS_WEG);
 }
 
 /* ═══════════════════════════════════════════════════════════

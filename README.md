@@ -198,9 +198,47 @@ Wie lange der Vorspann steht, hängt daran, wer da ist:
 | nicht angemeldet | `INTRO_LANG` 5,4 s | es folgt nichts mehr, also keine Eile |
 | Start hängt | `INTRO_MAX` 9,0 s | Notbremse, damit es nicht ewig steht |
 
-`nachIntro(fn)` stellt etwas in eine Schlange, die `endIntro()` abarbeitet, wenn der Vorspann
-restlos weg ist (`display:none`, nach `INTRO_WEG` + 50 ms). Läuft kein Vorspann, läuft `fn`
-sofort. `zeigeGruss()` geht diesen Weg — deshalb kommt das Profilbild nie über das Symbol.
+`nachIntro(fn)` stellt etwas in eine Schlange. `zeigeGruss()` geht diesen Weg — deshalb kommt
+das Profilbild nie über das Symbol.
+
+**`endIntro()` endet auf zwei Arten.** Wartet nichts in der Schlange, blendet der Vorspann aus
+und gibt die App frei. Wartet ein Gruß, wird **übergeben**: der Vorspann bleibt stehen und der
+Gruß blendet darüber auf. Beide tragen dieselbe Farbfläche, es wechselt also nichts am
+Hintergrund. Erst wenn der Gruß deckt (`UEBERGABE`, 700 ms), wird der Vorspann still
+abgeräumt.
+
+Das Symbol sitzt fast genau dort, wo gleich das Profilbild steht — nachgemessen 195 px an
+y 254 gegen 212 px an y 255. Deshalb blendet `.mark-wrap` über dieselben 0,62 s ab, über die
+der Gruß aufblendet: was das eine verliert, gewinnt das andere. Wortmarke, Unterzeile und
+Balken räumen schneller (0,3 s), sonst lägen sie über *Hallo <Name>* — nur 13 px daneben.
+
+Vorher blendete der Vorspann erst ganz aus, gab dabei den Kalender frei, und der Gruß legte
+sich danach wieder darüber: drei Bewegungen für einen Übergang.
+
+### Überblendungen und die Kurve dafür
+
+`--ease-out` ist `cubic-bezier(.16,1,.3,1)`, also Expo: nach einem Sechstel der Zeit ist fast
+alles passiert. Für **Bewegung** ist das richtig — etwas kommt an und legt sich hin. Für
+**Deckkraft** ist es falsch: das Bild ist sofort halb weg und zieht dann lange nach, was als
+Zucken gelesen wird. Überblendungen nehmen deshalb `--ease-blend`, `cubic-bezier(.4,0,.6,1)` —
+symmetrisch, in der Mitte am schnellsten.
+
+**Und eine Falle, die beim Umbranden zugeschnappt ist.** Vier Flächen blenden auf und ab:
+Vorspann, Gruß, Geburtstagskarte und das Schweinchen. Ihre `.on`/`.weg`-Regeln stehen weiter
+oben in der Datei als `.aurahg`. `animation` ist ein **Kurzschreiben** — wer dort nur das
+Wandern der Farben hineinschreibt, löscht damit das Auf- und Abblenden. Dazu schlägt
+`#hallo.aurahg` (eine ID) die Regel `.hallo.on` (zwei Klassen). Nachgemessen war das Ergebnis:
+
+| Fläche | war | ist |
+|---|---|---|
+| Vorspann aus | `splashOut` über **5 s** — die Dauer kam aus `#splash.aurahg`, gleich stark und weiter unten; abgeräumt wurde nach 1,15 s, also mitten im Bild | `splashOut` 1,1 s |
+| Gruß ein/aus | gar keine Überblendung, er sprang | `halloRein` 0,62 s / `halloWeg` 0,9 s |
+| Geburtstagskarte | gar keine, sie sprang | `qdoneIn` 0,3 s |
+| Schweinchen | gar keine, es sprang | `bleibRein` 0,3 s / `bleibRaus` 0,5 s |
+
+Die Flächen tragen jetzt **beide** Animationen nebeneinander:
+`animation:var(--aura-anim), halloRein …`. `--aura-anim` hält das Wandern an einer Stelle,
+damit es nicht viermal dasteht.
 
 **Das Profilmenü ist Vollbild** und nach Themen gegliedert — Konto, Arbeitszeit, Einstellungen,
 Sitzung. Das Menü blieb dabei dasselbe DOM: Alle Klick-Handler hängen delegiert an `#menu`, und
@@ -943,11 +981,14 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
-- **Vorspann neu getaktet** (13. September 2026): Ladebalken, der auf den echten Start wartet,
-  und der Gruß mit dem Profilbild kommt jetzt *nach* dem Vorspann statt darüber. Das App-Symbol
-  liegt als base64 in der Datei, weil es als Datei zu spät kam. Einzelheiten in
-  [Abschnitt 3](#3--rechnen), Unterabschnitt *Der Vorspann*. Geprüft mit 22 jsdom-Testfällen
-  und einer Sichtprüfung in beiden Fassungen, abgemeldet
+- **Vorspann neu getaktet** (13. September 2026): Ladebalken, der auf den echten Start wartet;
+  der Gruß mit dem Profilbild wird jetzt vom Vorspann *übernommen* statt darüber gelegt; das
+  App-Symbol liegt als base64 in der Datei, weil es als Datei zu spät kam. Dabei kamen zwei
+  Fehler vom Umbranden heraus: `.aurahg` hatte allen vier Vollbildflächen ihre Überblendung
+  gelöscht (`animation` ist ein Kurzschreiben), und der Vorspann blendete deshalb über 5 s statt
+  1,1 s aus — sichtbar war davon nichts, er wurde nach 1,15 s abgeräumt. Einzelheiten in
+  [Abschnitt 3](#3--rechnen), Unterabschnitte *Der Vorspann* und *Überblendungen*. Geprüft mit
+  33 jsdom-Testfällen und einer Sichtprüfung in beiden Fassungen, abgemeldet
 - **Umbranden auf Violett** (13. September 2026): neue Marke `#C643FE` aus dem App-Symbol,
   Hell als Vorgabe mit Umschalter im Profilmenü, Kategoriefarben in OKLCH gerechnet, Profilmenü
   als Vollbild, neues App-Symbol. Einzelheiten in Abschnitt 3. Gebaut wurde es über ein
