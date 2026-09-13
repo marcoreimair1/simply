@@ -1113,7 +1113,7 @@ order by u.created_at;
 
 ## 17 · Dateien im Projekt
 
-Stand 13. September 2026, gegen `git ls-files` geprüft — 28 Dateien.
+Stand 14. September 2026, gegen `git ls-files` geprüft.
 
 **Die App**
 
@@ -1144,6 +1144,21 @@ Stand 13. September 2026, gegen `git ls-files` geprüft — 28 Dateien.
 | `monatsmail-deploy.sh` | veröffentlicht die Function vom Rechner aus |
 | `supabase/config.toml` | bindet den Ordner an das Supabase-Projekt |
 | `moji-mail-wortmarke.png` | Wortmarke im Mailkopf. Im Quelltext steht sie nirgends — die Mailvorlagen holen sie über `https://moji-app.at/moji-mail-wortmarke.png`. Nicht löschen |
+
+**Testreihen**
+
+| Datei | Wofür |
+|---|---|
+| `tests/alle.js` | startet alle acht Reihen und fasst zusammen. `node tests/alle.js` prüft `index.html`, mit einem Pfad als Argument eine andere Fassung |
+| `tests/test-rhythmus.js` | Wochenrhythmus über Jahre mit 53 Kalenderwochen |
+| `tests/test-dienstzeiten.js` | Dienstzeiten mit Datum, `schedAlt` und `schedFuer()` |
+| `tests/test-erinnerung.js` | die einmalige Frage nach der Monats-Erinnerung |
+| `tests/test-serie.js` | Serien erkennen, fragen, wegfliegen lassen |
+| `tests/test-export.js` | Exportseite — und die PDF-Seite selbst, mit echtem jsPDF |
+| `tests/test-vorspann.js` | Vorspann, Übergabe an den Gruß, Anlauf der Kopfleiste |
+| `tests/test-menue.js` | Profilmenü, Wischgeste, Fassungswechsel |
+| `tests/test-kalender.js` | Kalender neu laden und das Osterei |
+| `package.json`, `package-lock.json` | **nur für die Testreihen.** Die App braucht davon nichts. `jsdom` und `jspdf` sind auf feste Fassungen genagelt, damit ein `npm install` überall dasselbe holt |
 
 **Dokumentation**
 
@@ -1256,10 +1271,23 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 - **`APP_STAND`** ganz oben im Skriptblock wird bei jeder Veröffentlichung hochgezählt
   (Format `JJJJ-MM-TT-hhmm`). Die Kachel im Kalender vergleicht ihn mit der Datei auf dem Server
 - **Vor jeder Veröffentlichung:** den Skriptblock aus der Datei ziehen und mit `node --check`
-  prüfen, dazu die Testläufe unten. Sie liegen nicht im Repo, sondern werden je Sitzung neu
-  geschrieben — jeder lädt `index.html` in jsdom, spielt Bedienschritte durch und prüft Zustände
-- **Testläufe, die es gab:** Kalender und Zeitraum, Profilmenü mit seinen Flächen, Konten,
-  Passkey-Balken, Löschen, Firma, Export, Mitgliedskarte, Wochenrhythmus
+  prüfen, dann `npm test`. Beim ersten Mal auf einem Rechner vorher einmal `npm install` —
+  das holt `jsdom` und `jspdf`, die die Reihen brauchen
+- **Nach jeder Veröffentlichung** dieselben Reihen gegen die Datei laufen lassen, die
+  `moji-app.at` wirklich ausliefert:
+
+  ```
+  curl -s -H 'Cache-Control: no-cache' "https://moji-app.at/?v=$(date +%s)" -o /tmp/live.html
+  diff -q index.html /tmp/live.html && node tests/alle.js /tmp/live.html
+  ```
+
+  Das ist nicht übervorsichtig. Genau daran ist im September 2026 eine Korrektur verloren
+  gegangen, die hier als erledigt stand und im Code nie ankam — siehe 19.4, *Wochenrhythmus*
+- **Die acht Reihen liegen seit 14. September 2026 im Repo**, unter `tests/`. Davor wurden sie
+  je Sitzung neu geschrieben und waren danach weg. Jede lädt `index.html` in jsdom, führt die
+  echte App aus, spielt Bedienschritte durch und prüft Zustände — 323 Prüfungen, rund 25
+  Sekunden. Was jsdom nicht kann (Layout rechnen, Animationen abspielen), prüfen sie am
+  Quelltext; die Maße dazu stehen im jeweiligen Commit nachgemessen
 - **Sichtprüfung nur abgemeldet.** Nie App-Code in einer angemeldeten Sitzung ausführen:
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 

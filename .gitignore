@@ -12,3 +12,7 @@ supabase/functions/
 
 # Farbvorschau zum Veroeffentlichen — Wegwerfkopien, gehoeren nicht ins Repo
 .vorschau/
+
+# Nur fuer die Testreihen unter tests/. package.json und package-lock.json
+# sind versioniert, damit ein "npm install" ueberall dieselben Fassungen holt.
+node_modules/

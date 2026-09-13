@@ -1,0 +1,13 @@
+{
+  "name": "moji-app",
+  "version": "0.0.0",
+  "private": true,
+  "description": "MOJI — Arbeitszeitaufzeichnung. Die App selbst ist index.html und braucht nichts hiervon; das Paket gibt es nur fuer die Testreihen unter tests/.",
+  "scripts": {
+    "test": "node tests/alle.js"
+  },
+  "devDependencies": {
+    "jsdom": "30.0.1",
+    "jspdf": "4.2.1"
+  }
+}
