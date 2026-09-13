@@ -3750,7 +3750,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-1247';
+const APP_STAND = '2026-09-13-1302';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -4509,13 +4509,16 @@ function pkText(e){
   if(/passkey_disabled/i.test(t))      return 'Passkeys sind für MOJI nicht freigeschaltet.';
   if(/challenge_expired/i.test(t))     return 'Zu lange gewartet — bitte nochmal.';
   if(/NotSupportedError|not supported/i.test(t)) return 'Dieses Gerät kann keine Passkeys.';
-  /* Der häufigste Stolperstein nach dem Umzug: im Schlüsselbund liegt noch
-     der alte Passkey. Das Gerät antwortet dann „habe ich schon" und legt
-     keinen neuen an. */
+  /* Das Gerät hat für DIESE Adresse schon einen Passkey und antwortet
+     „habe ich schon", statt einen zweiten anzulegen. Gemeint ist immer der
+     Eintrag zur aktuellen Adresse — die RP ID ist der Hostname. Darum
+     location.hostname und keine feste Adresse: nach dem Umzug auf
+     moji-app.at stand hier eine Weile die alte, und der Hinweis schickte
+     Leute zum falschen Eintrag im Schlüsselbund. */
   if(/InvalidStateError/i.test(t))
-    return 'Im Schlüsselbund liegt noch ein alter MOJI-Passkey. Bitte in den '
-         + 'Geräte-Einstellungen unter Passwörter den Eintrag für '
-         + 'marcoreimair1.github.io löschen — dann geht es.';
+    return 'Für ' + location.hostname + ' liegt im Schlüsselbund schon ein '
+         + 'MOJI-Passkey. Bitte in den Geräte-Einstellungen unter Passwörter '
+         + 'den Eintrag für ' + location.hostname + ' löschen — dann geht es.';
   /* Bleibt es unbekannt, wird der Name mitgeschickt — sonst rätselt man. */
   const kurz = ((e && e.name) || (e && e.code) || '').toString().slice(0, 28);
   return 'Mit dem Passkey hat es nicht geklappt' + (kurz ? ' (' + kurz + ')' : '') + '.';

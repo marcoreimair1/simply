@@ -678,32 +678,25 @@ steht, woran man das erkennt.
 
 ### Zu tun, mit Priorität
 
-**1 · Im Code: der Passkey-Hinweis nennt die alte Adresse.**
-[index.html:4518](index.html:4518) sagt bei einem `InvalidStateError`, man solle im
-Schlüsselbund den Eintrag für `marcoreimair1.github.io` löschen. Das stimmte unmittelbar nach
-dem Umzug, heute nicht mehr: Die RP ID ist `moji-app.at`, und genau dafür meldet das Gerät
-„habe ich schon". Wer dem Hinweis folgt, sucht den falschen Eintrag. Eine Zeile, schnell
-behoben — aber sie steht in der Live-App und führt gerade in die Irre.
-
-**2 · Nachschauen, ob die Frage angekommen ist.**
+**1 · Nachschauen, ob die Frage angekommen ist.**
 Die einmalige Frage nach der Monats-Erinnerung ist gebaut und seit 13. September live
 (→ Abschnitt 15.7). Sie greift aber erst, wenn die fünf bestehenden Nutzer die App das nächste
 Mal öffnen. Mit der Abfrage aus 15.5 lässt sich zählen, wer inzwischen zugestimmt hat — erst
 danach ist der Punkt wirklich erledigt.
 
-**3 · Schlüssel erneuern.** Alle früher einmal offen gezeigten Schlüssel gehören getauscht,
+**2 · Schlüssel erneuern.** Alle früher einmal offen gezeigten Schlüssel gehören getauscht,
 insbesondere der Supabase-`service_role` und das Gmail-App-Passwort, das inzwischen nicht mehr
 gebraucht wird. Beim `service_role` daran denken: er steht auch im Zeitplan `moji-monatsmail`
 im Klartext (→ Abschnitt 15.4), muss dort also mitgetauscht werden — sonst steht die Automatik.
 
-**4 · Aufräumen in Resend.** Die zwei alten Schlüssel **„MARU SMTP"** und
+**3 · Aufräumen in Resend.** Die zwei alten Schlüssel **„MARU SMTP"** und
 **„MARU Anmeldemails"** löschen — sie hängen an `studiomaru.at` und funktionieren nicht mehr.
 Der Schlüssel **„simply"** (Full access) wird ebenfalls nicht gebraucht.
 
-**5 · Die alte GitHub-Rückkehradresse** in Supabase entfernen. Der Umzug ist über einen Monat
+**4 · Die alte GitHub-Rückkehradresse** in Supabase entfernen. Der Umzug ist über einen Monat
 her; wer noch einen alten Anmeldelink im Postfach liegen hat, wird ihn nicht mehr brauchen.
 
-**6 · Dienstzeiten mit Datum versehen**, damit alte Monate mit dem damals gültigen Plan
+**5 · Dienstzeiten mit Datum versehen**, damit alte Monate mit dem damals gültigen Plan
 gerechnet werden. Heute gilt für jeden Monat der aktuelle Plan — wer seine Arbeitszeiten
 ändert, bekommt rückwirkend falsche Summen. Der größte Brocken auf dieser Liste und der
 einzige, der am Rechnen selbst etwas ändert.
@@ -711,13 +704,18 @@ einzige, der am Rechnen selbst etwas ändert.
 ### Erledigt seit der letzten Durchsicht
 
 - ~~**Einmaliger Hinweis in der App** für die Monats-Erinnerung~~ — gebaut und live,
-  → Abschnitt 15.7. Es bleibt nur das Nachzählen, siehe Punkt 2
+  → Abschnitt 15.7. Es bleibt nur das Nachzählen, siehe Punkt 1
 - ~~**Alter MX-Eintrag** auf der Wurzel von `moji-app.at`~~ — ist weg.
   `dig +short MX moji-app.at` antwortet leer, während `dig +short MX send.moji-app.at`
   weiterhin `feedback-smtp.eu-west-1.amazonses.com` liefert. Der Versand über Resend
   ist also unberührt
 - ~~**Dateiliste in Abschnitt 17**~~ — gegen `git ls-files` richtiggestellt
 - ~~**`EINRICHTUNG.md`**~~ — gelöscht, ihr Inhalt steht seit längerem in Abschnitt 11 bis 16
+- ~~**Passkey-Hinweis nannte die alte Adresse**~~ — `pkText()` sagte bei einem
+  `InvalidStateError`, man solle den Schlüsselbund-Eintrag für `marcoreimair1.github.io`
+  löschen. Die RP ID ist aber `moji-app.at`, und genau dafür meldet das Gerät „habe ich schon" —
+  der Hinweis schickte Leute zum falschen Eintrag. Steht jetzt auf `location.hostname` statt
+  auf einer festen Adresse, kann beim nächsten Umzug also nicht wieder veralten
 
 ### Kein Handlungsbedarf, nur zum Wissen
 
@@ -781,6 +779,10 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 - **Einmalige Frage nach der Monats-Erinnerung gebaut** (13. September 2026): neue Ansicht
   `v-erinask` und das Profilfeld `mailGefragt` — Einzelheiten in Abschnitt 15.7. Geprüft mit
   40 jsdom-Testfällen und einer Sichtprüfung am Handyformat, abgemeldet
+- **Dokumentation durchgesehen** (13. September 2026): `EINRICHTUNG.md` gelöscht, Abschnitt 17
+  gegen `git ls-files` geprüft, Abschnitt 18 nach Priorität sortiert und mit Nachweisen
+  versehen, zwei kaputte Anker im Inhaltsverzeichnis behoben. Dabei fiel der veraltete
+  Passkey-Hinweis auf — siehe Abschnitt 18, Erledigtes
 - **Wochenrhythmus korrigiert** (September 2026): Der Zyklus hing an der Kalenderwoche und
   stolperte in Jahren mit 53 Wochen — auf KW 53 folgte KW 1, also zweimal dieselbe Woche.
   Jetzt zählt `wochenNr()` die Wochen fortlaufend ab Montag, 1. Jänner 2024. Bestehende Profile
