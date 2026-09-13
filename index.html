@@ -26,11 +26,100 @@
 <meta name="twitter:title" content="MOJI — Arbeitszeitaufzeichnung">
 <meta name="twitter:description" content="Eine App von Studio MARU 丸.">
 <meta name="twitter:image" content="https://moji-app.at/icon-512.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@600;700&family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..700&family=Gabarito:wght@400..900&family=Funnel+Display:wght@300..800&family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<!-- Schriften liegen im Repo, siehe @font-face ganz oben im Stilblock -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%230A1129%22%2F%3E%3Cg%20transform%3D%22translate(11.30%2C14.00)%20scale(0.3600)%22%3E%3Cpath%20d%3D%22M2.00%2C100.00A2.00%2C2.00%200%200%201%200.00%2C98.00L0.00%2C23.00A23.00%2C23.00%200%200%201%2023.00%2C0.00L92.00%2C0.00A23.00%2C23.00%200%200%201%20115.00%2C23.00L115.00%2C98.00A2.00%2C2.00%200%200%201%20113.00%2C100.00L96.00%2C100.00A2.00%2C2.00%200%200%201%2094.00%2C98.00L94.00%2C23.00A2.00%2C2.00%200%200%200%2092.00%2C21.00L70.00%2C21.00A2.00%2C2.00%200%200%200%2068.00%2C23.00L68.00%2C98.00A2.00%2C2.00%200%200%201%2066.00%2C100.00L49.00%2C100.00A2.00%2C2.00%200%200%201%2047.00%2C98.00L47.00%2C23.00A2.00%2C2.00%200%200%200%2045.00%2C21.00L23.00%2C21.00A2.00%2C2.00%200%200%200%2021.00%2C23.00L21.00%2C98.00A2.00%2C2.00%200%200%201%2019.00%2C100.00Z%22%20fill%3D%22%23FFFFFF%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <style>
+
+/* ═══ Schriften ═══════════════════════════════════════════════════
+   Liegen als .woff2 neben dieser Datei statt beim Google-CDN. Gruende:
+   MOJI soll offline laufen — ohne Netz kam die Schrift bisher nicht an
+   und die Seite fiel auf Georgia zurueck. Und jeder Aufruf schickte die
+   IP der Mitarbeiter an Google, waehrend das README festhaelt, dass die
+   Daten in der EU bleiben.
+
+   Bricolage Grotesque, Plus Jakarta Sans und Caveat, alle OFL-lizenziert.
+   Je Familie latin und latin-ext: ueber unicode-range laedt der Browser
+   nur, was der Text wirklich braucht.
+
+   Die alternativen Schriftpaare weiter unten (Schibsted, Gabarito,
+   Funnel) haben hier KEINE Datei — wer per data-font umschaltet,
+   bekommt die Systemschrift, bis die betreffende .woff2 dazukommt.
+   ═══════════════════════════════════════════════════════════════ */
+/* latin-ext */
+@font-face{
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('moji-bricolage-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face{
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('moji-bricolage.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face{
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url('moji-caveat-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face{
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url('moji-caveat.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face{
+  font-family: 'Plus Jakarta Sans';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('moji-jakarta-italic-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face{
+  font-family: 'Plus Jakarta Sans';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('moji-jakarta-italic.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face{
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url('moji-jakarta-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face{
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url('moji-jakarta.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* ============================================================
    SIMPLY — Design Tokens
    ============================================================ */
@@ -4409,7 +4498,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-1748';
+const APP_STAND = '2026-09-13-1759';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;

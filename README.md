@@ -140,10 +140,23 @@ Der **aktuelle Tag** trägt die Marke als atmenden Ring, 3 px bis 5 px über 6,5
 Er ist keine Kategorie, sondern ein Ort — *du bist hier*.
 
 **Schriften:** `Bricolage Grotesque` für Überschriften, `Plus Jakarta Sans` für die Bedienung,
-`Caveat` für die Unterschriftsleisten im PDF. Drei weitere Paare liegen als Regeln bereit und
-lassen sich mit `data-font="b"` bis `"d"` am `<html>` erreichen — Schibsted Grotesk, Gabarito,
-Funnel. **Offen:** Die Schriften kommen weiterhin vom Google-CDN. Sie gehören ins Repo, siehe
-Abschnitt 18.
+`Caveat` für die Unterschriftsleisten. Alle drei liegen als **`.woff2` im Repo**, nicht beim
+Google-CDN — MOJI soll offline laufen, und es geht keine IP der Mitarbeiter an Google. Alle
+sind OFL-lizenziert, Selbsthosten ist erlaubt.
+
+Je Familie gibt es `latin` und `latin-ext`, gesteuert über `unicode-range`: Der Browser lädt
+nur, was der Text wirklich braucht. Beim Aufruf der Anmeldeseite sind das drei Dateien,
+nicht acht. Zusammen 313 KB, einmalig.
+
+| Datei | Wofür |
+|---|---|
+| `moji-bricolage.woff2`, `-ext` | Überschriften, 300–800 variabel |
+| `moji-jakarta.woff2`, `-ext`, `-italic`, `-italic-ext` | Bedienung |
+| `moji-caveat.woff2`, `-ext` | Unterschriftsleisten |
+
+Drei weitere Paare stehen als Regeln bereit — Schibsted Grotesk, Gabarito, Funnel — erreichbar
+über `data-font="b"` bis `"d"` am `<html>`. **Ihre Dateien liegen nicht im Repo:** Wer
+umschaltet, bekommt die Systemschrift, bis die betreffende `.woff2` dazukommt.
 
 **Das Profilmenü ist Vollbild** und nach Themen gegliedert — Konto, Arbeitszeit, Einstellungen,
 Sitzung. Das Menü blieb dabei dasselbe DOM: Alle Klick-Handler hängen delegiert an `#menu`, und
@@ -747,6 +760,7 @@ Stand 13. September 2026, gegen `git ls-files` geprüft — 28 Dateien.
 | `firma-miller.png` | Logo Miller Optik, nur bei der Firmenauswahl |
 | `schwein-troete.png` | Schwein mit Tröte. Erscheint im Block `#bleib`, wenn jemand das Löschen des Profils abbricht — „Schön, dass du dich nochmal umentschieden hast" |
 | `wolken.mp4` | Hintergrund im Ladebild |
+| `moji-bricolage*.woff2`, `moji-jakarta*.woff2`, `moji-caveat*.woff2` | die drei Schriften, selbst gehostet |
 
 **Veröffentlichen**
 
@@ -797,22 +811,16 @@ Die einmalige Frage nach der Monats-Erinnerung ist gebaut und seit 13. September
 Mal öffnen. Mit der Abfrage aus 15.5 lässt sich zählen, wer inzwischen zugestimmt hat — erst
 danach ist der Punkt wirklich erledigt.
 
-**2 · Schriften ins Repo holen.** Bricolage Grotesque, Plus Jakarta Sans und Caveat kommen
-vom Google-CDN. Zwei Gründe, das zu ändern: MOJI soll offline laufen — beim ersten Start ohne
-Netz fällt die Schrift auf Georgia zurück und sieht nicht nach MOJI aus. Und jeder Aufruf
-schickt die IP der Mitarbeiter an Google, während Abschnitt 10 festhält, dass die Daten in der
-EU bleiben. Drei `.woff2` neben `index.html`, ein `@font-face`-Block, kein Build.
-
-**3 · Schlüssel erneuern.** Alle früher einmal offen gezeigten Schlüssel gehören getauscht,
+**2 · Schlüssel erneuern.** Alle früher einmal offen gezeigten Schlüssel gehören getauscht,
 insbesondere der Supabase-`service_role` und das Gmail-App-Passwort, das inzwischen nicht mehr
 gebraucht wird. Beim `service_role` daran denken: er steht auch im Zeitplan `moji-monatsmail`
 im Klartext (→ Abschnitt 15.4), muss dort also mitgetauscht werden — sonst steht die Automatik.
 
-**4 · Aufräumen in Resend.** Die zwei alten Schlüssel **„MARU SMTP"** und
+**3 · Aufräumen in Resend.** Die zwei alten Schlüssel **„MARU SMTP"** und
 **„MARU Anmeldemails"** löschen — sie hängen an `studiomaru.at` und funktionieren nicht mehr.
 Der Schlüssel **„simply"** (Full access) wird ebenfalls nicht gebraucht.
 
-**5 · Die alte GitHub-Rückkehradresse** in Supabase entfernen. Der Umzug ist über einen Monat
+**4 · Die alte GitHub-Rückkehradresse** in Supabase entfernen. Der Umzug ist über einen Monat
 her; wer noch einen alten Anmeldelink im Postfach liegen hat, wird ihn nicht mehr brauchen.
 
 ### Erledigt seit der letzten Durchsicht
@@ -828,6 +836,9 @@ her; wer noch einen alten Anmeldelink im Postfach liegen hat, wird ihn nicht meh
 - ~~**Dienstzeiten mit Datum versehen**~~ — gebaut und live. `schedAlt` im Profil,
   `schedFuer()` beim Rechnen, Frage beim Speichern und ein Verlauf zum Nachsehen.
   Einzelheiten in [Abschnitt 3](#3--rechnen), Unterabschnitt *Dienstzeiten mit Datum*
+- ~~**Schriften ins Repo holen**~~ — erledigt. Bricolage, Plus Jakarta und Caveat liegen als
+  `.woff2` neben `index.html`, der Google-Link ist raus. Nachgemessen: **null** Anfragen an
+  fonts.googleapis.com beim Laden der Seite
 - ~~**Passkey-Hinweis nannte die alte Adresse**~~ — `pkText()` sagte bei einem
   `InvalidStateError`, man solle den Schlüsselbund-Eintrag für `marcoreimair1.github.io`
   löschen. Die RP ID ist aber `moji-app.at`, und genau dafür meldet das Gerät „habe ich schon" —
