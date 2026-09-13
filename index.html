@@ -617,7 +617,7 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 .dg-by b{color:var(--butter);font-weight:600;letter-spacing:.1em}
 @media(max-width:520px){.dg-qr{width:200px;height:200px}}
 
-#splash{position:fixed;inset:0;z-index:60;background:#02040C;display:grid;place-items:center;overflow:hidden;
+#splash{position:fixed;inset:0;z-index:60;display:grid;place-items:center;overflow:hidden;
   cursor:default;-webkit-tap-highlight-color:transparent}
 /* Der Film füllt den Schirm und wird dabei beschnitten — bei Wolken fällt das nicht auf.
    Die langsame Vergrößerung gibt dem Standbildgefühl den Rest. */
@@ -2238,7 +2238,9 @@ body.zrmodus .fb-z{display:inline-flex}
 .bleib-blase{position:relative;display:block;
   padding:17px 19px;border-radius:22px;
   /* Voll deckend: vorher schien der Körper des Schweinchens durch. */
-  background:linear-gradient(165deg,#1E2C5E,#0B1230);
+  /* Stand fest auf Dunkelblau und blieb im Hellmodus dunkel — jetzt
+     eine angehobene Flaeche wie ueberall sonst. */
+  background:var(--karte);
   border:1px solid var(--line);box-shadow:var(--shadow);
   animation:blaseRein .5s .34s var(--ease-out) both}
 .bleib-blase b{display:block;font-family:var(--font-dis);font-weight:400;font-size:20px;line-height:1.3;
@@ -3241,6 +3243,77 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 :root[data-theme="dark"] .mi[data-act="erscheinung"] .mischalter{ background:var(--butter) }
 :root[data-theme="dark"] .mi[data-act="erscheinung"] .mischalter::after{ transform:translateX(19px) }
 
+
+/* ═══ Farbwolken als Flaeche ════════════════════════════════════════
+   Dieselben Toene wie der Hintergrund der App, aber ohne fuenf eigene
+   Elemente: fuenf radiale Verlaeufe auf einer einzigen Flaeche, die
+   ueber background-position wandern.
+
+   Warum nicht die .bg-Wolken wiederverwenden? Die liegen fest hinter
+   der App auf z-index 0. Vorspann, Gruss, Geburtstagskarte und das
+   Schweinchen legen sich darueber — sie brauchen ihre eigene Flaeche.
+
+   Die Toene kommen aus --aura-1 bis -5 und wechseln damit automatisch
+   mit Hell und Dunkel. --ink liegt als Grund darunter. */
+/* Die Verlaufsliste steht als Token, damit sie nicht dreimal im
+   Quelltext auftaucht. #bleib traegt eine ID und schlaegt sonst die
+   Klasse — deshalb wird es hier eigens genannt. */
+:root{
+  --aura-flaeche:
+    radial-gradient(42% 34% at 16% 20%, var(--aura-1), transparent 70%),
+    radial-gradient(38% 32% at 84% 14%, var(--aura-2), transparent 70%),
+    radial-gradient(46% 38% at 74% 82%, var(--aura-3), transparent 72%),
+    radial-gradient(30% 26% at 26% 74%, var(--aura-4), transparent 68%),
+    radial-gradient(28% 24% at 52% 48%, var(--aura-5), transparent 66%),
+    var(--ink);
+}
+.aurahg, #bleib.aurahg, #geb.aurahg, #hallo.aurahg{
+  background:var(--aura-flaeche);
+  background-size:220% 220%,220% 220%,220% 220%,220% 220%,220% 220%,auto;
+  background-position:20% 24%, 78% 16%, 72% 80%, 28% 72%, 50% 50%, 0 0;
+  animation:auraWandern 26s ease-in-out infinite alternate;
+}
+@keyframes auraWandern{
+  to{ background-position:32% 12%, 66% 28%, 60% 68%, 40% 84%, 44% 58%, 0 0 }
+}
+/* Im Vorspann ist nur ein kleines Fenster Zeit — dort deutlich schneller,
+   damit die Bewegung ueberhaupt wahrnehmbar wird. */
+#splash.aurahg{ animation-duration:5s }
+@media (prefers-reduced-motion:reduce){ .aurahg{ animation:none } }
+
+
+/* Vorspann: die Kachel traegt das App-Symbol formatfuellend, die
+   Wortmarke steht klein darueber in der Unterzeile. */
+.mark-img{ width:100%!important; border-radius:inherit }
+.sp-wort{ display:block; height:20px; width:auto; margin:0 auto 10px; opacity:.92 }
+:root[data-theme="light"] .sp-wort{ filter:invert(1) }
+
+
+/* ─── Vorspann in beiden Fassungen ───────────────────────────────
+   Die Kachel trug einen tiefblauen Verlauf und die Unterzeile weisse
+   Schrift auf dunklem Glas — beides aus der Zeit, als der Vorspann
+   immer dunkel war. Auf hellem Grund ergab das eine weisse Pille mit
+   unsichtbarem Text.
+
+   Jetzt: die Kachel zeigt das Symbol randlos, weil das Symbol seinen
+   eigenen Rahmen mitbringt. Die Unterzeile nimmt die Textfarbe des
+   Modus und wird zur schlichten Zeile ohne Glas. */
+.mark-tile{
+  background:none!important;
+  border:none!important;
+  box-shadow:0 26px 60px -22px rgba(var(--s-schatten),.45)!important;
+}
+.mark-tile::before, .mark-tile::after{ display:none!important }
+.subline span{
+  color:var(--tx-2)!important; background:none!important; border:none!important;
+  backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
+  box-shadow:none!important; padding:0!important;
+}
+/* Der Schleier machte die Mitte fast undurchsichtig, damit die Kachel
+   stand. Vor den Farbwolken darf er viel leiser sein — sonst sieht man
+   die Bewegung nicht, um die es hier geht. */
+.sp-veil{ opacity:.35!important }
+
 </style>
 </head>
 <body>
@@ -3271,23 +3344,26 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 </div>
 
 <!-- ══════════════════════════ INTRO ══════════════════════════ -->
-<div id="splash">
+<div id="splash" class="aurahg">
   <!-- Wolken im Hintergrund. Stumm und inline, sonst spielt iOS nicht von selbst.
        Das Poster ist eingebettet, damit in der ersten Zehntelsekunde kein
        schwarzes Loch klafft. -->
-  <video id="spvid" class="sp-vid" autoplay muted loop playsinline webkit-playsinline
-         preload="auto" disablepictureinpicture tabindex="-1" aria-hidden="true"
-         poster="data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAEwAS/AAD//gARTGF2YzU4LjEzNC4xMDAA/9sAQwAIBAQEBAQFBQUFBQUGBgYGBgYGBgYGBgYGBwcHCAgIBwcHBgYHBwgICAgJCQkICAgICQkKCgoMDAsLDg4OEREU/8QAdwAAAQUBAAAAAAAAAAAAAAAAAwQFAAECBgEBAQEBAQAAAAAAAAAAAAAAAAEDAgQQAAEDAgMGBgEFAQAAAAAAAAEAAwIRBEEFIVEVMRQSE2KhQnEyYVJDgZFjIlMRAQEBAAMBAQEAAAAAAAAAAAABERITAgNBIf/AABEIAGAANgMBIgACEQADEQD/2gAMAwEAAhEDEQA/ABZdZRPFO1vlkSPiht2XZdFOCe7GEOkVXr+nr9eeRz+Z5PWJpFMr+WSiTou/urZmUPjVMl7l0ZEkRop8/oevLlDYoU7Oif3su6cEmlYEngtJ6jOwyStTsVcqdieTlx2KbuP4+SuxHYvWERhqtW7c2zRO0svM9aLPIU9K83Z/G2AQjWOsUC4sQ56U6NWwA1VyYGxTnlXHOP5UT6UI5T4PJdKbMSPBTd315K9qXxK5ndPhU3T4V0pysHBTdY2J3J1nblgFOWbOCMajBVqseVa8YBysK8FmVqFq4uSx+nOXsEGWYf1uV2UV2nEdm3gEQtQCCy8XBXplH3Wpz04qXTEkIKqQQjMknip1HYhhypVZIAWC5TFDcuQNSorcm25quy0MAsRdjLXgrkK4kIJMwjE0okFw5cCeko0rij3MKD5FIXokjSUlYCSuHW8Iyr7rPOu/8x/JQIvwGhlqFfMN/kqCiWbGnWR+ycbW3/wOvUpIL5skioRGsxEcVKF/bgBwCzPpCT8+Csyu6qC35dQom+5M4VolUnSUkvXIxiSrAj7MnJGVVOVntSeV+ISNCq3l9rrAusGjUSkTKqcIsNypok7Ri0KUShp0FcgnbiAsSAC1KeiC68gpxzpGibr2LrhOuiUuupK+6UgbLm1kJaVQuXd+0unMEquqOxdaP//Z">
-    <source src="wolken.mp4" type="video/mp4">
-  </video>
+  <!-- Frueher lag hier ein Wolkenvideo. Ersetzt durch die Farbwolken
+       der App, siehe .aurahg — damit traegt der Vorspann dieselbe
+       Handschrift wie alles andere und folgt Hell und Dunkel. -->
   <div class="sp-veil"></div>
   <canvas id="pcanvas"></canvas>
   <div class="bloom"></div>
   <div class="sp-inner">
     <div class="mark-wrap">
-      <span class="mark-tile"><img class="mark-img" id="mark-img" alt="MOJI"></span>
+      <!-- Die Kachel zeigt das App-Symbol — dasselbe, das am
+           Startbildschirm liegt. Die Wortmarke steht darunter. -->
+      <span class="mark-tile"><img class="mark-img" id="mark-img" src="icon-512.png" alt="MOJI"></span>
     </div>
-    <div class="subline"><span>Mehr Zeit fürs Wesentliche.</span></div>
+    <div class="subline">
+      <img class="sp-wort" id="mark-wort" alt="MOJI">
+      <span>Mehr Zeit fürs Wesentliche.</span>
+    </div>
   </div>
 </div>
 
@@ -4189,7 +4265,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 </div>
 
 <!-- ═══════════════════ GEBURTSTAG ═══════════════════ -->
-<div class="geb" id="geb">
+<div class="geb aurahg" id="geb">
   <canvas id="gcanvas"></canvas>
   <div class="geb-in">
     <div class="geb-bild">
@@ -4290,7 +4366,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
 <!-- Begrüßung nach dem Anmelden. Hier darf der Charakter groß und
      unbeschnitten auftreten — 3:4 Feld auf 3:4 Motiv. -->
-<div class="hallo" id="hallo" aria-hidden="true">
+<div class="hallo aurahg" id="hallo" aria-hidden="true">
   <div class="hallo-in">
     <div class="hallo-rahmen">
       <div class="hallo-bild"><img id="hallo-img" alt=""></div>
@@ -4333,7 +4409,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
      Ein Knopf lässt sich verrutschen, ein Zug über die ganze Breite nicht. -->
 <!-- Wer das Löschen abbricht, bekommt kurz ein Danke auf den geblurrten
      Hintergrund. Nur beim Bleiben, nie nach dem Löschen. -->
-<div id="bleib" aria-hidden="true">
+<div id="bleib" class="aurahg" aria-hidden="true">
   <div class="bleib-buehne">
     <!-- Das Schweinchen schaut über der Nachricht hervor, trötet Konfetti
          und zieht sich wieder zurück. Danach geht die Nachricht mit. -->
@@ -4498,7 +4574,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-1843';
+const APP_STAND = '2026-09-13-1853';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5497,12 +5573,10 @@ function playIntro(){
   sp.innerHTML = INTRO_HTML;            // setzt alle CSS-Animationen zurück
   document.body.classList.add('locked');
   $('#app').classList.remove('on');
-  $('#mark-img').src = LOGO_MARK;
-  /* Nach dem Neusetzen des Markups ist es ein frisches Element — die
-     Autoplay-Angabe allein reicht dann nicht überall. */
-  const v = $('#spvid');
-  if(v){ v.muted = true; v.defaultMuted = true;
-         const p = v.play(); if(p && p.catch) p.catch(() => {}); }
+  /* Das Symbol steht im Markup, die Wortmarke kommt aus dem Quelltext. */
+  const wort = $('#mark-wort'); if(wort) wort.src = LOGO_MARK;
+  /* Frueher wurde hier das Wolkenvideo angeworfen. Die Farbwolken
+     brauchen nichts dergleichen — sie laufen als CSS. */
   window.__introLaeuft = true;
   window.__introStart = Date.now();
   try{ startParticles(); }catch(e){ console.warn('Partikel nicht verfügbar', e); }
@@ -5520,7 +5594,6 @@ function endIntro(){
   playIntro._b = setTimeout(() => {
     sp.style.display = 'none'; stopParticles();
     window.__introLaeuft = false;
-    const v = $('#spvid'); if(v){ try{ v.pause(); }catch(e){} }
   }, INTRO_WEG + 50);
 }
 let _pAnim = null;

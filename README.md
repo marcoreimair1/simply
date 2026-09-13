@@ -158,6 +158,16 @@ Drei weitere Paare stehen als Regeln bereit — Schibsted Grotesk, Gabarito, Fun
 über `data-font="b"` bis `"d"` am `<html>`. **Ihre Dateien liegen nicht im Repo:** Wer
 umschaltet, bekommt die Systemschrift, bis die betreffende `.woff2` dazukommt.
 
+**Vorspann, Gruß, Geburtstagskarte und das Schweinchen** teilen sich eine Fläche: `.aurahg`
+malt dieselben fünf Farbwolken wie der App-Hintergrund, aber als **ein** Element statt fünf —
+fünf radiale Verläufe, die über `background-position` wandern. Die Töne kommen aus `--aura-1`
+bis `-5` und wechseln damit von selbst mit Hell und Dunkel.
+
+Im Vorspann läuft die Bewegung mit 5 Sekunden statt 26 — das Fenster ist nur rund drei
+Sekunden lang, langsamer nimmt man die Farbwanderung gar nicht wahr. Das Wolkenvideo
+`wolken.mp4` ist dafür entfallen; die Kachel im Vorspann zeigt jetzt das App-Symbol selbst,
+die Wortmarke steht darunter.
+
 **Das Profilmenü ist Vollbild** und nach Themen gegliedert — Konto, Arbeitszeit, Einstellungen,
 Sitzung. Das Menü blieb dabei dasselbe DOM: Alle Klick-Handler hängen delegiert an `#menu`, und
 die Untermenüs liegen als Flächen darin. Kopiert man die Knöpfe woandershin, ist nichts mehr
@@ -759,7 +769,6 @@ Stand 13. September 2026, gegen `git ls-files` geprüft — 28 Dateien.
 | `av-1.png` … `av-12.png` | die zwölf Profilbilder |
 | `firma-miller.png` | Logo Miller Optik, nur bei der Firmenauswahl |
 | `schwein-troete.png` | Schwein mit Tröte. Erscheint im Block `#bleib`, wenn jemand das Löschen des Profils abbricht — „Schön, dass du dich nochmal umentschieden hast" |
-| `wolken.mp4` | Hintergrund im Ladebild |
 | `moji-bricolage*.woff2`, `moji-jakarta*.woff2`, `moji-caveat*.woff2` | die drei Schriften, selbst gehostet |
 
 **Veröffentlichen**
