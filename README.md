@@ -490,15 +490,30 @@ Deshalb bleibt jede Pflichtangabe, wo sie war, und die Gestaltung passiert daneb
 
 | | |
 |---|---|
-| **Kopfband** (0–37 mm) | Pastellfläche mit weichen Farbwolken. Links das App-Symbol, der Titel und *Aufzeichnung gemäß § 26 AZG*. Rechts die Einladung in Handschrift und der QR-Code auf einer weißen Karte |
+| **Kopfband** (0–37 mm) | Leichter Verlauf von Hellblau nach fast Weiß. Links das App-Symbol, der Titel und *Aufzeichnung gemäß § 26 AZG*. Rechts die Einladung in MOJIs Schrift und der QR-Code auf einer weißen Karte |
 | **Vier Karten** (42–57) | Dienstnehmer/in, Geburtsdatum, Dienstgeber, Zeitraum — je mit einem Streifen in einem der fünf Wolkentöne |
 | **Tabelle** (ab 61,6) | Kein Kasten um alles. Eine Kopfpille in Lavendel, darunter Zeilen mit haarfeinen Trennern. Zeilen mit Eintrag im Pastellton ihrer Kategorie, die volle Farbe trägt ein Streifen an der Kante |
-| **Legende, Summen** | Pastellchips, dann Karten mit farbigem Streifen oben; *Gesamt* in Violett |
+| **Summen** | Karten mit farbigem Streifen oben; *Gesamt* in Violett |
 | **Unterschrift** (274) | Der Name in Blockhandschrift |
 
 **Farbflächen nur in schmalen Bändern, nie ganzseitig.** Das Blatt wird gedruckt, und Toner
-kostet. Die weichen Wolken zeichnet `wolke()` über `GState`; kann das PDF keine Transparenz,
-bleiben sie weg — eine hartkantige Scheibe wäre schlimmer als gar keine.
+kostet. Den Verlauf im Kopfband zeichnet `verlauf()` aus achtzig schmalen Streifen mit einer
+Zehntelmillimeter Überlappung — jsPDF kennt keine Verläufe, und auf Papier sind die Streifen
+nicht als Stufen zu erkennen. Davor lagen dort weiche Farbkreise; die waren als Feld gedacht,
+sahen aber als Kreise aus, und auf einer Arbeitsaufzeichnung wirkt das schnell wie ein Fleck.
+
+**Keine Legende mehr.** Vier Pastellchips erklärten unter der Tabelle, was Feiertag, Urlaub,
+Krankenstand und Eigener Text bedeuten. Jede Zeile mit Eintrag schreibt ihre Art aber ohnehin
+in die Vermerkspalte, direkt neben dasselbe Zeichen — die Chips erklärten etwas, das drei
+Zentimeter weiter oben schon dastand. Die gewonnenen sieben Millimeter gehen an die Tabelle.
+
+**Das App-Symbol ist freigestellt.** Die Vorlage `MOJI-APP-ICON.png` zeigt die Kachel auf einem
+violetten Seitenhintergrund. Ein Zuschnitt allein hilft nicht: die Kachel ist ein abgerundetes
+Quadrat, also bleibt in den vier Ecken Violett stehen — genau das war im PDF zu sehen.
+`LOGO_ICON` ist jetzt ein PNG mit Alpha. Getrennt wurde nicht über Helligkeit, sondern über
+**R minus G**, das Maß für „wie violett": der Grund liegt oben bei 55 und unten bei 32, die
+Kachel bei −2 bis 12. Über den Grünkanal allein ließ sich die Unterkante nicht finden, dort
+liegen Grund und Kachel zu nah beieinander.
 
 **Die Farben sind dieselben wie in der App.** `TYPES[x].pdf` ist die kräftige Farbe,
 `TYPES[x].pdfF` der Pastellton — beide aus `--c-urlaub` und `--c-urlaub-rgb-f` und so fort.
@@ -515,6 +530,18 @@ schlägt das fehl, fällt die Unterschrift auf Kursiv zurück.
 Vorher wurde die Unterschrift auf eine Leinwand gemalt, in *Dancing Script* mit `cursive` als
 Ausweichschrift. Die Schrift liegt aber nirgends im Projekt — am iPhone kam Snell Roundhand
 heraus, am Mac etwas anderes, unter Windows wieder etwas anderes.
+
+### Die Anzeigeschrift
+
+`BRICO_TTF` ist **Bricolage Grotesque** in Gewicht 500 — MOJIs Anzeigeschrift, auf Basis-Latin
+und die deutschen Sonderzeichen zusammengestrichen (126 Glyphen, 27 KB). Sie trägt im PDF genau
+eine Zeile: die Einladung neben dem QR-Code. Die spricht für die Marke und soll deshalb auch
+wie die Marke klingen; der Rest des Blattes bleibt bei Helvetica, weil eine Aufzeichnung nach
+§ 26 AZG sachlich aussehen darf.
+
+Das ist teuer für eine Zeile — rund 36 KB base64. Wer die Schrift auch für die Überschrift
+*ARBEITSZEITAUFZEICHNUNG* haben will, bekommt sie zum selben Preis: `doc.setFont('MojiBrico')`
+vor dem `doc.text(...)` im Kopfband.
 
 ### Der QR-Code
 
@@ -1177,6 +1204,10 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **PDF nachgezogen** (13. September 2026): Farbkreise raus, Kopfband als leichter hellblauer
+  Verlauf; App-Symbol freigestellt (die violetten Ecken kamen vom Seitenhintergrund der
+  Vorlage); die Einladung in MOJIs Anzeigeschrift statt in Handschrift; Legende entfernt.
+  Einzelheiten in [Abschnitt 4](#4--pdf-export)
 - **PDF neu gestaltet** (13. September 2026): Kopfband in Pastell mit App-Symbol, Einladung in
   Handschrift und QR-Code; Tabelle ohne Kasten, Kategorien in den Farben der App; Unterschrift
   in eingebetteter Blockhandschrift (Architects Daughter, 24 KB). `sigImage()` und
