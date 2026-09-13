@@ -2850,6 +2850,32 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       </div>
     </section>
 
+    <!-- Einmalige Frage nach der Monats-Erinnerung.
+         Wer sein Profil angelegt hat, bevor es die Einwilligung gab, hat das
+         Häkchen im Funnel nie gesehen und bekäme darum nie eine Mail. Hier
+         wird das einmal nachgeholt — danach steht mailGefragt auf true und
+         die Ansicht kommt nicht wieder. Beide Knöpfe sind gleichwertig:
+         eine Einwilligung, bei der „nein" versteckt ist, wäre keine. -->
+    <section class="view pt" id="v-erinask">
+      <div class="eyebrow">Kurze Frage</div>
+      <h1 class="dis">Sollen wir dich am <i>Monatsersten</i> erinnern?</h1>
+      <p class="lede">Am Ersten wird der abgeschlossene Monat zum Abgeben frei. Wenn du magst,
+        schickt dir MOJI dann eine kurze Mail — damit die Aufzeichnung nicht liegen bleibt.</p>
+      <div class="card mt" style="max-width:440px">
+        <div class="pkrow"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/></svg></span>
+          <span><b>Einmal im Monat, sonst nie</b><small>Eine Mail am Ersten, an
+            <span id="erin-ask-mail">deine Adresse</span>. Wer den Monat schon abgegeben hat,
+            bekommt keine.</small></span></div>
+        <div class="pkrow"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg></span>
+          <span><b>Jederzeit wieder aus</b><small>Im Profilmenü unter <i>Monats-Erinnerung</i>,
+            mit einem Tipp. Du musst dich nirgends abmelden.</small></span></div>
+      </div>
+      <div class="navrow">
+        <button class="btn btn-p" id="erin-ask-ja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/></svg>Ja, erinnere mich</button>
+        <button class="btn btn-g" id="erin-ask-no">Nein danke</button>
+      </div>
+    </section>
+
     <!-- ─────────── ONBOARDING ─────────── -->
     <section class="view pt" id="v-onboard">
       <div class="obtop">
@@ -3724,7 +3750,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-08-07-1128';
+const APP_STAND = '2026-09-13-1247';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -4141,6 +4167,11 @@ function normalize(p){
   if(typeof p.pkHost !== 'string') p.pkHost = '';
   /* Einwilligung in die Monats-Erinnerung. Fehlt sie, gilt: nein. */
   if(typeof p.mailOk !== 'boolean') p.mailOk = false;
+  /* Ob überhaupt schon gefragt wurde. Ohne dieses Feld wäre mailOk = false
+     doppeldeutig: „nein gesagt" und „nie gefragt" sähen gleich aus. Profile
+     aus der Zeit vor der Einwilligung starten deshalb auf false und bekommen
+     den Hinweis einmal zu sehen — siehe askErinnerung(). */
+  if(typeof p.mailGefragt !== 'boolean') p.mailGefragt = false;
   /* Zeitausgleich und Urlaub. Gespeichert werden nur die beiden Grundwerte
      — was du mitgebracht hast und wie viele Tage dir im Jahr zustehen.
      Der Stand darunter wird gerechnet und bei jedem Speichern mitgeführt,
@@ -4424,6 +4455,49 @@ async function askPasskey(weiter){
 function pkAskWeiter(){
   const w = NACH_PK; NACH_PK = null;
   if(w) w(); else go('v-cal');
+}
+
+/* ─── Einmal nach der Monats-Erinnerung fragen ───
+   Das Häkchen steht auf der letzten Funnelseite. Alle Profile, die davor
+   entstanden sind, haben es nie gesehen — für die läuft die Automatik ins
+   Leere, weil monatsmail.ts nur an mailOk = true schickt. Hier wird die
+   Frage einmal nachgeholt, danach nie wieder: die Antwort landet in
+   mailGefragt und wandert mit dem Profil in die Cloud, gilt also auf
+   allen Geräten dieser Person.
+
+   Anders als beim Passkey wird die Ablehnung nicht im Gerätespeicher
+   vermerkt, sondern im Profil. Safari räumt den Gerätespeicher nach
+   sieben Tagen ohne Besuch ab — die Frage käme sonst wieder. */
+let NACH_ERIN = null;
+function erinFrageNoetig(){
+  /* Ohne Konto gibt es keine Adresse, an die man erinnern könnte.
+     Wer schon zugestimmt hat, wird nicht nochmal gefragt. */
+  return !!(CLOUD_ON && UID && MAIL && ME && !ME.mailGefragt && !ME.mailOk);
+}
+function askErinnerung(weiter){
+  if(!erinFrageNoetig()){ weiter(); return; }
+  NACH_ERIN = weiter;
+  const m = $('#erin-ask-mail');
+  if(m) m.textContent = MAIL;
+  go('v-erinask');
+}
+/* Beide Wege setzen mailGefragt — auch das Nein ist eine Antwort. */
+function erinAskFertig(ja){
+  if(ME){
+    ME.mailOk = !!ja;
+    ME.mailGefragt = true;
+    save();
+    try{ malErinnerung(); }catch(e){ console.warn(e); }
+  }
+  const w = NACH_ERIN; NACH_ERIN = null;
+  if(w) w(); else go('v-cal');
+  /* Kurz warten: direkt danach läuft oft die Begrüßung mit ihrem Konfetti,
+     und zwei Dinge gleichzeitig liest niemand. Dieselbe Verzögerung wie
+     beim Stufenaufstieg. */
+  setTimeout(() => {
+    toast(ja ? 'Wir erinnern dich künftig am Monatsersten.'
+             : 'Alles klar — wir schreiben dir nicht.');
+  }, 900);
 }
 
 /* Fehler in etwas Verständliches übersetzen. */
@@ -5242,7 +5316,7 @@ $('#go-ort').addEventListener('click', () => obGo(3));
    Betreten des letzten Schritts, ein späterer Klick muss also nachziehen. */
 $('#mailok').addEventListener('change', () => {
   const an = $('#mailok').checked;
-  if(ME){ ME.mailOk = an; save(); }
+  if(ME){ ME.mailOk = an; ME.mailGefragt = true; save(); }
   if(OB) OB.mailOk = an;
   malErinnerung();
   toast(an ? 'Erinnerung eingeschaltet' : 'Erinnerung aus');
@@ -5273,10 +5347,16 @@ function sichereProfil(){
   const months = Array.from(OB.months).map(s => { const [y,m] = s.split('-'); return { y:+y, m:+m }; });
   const sched = JSON.parse(JSON.stringify(OB.sched));
 
+  /* Der Funnel zeigt das Häkchen auf der letzten Seite — wer hier durchgeht,
+     wurde also gefragt, ganz gleich ob er es angehakt hat oder nicht. Nur
+     dort, wo eine Adresse bekannt ist: ohne Cloud bleibt das Häkchen
+     ausgeblendet, dann wurde auch nichts gefragt. */
+  const gefragt = !!(CLOUD_ON && MAIL);
   if(_funnelId && ME && ME.id === _funnelId){
     ME.vorname = vn; ME.nachname = nn; ME.dob = dob;
     ME.sched = sched; ME.months = months;
     if(typeof OB.mailOk === 'boolean') ME.mailOk = OB.mailOk;
+    if(gefragt) ME.mailGefragt = true;
     normalize(ME);
   } else {
     ME = normalize({
@@ -5284,6 +5364,7 @@ function sichereProfil(){
       vorname: vn, nachname: nn, dob: dob, ort: EMPLOYER,
       sched: sched, months: months, events: (ME && ME.events) || {},
       mailOk: !!OB.mailOk,
+      mailGefragt: gefragt,
       created: new Date().toISOString()
     });
     _funnelId = ME.id;
@@ -5781,6 +5862,8 @@ function erinUmschalten(){
   $('#mi-erin-s').textContent = 'wird geändert …';
   setTimeout(() => {
     ME.mailOk = !ME.mailOk;
+    /* Wer den Punkt im Menü selbst gefunden hat, braucht den Hinweis nicht mehr. */
+    ME.mailGefragt = true;
     save();
     mi.classList.remove('erin-wechsel');
     malErinnerung();
@@ -6347,6 +6430,22 @@ function postDatum(iso){
 }
 
 const NACHRICHTEN = [
+  {
+    id: 'erinnerung-2026-09',
+    datum: '2026-09-13',
+    art: 'glocke',
+    titel: 'Neu: Erinnerung am Monatsersten',
+    text: 'MOJI kann dir am Ersten jedes Monats eine kurze Mail schicken — '
+        + 'als Anstoß, den abgeschlossenen Monat abzugeben, solange du ihn '
+        + 'noch im Kopf hast.\n\n'
+        + 'Eingeschaltet wird sie im Profilmenü unter Monats-Erinnerung. '
+        + 'Dort steht auch, an welche Adresse sie ginge, und dort schaltest '
+        + 'du sie mit einem Tipp wieder aus.\n\n'
+        + 'Voreingestellt ist sie aus. Ohne deine ausdrückliche Zustimmung '
+        + 'schreibt dir MOJI nicht — und wer einen Monat schon abgegeben hat, '
+        + 'bekommt dafür ohnehin keine Erinnerung mehr.',
+    von: 'Studio MARU 丸'
+  },
   {
     id: 'umzug-moji-app-at',
     datum: '2026-08-05',
@@ -8714,7 +8813,10 @@ async function afterLogin(session, frisch){
       ME = normalize(JSON.parse(JSON.stringify(local)));
       cloudQueue();
       toast('Deine Daten sind jetzt gesichert');
-      await askPasskey(() => { enterApp(); if(frisch) zeigeHallo(); });
+      /* Erst der Passkey, dann die Erinnerung — beide nur, wenn offen.
+         Das lokale Profil kennt die Frage nach der Erinnerung noch nicht,
+         jetzt gibt es erstmals eine Adresse dafür. */
+      await askPasskey(() => askErinnerung(() => { enterApp(); if(frisch) zeigeHallo(); }));
       return;
     }
     /* Kein Datensatz UND keine Verbindung: das kann auch eine Person mit
@@ -8732,7 +8834,11 @@ async function afterLogin(session, frisch){
   setSync(offline ? 'offline' : 'ok');
   if(push) cloudQueue();
   if(offline){ enterApp(); if(frisch) zeigeHallo(); return; }
-  await askPasskey(() => { enterApp(); if(frisch) zeigeHallo(); });
+  /* Der übliche Weg für alle, die schon ein Profil haben. Nur hier greift
+     die einmalige Frage nach der Erinnerung — sie geht vorbei, sobald
+     mailGefragt steht. Offline wird nicht gefragt: die Antwort käme nicht
+     hoch, und der Zeitplan liest nur die Cloud. */
+  await askPasskey(() => askErinnerung(() => { enterApp(); if(frisch) zeigeHallo(); }));
 }
 
 $('#wt-retry').addEventListener('click', () => location.reload());
@@ -8770,6 +8876,10 @@ $('#pk-ask-skip').addEventListener('click', () => {
   try{ localStorage.setItem('maru.pkask.' + UID, '1'); }catch(e){}
   pkAskWeiter();
 });
+
+/* ─── Knöpfe der Monats-Erinnerung ───────────────────────── */
+$('#erin-ask-ja').addEventListener('click', () => erinAskFertig(true));
+$('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
 
 (async function boot(){
   if(!AM_HANDY) return;          /* am Computer wird nichts geladen und nichts angemeldet */

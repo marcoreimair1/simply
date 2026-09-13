@@ -552,11 +552,42 @@ im Profil**. Die Profile wurden gespeichert, bevor es die Einwilligung gab; die 
 überspringt alles, was nicht ausdrücklich `true` ist.
 
 **Daraus folgt:** die fünf bestehenden Nutzer bekommen nichts, bis sie im Profilmenü
-*Monats-Erinnerung* selbst einschalten. Das Häkchen im Funnel sehen nur neue Konten. Wer die
-Automatik für die bestehenden Leute nutzen will, braucht einen einmaligen Hinweis in der App —
-ist noch nicht gebaut.
+*Monats-Erinnerung* selbst einschalten. Das Häkchen im Funnel sehen nur neue Konten.
 
-### 15.7 Wie die Erinnerung abgeschaltet wird
+### 15.7 Die einmalige Frage für bestehende Konten *(erledigt, September 2026)*
+
+Genau dafür gibt es jetzt die Ansicht `v-erinask`. Sie erscheint **einmal** nach dem Anmelden
+und fragt geradeheraus, ob MOJI am Monatsersten erinnern soll — zwei gleichwertige Knöpfe,
+*Ja, erinnere mich* und *Nein danke*. Kein kleiner Textlink für das Nein: bei einer
+Einwilligung wäre das schief.
+
+Möglich wird das durch ein zweites Feld im Profil, **`mailGefragt`**. Ohne es wäre
+`mailOk = false` doppeldeutig — „nein gesagt" und „nie gefragt" sähen gleich aus. Gesetzt wird
+es an vier Stellen: im Funnel, bei den beiden Knöpfen der neuen Ansicht und beim Umschalter im
+Profilmenü. Wer den Punkt also selbst gefunden hat, wird nicht mehr gefragt.
+
+Die Frage erscheint nur, wenn **alle vier** Bedingungen zutreffen — nachzulesen in
+`erinFrageNoetig()`:
+
+| Bedingung | Warum |
+|---|---|
+| `CLOUD_ON` und `UID` | ohne Konto gibt es niemanden zu erinnern |
+| `MAIL` bekannt | ohne Adresse ginge die Mail nirgendwohin |
+| `mailGefragt` nicht `true` | jeder wird genau einmal gefragt |
+| `mailOk` nicht `true` | wer schon zugestimmt hat, wird nicht behelligt |
+
+Die Antwort steht im Profil, nicht im Gerätespeicher — anders als beim Passkey, wo die
+Ablehnung unter `maru.pkask.<UID>` lokal liegt. Grund: Safari räumt den Gerätespeicher nach
+sieben Tagen ohne Besuch ab, die Frage käme sonst wieder. So gilt sie auf allen Geräten
+derselben Person.
+
+Eingehängt ist sie hinter `askPasskey()` an zwei der drei Stellen im Anmeldefluss. Der dritte
+Aufruf führt in den Funnel — der fragt selbst. **Offline wird nicht gefragt**, weil die Antwort
+nicht hochkäme und der Zeitplan nur die Cloud liest.
+
+Dazu liegt im Postfach die Nachricht `erinnerung-2026-09` zum Nachschlagen.
+
+### 15.8 Wie die Erinnerung abgeschaltet wird
 
 Profilmenü → **Monats-Erinnerung**. Der Punkt zeigt *ein · per E-Mail an …* oder *aus* und
 schreibt `mailOk` ins Profil; die Funktion überspringt beim nächsten Lauf alle mit `false`.
@@ -602,6 +633,9 @@ order by u.created_at;
 | `mail-anmeldung.html`, `mail-registrierung.html` | Vorlagen für Supabase |
 | `monatsmail.ts` | Monats-Erinnerung, Code der Edge Function |
 | `monatsmail.sql` | Tabelle und Zeitplan dazu |
+| `monatsmail-deploy.sh` | veröffentlicht die Edge Function vom Rechner aus |
+| `supabase/config.toml` | bindet den Ordner an das Supabase-Projekt |
+| `.gitignore` | hält `.DS_Store` und Arbeitsdateien aus dem Repo |
 
 Profilbilder haben ihre eigene Fassung: `AV_STAND` in `index.html` hochsetzen, sonst zeigen
 Geräte die alten Bilder aus dem Zwischenspeicher.
@@ -610,8 +644,10 @@ Geräte die alten Bilder aus dem Zwischenspeicher.
 
 ## 18 · Offene Punkte
 
-- **Einmaliger Hinweis in der App**, damit die fünf bestehenden Nutzer die Monats-Erinnerung
-  einschalten können — sie sehen das Häkchen aus dem Funnel nie (→ Abschnitt 15.6)
+- **Nachschauen, ob die Frage angekommen ist.** Die einmalige Frage nach der Monats-Erinnerung
+  ist gebaut (→ Abschnitt 15.7), aber sie greift erst, wenn die fünf bestehenden Nutzer die App
+  das nächste Mal öffnen. Mit der Abfrage aus 15.5 lässt sich zählen, wer inzwischen zugestimmt
+  hat. Erst danach ist der Punkt wirklich erledigt
 - Alter **MX-Eintrag** auf der Wurzel von `moji-app.at` ist verwaist und kann weg
 - Die zwei alten Resend-Schlüssel **„MARU SMTP"** und **„MARU Anmeldemails"** löschen — sie
   hängen an `studiomaru.at` und funktionieren nicht mehr. Der Schlüssel **„simply"**
@@ -670,6 +706,13 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Arbeitsordner angebunden** (13. September 2026): Das Repo liegt jetzt lokal unter
+  `~/MOJI-APP`, Veröffentlichen geht über `git push` statt über die Weboberfläche. GitHub
+  hängt an einem SSH-Schlüssel, die Supabase-CLI ist angemeldet; `supabase/config.toml` und
+  `monatsmail-deploy.sh` erledigen den Deploy der Edge Function vom Rechner aus
+- **Einmalige Frage nach der Monats-Erinnerung gebaut** (13. September 2026): neue Ansicht
+  `v-erinask` und das Profilfeld `mailGefragt` — Einzelheiten in Abschnitt 15.7. Geprüft mit
+  40 jsdom-Testfällen und einer Sichtprüfung am Handyformat, abgemeldet
 - **Wochenrhythmus korrigiert** (September 2026): Der Zyklus hing an der Kalenderwoche und
   stolperte in Jahren mit 53 Wochen — auf KW 53 folgte KW 1, also zweimal dieselbe Woche.
   Jetzt zählt `wochenNr()` die Wochen fortlaufend ab Montag, 1. Jänner 2024. Bestehende Profile
