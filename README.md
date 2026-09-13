@@ -245,6 +245,42 @@ Sitzung. Das Menü blieb dabei dasselbe DOM: Alle Klick-Handler hängen delegier
 die Untermenüs liegen als Flächen darin. Kopiert man die Knöpfe woandershin, ist nichts mehr
 verdrahtet.
 
+Drei Zeilen tragen einen **Schieberegler** statt eines Pfeils: Erscheinungsbild,
+Monats-Erinnerung und Passkey. Der Stand steht in `aria-pressed` an der Zeile — das treibt das
+Aussehen und ist zugleich die Auskunft für Vorleseprogramme. `aria-busy` hält ihn still,
+solange gerechnet oder gefragt wird. **Kein Pfeil neben einem Regler:** der Regler ist die
+Handlung, ein Pfeil daneben verspricht eine zweite Ebene, die es nicht gibt.
+
+### Was beim Umbau auf Vollbild liegen blieb
+
+Fünf Sachen stammten aus der Zeit, als das Menü ein kleines Fenster war, das rechts oben
+aufklappte. Sie standen alle noch drin und sind am 13. September 2026 nachgezogen worden:
+
+| war | warum das im Vollbild schiefging |
+|---|---|
+| `.menu-card{animation:pop}`, `transform-origin:100% 0` | Die ganze Seite fuhr aus der rechten oberen Ecke auf 94 % herein. Schlimmer: solange ein `transform` an der Karte liegt, richten sich alle `position:fixed`-Kinder nach *ihr* statt nach dem Fenster |
+| `miIn{translateX(9px)}` an jeder Zeile | 9 px Überstand nach rechts beim Öffnen. `overflow-y:auto` rechnet `overflow-x:visible` zu `auto` um — die Seite war also seitlich scrollbar, und einmal geschoben blieb sie geschoben |
+| Untermenüs `position:absolute` in `.mbody`, teils `inset:-4px -6px` | Sie begannen 201 px weit unten, waren so hoch wie der ganze Menüinhalt (806 px bei 812 px Schirm) und standen seitlich 6 px über |
+| `.zurueckbtn` mit `left:7px;top:6px` | Sass im Nichts und scrollte weg |
+| `zurueckInsMenu()` mit 170 ms Halteschicht | Die Pause sollte den unscharfen Hintergrund halten, bis das kleine Fenster wieder aufgeht. Bei einer deckenden Seite sah man in diesen 170 ms schlicht den Kalender — der kleine Sprung beim Zurückgehen |
+
+Dazu zwei Fallen, die nichts mit dem Umbranden zu tun haben:
+
+- **Der Schließen-Knopf ging oft nicht.** Der Handler prüfte `e.target.dataset.close`. Der Knopf
+  trägt aber ein SVG, das ihn fast ganz ausfüllt — getroffen wurde also meist das `<path>` darin,
+  und dessen `dataset.close` ist leer. Jetzt `e.target.closest('[data-close="menu"]')`.
+- **Ein `z-index` wirkt nur im eigenen Stapel.** Die Untermenüs liegen in `.mbody`, und `.mbody`
+  bekommt durch seine Einblendung (eine Animation auf `opacity`) einen eigenen Stapel. Ihr
+  `z-index:6` zählte nur dort drin — die Fußzeile *Eine App von Studio MARU* steht im Quelltext
+  nach `.mbody` und lag damit obenauf: sie schien mitten durch das Löschen-Fenster. Solange eine
+  Fläche offen ist, hebt sich deshalb `.mbody` als Ganzes.
+
+Und einer im Profilbild: der Rahmen lag als `border` am Kasten. Ein `border` schiebt den
+Inhaltsbereich um seine Breite nach innen — das Bild füllte also nur 82 von 84 px, und
+dazwischen blitzte der weiße Grund als 1-px-Ring durch. Im Dunkeln ging der im hellen Rand
+unter, im Hellen stand eine weiße Linie im dunklen Rand. Der Rahmen liegt jetzt als `::after`
+über dem Bild.
+
 **Beim Umfärben zu beachten:** Farben, die doppelt gedeutet wurden, fallen auseinander. Das alte
 Gold war Marke *und* Urlaubsfarbe, ein Fast-Weiß war Schriftfarbe *und* Fläche, ein Blau war
 Arbeitszeit *und* Zeitausgleich. Alle drei sind jetzt getrennt benannt. Und: `!important` schlägt
@@ -981,6 +1017,12 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Menü durchgesehen** (13. September 2026): Seitenmaße, Untermenüs als eigene Bildschirme,
+  Schließen-Knopf, Rücksprung ohne Blitzer, Schieberegler für Monats-Erinnerung und Passkey,
+  Profilbildrahmen ohne weiße Fuge. Sieben Ursachen, aufgelistet in
+  [Abschnitt 3](#3--rechnen), Unterabschnitt *Was beim Umbau auf Vollbild liegen blieb*.
+  Geprüft mit 30 jsdom-Testfällen und im Browser nachgemessen: alle fünf Flächen exakt
+  375 × 812 an 0,0, Zurück-Pfeil überall an 14/12, seitlicher Überstand 0 statt 15 px
 - **Vorspann neu getaktet** (13. September 2026): Ladebalken, der auf den echten Start wartet;
   der Gruß mit dem Profilbild wird jetzt vom Vorspann *übernommen* statt darüber gelegt; das
   App-Symbol liegt als base64 in der Datei, weil es als Datei zu spät kam. Dabei kamen zwei

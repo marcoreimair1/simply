@@ -884,11 +884,21 @@ body.menuauf #avatar{transform:scale(.92)}
    Rundung als Anteil der Kante (34 %, wie 13 px auf 38 px), Ausschnitt am
    unteren Rand. Damit ist der Bildausschnitt in beiden Größen identisch. */
 .avbig{position:relative;width:104px;height:104px;flex:none;border-radius:34%;overflow:hidden;
-  background:#fff;border:1px solid rgba(var(--s-auf),.22);display:grid;place-items:center;
+  background:#fff;display:grid;place-items:center;
   font-family:var(--font-dis);font-size:36px;color:var(--on-primary);
   transition:transform .34s var(--ease),border-radius .34s var(--ease),box-shadow .3s}
+/* Der Rahmen lag frueher als border am Kasten. Ein border schiebt den
+   Inhaltsbereich um seine Breite nach innen — das Bild fuellte also nur
+   82 von 84 px, und dazwischen blitzte der weisse Grund als 1-px-Ring
+   durch. Im Dunkeln ging der im hellen Rand unter, im Hellen stand eine
+   weisse Linie im dunklen Rand: der helle Balken.
+
+   Jetzt fuellt das Bild den ganzen Kasten und der Rahmen liegt als
+   eigene Lage darueber. Keine Fuge mehr, in keiner Fassung. */
 .avbig img{position:absolute;left:0;top:0;width:100%;height:100%;
   object-fit:cover;object-position:center 86%;display:block}
+.avbig::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(var(--s-auf),.22)}
 .avbig:hover{transform:scale(1.04);box-shadow:0 12px 30px -14px rgba(var(--s-schatten),.7)}
 .avbig:active{transform:scale(.98)}
 /* Gitter mit den Motiven — vier je Reihe. Es legt sich als blaue Fläche
@@ -3096,9 +3106,42 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   width:auto; max-height:none; height:100%;
   border:none; border-radius:0; box-shadow:none;
   background:var(--ink);
-  padding:0; overflow-y:auto; overscroll-behavior:contain;
+  padding:0; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
 }
+/* Die Karte fuhr beim Oeffnen aus der rechten oberen Ecke auf 94 %
+   herein (animation:pop, transform-origin:100% 0) — richtig fuer ein
+   kleines Fenster, das dort aufklappt, falsch fuer eine ganze Seite.
+   Dazu kommt: solange ein transform an der Karte liegt, richten sich
+   alle position:fixed-Kinder nach ihr statt nach dem Fenster. Die
+   Untermenues und ihr Zurueck-Pfeil sassen in diesen 340 ms verschoben
+   und um 6 % zu klein. Jetzt blendet die Seite nur auf. */
+@keyframes menuBlende{ from{ opacity:0 } }
+.menu-card{ animation:menuBlende .26s var(--ease-blend); transform-origin:50% 50% }
+.menu.zu .menu-card{ animation:menuBlendeZu .2s var(--ease-blend) forwards }
+@keyframes menuBlendeZu{ to{ opacity:0 } }
+.menu.sofort .menu-card{ animation:none }
+
+/* Warum overflow-x:hidden noetig war: overflow-y:auto allein laesst
+   overflow-x auf visible, und ein visible neben einem nicht-visiblen
+   Wert rechnet der Browser zu auto um. Die Zeilen fahren beim Oeffnen
+   9 px von rechts herein (miIn) — waehrenddessen stand die Seite also
+   9 px ueber, war seitlich scrollbar, und einmal geschoben blieb sie
+   geschoben. Dazu kamen die Untermenues mit negativem Seiteneinzug.
+   Beides ist unten behoben; das hier ist der Riegel davor. */
+
+/* Die Zeilen fahren im Vollbild nicht mehr von der Seite herein, sie
+   blenden nur auf. Seitwaerts war fuer die kleine Karte gedacht, die
+   von rechts oben aufging — auf einer ganzen Seite liest sich das
+   unruhig, und es war die Ursache des seitlichen Ueberstands. */
+@keyframes miInVoll{ from{ opacity:0 } }
+.menu.on:not(.zu) .menu-card > *{ animation-name:miInVoll }
+/* Beim Ruecksprung aus einem Untermenue steht das Menue sofort wieder
+   da — dann waere ein Einlaufen zum zweiten Mal nur Zappeln.
+   Die Auswahl muss .menu.on:not(.zu) uebertreffen: das sind drei
+   Klassen (:not zaehlt seinen Inhalt mit), eine .sofort allein waere
+   zu schwach und die Zeilen liefen doch wieder ein. */
+.menu.on.sofort:not(.zu) .menu-card > *{ animation:none }
 /* Eine Breite für alles. Vorher trug nur .menu-card > * die Begrenzung —
    die Profilkarte ist ein direktes Kind, die Gruppen nicht. Auf breiten
    Geräten lief die Karte deshalb anders als die Boxen darunter. */
@@ -3213,23 +3256,78 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 .mfoot{ margin:26px 20px calc(28px + env(safe-area-inset-bottom)); text-align:center }
 
 /* ─── Die Flächen, die sich über das Menü legen ──────────────────
-   Bildwahl, Konten und Urlaubsanspruch waren auf die kleine Karte
-   ausgelegt: Die Konten schoben ihren Inhalt mit justify-content:
-   flex-end nach unten, die Bildwahl zentrierte ihn. Auf der kleinen
-   Fläche sah das gefüllt aus — im Vollbild klaffte oben eine Lücke.
+   Bildwahl, Stände, Urlaubsanspruch, Stufen und Löschen waren auf die
+   kleine Karte ausgelegt: position:absolute in .mbody, teils mit
+   negativem Seiteneinzug (-6 px), damit sie über den Kartenrand
+   greifen. Im Vollbild hiess das nachgemessen: sie begannen erst
+   201 px weit unten, waren so hoch wie der ganze Menüinhalt — 806 px,
+   also 195 px länger als der Schirm — und standen seitlich 6 px über.
+   Man musste scrollen, um den Knopf unten zu erreichen, beim Scrollen
+   wanderte die Fläche mit, und seitlich liess sie sich schieben.
 
-   Jetzt beginnen sie oben und bekommen denselben Einzug und Radius
-   wie die Gruppen darunter. */
-.avgrid, .konten, .uabox{
-  inset:0 14px; border-radius:var(--r-m);
-  padding:14px; gap:12px;
-  justify-content:flex-start; align-content:start;
-  background:var(--ink-1); border:1px solid var(--line-2);
+   Ein Untermenü ist jetzt ein eigener Bildschirm: fest am Fenster,
+   deckend, mit eigenem Lauf. Nichts davon hängt mehr an der Höhe des
+   Menüs darunter. */
+/* #konten und #uabox stehen weiter oben mit padding-top:42px als
+   ID-Regel — die schlaegt jede Klasse. Deshalb tragen sie hier ihre
+   eigene Auswahl mit, sonst begaenne ihr Inhalt 16 px zu hoch und der
+   Zurueck-Pfeil laege auf der ersten Zeile. */
+.avgrid, .konten, .uabox, .rangbox, .dlbox, #konten, #uabox{
+  position:fixed; inset:0; z-index:6;
+  width:auto; height:auto; max-height:none;
+  margin:0; border:none; border-radius:0;
+  background:var(--ink);
+  padding:calc(58px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom));
+  overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  justify-content:flex-start; align-content:start; gap:12px;
 }
-/* Der Zurück-Pfeil sass im Nichts — er bekommt eine feste Ecke. */
-.konten .zurueckbtn, .uabox .zurueckbtn, .avgrid .zurueckbtn{
-  position:sticky; top:0; align-self:flex-start; z-index:2;
+/* Nur noch aufblenden, nicht mehr schieben und schrumpfen. Ein transform
+   an der Fläche würde ausserdem den Zurück-Pfeil mitnehmen: er ist fest
+   am Fenster, und ein transform am Vorfahren macht daraus wieder ein
+   absolutes Element. */
+.avgrid, .konten, .uabox, .rangbox, .dlbox, #konten, #uabox{
+  transform:none; transition:opacity .28s var(--ease-blend), visibility .28s;
 }
+.menu-card.avauf .avgrid, .menu-card.kauf #konten, .menu-card.uaauf #uabox,
+.menu-card.rauf .rangbox, .menu-card.dlauf .dlbox{ transform:none }
+
+/* Ein z-index wirkt nur innerhalb des eigenen Stapels. Die Flaechen
+   liegen in .mbody, und .mbody bekommt durch seine Einblendung (eine
+   Animation auf opacity) einen eigenen Stapel. Ihr z-index:6 zaehlt
+   also nur dort drin — die Fusszeile "Eine App von Studio MARU" steht
+   im Quelltext NACH .mbody und lag damit obenauf: sie schien mitten
+   durch das Loeschen-Fenster. Solange eine Flaeche offen ist, hebt
+   sich deshalb .mbody als Ganzes. */
+.menu-card.avauf .mbody, .menu-card.kauf .mbody, .menu-card.uaauf .mbody,
+.menu-card.rauf .mbody, .menu-card.dlauf .mbody{ z-index:6 }
+
+/* Der Zurück-Pfeil sass im Nichts. Jetzt sitzt er dort, wo im Menü der
+   Schliessen-Knopf sitzt — nur auf der anderen Seite, weil er zurück
+   führt und nicht hinaus. Gleiche Grösse, gleiche Form. */
+.avgrid .zurueckbtn, .konten .zurueckbtn, .uabox .zurueckbtn,
+.rangbox .zurueckbtn, .dlbox .zurueckbtn{
+  position:fixed; left:14px; top:calc(12px + env(safe-area-inset-top));
+  width:38px; height:38px; border-radius:13px; z-index:8;
+  border:1px solid var(--karte-rand); background:var(--karte); color:var(--tx-2);
+  box-shadow:var(--karte-schatten);
+}
+.avgrid .zurueckbtn svg, .konten .zurueckbtn svg, .uabox .zurueckbtn svg,
+.rangbox .zurueckbtn svg, .dlbox .zurueckbtn svg{ width:18px; height:18px }
+
+/* Die Bilder dürfen im Vollbild grösser werden — vier je Reihe waren
+   für 344 px Kartenbreite gerechnet. */
+.avgrid{ align-content:start; gap:10px }
+
+/* Löschen füllt den Schirm. Zwei automatische Abstände teilen sich den
+   freien Platz: der Text sitzt dadurch in der Mitte des Bereichs, der
+   Knopf "Behalten" steht unten. Der weite Abstand dazwischen ist
+   Absicht — der Ziehgriff löscht endgültig, und die beiden sollen sich
+   nicht im Vorbeitippen verwechseln lassen. */
+.dlbox{ display:flex; flex-direction:column }
+.dlbox .dl-liste{ flex:0 1 auto }
+.dlbox .dlb-h{ margin-top:auto }
+.dlbox .dlb-weg{ margin-top:auto }
 
 @media(min-width:560px){
   .mkopf{ padding-left:24px; padding-right:24px }
@@ -3238,18 +3336,26 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 }
 
 
-/* ─── Zeile "Erscheinungsbild" ───────────────────────────────────── */
-.mi[data-act="erscheinung"] .mischalter{
+/* ─── Schieberegler ──────────────────────────────────────────────
+   Frueher nur fuer das Erscheinungsbild, und der Stand kam aus
+   :root[data-theme]. Jetzt tragen ihn drei Zeilen — Erscheinungsbild,
+   Monats-Erinnerung und Passkey — und der Stand steht in aria-pressed
+   an der Zeile. Das ist zugleich die Auskunft fuer Vorleseprogramme;
+   vorher sagten die Zeilen ueberhaupt nichts ueber ihren Zustand. */
+.mi .mischalter{
   flex:none; width:46px; height:27px; border-radius:99px;
   background:var(--line-2); position:relative; transition:background .22s var(--ease);
 }
-.mi[data-act="erscheinung"] .mischalter::after{
+.mi .mischalter::after{
   content:''; position:absolute; top:3px; left:3px; width:21px; height:21px;
   border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.28);
   transition:transform .22s var(--ease);
 }
-:root[data-theme="dark"] .mi[data-act="erscheinung"] .mischalter{ background:var(--butter) }
-:root[data-theme="dark"] .mi[data-act="erscheinung"] .mischalter::after{ transform:translateX(19px) }
+.mi[aria-pressed="true"] .mischalter{ background:var(--butter) }
+.mi[aria-pressed="true"] .mischalter::after{ transform:translateX(19px) }
+/* Waehrend gerechnet oder gefragt wird, steht der Regler still und
+   nimmt keine zweite Beruehrung an. */
+.mi[aria-busy="true"] .mischalter{ opacity:.5 }
 
 
 /* ═══ Farbwolken als Flaeche ════════════════════════════════════════
@@ -4207,10 +4313,12 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <button class="mi" data-act="erinnerung" id="mi-erin" style="display:none">
       <span class="miico" id="mi-erin-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 10-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.3 20a2 2 0 003.4 0"/></svg></span>
       <span id="mi-erin-t">Monats-Erinnerung<small id="mi-erin-s">—</small></span>
+      <span class="mischalter" aria-hidden="true"></span>
     </button>
     <button class="mi" data-act="passkey" id="mi-pk" style="display:none">
       <span class="miico" id="mi-pk-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span>
       <span id="mi-pk-t">Passkey<small id="mi-pk-s">—</small></span>
+      <span class="mischalter" aria-hidden="true"></span>
     </button>
         <button class="mi" data-act="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12H4M8 8l-4 4 4 4M14 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4"/></svg>Abmelden</button>
     
@@ -4680,7 +4788,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-1931';
+const APP_STAND = '2026-09-13-1953';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5612,6 +5720,13 @@ function paintPasskey(){
     mi.classList.toggle('pk-warn', stand === 'aus');
     mi.classList.toggle('pk-bad',  stand === 'problem');
     mi.classList.remove('done', 'achtung');
+    /* Derselbe Regler wie beim Erscheinungsbild. Ein Passkey kennt mehr
+       als an und aus — geprüft wird gerade, oder es hakt. Der Regler
+       zeigt nur, ob er steht; was sonst los ist, steht in der Zeile
+       darunter und im Farbton des Symbols. */
+    mi.setAttribute('aria-pressed', String(stand === 'aktiv'));
+    if(stand === 'laden') mi.setAttribute('aria-busy', 'true');
+    else mi.removeAttribute('aria-busy');
   }
 
   const karte = $('#pk-card'), knopf = $('#pk-card-go'), txt = $('#pk-card-t');
@@ -7009,6 +7124,10 @@ function malErinnerung(){
     $('#mi-erin-s').textContent = an ? 'ein · per E-Mail an ' + MAIL : 'aus';
     mi.classList.toggle('erin-on', an);
     mi.classList.toggle('erin-off', !an);
+    /* Treibt den Schieberegler und sagt zugleich Vorleseprogrammen,
+       woran sie sind. */
+    mi.setAttribute('aria-pressed', String(an));
+    mi.removeAttribute('aria-busy');
   }
   mi.classList.remove('done');
   const box = $('#mailok');
@@ -7023,6 +7142,11 @@ function erinUmschalten(){
   _erinLaeuft = true;
   mi.classList.remove('erin-on', 'erin-off');
   mi.classList.add('erin-wechsel');
+  /* Der Regler springt sofort — das Umschalten dauert 760 ms, so lange
+     auf eine Rückmeldung zu warten fühlt sich kaputt an. Er steht dabei
+     still, bis malErinnerung() den echten Stand bestätigt. */
+  mi.setAttribute('aria-pressed', String(!ME.mailOk));
+  mi.setAttribute('aria-busy', 'true');
   $('#mi-erin-s').textContent = 'wird geändert …';
   setTimeout(() => {
     ME.mailOk = !ME.mailOk;
@@ -9496,22 +9620,19 @@ function blurHalten(an){
 function zurueckInsMenu(){
   if(!_vonMenu) return;
   _vonMenu = false;
-  /* Erst die Trübung halten, dann wechseln — sonst blitzt die Seite scharf
-     auf, bevor das Menü mit seinem eigenen Hintergrund wieder aufgeht.
-     Übergeben wird ohne Überblendung: der Menühintergrund steht sofort da,
-     im selben Bild geht die Halteschicht weg. Sonst lägen beide kurz
-     übereinander und der Hintergrund würde dunkler springen. */
+  /* Ohne Pause. Hier standen früher 170 ms, in denen eine Halteschicht
+     den unscharfen Hintergrund hielt, damit die Seite nicht scharf
+     aufblitzt, bevor das Menü wieder aufgeht. Das stammt aus der Zeit,
+     als das Menü eine kleine Karte mit durchsichtigem Schleier war.
+
+     Seit dem Umbranden ist es eine deckende Seite — in diesen 170 ms sah
+     man also schlicht den Kalender. Genau der kleine Sprung, der beim
+     Zurückgehen aus jedem Untermenü auftrat. Jetzt steht das Menü sofort
+     wieder da, und zwar ohne Einlaufen: es war ja schon da. */
   const m = $('#menu');
-  blurHalten(true);
-  setTimeout(() => {
-    /* Beides im selben Zug: das Menü geht auf und die Halteschicht geht weg.
-       Der Browser zeichnet erst danach — die beiden Schleier liegen also nie
-       gleichzeitig übereinander, und nichts wird kurz dunkler. */
-    m.classList.add('sofort');
-    menuAuf();
-    blurHalten(false);
-    setTimeout(() => m.classList.remove('sofort'), 80);
-  }, 170);
+  blurHalten(false);
+  m.classList.add('sofort');
+  menuAuf();
 }
 function menuAuf(){
   clearTimeout(_menuZu);
@@ -9538,7 +9659,9 @@ function menuZu(){
   m.classList.add('zu');
   document.body.classList.remove('menuauf');
   clearTimeout(_menuZu);
-  _menuZu = setTimeout(() => { m.classList.remove('on','zu'); }, 210);
+  /* 'sofort' gilt nur fuer den Ruecksprung. Beim naechsten Oeffnen vom
+     Profilbild aus soll das Menue wieder einlaufen. */
+  _menuZu = setTimeout(() => { m.classList.remove('on','zu','sofort'); }, 210);
 }
 $('#pkbar').addEventListener('click', e => {
   if(e.target.dataset.close === 'pkbar'){ pkBarZu(); return; }
@@ -9555,7 +9678,11 @@ $('#avatar').addEventListener('click', () => {
   $('#menu').classList.contains('on') ? menuZu() : menuAuf();
 });
 $('#menu').addEventListener('click', e => {
-  if(e.target.dataset.close === 'menu'){ menuZu(); return; }
+  /* closest, nicht e.target: der Schliessen-Knopf traegt ein SVG, das
+     38 von 38 px ausfuellt. Getroffen wurde also fast immer das <path>
+     darin — dessen dataset.close ist leer, und der Tipp lief ins Nichts.
+     Das war der Knopf, der "oft nicht geht". */
+  if(e.target.closest('[data-close="menu"]')){ menuZu(); return; }
   const b = e.target.closest('[data-act]'); if(!b) return;
   /* Nach dem Tippen die Auswahl abgeben, sonst bleibt der Knopf hell. */
   try{ b.blur(); }catch(_e){}
@@ -9563,6 +9690,12 @@ $('#menu').addEventListener('click', e => {
   if(b.dataset.act === 'konten'){ kontenAuf(); return; }
   if(b.dataset.act === 'anspruch'){ uaAuf(); return; }
   if(b.dataset.act === 'erinnerung'){ erinUmschalten(); return; }
+  /* Der Passkey trägt jetzt denselben Schieberegler wie die beiden
+     Zeilen darüber — dann darf er sich auch gleich verhalten und das
+     Menü offen lassen. Die Rückfrage liegt auf z-index 80 und damit
+     ohnehin über dem Menü (45); früher ging das Menü zu und die Frage
+     kam 180 ms später vor einem leeren Kalender. */
+  if(b.dataset.act === 'passkey'){ pkBarAuf(); return; }
   if(b.dataset.act === 'raenge' && !aufOffen()){ rangboxAuf(); return; }
   if(b.dataset.act === 'delete'){ doDelete(); return; }
   menuZu();
@@ -9577,9 +9710,6 @@ $('#menu').addEventListener('click', e => {
     malSchedHist();
     go('v-hours');
   }
-  /* Ein Tipp fragt kurz nach, statt sofort etwas zu tun — je nach Zustand
-     deaktivieren, aktivieren oder neu versuchen. */
-  if(a === 'passkey') setTimeout(pkBarAuf, 180);
   if(a === 'firma'){ _vonMenu = true; firmaAuf(); }
   if(a === 'karte'){ _vonMenu = true; karteAuf(); }
   if(a === 'raenge'){ _vonMenu = true; if(aufOffen()) aufFeier(); else rangAuf(); }
@@ -10273,7 +10403,11 @@ $('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
         if (SUB[act]) txt.querySelector('small').textContent = SUB[act];
         mi.appendChild(txt);
       }
-      if (!mi.querySelector('.michev')) mi.insertAdjacentHTML('beforeend', CHEV);
+      /* Kein Pfeil neben einem Schieberegler: der Regler IST die
+         Handlung, ein Pfeil daneben verspricht eine zweite Ebene, die
+         es nicht gibt. Das Erscheinungsbild hatte deshalb nie einen. */
+      if (!mi.querySelector('.michev') && !mi.querySelector('.mischalter'))
+        mi.insertAdjacentHTML('beforeend', CHEV);
     });
 
     
