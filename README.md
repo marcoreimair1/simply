@@ -343,6 +343,37 @@ Die Bewegung nimmt `--ease-blend`, nicht `--ease-out` — siehe *Überblendungen
 dafür*. Mit Expo war das Gitter nach 150 von 500 ms schon bei 90 % Deckkraft und das Neuladen
 las sich als Blinzeln. Jetzt: 0,15 / 0,27 / 0,57 / 0,88 / 1,00 über 550 ms.
 
+### Das Osterei
+
+Ein Tipp auf den **MOJI-Schriftzug** oben: der macht Platz nach rechts, das Maskottchen kommt
+von links heraus, wackelt kurz und verschwindet wieder. Kein Hinweis darauf, keine Beschriftung
+— es soll gefunden werden, nicht angeboten. 2,5 Sekunden, danach steht alles wie vorher.
+
+Drei Dinge, die dabei zählen:
+
+- **Der Untertitel blendet weg.** Nachgerechnet: auf einem 375er-Schirm bleiben neben
+  Schriftzug, Untertitel und Profilbild nur rund 24 px Luft. Schöbe man beide um 34 px nach
+  rechts, läge *Mehr Zeit fürs Wesentliche* unter dem Profilbild.
+- **Zwei Ebenen, zwei Animationen.** Die Hülle (`.bmoji`) kommt und geht, das Bild darin
+  wackelt. Beides in eine Animation zu legen hieße, Verschieben und Drehen in jedem
+  Zwischenschritt von Hand zu mischen.
+- **Das Bild kommt erst beim ersten Tipp** und die Bewegung wartet auf `img.decode()`. Sonst
+  schleppt jeder Start 16 KB mit, die niemand sieht — und die Hülle startet mit 0 px Höhe, das
+  Männchen erschiene mittendrin. `aspect-ratio:120/98` hält die Höhe zusätzlich stabil.
+
+`LOGO_MOJI` ist **nur das Männchen**: Körper, Gesicht, grüner Punkt und der weiße Umriss
+drumherum, weder Kachel noch Hintergrund. Freigestellt wurde es, indem der Verlauf der Kachel
+**gemessen und abgezogen** wurde: aus einem Ring am Kachelrand — garantiert reine Kachel — je
+Kanal eine Ebene angepasst und über das Feld fortgeschrieben. Was heller ist als diese Ebene
+(der weiße Umriss) oder kräftig gesättigt (Körper, Punkt), ist das Männchen. Der Schlagschatten
+fällt heraus, weil er *dunkler* und entsättigt ist — auf hellem Grund wäre er ein grauer Hof.
+Augen und Mund holt ein Löcherfüllen zurück, sie liegen mitten im Körper.
+
+Ein einfaches Fluten vom Rand her scheiterte zweimal: erst lief es durch die weichgezeichnete
+Kante (99,8 % der Kachel weg, das Männchen mit), dann blockierte der helle Ring der Kachel es
+(nur die Ecken weg). Weiß und die blasse Kachel sind beide entsättigt — über Farbe allein
+lassen sie sich nicht trennen.
+
 ### Serien — ein Zeitraum ist mehr als seine Tage
 
 Ein Zeitraum schrieb bisher jeden Tag einzeln in `ME.events`; dass sie zusammengehören, stand
@@ -1204,6 +1235,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Osterei im Schriftzug** (13. September 2026): Ein Tipp auf den MOJI-Schriftzug lässt das
+  Maskottchen von links vorbeischauen. Dafür wurde das Männchen aus der Icon-Vorlage
+  freigestellt — ohne Kachel, ohne Hintergrund. Einzelheiten in [Abschnitt 3](#3--rechnen),
+  Unterabschnitt *Das Osterei*. Geprüft mit 35 jsdom-Testfällen und im Browser in beiden
+  Fassungen angesehen
 - **PDF nachgezogen** (13. September 2026): Farbkreise raus, Kopfband als leichter hellblauer
   Verlauf; App-Symbol freigestellt (die violetten Ecken kamen vom Seitenhintergrund der
   Vorlage); die Einladung in MOJIs Anzeigeschrift statt in Handschrift; Legende entfernt.
