@@ -96,6 +96,46 @@ Ein Passkey gilt immer nur für **ein Gerät** und **eine Adresse**.
   Knöpfe grau, offen leuchtet das Schloss gelb
 - **Feiertage Österreich** werden inklusive Ostertermin selbst berechnet und überschreiben
   einen Urlaubseintrag am selben Tag
+- **Getrennte Summen**: Arbeitszeit, Urlaub, Krankenstand, Feiertag, Sonstige, Gesamt
+- Bei *Eigener Text* lässt sich festlegen, ob die Stunden als Arbeitszeit zählen (Schulung)
+  oder nicht
+
+### Dienstzeiten mit Datum
+
+Wer seine Arbeitszeiten ändert, bekommt alte Monate **nicht** mit dem neuen Plan gerechnet.
+Ein im März abgegebenes Blatt zeigt im Dezember noch dieselben Stunden.
+
+Gespeichert wird sparsam: `sched` bleibt der Plan, der **jetzt** gilt. Daneben liegen in
+`schedAlt` die abgelösten Fassungen, jede mit dem Tag, an dem sie endete — aufsteigend und
+lückenlos:
+
+```
+schedAlt: [ { bis:'2026-09-30', sched:{…} },      ← gilt bis einschließlich 30.09.2026
+            { bis:'2026-12-31', sched:{…} } ]     ← gilt 01.10. bis 31.12.2026
+sched:    {…}                                     ← gilt ab 01.01.2027
+```
+
+`schedFuer(profil, datum)` liefert den Plan dieses Tages; `evalDay()` fragt dort, und damit
+auch Kalender, Summen und PDF-Export. Profile ohne `schedAlt` verhalten sich exakt wie vorher.
+
+**Beim Speichern fragt MOJI**, weil sich die Absicht nicht erraten lässt:
+
+| Antwort | Wirkung |
+|---|---|
+| *Nur korrigieren* | überschreibt den aktuellen Plan rückwirkend — für Tippfehler |
+| *Ab einem Datum* | legt eine neue Fassung an, Vorschlag ist der nächste Monatserste |
+
+Wer nur den Reiter umgestellt hat, sieht keine Frage: `schedGleich()` vergleicht nur Zeiten und
+Rhythmus, keine Bedienspuren. Ein Wechseldatum **vor** einer bestehenden Grenze wird abgelehnt —
+sonst wäre nicht mehr klar, welcher Plan dazwischen galt.
+
+Unter *Dienstzeiten* steht der **Verlauf**: jede Fassung mit Zeitraum und Wochenstunden, die
+aktuelle hervorgehoben. Eine Fassung lässt sich entfernen; ihre Zeit fällt dann an die
+nächstjüngere, damit keine Lücke entsteht. Ohne diese Liste stünde ein versehentlich falsch
+gesetztes Datum für immer fest.
+
+Nicht betroffen ist `tagStunden()` — die Umrechnung von Urlaubsstunden in Tage nimmt bewusst
+den **heutigen** Plan, denn der Anspruch gilt jetzt.
 
 ### Wochenrhythmus
 
@@ -117,9 +157,6 @@ obwohl er Arbeitstag wäre. Der Versatz hätte bis 2033 gehalten, im Kalender wi
 werden in `normalize()` **einmalig** umgerechnet, so dass am Tag der Umstellung dieselbe Woche
 läuft wie vorher. Bereits exportierte Monate werden nicht rückwirkend verändert — ein
 abgegebenes Blatt nachträglich umzurechnen hilft niemandem.
-- **Getrennte Summen**: Arbeitszeit, Urlaub, Krankenstand, Feiertag, Sonstige, Gesamt
-- Bei *Eigener Text* lässt sich festlegen, ob die Stunden als Arbeitszeit zählen (Schulung)
-  oder nicht
 
 ### Zeitausgleich & Urlaubstage im Profilmenü
 
@@ -717,11 +754,6 @@ Der Schlüssel **„simply"** (Full access) wird ebenfalls nicht gebraucht.
 **4 · Die alte GitHub-Rückkehradresse** in Supabase entfernen. Der Umzug ist über einen Monat
 her; wer noch einen alten Anmeldelink im Postfach liegen hat, wird ihn nicht mehr brauchen.
 
-**5 · Dienstzeiten mit Datum versehen**, damit alte Monate mit dem damals gültigen Plan
-gerechnet werden. Heute gilt für jeden Monat der aktuelle Plan — wer seine Arbeitszeiten
-ändert, bekommt rückwirkend falsche Summen. Der größte Brocken auf dieser Liste und der
-einzige, der am Rechnen selbst etwas ändert.
-
 ### Erledigt seit der letzten Durchsicht
 
 - ~~**Einmaliger Hinweis in der App** für die Monats-Erinnerung~~ — gebaut und live,
@@ -732,6 +764,9 @@ einzige, der am Rechnen selbst etwas ändert.
   ist also unberührt
 - ~~**Dateiliste in Abschnitt 17**~~ — gegen `git ls-files` richtiggestellt
 - ~~**`EINRICHTUNG.md`**~~ — gelöscht, ihr Inhalt steht seit längerem in Abschnitt 11 bis 16
+- ~~**Dienstzeiten mit Datum versehen**~~ — gebaut und live. `schedAlt` im Profil,
+  `schedFuer()` beim Rechnen, Frage beim Speichern und ein Verlauf zum Nachsehen.
+  Einzelheiten in [Abschnitt 3](#3--rechnen), Unterabschnitt *Dienstzeiten mit Datum*
 - ~~**Passkey-Hinweis nannte die alte Adresse**~~ — `pkText()` sagte bei einem
   `InvalidStateError`, man solle den Schlüsselbund-Eintrag für `marcoreimair1.github.io`
   löschen. Die RP ID ist aber `moji-app.at`, und genau dafür meldet das Gerät „habe ich schon" —
@@ -793,6 +828,10 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Dienstzeiten mit Datum** (13. September 2026): `schedAlt` im Profil, `schedFuer()` beim
+  Rechnen, Frage beim Speichern (*Nur korrigieren* / *Ab einem Datum*) und ein Verlauf zum
+  Nachsehen und Entfernen. Einzelheiten in Abschnitt 3. Geprüft mit 42 jsdom-Testfällen und
+  einem vollständigen Durchlauf im Browser, abgemeldet
 - **Arbeitsordner angebunden** (13. September 2026): Das Repo liegt jetzt lokal unter
   `~/MOJI-APP`, Veröffentlichen geht über `git push` statt über die Weboberfläche. GitHub
   hängt an einem SSH-Schlüssel, die Supabase-CLI ist angemeldet; `supabase/config.toml` und

@@ -1250,6 +1250,30 @@ body.nobar #v-onboard{padding-top:14px}
   .pkbar-in{flex-wrap:wrap}
   .pkbar-btns{width:100%;justify-content:flex-end}
 }
+/* Dienstzeiten ab Datum — zweiter Schritt derselben Leiste. Das Datumsfeld
+   bekommt eine eigene Zeile, damit die Knöpfe nicht gequetscht werden. */
+.sab .pkbar-i{color:var(--butter);border-color:var(--butter-dim);background:rgba(247,215,116,.09)}
+/* [hidden] muss stärker sein als das display:flex darunter — sonst stünden
+   beide Schritte gleichzeitig da. */
+.sab [hidden]{display:none!important}
+.sab-datum{flex:0 0 100%;display:flex;align-items:center;flex-wrap:wrap;gap:9px;
+  margin-top:2px;padding-top:11px;border-top:1px solid var(--line-2)}
+.sab-datum label{font-size:12.5px;color:var(--tx-2)}
+.sab-datum input[type="date"]{flex:1;min-width:132px;padding:9px 11px;border-radius:12px;
+  border:1px solid var(--line-2);background:rgba(255,255,255,.04);color:var(--tx);
+  font:inherit;font-size:13px;color-scheme:dark}
+.sab-datum input[type="date"]:focus{outline:none;border-color:var(--butter-dim)}
+/* Verlauf der Dienstplan-Fassungen */
+.shist{margin-top:14px}
+.shist-z{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:14px;
+  border:1px solid var(--line-2);background:rgba(255,255,255,.02);margin-top:8px}
+.shist-z.jetzt{border-color:var(--butter-dim);background:rgba(247,215,116,.07)}
+.shist-z > span{flex:1;min-width:0}
+.shist-z b{display:block;font-size:13px;font-weight:600}
+.shist-z small{display:block;margin-top:2px;font-size:11.5px;color:var(--tx-3)}
+.shist-weg{flex:none;padding:7px 10px;border-radius:10px;font-size:11.5px;font-weight:600;
+  border:1px solid var(--line-2);background:transparent;color:var(--tx-3);cursor:pointer}
+.shist-weg:hover{border-color:rgba(255,112,96,.5);color:var(--za-minus)}
 .mi .miico{display:grid;place-items:center;width:16px;height:16px;flex:none}
 .mi .miico svg{width:16px;height:16px;opacity:.9}
 /* ─── Begrüßungsseite ─────────────────────────────────────
@@ -3158,8 +3182,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <section class="view pt" id="v-hours">
       <div class="eyebrow">Einstellungen</div>
       <h1 class="dis">Dienstzeiten <i>anpassen</i>.</h1>
-      <p class="lede">Änderungen wirken auf alle Monate, für die noch kein abweichender Eintrag besteht.</p>
+      <p class="lede">Beim Speichern fragt MOJI, ob die neuen Zeiten schon immer galten oder erst
+        ab einem Tag. So bleiben alte Monate so gerechnet, wie du sie abgegeben hast.</p>
       <div id="sched-edit" class="mt"></div>
+      <div id="sched-hist"></div>
       <div class="navrow sticky solid" id="hr-nav">
         <button class="btn btn-p" id="hr-save">Speichern</button>
         <button class="btn btn-g" id="hr-cancel">Verwerfen</button>
@@ -3360,6 +3386,31 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     <span class="pkbar-btns">
       <button class="pkbar-no" id="pkbar-no">Abbrechen</button>
       <button class="pkbar-ja" id="pkbar-ja">Weiter</button>
+    </span>
+  </div>
+</div>
+
+<!-- Beim Speichern geänderter Dienstzeiten: gelten sie schon immer, oder
+     erst ab einem Tag? Beides kommt vor und lässt sich nicht erraten —
+     ein Tippfehler soll überall verschwinden, ein echter Wechsel aber die
+     alten Monate in Ruhe lassen. Zwei Schritte in derselben Leiste: erst
+     die Frage, dann das Datum. -->
+<div class="pkbar sab" id="sab" aria-hidden="true">
+  <div class="pkbar-hg" data-close="sab"></div>
+  <div class="pkbar-in" role="dialog" aria-modal="true" aria-labelledby="sab-b">
+    <span class="pkbar-i" id="sab-i"></span>
+    <span class="pkbar-txt"><b id="sab-b">—</b><small id="sab-s">—</small></span>
+    <span class="pkbar-btns" id="sab-schritt1">
+      <button class="pkbar-no" id="sab-korr">Nur korrigieren</button>
+      <button class="pkbar-ja" id="sab-wechsel">Ab einem Datum</button>
+    </span>
+    <span class="sab-datum" id="sab-schritt2" hidden>
+      <label for="sab-ab">Neue Zeiten gelten ab</label>
+      <input type="date" id="sab-ab">
+      <span class="pkbar-btns">
+        <button class="pkbar-no" id="sab-zurueck">Zurück</button>
+        <button class="pkbar-ja" id="sab-ok">Übernehmen</button>
+      </span>
     </span>
   </div>
 </div>
@@ -3780,7 +3831,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-1313';
+const APP_STAND = '2026-09-13-1437';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3887,6 +3938,88 @@ function dayPlan(sched, date){
   }
   return { vm:vm, nm:nm, pause:pause, cfg:cfg, wi:wi };
 }
+
+/* ═══════════════════════════════════════════════════════════
+   DIENSTZEITEN MIT DATUM
+
+   Wer seine Arbeitszeiten ändert, soll alte Monate nicht mit dem
+   neuen Plan gerechnet bekommen. Ein im März abgegebenes Blatt muss
+   im Dezember noch dieselben Stunden zeigen.
+
+   Gespeichert wird das sparsam: `sched` bleibt der Plan, der JETZT
+   gilt — alles, was ihn liest, kann so bleiben. Daneben liegen in
+   `schedAlt` die abgelösten Fassungen, jede mit dem Tag, an dem sie
+   endete. Aufsteigend sortiert, lückenlos: Fassung i gilt von dem
+   Tag nach `schedAlt[i-1].bis` bis einschließlich `schedAlt[i].bis`,
+   die erste gilt seit Anbeginn, `sched` gilt ab dem Tag nach der
+   letzten.
+
+     schedAlt: [ { bis:'2026-09-30', sched:{…} } ]
+     sched:    {…}                       ← gilt ab 01.10.2026
+
+   Profile ohne `schedAlt` verhalten sich exakt wie vorher.
+   ═══════════════════════════════════════════════════════════ */
+const isoTag = d => key(d.getFullYear(), d.getMonth(), d.getDate());
+function tagDavor(iso){
+  const p = iso.split('-');
+  const d = new Date(+p[0], +p[1] - 1, +p[2]);
+  d.setDate(d.getDate() - 1);
+  return isoTag(d);
+}
+function tagDanach(iso){
+  const p = iso.split('-');
+  const d = new Date(+p[0], +p[1] - 1, +p[2]);
+  d.setDate(d.getDate() + 1);
+  return isoTag(d);
+}
+/* Welcher Plan galt an diesem Tag? */
+function schedFuer(p, date){
+  const alt = p && p.schedAlt;
+  if(!Array.isArray(alt) || !alt.length) return p.sched;
+  const k = isoTag(date);
+  for(let i = 0; i < alt.length; i++) if(k <= alt[i].bis) return alt[i].sched;
+  return p.sched;
+}
+/* Ab wann gilt der aktuelle Plan? null heißt: seit Anbeginn. */
+function schedGiltAb(p){
+  const alt = p && p.schedAlt;
+  if(!Array.isArray(alt) || !alt.length) return null;
+  return tagDanach(alt[alt.length - 1].bis);
+}
+/* Die bisher letzte Grenze — ein neuer Wechsel muss danach liegen,
+   sonst wüsste niemand mehr, welcher Plan dazwischen galt. */
+function schedLetzteGrenze(p){
+  const alt = p && p.schedAlt;
+  return (Array.isArray(alt) && alt.length) ? alt[alt.length - 1].bis : null;
+}
+/* Neue Fassung ab einem Datum. Der bisher aktuelle Plan wird mit dem
+   Tag davor abgeschlossen und wandert nach schedAlt. */
+function schedWechsel(p, abIso, neu){
+  const grenze = schedLetzteGrenze(p);
+  if(grenze && abIso <= grenze) return false;     /* würde eine Fassung überdecken */
+  if(!Array.isArray(p.schedAlt)) p.schedAlt = [];
+  p.schedAlt.push({ bis: tagDavor(abIso), sched: JSON.parse(JSON.stringify(p.sched)) });
+  p.sched = JSON.parse(JSON.stringify(neu));
+  return true;
+}
+/* Eine abgelöste Fassung entfernen: ihre Zeit fällt an die nächstjüngere,
+   damit keine Lücke entsteht. Die jüngste zu entfernen heißt, dass der
+   aktuelle Plan wieder weiter zurückreicht. */
+function schedFassungWeg(p, i){
+  if(!Array.isArray(p.schedAlt) || i < 0 || i >= p.schedAlt.length) return false;
+  p.schedAlt.splice(i, 1);
+  return true;
+}
+/* Zwei Pläne inhaltlich vergleichen — nur Zeiten und Rhythmus, keine
+   Bedienspuren wie tab oder die Schlösser. */
+function schedGleich(a, b){
+  if(!a || !b) return false;
+  if(clamp(a.weekCount||1,1,4) !== clamp(b.weekCount||1,1,4)) return false;
+  if((a.offset||0) !== (b.offset||0)) return false;
+  const wc = clamp(a.weekCount||1, 1, 4);
+  for(let i = 0; i < wc; i++) if(wocheSchluessel(a, i) !== wocheSchluessel(b, i)) return false;
+  return true;
+}
 /* Jede Woche bekommt eine eigene Farbe. Sie zieht sich durch: Reiter,
    Kopf der Karte und Rahmen — damit auf einen Blick klar ist, welche Woche
    gerade bearbeitet wird. Vorher waren alle vier Reiter gleich und man
@@ -3945,7 +4078,9 @@ function weekTotal(sched, wi){
 function evalDay(profile, y, m, d){
   const date = new Date(y, m, d);
   const k = key(y, m, d);
-  const plan = dayPlan(profile.sched, date);
+  /* Nicht profile.sched, sondern der Plan, der an DIESEM Tag galt.
+     Sonst würden alte Monate mit heutigen Zeiten gerechnet. */
+  const plan = dayPlan(schedFuer(profile, date), date);
   const hol  = holidays(y)[k];
   const roh  = profile.events ? profile.events[k] : null;
   /* Kennt diese Fassung die Art nicht — etwa weil ein Eintrag aus einer
@@ -4173,6 +4308,26 @@ function normalize(p){
     p.sched.weeks = w;
   }
   if(typeof p.sched.offset !== 'number') p.sched.offset = 0;
+  /* Abgelöste Dienstplan-Fassungen. Kaputte Einträge fliegen heraus statt
+     die Rechnung zu verfälschen — ein Eintrag ohne brauchbares Datum
+     könnte sonst einen ganzen Monat still falsch rechnen. */
+  if(!Array.isArray(p.schedAlt)) p.schedAlt = [];
+  p.schedAlt = p.schedAlt
+    .filter(e => e && typeof e.bis === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.bis) && e.sched)
+    .map(e => {
+      const s = e.sched;
+      if(!s.weeks || s.weeks.length < 4){
+        const w = s.weeks || [defaultWeek()];
+        while(w.length < 4) w.push(JSON.parse(JSON.stringify(w[0])));
+        s.weeks = w;
+      }
+      if(typeof s.offset !== 'number') s.offset = 0;
+      return e;
+    })
+    .sort((a, b) => a.bis.localeCompare(b.bis));
+  /* Zwei Fassungen mit demselben Enddatum wären eine zu viel — die jüngere
+     gewinnt, die ältere hätte ohnehin keinen einzigen Tag abgedeckt. */
+  p.schedAlt = p.schedAlt.filter((e, i) => i === 0 || e.bis !== p.schedAlt[i-1].bis);
   /* ─── Einmalige Umrechnung des Wochenversatzes ───
      Bis September 2026 zählte der Rhythmus gegen die Kalenderwoche. Jetzt
      zählt er gegen wochenNr(). Beide Zählungen stehen verschieden, also muss
@@ -4186,13 +4341,22 @@ function normalize(p){
      abgegebenes Blatt nachträglich umzurechnen hilft niemandem.
 
      Läuft genau einmal, danach steht basis auf 'lauf'. */
-  if(p.sched.basis !== 'lauf'){
-    const wc = clamp(p.sched.weekCount || 1, 1, 4);
-    const heute = new Date();
-    const alt = isoWeek(heute) - 1 + p.sched.offset;
-    p.sched.offset = (((alt - wochenNr(heute)) % wc) + wc) % wc;
-    p.sched.basis = 'lauf';
+  function versatzUmrechnen(s, stichtag){
+    if(!s || s.basis === 'lauf') return;
+    const wc = clamp(s.weekCount || 1, 1, 4);
+    const alt = isoWeek(stichtag) - 1 + (s.offset || 0);
+    s.offset = (((alt - wochenNr(stichtag)) % wc) + wc) % wc;
+    s.basis = 'lauf';
   }
+  versatzUmrechnen(p.sched, new Date());
+  /* Abgelöste Fassungen sind erst nach der Umstellung entstanden und
+     bringen basis schon mit. Falls doch eine ohne hereinkommt, wird sie
+     auf ihren letzten Gültigkeitstag umgerechnet — innerhalb ihrer
+     eigenen Laufzeit bleibt der Takt damit derselbe. */
+  p.schedAlt.forEach(e => {
+    const t = e.bis.split('-');
+    versatzUmrechnen(e.sched, new Date(+t[0], +t[1] - 1, +t[2]));
+  });
   if(!p.events) p.events = {};
   if(!p.months) p.months = [];
   /* Exportbuch: Monat → Zeitstempel des letzten Exports. Jeder Monat steht
@@ -7407,7 +7571,7 @@ function openSheet(y, m, d){
   const k = key(y, m, d);
   const ev = ME.events[k];
   const hol = holidays(y)[k];
-  const plan = dayPlan(ME.sched, new Date(y, m, d));
+  const plan = dayPlan(schedFuer(ME, new Date(y, m, d)), new Date(y, m, d));
   SH.y = y; SH.m = m; SH.d = d;
   SH.type = ev ? ev.t : null; SH.scope = ev ? (ev.s || 'full') : 'full';
   SH.text = ev ? (ev.text || '') : ''; SH.aw = ev ? !!ev.aw : false;
@@ -7730,7 +7894,7 @@ function fmtDay(d){ return DOWSHORT[d.getDay()] + ', ' + d.getDate() + '. ' + MS
 function qTouched(d){
   if(d.getDay() === 0) return false;
   if(holidays(d.getFullYear())[key(d.getFullYear(), d.getMonth(), d.getDate())]) return false;
-  const pl = dayPlan(ME.sched, d);
+  const pl = dayPlan(schedFuer(ME, d), d);
   return (pl.vm + pl.nm) > 0;
 }
 function qEach(fn){
@@ -8444,6 +8608,9 @@ $('#pkbar').addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape' && $('#pkbar').classList.contains('on')) pkBarZu();
+  /* Escape bricht die Frage nach dem Gültigkeitsdatum ab — der Entwurf
+     bleibt dabei stehen, man landet wieder im Bearbeiten. */
+  if(e.key === 'Escape' && $('#sab').classList.contains('on')) sabZu();
 });
 $('#avatar').addEventListener('click', () => {
   $('#menu').classList.contains('on') ? menuZu() : menuAuf();
@@ -8468,6 +8635,7 @@ $('#menu').addEventListener('click', e => {
        bewusst ändern, nicht im Vorbeiwischen. */
     DRAFT.wcLock = true; DRAFT.rotLock = true;
     renderSched($('#sched-edit'), DRAFT, null);
+    malSchedHist();
     go('v-hours');
   }
   /* Ein Tipp fragt kurz nach, statt sofort etwas zu tun — je nach Zustand
@@ -8679,13 +8847,126 @@ async function loeschenJetzt(){
   if(DB.profiles.length) loginScreen(); else { obInit(); go('v-onboard'); }
   toast('Profil gelöscht');
 }
+/* ─── Dienstzeiten sichern ─────────────────────────────────────────
+   Hat sich inhaltlich nichts geändert, wird ohne Frage gesichert —
+   wer nur den Reiter umgestellt hat, soll keinen Dialog sehen. Sonst
+   die Frage: schon immer, oder ab einem Tag? */
+function hoursSichern(abIso){
+  if(abIso){
+    if(!schedWechsel(ME, abIso, DRAFT)){
+      toast('Das Datum liegt vor einem früheren Wechsel.');
+      return false;
+    }
+  } else {
+    ME.sched = JSON.parse(JSON.stringify(DRAFT));
+  }
+  save();
+  _vonMenu = false;                       /* nach dem Sichern bleibt das Menü zu */
+  renderCal(); go('v-cal');
+  toast(abIso ? 'Gilt ab ' + fmtDate(abIso) + '. Alte Monate bleiben, wie sie waren.'
+              : 'Dienstzeiten gespeichert');
+  DRAFT = null;
+  return true;
+}
 $('#hr-save').addEventListener('click', () => {
   if(!DRAFT) return;
-  ME.sched = JSON.parse(JSON.stringify(DRAFT)); save();
-  _vonMenu = false;                       /* nach dem Sichern bleibt das Menü zu */
-  renderCal(); go('v-cal'); toast('Dienstzeiten gespeichert');
+  if(schedGleich(ME.sched, DRAFT)){ hoursSichern(null); return; }
+  sabAuf();
 });
 $('#hr-cancel').addEventListener('click', () => { DRAFT = null; go('v-cal'); zurueckInsMenu(); });
+
+/* ─── Die Leiste mit der Frage ───────────────────────────────── */
+const SAB_UHR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
+  + 'stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/>'
+  + '<path d="M12 7v5.2l3.2 2"/></svg>';
+function sabAuf(){
+  const el = $('#sab'); if(!el) return;
+  $('#sab-i').innerHTML = SAB_UHR;
+  sabSchritt(1);
+  el.classList.add('on');
+  el.setAttribute('aria-hidden', 'false');
+  requestAnimationFrame(() => el.classList.add('da'));
+}
+function sabZu(){
+  const el = $('#sab'); if(!el || !el.classList.contains('on')) return;
+  el.classList.remove('da');
+  el.setAttribute('aria-hidden', 'true');
+  setTimeout(() => el.classList.remove('on'), 300);
+}
+function sabSchritt(n){
+  const eins = n === 1;
+  $('#sab-b').textContent = eins ? 'Gelten die neuen Zeiten schon immer?'
+                                 : 'Ab welchem Tag gelten sie?';
+  $('#sab-s').textContent = eins
+    ? 'Ein Tippfehler soll überall verschwinden. Ein echter Wechsel darf die alten Monate nicht anfassen.'
+    : 'Alles davor bleibt mit den bisherigen Zeiten gerechnet — auch schon abgegebene Monate.';
+  $('#sab-schritt1').hidden = !eins;
+  $('#sab-schritt2').hidden = eins;
+  if(!eins){
+    const feld = $('#sab-ab');
+    /* Vorschlag: der nächste Monatserste. Das ist der übliche Termin für
+       eine Vertragsänderung, und er zerschneidet keinen laufenden Monat. */
+    const h = new Date();
+    const vor = new Date(h.getFullYear(), h.getMonth() + 1, 1);
+    const grenze = schedLetzteGrenze(ME);
+    feld.value = isoTag(vor);
+    /* Früher als der letzte Wechsel geht nicht — sonst wäre nicht mehr
+       klar, welcher Plan dazwischen gegolten hat. */
+    feld.min = grenze ? tagDanach(grenze) : '2015-01-01';
+    setTimeout(() => feld.focus(), 60);
+  }
+}
+$('#sab-korr').addEventListener('click', () => { if(hoursSichern(null)) sabZu(); });
+$('#sab-wechsel').addEventListener('click', () => sabSchritt(2));
+$('#sab-zurueck').addEventListener('click', () => sabSchritt(1));
+$('#sab-ok').addEventListener('click', () => {
+  const v = $('#sab-ab').value;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(v)){ toast('Bitte ein Datum wählen.'); return; }
+  if(hoursSichern(v)) sabZu();
+});
+$('#sab').addEventListener('click', e => { if(e.target.dataset.close === 'sab') sabZu(); });
+
+/* ─── Verlauf der Fassungen ──────────────────────────────────────
+   Ohne diese Liste stünde ein versehentlich falsch gesetztes Datum für
+   immer fest, und niemand könnte nachsehen, warum ein alter Monat so
+   gerechnet wurde. */
+function malSchedHist(){
+  const host = $('#sched-hist'); if(!host || !ME) return;
+  const alt = Array.isArray(ME.schedAlt) ? ME.schedAlt : [];
+  if(!alt.length){ host.innerHTML = ''; return; }
+  const zeilen = [];
+  alt.forEach((e, i) => {
+    const von = i === 0 ? null : tagDanach(alt[i-1].bis);
+    zeilen.push('<div class="shist-z">'
+      + '<span><b>' + (von ? fmtDate(von) + ' bis ' + fmtDate(e.bis)
+                           : 'bis ' + fmtDate(e.bis)) + '</b>'
+      + '<small>' + schedKurz(e.sched) + '</small></span>'
+      + '<button class="shist-weg" data-shist="' + i + '">Entfernen</button></div>');
+  });
+  const ab = schedGiltAb(ME);
+  zeilen.push('<div class="shist-z jetzt"><span><b>' + (ab ? 'seit ' + fmtDate(ab) : 'seit Anbeginn')
+    + ' · gilt jetzt</b><small>' + schedKurz(ME.sched) + '</small></span></div>');
+  host.innerHTML = '<div class="card shist"><h3>Frühere Dienstzeiten</h3>'
+    + '<p class="hint">Jede Fassung gilt für die Monate in ihrem Zeitraum. Entfernen heißt: '
+    + 'die Zeit fällt an die nächstjüngere Fassung — die Monate davor werden dann anders gerechnet.</p>'
+    + zeilen.join('') + '</div>';
+}
+/* Eine Fassung in einem Satz: Wochen und Wochenstunden. */
+function schedKurz(s){
+  const wc = clamp(s.weekCount || 1, 1, 4);
+  const std = [];
+  for(let i = 0; i < wc; i++) std.push(fmtH(weekTotal(s, i)));
+  return (wc === 1 ? 'Eine Woche' : wc + ' Wochen') + ' · ' + std.join(' / ') + ' h';
+}
+$('#sched-hist').addEventListener('click', e => {
+  const b = e.target.closest('[data-shist]'); if(!b) return;
+  const i = +b.dataset.shist;
+  const e2 = ME.schedAlt[i]; if(!e2) return;
+  if(schedFassungWeg(ME, i)){
+    save(); malSchedHist(); renderCal();
+    toast('Fassung bis ' + fmtDate(e2.bis) + ' entfernt');
+  }
+});
 $('#fabbar').addEventListener('click', e => {
   const b = e.target.closest('[data-go]'); if(!b) return;
   if(b.dataset.go === 'v-export') exYear();
