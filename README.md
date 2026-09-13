@@ -96,6 +96,27 @@ Ein Passkey gilt immer nur für **ein Gerät** und **eine Adresse**.
   Knöpfe grau, offen leuchtet das Schloss gelb
 - **Feiertage Österreich** werden inklusive Ostertermin selbst berechnet und überschreiben
   einen Urlaubseintrag am selben Tag
+
+### Wochenrhythmus
+
+Bei mehr als einer Woche muss MOJI für jeden Tag wissen, welche Woche des Rhythmus gilt.
+Gerechnet wird das in **`wochenNr()`**: Wochen werden fortlaufend durchgezählt seit Montag,
+1. Jänner 2024, in UTC und auf den Montag abgerundet, damit Sommerzeit nichts verschiebt.
+Die eine Stelle, die daraus die Rhythmuswoche macht, ist `rhythmusWoche(sched, datum)` —
+Kalender, Profilmenü und PDF-Export fragen alle dort.
+
+**Nicht die Kalenderwoche.** Genau daran ist es bis September 2026 gescheitert: Jahre wie
+2026 haben **53** Kalenderwochen, und auf KW 53 folgt KW 1. Bei zwei Wochen Rhythmus ergibt
+`(53−1) % 2` dasselbe wie `(1−1) % 2` — dieselbe Woche zweimal hintereinander, und ab da läuft
+alles um eine Woche verschoben. Aufgefallen an Samstag, 9. Jänner 2027, der frei anzeigte,
+obwohl er Arbeitstag wäre. Der Versatz hätte bis 2033 gehalten, im Kalender wie im Export.
+`isoWeek()` gibt es weiterhin, aber nur noch zum **Anzeigen** („gerade läuft KW 37").
+
+**Der Versatz** steht als `sched.offset` im Profil und zählt gegen `wochenNr()`.
+`sched.basis = 'lauf'` merkt sich, dass die Umrechnung schon gelaufen ist; Profile von vorher
+werden in `normalize()` **einmalig** umgerechnet, so dass am Tag der Umstellung dieselbe Woche
+läuft wie vorher. Bereits exportierte Monate werden nicht rückwirkend verändert — ein
+abgegebenes Blatt nachträglich umzurechnen hilft niemandem.
 - **Getrennte Summen**: Arbeitszeit, Urlaub, Krankenstand, Feiertag, Sonstige, Gesamt
 - Bei *Eigener Text* lässt sich festlegen, ob die Stunden als Arbeitszeit zählen (Schulung)
   oder nicht
@@ -783,11 +804,21 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   gegen `git ls-files` geprüft, Abschnitt 18 nach Priorität sortiert und mit Nachweisen
   versehen, zwei kaputte Anker im Inhaltsverzeichnis behoben. Dabei fiel der veraltete
   Passkey-Hinweis auf — siehe Abschnitt 18, Erledigtes
-- **Wochenrhythmus korrigiert** (September 2026): Der Zyklus hing an der Kalenderwoche und
+- **Wochenrhythmus korrigiert** (13. September 2026): Der Zyklus hing an der Kalenderwoche und
   stolperte in Jahren mit 53 Wochen — auf KW 53 folgte KW 1, also zweimal dieselbe Woche.
   Jetzt zählt `wochenNr()` die Wochen fortlaufend ab Montag, 1. Jänner 2024. Bestehende Profile
   bekommen in `normalize()` einmalig einen umgerechneten Versatz (`sched.basis = 'lauf'`),
-  damit die laufende Woche dieselbe bleibt
+  damit die laufende Woche dieselbe bleibt. Einzelheiten in
+  [Abschnitt 3](#3--rechnen), Unterabschnitt *Wochenrhythmus*
+
+  > **Zur Warnung, wie das passieren konnte:** Genau dieser Eintrag stand hier schon einmal —
+  > als *erledigt*, datiert September 2026. Im Code stand davon nichts: `wochenNr` und
+  > `sched.basis` kamen null Mal vor, und `git log -S "wochenNr"` fand über die ganze Historie
+  > keinen einzigen Treffer. Die Korrektur war beschrieben, aber nie hochgeladen — vermutlich
+  > beim Hochladen über die Weboberfläche verloren. Aufgefallen ist es erst, als jemand meldete,
+  > dass Samstag, 9. Jänner 2027 frei anzeigt, obwohl er Arbeitstag wäre. **Lehre:** was hier
+  > als erledigt steht, gehört gegen den Code geprüft, nicht gegen die Erinnerung. Seit der
+  > Arbeitsordner am Rechner hängt, geht das mit einem `grep`
 - **Noch nicht gebaut:** Versionierung mit einer Vorschau-Datei. Gedacht war: `vorschau.html`
   neben `index.html`, dort wird entwickelt und am Handy getestet; auf Zuruf wird sie nach
   `index.html` kopiert, Versionsnummer hoch, Änderungen in eine `VERSIONEN.md`. Dazu eine

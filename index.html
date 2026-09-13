@@ -3729,12 +3729,42 @@ const m2t = m => p2(Math.floor(m/60)) + ':' + p2(m%60);
 const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 
+/* Die echte Kalenderwoche. Nur noch zum Anzeigen — „gerade läuft KW 12".
+   Für den Wochenrhythmus taugt sie nicht, siehe wochenNr(). */
 function isoWeek(d){
   const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   const dn = t.getUTCDay() || 7;
   t.setUTCDate(t.getUTCDate() + 4 - dn);
   const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
   return Math.ceil(((t - y0) / 86400000 + 1) / 7);
+}
+
+/* ─── Fortlaufende Wochennummer ──────────────────────────────────────
+   Wochen werden durchgezählt, seit Montag, 1. Jänner 2024 — ohne Rücksicht
+   auf Jahresgrenzen. Genau darin lag der Fehler: Der Rhythmus hing früher an
+   der Kalenderwoche, und Jahre mit 53 Wochen bringen die aus dem Tritt. Auf
+   KW 53 folgt KW 1, und bei zwei Wochen Rhythmus ergibt (53−1) % 2 dasselbe
+   wie (1−1) % 2 — dieselbe Woche zweimal hintereinander. Ab da lief alles um
+   eine Woche verschoben weiter, im Kalender wie im PDF-Export.
+
+   Gemeldet für Samstag, 9. Jänner 2027: frei, obwohl Arbeitstag.
+   2026 hat 53 Kalenderwochen. Der Versatz hätte bis 2033 gehalten.
+
+   Gezählt wird in UTC und auf den Montag abgerundet, damit Sommerzeit
+   nichts verschiebt. Das Datum ist frei gewählt und liegt weit genug
+   zurück; es muss nur ein Montag sein und darf sich nie mehr ändern. */
+const WOCHEN_BASIS = Date.UTC(2024, 0, 1);        /* Montag */
+function wochenNr(d){
+  const t = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  const dn = (new Date(t).getUTCDay() + 6) % 7;   /* Montag = 0 */
+  return Math.floor((t - dn * 864e5 - WOCHEN_BASIS) / (7 * 864e5));
+}
+
+/* Welche Woche des Rhythmus gilt an diesem Tag? Eine Stelle, damit Kalender,
+   Profilmenü und Export nicht auseinanderlaufen können. */
+function rhythmusWoche(sched, d){
+  const wc = clamp((sched && sched.weekCount) || 1, 1, 4);
+  return (((wochenNr(d) + ((sched && sched.offset) || 0)) % wc) + wc) % wc;
 }
 function fmtDate(iso){ if(!iso) return '—'; const p = iso.split('-'); return p[2]+'.'+p[1]+'.'+p[0]; }
 function toast(msg, bleib){
@@ -3750,7 +3780,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-1302';
+const APP_STAND = '2026-09-13-1313';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -3830,7 +3860,10 @@ function defaultWeek(){
   return w;
 }
 function defaultSched(){
-  return { weekCount:1, offset:0, tab:0, wcLock:false, rotLock:false,
+  /* basis: 'lauf' heißt — der Versatz zählt gegen wochenNr(), nicht gegen
+     die Kalenderwoche. Neue Pläne fangen gleich richtig an und werden in
+     normalize() nicht mehr umgerechnet. */
+  return { weekCount:1, offset:0, tab:0, wcLock:false, rotLock:false, basis:'lauf',
            weeks:[defaultWeek(), defaultWeek(), defaultWeek(), defaultWeek()] };
 }
 function segH(on, from, to){
@@ -3842,7 +3875,7 @@ function dayPlan(sched, date){
   const dow = date.getDay();
   if(dow === 0) return { vm:0, nm:0, pause:0, cfg:null, wi:0 };
   const wc = clamp(sched.weekCount||1, 1, 4);
-  const wi = (((isoWeek(date) - 1 + (sched.offset||0)) % wc) + wc) % wc;
+  const wi = rhythmusWoche(sched, date);
   const cfg = (sched.weeks[wi] || sched.weeks[0])[dow];
   if(!cfg) return { vm:0, nm:0, pause:0, cfg:null, wi:wi };
   const vm = segH(cfg.vmOn, cfg.vmFrom, cfg.vmTo);
@@ -4140,6 +4173,26 @@ function normalize(p){
     p.sched.weeks = w;
   }
   if(typeof p.sched.offset !== 'number') p.sched.offset = 0;
+  /* ─── Einmalige Umrechnung des Wochenversatzes ───
+     Bis September 2026 zählte der Rhythmus gegen die Kalenderwoche. Jetzt
+     zählt er gegen wochenNr(). Beide Zählungen stehen verschieden, also muss
+     der Versatz einmal umgerechnet werden — sonst springt allen Leuten die
+     laufende Woche um, und zwar mitten im Monat.
+
+     Umgerechnet wird so, dass HEUTE dieselbe Woche läuft wie vorher. Für
+     die Zukunft ist damit alles in der Reihe; vergangene Monate, die über
+     einen Jahreswechsel mit 53 Wochen hinweg gerechnet wurden, bleiben so
+     stehen, wie sie damals exportiert wurden. Das ist Absicht: ein bereits
+     abgegebenes Blatt nachträglich umzurechnen hilft niemandem.
+
+     Läuft genau einmal, danach steht basis auf 'lauf'. */
+  if(p.sched.basis !== 'lauf'){
+    const wc = clamp(p.sched.weekCount || 1, 1, 4);
+    const heute = new Date();
+    const alt = isoWeek(heute) - 1 + p.sched.offset;
+    p.sched.offset = (((alt - wochenNr(heute)) % wc) + wc) % wc;
+    p.sched.basis = 'lauf';
+  }
   if(!p.events) p.events = {};
   if(!p.months) p.months = [];
   /* Exportbuch: Monat → Zeitstempel des letzten Exports. Jeder Monat steht
@@ -4767,8 +4820,10 @@ function renderSched(host, sched, onChange){
   html += schlossHtml('wc', zu, sched._klackWc);
   sched._klackWc = false;
   if(wc > 1){
+    /* Angezeigt wird die echte Kalenderwoche, gerechnet wird mit der
+       fortlaufenden — siehe wochenNr(). */
     const kw = isoWeek(new Date());
-    const cur = (((kw - 1 + (sched.offset||0)) % wc) + wc) % wc;
+    const cur = rhythmusWoche(sched, new Date());
     const rotZu = sched.rotLock !== false;
     html += '<div class="wsec"><u>Diese Woche</u>';
     html += '<p class="hint" style="margin-bottom:11px">Gerade läuft Kalenderwoche '+kw+'. '
@@ -4782,8 +4837,7 @@ function renderSched(host, sched, onChange){
     sched._klackRot = false;
   }
   if(wc > 1){
-    const kw2 = isoWeek(new Date());
-    const cur2 = (((kw2 - 1 + (sched.offset||0)) % wc) + wc) % wc;
+    const cur2 = rhythmusWoche(sched, new Date());
     html += '<div class="wsec"><u>Bearbeiten</u>';
     html += '<p class="hint" style="margin-bottom:0">Welche Woche möchtest du eintragen?</p>';
     html += '<div class="wtabs">';
@@ -4815,7 +4869,7 @@ function renderSched(host, sched, onChange){
 
   if(wc > 1){
     const kw3 = isoWeek(new Date());
-    const cur3 = (((kw3 - 1 + (sched.offset||0)) % wc) + wc) % wc;
+    const cur3 = rhythmusWoche(sched, new Date());
     const dran = wocheDran(tab, cur3, wc);
     const lauf = dran === 0 ? 'Läuft gerade — Kalenderwoche ' + kw3
                : dran === 1 ? 'Ab nächster Woche — Kalenderwoche ' + kwPlus(1)
@@ -4895,8 +4949,12 @@ function renderSched(host, sched, onChange){
     const rot = t.closest('[data-rot]');
     if(rot){
       if(sched.rotLock !== false){ toast('Erst das Schloss öffnen'); return; }
-      const want = +rot.dataset.rot, kw = isoWeek(new Date());
-      sched.offset = (((want - (kw - 1)) % wc) + wc) % wc;
+      /* Der Versatz zählt jetzt gegen die fortlaufende Wochennummer, nicht
+         mehr gegen die Kalenderwoche. Beides zu mischen hieße: eine Woche
+         hier einstellen und im Kalender eine andere sehen. */
+      const want = +rot.dataset.rot;
+      sched.offset = (((want - wochenNr(new Date())) % wc) + wc) % wc;
+      sched.basis = 'lauf';
       sched.rotLock = true; sched._klackRot = true;
       renderSched(host, sched, onChange); onChange && onChange(); return;
     }
