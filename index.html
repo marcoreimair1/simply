@@ -4890,7 +4890,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-2133';
+const APP_STAND = '2026-09-13-2225';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6950,8 +6950,7 @@ $('#lg-go').addEventListener('click', () => {
   const p = DB.profiles.find(x => x.vorname.trim().toLowerCase() === vn && x.dob === iso);
   if(!p){ err.textContent = 'Kein Profil gefunden. Prüfe Vorname und Geburtsdatum — oder melde dich neu an.'; err.style.display = 'block'; return; }
   ME = normalize(p); DB.activeId = p.id; save();
-  enterApp();
-  zeigeHallo();
+  appBetreten(true);
 });
 $('#lg-new').addEventListener('click', () => { obInit(); go('v-onboard'); });
 $('#lg-send').addEventListener('click', sendLink);
@@ -7065,6 +7064,10 @@ let _halloT = null;
 /* introLaeuft() und die Zeiten des Vorspanns stehen weiter oben, bei
    playIntro() — dort werden sie gebraucht, bevor es hier weitergeht. */
 const GRUSS_WEG = 900;              /* Ausblenden der Begrüßung */
+/* Aufblenden. Muss zu .hallo.on{animation:halloRein .62s} passen —
+   danach deckt der Gruss, und erst dann darf sich darunter etwas
+   aendern. */
+const GRUSS_REIN = 620;
 
 /* Dieselbe Bühne für Kommen und Gehen. Beim Abmelden muss sie vor dem
    Abmelden aufgehen — danach ist ME leer und niemand mehr zu grüßen. */
@@ -7077,12 +7080,15 @@ const GRUSS = {
   ab:  { kopf: n => 'Bis bald, <i>' + n + '</i>!',    zeile: () => CLOUD_ON ? 'Deine Zeiten sind gesichert.' : 'Bis zum nächsten Mal.',
          dauer: 1750 }
 };
-function zeigeGruss(art){
+/* wennOben laeuft, sobald der Gruss den Schirm deckt. Dafuer ist er da:
+   Er ist nicht nur Zierde, er ist der Vorhang, hinter dem die Ansicht
+   wechselt. Wer ihn erst NACH dem Wechsel aufzieht, zeigt den Wechsel. */
+function zeigeGruss(art, wennOben){
   if(!ME || !ME.vorname) return;
   /* Der Gruss kommt NACH dem Vorspann, nicht darueber. Frueher lagen
      beide uebereinander und endeten gemeinsam — vom Symbol blieb dabei
      nur das Profilbild ueber. */
-  if(introLaeuft()){ nachIntro(() => zeigeGruss(art)); return; }
+  if(introLaeuft()){ nachIntro(() => zeigeGruss(art, wennOben)); return; }
   const g = GRUSS[art] || GRUSS.an;
   const el = $('#hallo');
   clearTimeout(_halloT);
@@ -7099,6 +7105,7 @@ function zeigeGruss(art){
      müssen zugleich enden, sonst bleibt eines allein stehen. Also wird ein
      gemeinsamer Schlusszeitpunkt bestimmt und der Vorspann darauf
      umgestellt. */
+  if(wennOben) setTimeout(() => { try{ wennOben(); }catch(e){ console.warn(e); } }, GRUSS_REIN);
   const halten = g.dauer;
   _halloT = setTimeout(() => {
     el.classList.add('weg');
@@ -7106,6 +7113,35 @@ function zeigeGruss(art){
   }, halten);
 }
 function zeigeHallo(){ zeigeGruss('an'); }
+
+/* ─── Anmelden: erst der Vorhang, dann der Wechsel ───────────────
+   Frueher stand hier enterApp(); if(frisch) zeigeHallo();  — also:
+   Kalender aufbauen und ihn dann zudecken. Zwei Folgen hatte das.
+
+   Erstens sah man den Kalender kurz aufblitzen, bevor sich der Gruss
+   darueberlegte, und nach dem Gruss noch einmal. Zweitens — und das
+   faellt mehr auf — laeuft in enterApp() der Anlauf der Kopfleiste an.
+   Der wartet zwar auf einen freien Schirm, aber zu diesem Zeitpunkt
+   WAR er frei: der Gruss kam ja erst danach. Also lief die Bewegung
+   hinter dem Profilbild ab und war weg, bevor man sie sehen konnte.
+
+   Jetzt blendet der Gruss ueber der Anmeldeseite auf, und erst wenn er
+   deckt, wechselt darunter die Ansicht. Der Anlauf der Kopfleiste sieht
+   den belegten Schirm und stellt sich brav an.
+
+   Ausnahme: laeuft noch der Vorspann, deckt der ohnehin alles. Dann
+   bleibt es bei der alten Reihenfolge — auch weil go() dem Vorspann
+   meldet, dass der Start durch ist. Wuerde enterApp() auf den Gruss
+   warten, stuende der Vorspann bis zur Notbremse. */
+function appBetreten(frisch){
+  const gruss = !!(frisch && ME && ME.vorname);
+  if(!gruss || introLaeuft()){
+    enterApp();
+    if(gruss) zeigeHallo();
+    return;
+  }
+  zeigeGruss('an', enterApp);
+}
 
 /* Solange die Bühne oben liegt, darf das Konfetti weiterlaufen. */
 function gruessend(){
@@ -10083,9 +10119,16 @@ $('#menu').addEventListener('click', e => {
 async function doLogout(){
   /* Erst der Abschied, dann das Abmelden: solange die Bühne oben liegt,
      räumt die App darunter auf und die Anmeldeseite steht schon bereit,
-     wenn sich das Bild auflöst. */
+     wenn sich das Bild auflöst.
+
+     Das galt nur, solange das Abmelden laenger dauerte als das
+     Aufblenden des Grusses. Ist die Verbindung schnell — oder gibt es
+     gar keine —, war die Anmeldeseite nach wenigen Millisekunden da und
+     schien durch den halbdurchsichtigen Gruss. Deshalb laeuft eine Uhr
+     mit: der sichtbare Teil wartet, bis der Gruss wirklich deckt. */
   zeigeGruss('ab');
   menuZu();
+  const gedeckt = wait(GRUSS_REIN);
   if(CLOUD_ON){
     if(_dirty) await cloudFlush();
     try{ await sb.auth.signOut(); }catch(e){}
@@ -10094,6 +10137,7 @@ async function doLogout(){
     DB.activeId = null; save();
   }
   ME = null;
+  await gedeckt;
   $('#avwrap').style.display = 'none';
   $('#sync').style.display = 'none';
   malZaehler();
@@ -10591,7 +10635,7 @@ async function afterLogin(session, frisch){
       /* Erst der Passkey, dann die Erinnerung — beide nur, wenn offen.
          Das lokale Profil kennt die Frage nach der Erinnerung noch nicht,
          jetzt gibt es erstmals eine Adresse dafür. */
-      await askPasskey(() => askErinnerung(() => { enterApp(); if(frisch) zeigeHallo(); }));
+      await askPasskey(() => askErinnerung(() => appBetreten(frisch)));
       return;
     }
     /* Kein Datensatz UND keine Verbindung: das kann auch eine Person mit
@@ -10608,12 +10652,12 @@ async function afterLogin(session, frisch){
   ME = normalize(rec);
   setSync(offline ? 'offline' : 'ok');
   if(push) cloudQueue();
-  if(offline){ enterApp(); if(frisch) zeigeHallo(); return; }
+  if(offline){ appBetreten(frisch); return; }
   /* Der übliche Weg für alle, die schon ein Profil haben. Nur hier greift
      die einmalige Frage nach der Erinnerung — sie geht vorbei, sobald
      mailGefragt steht. Offline wird nicht gefragt: die Antwort käme nicht
      hoch, und der Zeitplan liest nur die Cloud. */
-  await askPasskey(() => askErinnerung(() => { enterApp(); if(frisch) zeigeHallo(); }));
+  await askPasskey(() => askErinnerung(() => appBetreten(frisch)));
 }
 
 $('#wt-retry').addEventListener('click', () => location.reload());

@@ -201,6 +201,24 @@ Wie lange der Vorspann steht, hängt daran, wer da ist:
 `nachIntro(fn)` stellt etwas in eine Schlange. `zeigeGruss()` geht diesen Weg — deshalb kommt
 das Profilbild nie über das Symbol.
 
+**Der Gruß ist ein Vorhang, keine Zierde.** Er deckt den Wechsel, statt ihm hinterherzulaufen.
+Bis 13. September 2026 stand beim Anmelden `enterApp(); if(frisch) zeigeHallo();` — also:
+Kalender aufbauen und ihn dann zudecken. Zwei Folgen hatte das. Man sah den Kalender kurz
+aufblitzen, bevor der Gruß sich darüberlegte. Und der Anlauf der Kopfleiste, der in `enterApp()`
+startet, sah einen **freien** Schirm — der Gruß kam ja erst danach —, lief also hinter dem
+Profilbild ab und war weg, bevor man ihn sehen konnte.
+
+`zeigeGruss(art, wennOben)` nimmt jetzt entgegen, was unter ihm passieren soll; `wennOben` läuft
+nach `GRUSS_REIN` (620 ms, passend zu `.hallo.on{animation:halloRein .62s}`). `appBetreten()`
+nutzt das: beim Anmelden erst aufblenden, dann darunter die Ansicht tauschen. **Ausnahme:**
+läuft noch der Vorspann, bleibt die alte Reihenfolge — der deckt ohnehin alles, und `go()` muss
+ihm melden, dass der Start durch ist, sonst stünde er bis zur Notbremse.
+
+Beim **Abmelden** dasselbe Problem von der anderen Seite: der Kommentar sagte, das Abmelden
+dauere länger als das Aufblenden. Bei schneller Verbindung — oder ohne Cloud — war die
+Anmeldeseite nach Millisekunden da und schien durch den halbdurchsichtigen Gruß. Jetzt läuft
+`wait(GRUSS_REIN)` nebenher, und der sichtbare Teil wartet darauf.
+
 **`wennFrei(fn)` ist die zweite Schlange:** sie wartet, bis *weder* Vorspann *noch* Gruß den
 Schirm verdecken. Beide melden ihr Abtreten über `schirmPruefen()`. Daran hängt der Anlauf der
 Kopfleiste — das Tier rutscht im Rahmen nach unten und die rote Zahl poppt auf, 0,62 s, die
@@ -1096,6 +1114,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Gruß deckt den Wechsel** (13. September 2026): Beim An- und Abmelden lag der Gruß bisher
+  *nach* dem Ansichtswechsel — man sah den Kalender aufblitzen, und die Bewegung in der
+  Kopfleiste lief dahinter ab. Jetzt blendet er zuerst auf, und erst wenn er deckt, wechselt
+  darunter die Ansicht. Einzelheiten in [Abschnitt 3](#3--rechnen), Unterabschnitt
+  *Der Vorspann*. Geprüft mit 11 neuen jsdom-Testfällen
 - **Exportseite** (13. September 2026): Abgegebene Monate tragen jetzt einen grünen Haken auf
   der Kachel — bisher war das nur im Verlauf hinter einem kleinen Knopf zu sehen, daher der
   Eindruck, es werde nichts mitgeführt. Der Verlauf schreibt aus, welches Datum was ist. Der
