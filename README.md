@@ -100,6 +100,61 @@ Ein Passkey gilt immer nur für **ein Gerät** und **eine Adresse**.
 - Bei *Eigener Text* lässt sich festlegen, ob die Stunden als Arbeitszeit zählen (Schulung)
   oder nicht
 
+### Farben, Schrift und Erscheinungsbild
+
+MOJI trägt seit 13. September 2026 **Violett** statt Nachtblau und Gold. Die Marke ist
+`#C643FE` — gemessen aus dem App-Symbol, nicht geschätzt.
+
+**Hell ist die Vorgabe.** Für jeden, immer — nicht die Systemeinstellung. Wer im Profilmenü
+unter *Erscheinungsbild* umschaltet, bekommt seine Wahl als `erscheinung` ins Profil
+geschrieben und damit auf alle Geräte. Zusätzlich liegt sie unter `moji.erscheinung` im
+Gerätespeicher, damit die Fassung schon beim ersten Anstrich steht — das Profil kommt erst
+aus der Cloud, der Gerätespeicher ist sofort da.
+
+**Jede Kategoriefarbe hat drei Werte**, weil sie drei Aufgaben erfüllt:
+
+| Rolle | Token | Beispiel Urlaub hell |
+|---|---|---|
+| Fläche — luftig | `--c-urlaub-rgb-f` | `#F6D9AE` |
+| Tinte — leuchtend | `--c-urlaub-rgb` | `#E1A01D` |
+| Text — tief | `--c-urlaub-tx` | `#B07400` |
+
+Ein dunkles Bernstein bei 13 % Deckkraft auf Weiß ergibt Schlamm, ein leuchtendes bei 34 px
+Schrift nur 2,0:1 Kontrast. Deshalb drei Werte statt einem.
+
+| Kategorie | Farbton | Dunkel | Hell |
+|---|---|---|---|
+| Arbeitszeit | 285° | `#A3A4AD` | `#7F7F8C` |
+| Urlaub | 78° | `#F7C980` | `#E1A01D` |
+| Krankenstand | 22° | `#F4A19E` | `#E54B52` |
+| Feiertag | 215° | `#7ADFF7` | `#00A7CB` |
+| Eigener Text | 148° | `#81C08A` | `#4EB864` |
+| Zeitausgleich | 268° | `#9AB5FB` | `#4163E4` |
+| **Heute** | 313° | `#C861FA` | `#9912CB` |
+
+Gerechnet in **OKLCH**, nicht HSL: Dort heißt gleiche Helligkeit auch fürs Auge gleiche
+Helligkeit. Geprüft ist dreierlei — Kontrast gegen den Untergrund, Abstand der Kategorien
+untereinander (kleinster Wert 11) und Abstand zur Marke (alle ≥ 21).
+
+Der **aktuelle Tag** trägt die Marke als atmenden Ring, 3 px bis 5 px über 6,5 Sekunden.
+Er ist keine Kategorie, sondern ein Ort — *du bist hier*.
+
+**Schriften:** `Bricolage Grotesque` für Überschriften, `Plus Jakarta Sans` für die Bedienung,
+`Caveat` für die Unterschriftsleisten im PDF. Drei weitere Paare liegen als Regeln bereit und
+lassen sich mit `data-font="b"` bis `"d"` am `<html>` erreichen — Schibsted Grotesk, Gabarito,
+Funnel. **Offen:** Die Schriften kommen weiterhin vom Google-CDN. Sie gehören ins Repo, siehe
+Abschnitt 18.
+
+**Das Profilmenü ist Vollbild** und nach Themen gegliedert — Konto, Arbeitszeit, Einstellungen,
+Sitzung. Das Menü blieb dabei dasselbe DOM: Alle Klick-Handler hängen delegiert an `#menu`, und
+die Untermenüs liegen als Flächen darin. Kopiert man die Knöpfe woandershin, ist nichts mehr
+verdrahtet.
+
+**Beim Umfärben zu beachten:** Farben, die doppelt gedeutet wurden, fallen auseinander. Das alte
+Gold war Marke *und* Urlaubsfarbe, ein Fast-Weiß war Schriftfarbe *und* Fläche, ein Blau war
+Arbeitszeit *und* Zeitausgleich. Alle drei sind jetzt getrennt benannt. Und: `!important` schlägt
+jede Animation — eine so übersteuerte Eigenschaft friert ein.
+
 ### Dienstzeiten mit Datum
 
 Wer seine Arbeitszeiten ändert, bekommt alte Monate **nicht** mit dem neuen Plan gerechnet.
@@ -742,16 +797,22 @@ Die einmalige Frage nach der Monats-Erinnerung ist gebaut und seit 13. September
 Mal öffnen. Mit der Abfrage aus 15.5 lässt sich zählen, wer inzwischen zugestimmt hat — erst
 danach ist der Punkt wirklich erledigt.
 
-**2 · Schlüssel erneuern.** Alle früher einmal offen gezeigten Schlüssel gehören getauscht,
+**2 · Schriften ins Repo holen.** Bricolage Grotesque, Plus Jakarta Sans und Caveat kommen
+vom Google-CDN. Zwei Gründe, das zu ändern: MOJI soll offline laufen — beim ersten Start ohne
+Netz fällt die Schrift auf Georgia zurück und sieht nicht nach MOJI aus. Und jeder Aufruf
+schickt die IP der Mitarbeiter an Google, während Abschnitt 10 festhält, dass die Daten in der
+EU bleiben. Drei `.woff2` neben `index.html`, ein `@font-face`-Block, kein Build.
+
+**3 · Schlüssel erneuern.** Alle früher einmal offen gezeigten Schlüssel gehören getauscht,
 insbesondere der Supabase-`service_role` und das Gmail-App-Passwort, das inzwischen nicht mehr
 gebraucht wird. Beim `service_role` daran denken: er steht auch im Zeitplan `moji-monatsmail`
 im Klartext (→ Abschnitt 15.4), muss dort also mitgetauscht werden — sonst steht die Automatik.
 
-**3 · Aufräumen in Resend.** Die zwei alten Schlüssel **„MARU SMTP"** und
+**4 · Aufräumen in Resend.** Die zwei alten Schlüssel **„MARU SMTP"** und
 **„MARU Anmeldemails"** löschen — sie hängen an `studiomaru.at` und funktionieren nicht mehr.
 Der Schlüssel **„simply"** (Full access) wird ebenfalls nicht gebraucht.
 
-**4 · Die alte GitHub-Rückkehradresse** in Supabase entfernen. Der Umzug ist über einen Monat
+**5 · Die alte GitHub-Rückkehradresse** in Supabase entfernen. Der Umzug ist über einen Monat
 her; wer noch einen alten Anmeldelink im Postfach liegen hat, wird ihn nicht mehr brauchen.
 
 ### Erledigt seit der letzten Durchsicht
@@ -828,6 +889,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Umbranden auf Violett** (13. September 2026): neue Marke `#C643FE` aus dem App-Symbol,
+  Hell als Vorgabe mit Umschalter im Profilmenü, Kategoriefarben in OKLCH gerechnet, Profilmenü
+  als Vollbild, neues App-Symbol. Einzelheiten in Abschnitt 3. Gebaut wurde es über ein
+  Umfärbeskript, das aus der alten Datei die neue erzeugt hat — rund 300 feste Farbwerte im
+  CSS und 90 im JavaScript mussten dafür erst zu Token werden
 - **Dienstzeiten mit Datum** (13. September 2026): `schedAlt` im Profil, `schedFuer()` beim
   Rechnen, Frage beim Speichern (*Nur korrigieren* / *Ab einem Datum*) und ein Verlauf zum
   Nachsehen und Entfernen. Einzelheiten in Abschnitt 3. Geprüft mit 42 jsdom-Testfällen und

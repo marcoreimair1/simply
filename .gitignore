@@ -9,3 +9,6 @@ supabase/functions/
 
 # Arbeitsordner des Editors, gehoert nicht ins Repo
 .claude/
+
+# Farbvorschau zum Veroeffentlichen — Wegwerfkopien, gehoeren nicht ins Repo
+.vorschau/
