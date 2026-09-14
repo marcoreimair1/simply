@@ -270,7 +270,7 @@ beim Ändern zieht die Zeile darüber mit, ohne dass die Liste neu gebaut wird �
 Rad unter dem Finger weg. Auf schmalen Geräten (< 380 px) stehen die Tage als *Mo, Di, …*, damit
 die Zeiten nicht abgeschnitten werden.
 
-Die Seite trägt seit 15. September 2026 dieselbe Kopfzeile wie der Assistent — **Zurück** links
+Die Seite trägt seit 14. September 2026 dieselbe Kopfzeile wie der Assistent — **Zurück** links
 oben, darunter die Überschrift *Dienstzeiten*, keine Kopfleiste der App darüber. Augenbraue,
 Displayüberschrift und Fließtext sind entfallen.
 
@@ -316,7 +316,7 @@ Die einmaligen Nachfragen `#v-pkask` und `#v-erinask` gibt es weiterhin — sie 
 **bestehenden** Profilen, die den Funnel nie gesehen haben (→ Abschnitt 15.7). Neue Profile
 beantworten beides mit den Schaltern in Schritt 3.
 
-`#v-pkask` trägt seit 15. September 2026 dieselbe Bauform wie der Einstieg: die ganze Fläche
+`#v-pkask` trägt seit 14. September 2026 dieselbe Bauform wie der Einstieg: die ganze Fläche
 ohne Kopfleiste, in der Mitte Zeichen, Überschrift **Face ID jetzt einrichten** und eine Zeile,
 unten der Kasten mit *Einrichten* und *Später*. Vorher standen dort Augenbraue, Fließtext, zwei
 Merkzeilen in einer Karte und ein Textlink — und das Wort *Passkey*, das am Gerät niemand liest:
@@ -436,7 +436,7 @@ machten sie aus einem Zeichen eine kleine Seite.
    Dann der Übergang in die App.
 
 Zusammen dauert das **2,45 s** (angemeldet) oder **2,95 s** (ohne Anmeldung). Bis zum
-15. September 2026 waren es 4,4 und 5,4 — das las sich nicht als Vorspann, sondern als Hänger.
+14. September 2026 waren es 4,4 und 5,4 — das las sich nicht als Vorspann, sondern als Hänger.
 Das Ausblenden von 1,1 s bleibt, wie es ist: dort ist die App schon sichtbar, gewartet wird da
 nicht mehr.
 
@@ -834,7 +834,7 @@ Profilbildern — und zeigt zwei Stände, die beim Öffnen hochzählen:
   (halbe Tage zählen 0,5), in **halben Tagen** zu stellen. Der Anspruch selbst wird im
   eigenen Menüpunkt gepflegt.
 
-Gestellt wird seit 15. September 2026 **am Rad**, mit denselben Walzen wie im Zeit-Assistenten
+Gestellt wird seit 14. September 2026 **am Rad**, mit denselben Walzen wie im Zeit-Assistenten
 — nur in den Stufen, die hierher gehören. Davor standen dort zwei kleine **+/−**-Knöpfe; von
 +0,00 auf +12,00 h waren das 48 Tipps.
 
@@ -868,6 +868,27 @@ Gespeichert werden nur die beiden **Grundwerte** in `konten`. Der gerechnete Sta
 `stand = { za, zaRoh, urlaub, genommen, anspruch, jahr, ts }` und wird bei **jedem** `save()`
 nachgezogen — er liegt damit auch in der Cloud-Zeile und ändert sich automatisch, sobald im
 Kalender Urlaub oder Zeitausgleich eingetragen wird. Rechenzeit rund 2 ms.
+
+### Das Postfach
+
+Ankündigungen, erreichbar über die Kachel im Profilmenü. Gelesen wird **pro Nachricht** in
+`ME.gelesen` gemerkt und wandert mit dem Profil in die Cloud.
+
+Seit 14. September 2026 ist es eine **Liste**: je Nachricht eine Zeile mit Zeichen, Titel, Datum
+und Absender — angetippt klappt der Text auf, und damit gilt sie als gelesen. Vorher stand jede
+Nachricht sofort in voller Länge da; drei lange Texte untereinander liest niemand.
+
+**Der Zustand ist unübersehbar:** ungelesen trägt eine Pille **NEU** in der Markenfarbe, eine
+getönte Karte und einen fetteren Titel; gelesen einen grünen Haken. Vorher war der Unterschied
+ein blasser Rahmenton.
+
+Beim Öffnen steht die **neueste ungelesene** Nachricht schon offen — sie ist ja der Grund,
+warum die Zahl am Profilbild stand — und ist damit sofort vermerkt. Das Vermerken passiert
+*vor* dem Zählen, sonst stünde oben noch die alte Zahl.
+
+`postText()` macht aus dem Klartext Absätze; Zeilen, die mit `•` beginnen, werden zur Liste,
+und `*so markiertes*` wird fett. Eine Nachricht mit `bild: true` zeigt oben `LOGO_MOJI` —
+so stellt sich MOJI in `moji-stellt-sich-vor-2026-09` selbst vor.
 
 ### Zeitausgleich
 
@@ -933,7 +954,7 @@ neben den Ausdruck legte, sah zwei verschiedene Urlaubsfarben.
 
 ### Unterschreiben
 
-Seit 15. September 2026 wird **vor jedem Export unterschrieben**. *PDF erstellen* legt ein
+Seit 14. September 2026 wird **vor jedem Export unterschrieben**. *PDF erstellen* legt ein
 weißes Blatt über die ganze Kachel — eine hellgraue Linie, sonst nichts —, die Überschrift
 darüber wird zu *Bestätige jetzt mit deiner Unterschrift.*, darunter steht **Unterschrift** in
 der Markenfarbe, und unten, wo sonst **Kalender** und **Export** stehen, steht ein einziger
@@ -999,7 +1020,7 @@ er zu nichts und ging verloren.
 `HAND_TTF` ist **Architects Daughter**, auf Latin-1 und Latin Extended-A zusammengestrichen —
 309 Glyphen, 24 KB, als base64 in `index.html`. Eine echte Blockhandschrift: gedruckte
 Buchstaben mit leicht unruhiger Grundlinie. `handAn(doc)` meldet sie einmal je Dokument an;
-schlägt das fehl, fällt der Name auf Kursiv zurück. Sie trägt seit 15. September 2026 nur noch
+schlägt das fehl, fällt der Name auf Kursiv zurück. Sie trägt seit 14. September 2026 nur noch
 den **Rückfall**: liegt keine gezeichnete Unterschrift vor, steht dort der Name — ohne
 irgendeine Unterschrift ist die Aufzeichnung nichts wert.
 
@@ -1717,40 +1738,50 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
-- **Neues Warten nach dem Signieren** (15. September 2026): Statt des Glases, das sich mit Bier
+- **Postfach als Liste, und MOJI stellt sich vor** (14. September 2026): Jede Nachricht stand
+  bisher sofort in voller Länge da, und ob eine gelesen war, sah man kaum. Jetzt eine Zeile je
+  Nachricht, angetippt klappt sie auf und gilt damit als gelesen; ungelesen trägt eine
+  **NEU**-Pille, gelesen einen Haken. Dazu die neue Nachricht *Hallo, ich bin MOJI* mit Bild,
+  die in einfacher Sprache durch das Umbranden und die neuen Funktionen führt. 659 Prüfungen
+
+- **Ein Tag Datumsdrift korrigiert** (14. September 2026): In dieser Sitzung sind die
+  Änderungsvermerke über Mitternacht auf den 15. gerutscht, obwohl es der 14. war. In README,
+  Code-Kommentaren und Tests zurückgesetzt.
+
+- **Neues Warten nach dem Signieren** (14. September 2026): Statt des Glases, das sich mit Bier
   füllte, steht jetzt das freigestellte Männchen in einem Ring, der sich um es schließt, mit
   einem Lichtband darüber und dem Satz *Deine Arbeitszeit wird geschrieben …*. Gleiche Dauer
   wie vorher; gespeichert wird erst, wenn der Ring geschlossen ist. Glas, Wellen, Blasen und
   das *Prost!* sind ersatzlos entfallen. 641 Prüfungen
 
-- **Hohe Unterschriften kamen winzig heraus** (15. September 2026): Bei kleinem Seitenverhältnis
+- **Hohe Unterschriften kamen winzig heraus** (14. September 2026): Bei kleinem Seitenverhältnis
   hängt die Breite an der Höhe — mit einer festen Höhe von 8 mm wurde eine schmale, hohe
   Unterschrift nur 10 mm breit. Die Höhe rechnet das Blatt jetzt selbst aus (9–15 mm, je
   nachdem wie lang die Tabelle des Monats ist), und die Leiste richtet sich nach der
   Unterschrift statt umgekehrt (46–68 mm). Mit drei Seitenverhältnissen nachgestellt und die
   PDFs angesehen. 627 Prüfungen
 
-- **Die Unterschrift war zu klein geraten** (15. September 2026): Die Leiste zu kürzen war
+- **Die Unterschrift war zu klein geraten** (14. September 2026): Die Leiste zu kürzen war
   richtig, die Unterschrift mitzukürzen nicht — 8 mm über einer 62-mm-Linie sah verloren aus.
   Jetzt nutzt sie die volle Höhe zwischen Erklärzeile und Leiste (11,5 mm, bis 56 mm breit).
   Dafür ist der Fuß zwei Millimeter tiefer gerückt und die Erklärung einen halben herauf.
   626 Prüfungen
 
-- **Drei Korrekturen am Unterschreiben** (15. September 2026): Die Leiste im PDF war 86 mm lang
+- **Drei Korrekturen am Unterschreiben** (14. September 2026): Die Leiste im PDF war 86 mm lang
   und die Unterschrift bis 15 mm hoch — jetzt 62 und 8, das liest sich als Unterschrift und
   nicht als Formularfeld. Der Vermerk *Elektronisch unterschrieben in der MOJI App* stand
   rechtsbündig am Blattrand und gehörte dort zu nichts; er steht jetzt unter der Leiste. Über
   der Kachel steht **Unterschrift** in der Markenfarbe, und im Dunkeln ist das Blatt ein
   ruhiger Papierton statt grellem Weiß. 626 Prüfungen
 
-- **Unterschreiben vor dem Export** (15. September 2026): *PDF erstellen* macht die ganze Kachel
+- **Unterschreiben vor dem Export** (14. September 2026): *PDF erstellen* macht die ganze Kachel
   zum weißen Blatt mit einer hellgrauen Linie; unten wird aus *Kalender* und *Export* ein
   breiter Knopf **Signieren**. Der Strich wandert als zugeschnittenes PNG ins PDF — auf alle
   Seiten eines Exports, seitenverhältnisgetreu, mit dem Vermerk *Elektronisch unterschrieben in
   der MOJI App* daneben. Gespeichert wird er nicht: beim nächsten Export wird neu gefragt.
   617 Prüfungen
 
-- **Räder für die Stände, neue Oberfläche für den Anspruch** (15. September 2026):
+- **Räder für die Stände, neue Oberfläche für den Anspruch** (14. September 2026):
   Zeitausgleich und Urlaubstage werden am Rad gestellt statt mit +/− — Viertelstunden und
   halbe Tage, dieselbe Walze wie im Assistenten. Dafür ist `radBau()` in `radKern()` (beliebige
   Beschriftungen) und die zwei Sonderfälle `radBau()` für Uhrzeiten und `radZahl()` für Zahlen
@@ -1759,20 +1790,20 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   Kurve einer Karte statt des Expo — der Fokus muss in der Geste sitzen, sonst bleibt die
   Tastatur am iPhone unten, und die braucht rund eine Drittelsekunde. 599 Prüfungen
 
-- **Dienstzeiten: Zurück-Knopf und ein Schloss** (15. September 2026): Die Seite hatte keinen
+- **Dienstzeiten: Zurück-Knopf und ein Schloss** (14. September 2026): Die Seite hatte keinen
   sichtbaren Weg zurück — nur die Wischgeste — und ließ sich sofort verstellen. Jetzt dieselbe
   Kopfzeile wie im Assistenten und ein Schalter *Bearbeiten*, der die Seite verschlossen hält:
   lesbar, aber taub, und ohne Leiste zum Speichern. Ein Tipp ins Gesperrte wackelt am Schloss,
   statt nichts zu tun. Augenbraue, Displayüberschrift und Fließtext sind entfallen, die zwei
   Knöpfe unten tragen `.einb prim` / `.einb zweit` wie die neuen Bildschirme. 578 Prüfungen
 
-- **Face ID jetzt einrichten** (15. September 2026): Die Nachfrage nach dem Code-Login
+- **Face ID jetzt einrichten** (14. September 2026): Die Nachfrage nach dem Code-Login
   (`#v-pkask`) stand noch im alten Seitengerüst und sprach von *Passkey*. Jetzt dieselbe
   Bauform wie der Einstieg — ganze Fläche, keine Kopfleiste, unten derselbe Kasten mit
   `.einb prim` und `.einb zweit`. Sieben neue Prüfungen, darunter eine, dass das Wort
   *Passkey* dort nicht zurückkommt. 563 Prüfungen
 
-- **Vorspann kürzer, Assistent langsamer** (15. September 2026): Zwei Tempi in
+- **Vorspann kürzer, Assistent langsamer** (14. September 2026): Zwei Tempi in
   entgegengesetzte Richtungen. Der Vorspann stand 4,4 s (angemeldet) bzw. 5,4 s und las sich als
   Hänger — jetzt 2,45 s und 2,95 s, das Zeichen kommt nach 0,82 s statt 1,45 s, der Glanz
   wandert in 1,4 s statt 1,9 s. Das Ausblenden bleibt bei 1,1 s: dort ist die App schon
@@ -1781,7 +1812,7 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   75 ms Versatz statt 0,5 s mit 45, MOJIs Auftritt dauert 0,95 s statt 0,62, sein Wippen 1,6 s
   statt 1,15. 556 Prüfungen
 
-- **Der Assistent laeuft ruhiger** (15. September 2026): Vier Stellen, an denen es geruckelt hat.
+- **Der Assistent laeuft ruhiger** (14. September 2026): Vier Stellen, an denen es geruckelt hat.
   Geschrieben wird jetzt im Bildtakt statt mit einem Zeitgeber je Zeichen — 22 ms gehen in 16,7 ms
   nicht auf, also kamen mal eines, mal zwei Zeichen je Bild. Die Sprechblase misst ihre Endhöhe,
   bevor das erste Zeichen steht, und wächst einmal weich, statt beim Zeilenumbruch mitten im Wort

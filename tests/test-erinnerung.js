@@ -119,6 +119,48 @@ ok('Glocke ist in POST_ZEICHEN definiert', !!POST_ZEICHEN['glocke']);
 const kennungen = NACHRICHTEN.map(n => n.id);
 ok('Keine doppelten Kennungen', new Set(kennungen).size === kennungen.length, kennungen.join(', '));
 
+/* ── 8b · Das Postfach: Liste statt Textwand ──
+   Bis 14.09.2026 stand jede Nachricht sofort in voller Laenge da, und ob
+   eine gelesen war, sah man kaum. */
+ME = normalize({ id:'pPost', vorname:'Post', dob:'1990-01-01' });
+ME.gelesen = [];
+_pfOffen = undefined;
+malPostfach();
+const karten = document.querySelectorAll('#pf-liste .pfm');
+ok('Je Nachricht eine Karte', karten.length === NACHRICHTEN.length, karten.length);
+ok('Nur eine steht offen', document.querySelectorAll('#pf-liste .pfm.auf').length === 1);
+ok('Und zwar die neueste', _pfOffen === NACHRICHTEN[0].id, _pfOffen);
+ok('Aufgeklappt heisst gelesen', ME.gelesen.indexOf(NACHRICHTEN[0].id) > -1);
+ok('Gelesene tragen einen Haken', !!karten[0].querySelector('.pfm-haken'));
+ok('Ungelesene tragen die Pille', !!karten[1].querySelector('.pfm-marke'),
+   karten[1].className);
+ok('Zugeklappt steht kein Text da', !karten[1].querySelector('.pfm-text'));
+ok('Die Zahl oben stimmt schon',
+   document.getElementById('pf-sub').textContent === (NACHRICHTEN.length - 1) + ' neue Nachrichten',
+   document.getElementById('pf-sub').textContent);
+/* Antippen klappt auf und vermerkt. */
+karten[1].querySelector('[data-pf]').dispatchEvent(new window.MouseEvent('click', { bubbles:true }));
+ok('Ein Tipp klappt die naechste auf', _pfOffen === NACHRICHTEN[1].id, _pfOffen);
+ok('Und vermerkt sie',           ME.gelesen.indexOf(NACHRICHTEN[1].id) > -1);
+ok('Die erste ist wieder zu',    document.querySelectorAll('#pf-liste .pfm.auf').length === 1);
+
+/* ── 8c · MOJI stellt sich vor ── */
+const vor = NACHRICHTEN.filter(n => n.id === 'moji-stellt-sich-vor-2026-09')[0];
+ok('Die Vorstellung liegt im Postfach', !!vor);
+ok('Sie steht ganz oben',        NACHRICHTEN[0] === vor);
+ok('Und bringt ein Bild mit',    vor.bild === true);
+_pfOffen = vor.id; malPostfach();
+const bild = document.querySelector('#pf-liste .pfm.auf .pfm-bild img');
+ok('Das Bild ist MOJI selbst',
+   !!bild && (bild.getAttribute('src') || '').indexOf('data:image/webp') === 0);
+ok('Aufzaehlungen werden zur Liste',
+   document.querySelectorAll('#pf-liste .pfm.auf li').length === 5,
+   document.querySelectorAll('#pf-liste .pfm.auf li').length);
+ok('Und Betontes wird fett',
+   document.querySelectorAll('#pf-liste .pfm.auf li b').length === 5);
+ok('Kein Sternchen bleibt im Text stehen',
+   document.querySelector('#pf-liste .pfm.auf').textContent.indexOf('*') === -1);
+
 /* ── 9 · Der Umschalter im Profilmenü setzt mailGefragt mit ──
    erinUmschalten() wartet 760 ms auf seine Animation, darum asynchron. */
 (async function(){

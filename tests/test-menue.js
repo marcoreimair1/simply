@@ -332,7 +332,7 @@ setTimeout(() => {
    ['Kein altes Dienstplan-Formular mehr', !/function renderSched\(/.test(roh)],
    ['Kein Zeit-Popover mehr',              !/function openTime\(/.test(roh)],
    /* Das meint die zwei Schloesser im alten Formular, nicht das eine,
-      das seit 15.09.2026 die ganze Seite sperrt. */
+      das seit 14.09.2026 die ganze Seite sperrt. */
    ['Kein schlossHtml aus dem alten Formular', !/function schlossHtml\(/.test(roh)],
    ['Hinauswischen ist verdrahtet',        /wireWischRaus\('v-hours', hoursRaus\)/],
    ['Die Raeder ziehen nur senkrecht',     /\.rad-roll\{[\s\S]{0,200}touch-action:pan-y/],
@@ -342,7 +342,7 @@ setTimeout(() => {
    ['Das Gesperrte ist taub',              /\.hr-sperre\.zu > \*\{ pointer-events:none \}/.test(roh)],
    ['Und bleibt lesbar',                   /\.hr-sperre\.zu\{ opacity:\.46 \}/.test(roh)],
    /* Die Plus-Minus-Knoepfe bei Zeitausgleich und Urlaub sind am
-      15.09.2026 den Raedern gewichen. */
+      14.09.2026 den Raedern gewichen. */
    ['Keine Stepper mehr bei den Staenden',  !/data-kstep/.test(roh)],
    ['Verschlossen bleibt der Anspruch lesbar',
     /#uabox \.zabtn,#uabox \.uaein\{opacity:\.3;pointer-events:none\}/.test(roh)],

@@ -2709,34 +2709,58 @@ body.sigmodus .fb-s{display:inline-flex}
   border-top:1px solid var(--line-2);background:rgba(var(--s-tief),.55)}
 .pf-fuss .btn{width:100%;max-width:300px}
 
-/* Eine Nachricht je Karte, mit Zeichen links und Absender unten. */
-.pfm{border:1px solid var(--line-2);border-radius:20px;padding:16px 17px 14px;margin-bottom:13px;
-  background:linear-gradient(170deg,rgba(var(--s-hoch),.44),rgba(var(--s-tief),.30));
-  transition:.3s var(--ease)}
-.pfm.neu{border-color:rgba(var(--marke-rgb),.30);
-  background:linear-gradient(170deg,rgba(var(--marke-rgb),.10),rgba(var(--s-tief),.34))}
-.pfm-kopf{display:flex;align-items:center;gap:12px;margin:0 0 13px}
+/* ─── Eine Nachricht je Karte ─────────────────────────────────────
+   Bis 14.09.2026 stand jede Nachricht sofort in voller Laenge da. Drei
+   lange Texte untereinander liest niemand, und ob eine schon gelesen
+   war, sah man kaum. Jetzt ist es eine Liste: Titel, Datum, Zustand —
+   angetippt klappt der Text auf, und damit gilt sie als gelesen. */
+.pfm{border:1px solid var(--karte-rand);border-radius:20px;margin-bottom:11px;
+  background:var(--karte);box-shadow:var(--karte-schatten);overflow:hidden;
+  transition:border-color .3s var(--ease),background .3s var(--ease)}
+.pfm.neu{border-color:rgba(var(--marke-rgb),.34);
+  background:linear-gradient(170deg,rgba(var(--marke-rgb),.10),var(--karte) 62%)}
+.pfm-kopf{display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  padding:14px 14px;transition:.18s var(--ease)}
+.pfm-kopf:active{transform:scale(.995)}
 .pfm-ico{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;flex:none;
-  background:rgba(var(--marke-rgb),.14);color:var(--butter)}
-.pfm.neu .pfm-ico{background:rgba(var(--marke-rgb),.20)}
+  background:rgba(var(--tx-rgb),.06);color:var(--tx-3);transition:.3s var(--ease)}
+.pfm.neu .pfm-ico{background:rgba(var(--marke-rgb),.16);color:var(--butter)}
 .pfm-ico svg{width:19px;height:19px}
 .pfm-t{flex:1;min-width:0}
-.pfm-t b{display:block;font-size:15.5px;line-height:1.32;font-weight:600;color:var(--tx)}
-.pfm-t i{font-style:normal;font-size:11.5px;color:var(--tx-3);font-variant-numeric:tabular-nums}
+.pfm-t b{display:block;font-size:14.5px;line-height:1.3;font-weight:600;color:var(--tx-2)}
+.pfm.neu .pfm-t b{font-weight:700;color:var(--tx)}
+.pfm-t i{display:block;margin-top:2px;font-style:normal;font-size:11.5px;color:var(--tx-3);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Der Zustand, unuebersehbar: ungelesen eine Pille in der Markenfarbe,
+   gelesen ein Haken. Vorher war es ein blasser Rahmenton. */
 .pfm-marke{flex:none;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--on-primary);background:var(--butter);padding:4px 8px;border-radius:8px}
-.pfm p{margin:0;font-size:15px;line-height:1.66;color:rgba(var(--tx-rgb),.88)}
-.pfm p + p{margin-top:12px}
+  color:var(--on-primary);background:linear-gradient(120deg,var(--butter-2),var(--butter));
+  padding:4px 8px;border-radius:8px;box-shadow:0 6px 16px -8px var(--knopf-schatten)}
+.pfm-haken{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;
+  background:rgba(var(--c-eigen-rgb-f),.22);color:var(--c-eigen)}
+.pfm-haken svg{width:12px;height:12px}
+.pfm-pfeil{flex:none;width:15px;height:15px;color:var(--tx-3);
+  transition:transform .26s var(--ease)}
+.pfm.auf .pfm-pfeil{transform:rotate(90deg)}
+/* Der Text kommt erst beim Aufklappen — und bekommt dort Luft. */
+.pfm-text{padding:2px 16px 16px;animation:pfmRein .36s var(--ease-out) both}
+@keyframes pfmRein{from{opacity:0;transform:translateY(-6px)}}
+.pfm-text p{margin:0;font-size:15px;line-height:1.66;color:rgba(var(--tx-rgb),.88)}
+.pfm-text p + p{margin-top:12px}
+.pfm-text ul{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:9px}
+.pfm-text li{position:relative;padding-left:20px;font-size:14.5px;line-height:1.55;
+  color:rgba(var(--tx-rgb),.88)}
+.pfm-text li::before{content:"";position:absolute;left:4px;top:.62em;width:6px;height:6px;
+  border-radius:50%;background:var(--butter)}
+.pfm-text li b{font-weight:650;color:var(--tx)}
+/* Ein Bild in der Nachricht — MOJI stellt sich vor. */
+.pfm-bild{display:grid;place-items:center;margin:2px 0 14px}
+.pfm-bild img{width:104px;max-width:52%;height:auto;display:block;
+  filter:drop-shadow(0 14px 26px rgba(var(--marke-rgb),.32))}
 .pfm-fuss{display:flex;align-items:center;gap:10px;margin-top:15px;padding-top:12px;
   border-top:1px solid var(--line-2)}
 .pfm-von{flex:1;min-width:0;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
   color:var(--tx-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pfm-ok{display:inline-flex;align-items:center;gap:7px;flex:none;padding:9px 14px;border-radius:12px;
-  font-size:12.5px;font-weight:600;color:var(--butter);
-  border:1px solid var(--butter-dim);background:rgba(var(--marke-rgb),.08);
-  transition:.2s var(--ease)}
-.pfm-ok:hover{background:rgba(var(--marke-rgb),.17);border-color:var(--butter)}
-.pfm-ok svg{width:14px;height:14px}
 .pfm-fertig{display:inline-flex;align-items:center;gap:6px;flex:none;
   font-size:11.5px;color:var(--c-eigen)}
 .pfm-fertig svg{width:13px;height:13px}
@@ -4284,7 +4308,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 
     <!-- ─────────── FACE ID GLEICH EINRICHTEN ───────────
          Dieselbe Bauform wie der Einstieg: in der Mitte die Frage, unten
-         der Kasten mit den zwei Wegen. Bis zum 15. September 2026 stand
+         der Kasten mit den zwei Wegen. Bis zum 14. September 2026 stand
          hier eine ganze Seite mit Augenbraue, Fliesstext und zwei
          Merkzeilen — und das Wort "Passkey", das am Geraet niemand
          liest: dort heisst es Face ID. -->
@@ -5280,7 +5304,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1020';
+const APP_STAND = '2026-09-14-2355';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -8975,6 +8999,34 @@ function postDatum(iso){
 
 const NACHRICHTEN = [
   {
+    /* Die Vorstellung nach dem Umbranden. Einfache Saetze, kurze Zeilen:
+       wer die App aufmacht, will arbeiten und nicht lesen. */
+    id: 'moji-stellt-sich-vor-2026-09',
+    datum: '2026-09-14',
+    art: 'stern',
+    bild: true,
+    titel: 'Hallo, ich bin MOJI',
+    text: 'Ich bin das kleine violette Wesen in dieser App. Ich zähle deine '
+        + 'Stunden mit, damit du es nicht tun musst.\n\n'
+        + 'Die App sieht neu aus. Früher war alles golden, jetzt ist alles '
+        + 'violett — das Zeichen, die Knöpfe, der Kalender. Gerechnet wird '
+        + 'genau wie vorher. Sie trägt nur ein neues Gewand.\n\n'
+        + 'Das ist dazugekommen:\n\n'
+        + '• *Anmelden mit Face ID.* Kein Code mehr aus der Mail — ein Blick genügt.\n'
+        + '• *Dienstzeiten mit mir anlegen.* Ich frage dich Schritt für Schritt, du '
+        + 'drehst nur an den Rädern. Dauert zwei Minuten.\n'
+        + '• *Unterschreiben mit dem Finger.* Vor jedem PDF unterschreibst du am '
+        + 'Bildschirm. Deine Unterschrift steht dann auf dem Blatt.\n'
+        + '• *Erinnerung am Monatsersten.* Wenn du magst, schreibe ich dir eine '
+        + 'kurze Mail, damit der Monat nicht liegen bleibt.\n'
+        + '• *Hell oder dunkel.* Du stellst es ein, ich merke es mir.\n\n'
+        + 'Alles andere bleibt, wie du es kennst. Eintragen musst du nur, was vom '
+        + 'Dienstplan abweicht: Urlaub, Krankenstand oder einen eigenen Vermerk. '
+        + 'Am Monatsende mache ich daraus eine fertige A4-Seite zum Abgeben.\n\n'
+        + 'Schön, dass du da bist.',
+    von: 'MOJI · Studio MARU 丸'
+  },
+  {
     id: 'erinnerung-2026-09',
     datum: '2026-09-13',
     art: 'glocke',
@@ -9083,53 +9135,97 @@ function zaehlerAnlauf(){
   });
 }
 function malPostfach(){
+  const liste = alleNachrichten();
+  /* Beim Öffnen steht die neueste ungelesene Nachricht offen — sie ist
+     der Grund, warum die Zahl am Profilbild stand. Das Vermerken muss
+     VOR dem Zählen passieren, sonst stünde oben noch die alte Zahl. */
+  if(_pfOffen === undefined){
+    const ersteNeu = liste.filter(n => pfGelesen().indexOf(n.id) < 0)[0];
+    _pfOffen = ersteNeu ? ersteNeu.id : null;
+    if(ersteNeu) pfMerkeStill([ersteNeu.id]);
+  }
   const g = pfGelesen();
   const neu = pfNeu().length;
   $('#pf-sub').textContent = neu === 0
     ? 'Alles gelesen'
     : neu + (neu === 1 ? ' neue Nachricht' : ' neue Nachrichten');
   $('#pf-alle').disabled = neu === 0;
-  const liste = alleNachrichten();
   if(!liste.length){
     $('#pf-liste').innerHTML = '<p class="pfleer">'
       + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="3"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>'
       + 'Noch keine Nachrichten.<br>Hier melden wir uns, wenn es etwas Neues gibt.</p>';
     return;
   }
+  const HAKEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" '
+    + 'stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>';
   $('#pf-liste').innerHTML = liste.map(n => {
     const ist = g.indexOf(n.id) >= 0;
-    /* Absätze als eigene <p>, damit der Text Luft bekommt. */
-    const text = esc(n.text).split(/\n\s*\n/)
-      .map(a => '<p>' + a.replace(/\n/g, '<br>') + '</p>').join('');
-    return '<article class="pfm ' + (ist ? 'gelesen' : 'neu') + '">'
-      + '<div class="pfm-kopf">'
+    const auf = _pfOffen === n.id;
+    return '<article class="pfm ' + (ist ? 'gelesen' : 'neu') + (auf ? ' auf' : '') + '">'
+      + '<button class="pfm-kopf" data-pf="' + esc(n.id) + '" aria-expanded="' + (auf ? 'true' : 'false') + '">'
       +   '<span class="pfm-ico" aria-hidden="true">' + postZeichen(n.art) + '</span>'
       +   '<span class="pfm-t"><b>' + esc(n.titel) + '</b>'
-      +     '<i>' + postDatum(n.datum) + '</i></span>'
-      +   (ist ? '' : '<span class="pfm-marke">neu</span>')
-      + '</div>'
-      + text
-      + '<div class="pfm-fuss">'
-      +   '<span class="pfm-von">' + (n.von ? esc(n.von) : 'MOJI') + '</span>'
+      +     '<i>' + postDatum(n.datum) + ' · ' + (n.von ? esc(n.von) : 'MOJI') + '</i></span>'
       +   (ist
-          ? '<span class="pfm-fertig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>Gelesen</span>'
-          : '<button class="pfm-ok" data-gelesen="' + n.id + '">'
-            + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>'
-            + 'Gelesen</button>')
-      + '</div>'
+          ? '<span class="pfm-haken" aria-label="Gelesen">' + HAKEN + '</span>'
+          : '<span class="pfm-marke">neu</span>')
+      +   '<svg class="pfm-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
+      + '</button>'
+      + (auf
+        ? '<div class="pfm-text">'
+          + (n.bild ? '<div class="pfm-bild"><img src="' + LOGO_MOJI + '" alt=""></div>' : '')
+          + postText(n.text)
+          + '<div class="pfm-fuss"><span class="pfm-von">'
+          + (n.von ? esc(n.von) : 'MOJI') + '</span>'
+          + '<span class="pfm-fertig">' + HAKEN + 'Gelesen</span></div>'
+          + '</div>'
+        : '')
       + '</article>';
   }).join('');
 }
-function pfMerke(ids){
+/* Absaetze als eigene <p>, Zeilen mit • als Liste — so liest sich eine
+   Aufzaehlung auch wie eine. */
+function postText(roh){
+  return String(roh).split(/\n\s*\n/).map(block => {
+    const zeilen = block.split('\n');
+    if(zeilen.every(z => /^\s*•\s/.test(z))){
+      return '<ul>' + zeilen.map(z => '<li>'
+        + esc(z.replace(/^\s*•\s*/, '')).replace(/\*([^*]+)\*/g, '<b>$1</b>')
+        + '</li>').join('') + '</ul>';
+    }
+    return '<p>' + esc(block).replace(/\n/g, '<br>').replace(/\*([^*]+)\*/g, '<b>$1</b>') + '</p>';
+  }).join('');
+}
+/* Nur vermerken, ohne die Liste neu zu bauen — malPostfach() ruft das
+   selbst, waehrend es gerade zeichnet. */
+function pfMerkeStill(ids){
   if(!ME) return;
   const g = pfGelesen().slice();
-  ids.forEach(id => { if(g.indexOf(id) < 0) g.push(id); });
+  let neu = false;
+  ids.forEach(id => { if(g.indexOf(id) < 0){ g.push(id); neu = true; } });
+  if(!neu) return;
   ME.gelesen = g;
   save();
-  malPostfach(); malZaehler();
+  malZaehler();
 }
+function pfMerke(ids){
+  pfMerkeStill(ids);
+  malPostfach();
+}
+/* Welche Nachricht offen steht. undefined heisst: noch nicht entschieden,
+   dann sucht malPostfach() die neueste ungelesene. */
+let _pfOffen;
+$('#pf-liste').addEventListener('click', e => {
+  const k = e.target.closest('[data-pf]'); if(!k) return;
+  const id = k.dataset.pf;
+  _pfOffen = (_pfOffen === id) ? null : id;
+  /* Aufgeklappt heisst gelesen — dafuer ist es ja aufgeklappt. */
+  if(_pfOffen === id) pfMerkeStill([id]);
+  malPostfach();
+});
 function pfAuf(){
   if($('#pfsheet').classList.contains('on')) return;
+  _pfOffen = undefined;            /* beim Oeffnen neu entscheiden */
   malPostfach();
   if(window.__pfReset) window.__pfReset();
   $('#pf-liste').scrollTop = 0;
@@ -9153,9 +9249,7 @@ $('#rsheet').addEventListener('click', e => { if(e.target.dataset.close === 'rsh
 $('#vsheet').addEventListener('click', e => { if(e.target.dataset.close === 'vsheet') verlaufZu(); });
 $('#ex-histbtn').addEventListener('click', verlaufAuf);
 $('#pfsheet').addEventListener('click', e => {
-  if(e.target.dataset.close === 'pfsheet'){ pfZu(); return; }
-  const b = e.target.closest('[data-gelesen]');
-  if(b) pfMerke([b.dataset.gelesen]);
+  if(e.target.dataset.close === 'pfsheet') pfZu();
 });
 $('#pf-alle').addEventListener('click', () => pfMerke(alleNachrichten().map(n => n.id)));
 
@@ -9577,7 +9671,7 @@ $('#konten').addEventListener('click', e => {
   /* Riegel und Speichern haben eigene Knöpfe — hier nicht mitschließen. */
   if(e.target.closest('#k-lock') || e.target.closest('#k-save')) return;
   /* Ein Tipp auf die Fläche neben den Kacheln schließt wieder. Die
-     Kacheln selbst regeln sich seit 15.09.2026 ueber ihre Raeder. */
+     Kacheln selbst regeln sich seit 14.09.2026 ueber ihre Raeder. */
   if(e.target.closest('#k-lock') || e.target.closest('#k-save')) return;
   if(e.target.closest('.kbox')){
     if(!$('#konten').classList.contains('frei')) schlossStups('#k-lock');
@@ -11179,7 +11273,7 @@ function drawPage(doc, p, y, m){
      gerueckt und die Erklaerung einen halben herauf. */
   const sy = 273;
   let sw = 62;                       /* ohne Bild: die feste Laenge */
-  /* Seit 15.09.2026 steht hier die wirklich gezeichnete Unterschrift.
+  /* Seit 14.09.2026 steht hier die wirklich gezeichnete Unterschrift.
      Fehlt sie — etwa in einem alten Ablauf —, bleibt es beim Namen in
      der Blockhandschrift; ohne irgendeine Unterschrift ist die
      Aufzeichnung nichts wert. */

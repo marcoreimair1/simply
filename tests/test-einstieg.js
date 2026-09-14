@@ -433,7 +433,7 @@ ok('Beide Blaetter tragen das Bild', marken.length === 2
    marken.length);
 
 /* ── 18 · Face ID nachtraeglich einrichten ──
-   Die Frage nach dem Code-Login. Sie trug bis 15.09.2026 noch das alte
+   Die Frage nach dem Code-Login. Sie trug bis 14.09.2026 noch das alte
    Seitengeruest und das Wort "Passkey". */
 const fid = el('v-pkask');
 ok('Die Frage steht im neuen Geruest', !!fid.querySelector('.fid') && !!fid.querySelector('.einbox'),

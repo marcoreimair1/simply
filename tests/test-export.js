@@ -256,13 +256,13 @@ setTimeout(() => {
    /* Nur echter Code zaehlt — der Kommentar, der den alten Stand
       erklaert, enthaelt den Ausdruck absichtlich. */
    /* Gemeint ist die ALTE sigImage()-Leinwand, die den getippten Namen
-      in einer Zufallsschrift des Geraets abmalte. Seit 15.09.2026 wird
+      in einer Zufallsschrift des Geraets abmalte. Seit 14.09.2026 wird
       wieder auf einer Leinwand unterschrieben — aber von Hand. */
    ['Kein abgemalter Name mehr', !/function sigImage/.test(roh)],
    ['Und die Wortmarke nicht mehr aus logoBlack', !/function logoBlack/.test(roh)],
    ['Kein UTC-Datum mehr fuer Ortszeit-Anzeigen',
     !/(?<!Hier stand )new Date\([^)]*\)\.toISOString\(\)\.slice\(0,10\)/.test(roh)],
-   /* Seit 15.09.2026 wird vor jedem Export unterschrieben. */
+   /* Seit 14.09.2026 wird vor jedem Export unterschrieben. */
    ['Der Knopf fuehrt zum Unterschreiben', /\$\('#ex-go'\)\.addEventListener\('click', sigAuf\)/.test(roh)],
    ['Die Unterschrift steht im PDF', /doc\.addImage\(SIG_BILD, 'PNG'/.test(roh)],
    ['Mit dem Vermerk darunter',
@@ -287,7 +287,7 @@ setTimeout(() => {
     /:root\[data-theme="dark"\] \.sigpad\{background:#ded9e6/.test(roh)],
    ['Das Wort darueber traegt die Markenfarbe',
     /\.sig-titel\{[^}]*color:var\(--butter\)/.test(roh)],
-   /* Das Bierglas ist am 15.09.2026 gegangen — es hatte mit Arbeitszeit
+   /* Das Bierglas ist am 14.09.2026 gegangen — es hatte mit Arbeitszeit
       nichts zu tun. */
    ['Kein Glas mehr beim Export',       !/\.exglas\{/.test(roh)],
    ['Keine Wellen, keine Blasen',       !/@keyframes exwave/.test(roh) && !/@keyframes exbub/.test(roh)],
