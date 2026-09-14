@@ -115,6 +115,15 @@ window.__EI = function(){
   ok('Und laesst sich erneut ausloesen', marke.classList.contains('eier'));
   marke.classList.remove('eier');
 };
+
+/* Es kommt seit 14.09.2026 auch von selbst vorbei — aber selten, und nur
+   wenn der Schriftzug wirklich zu sehen ist. */
+ok('Das erste Mal kommt frueh',              EI_ERST === 60000, EI_ERST);
+ok('Aber nicht sofort',                      EI_ERST > EI_DAUER * 20);
+ok('Danach faengt der Abstand bei vier Minuten an', EI_VON === 240000, EI_VON);
+ok('Und reicht bis neun',                    EI_BIS === 540000, EI_BIS);
+ok('Spaeter also seltener als am Anfang',    EI_VON > EI_ERST_BIS);
+ok('Gewuerfelt, nicht getaktet',             EI_BIS > EI_VON && EI_ERST_BIS > EI_ERST);
 setTimeout(window.__EI, EI_DAUER + 250);
 
 /* ── 8 · Der Vermerk loest sich von selbst wieder ── */
@@ -149,7 +158,18 @@ setTimeout(() => {
    ['Und wackelt dazwischen', /@keyframes eiWackel\{/],
    ['Die Huelle hat Hoehe, bevor das Bild da ist', /\.bmoji\{[\s\S]{0,200}aspect-ratio:385\/315/],
    ['Auch das Osterei achtet auf weniger Bewegung',
-    /prefers-reduced-motion:reduce\)\{\s*\n\s*\.brand\.eier \.bmoji/]
+    /prefers-reduced-motion:reduce\)\{\s*\n\s*\.brand\.eier \.bmoji/],
+   /* Von selbst nur dort, wo der Schriftzug steht — nicht hinter einem
+      Blatt, nicht im Funnel, nicht bei ruhiger Bewegung. */
+   ['Von selbst nur bei ruhigem Schirm', /function eiFrei\(\)\{/],
+   ['Nicht hinter einem Blatt',          /if\(k\.contains\('locked'\)\) return false;/],
+   ['Nicht ohne Kopfleiste',             /if\(k\.contains\('nobar'\)\) return false;/],
+   ['Nicht im Zeitraum',                 /if\(k\.contains\('zrmodus'\)\) return false;/],
+   ['Nicht im offenen Menue',            /\$\('#menu'\)\.classList\.contains\('on'\)\) return false;/],
+   ['Und nicht, wenn die Seite ruht',    /if\(document\.hidden\) return false;/],
+   ['Jedes Mal neu gewuerfelt',
+    /von \+ Math\.random\(\) \* \(bis - von\)/],
+   ['Das erste Mal kommt frueher',       /planen\(true\);/]
   ].forEach(([n, re]) => E.push({ n, ok: re.test(roh), z: re.test(roh) ? '' : 'fehlt' }));
 
   let schlecht = 0;

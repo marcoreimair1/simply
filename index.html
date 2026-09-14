@@ -11572,6 +11572,14 @@ document.addEventListener('keydown', e => {
    angeboten. Es laeuft ueberall, wo der Schriftzug steht; im
    Zeitraum-Modus weicht der ohnehin. */
 const EI_DAUER = 2500;
+/* Und ab und zu kommt es von selbst vorbei. Das erste Mal nach ein bis
+   zweieinhalb Minuten — die meisten Besuche sind kurz, und wer nie so
+   lange bleibt, soll es trotzdem einmal sehen koennen. Danach seltener:
+   irgendwann zwischen vier und neun Minuten. Jedes Mal neu gewuerfelt;
+   ein fester Takt waere ein Uhrwerk, und ein Uhrwerk ueberrascht
+   niemanden. */
+const EI_ERST = 60000, EI_ERST_BIS = 150000;
+const EI_VON = 240000, EI_BIS = 540000;
 (function osterei(){
   const b = $('#brand'), w = $('#brand-word'), m = $('#brand-moji');
   if(!b || !w || !m) return;
@@ -11585,17 +11593,45 @@ const EI_DAUER = 2500;
     clearTimeout(osterei._t);
     osterei._t = setTimeout(() => { b.classList.remove('eier'); laeuft = false; }, EI_DAUER);
   }
-  w.addEventListener('click', () => {
+  function anstossen(){
     if(laeuft) return;
     laeuft = true;
-    /* Erst beim ersten Tipp laden: 16 KB, die sonst jeder Start
+    /* Erst beim ersten Mal laden: 16 KB, die sonst jeder Start
        mitschleppt, ohne dass sie je jemand sieht. Und erst losgehen,
        wenn es dekodiert ist — sonst faengt die Bewegung ohne Bild an. */
     if(bild.getAttribute('src')){ los(); return; }
     bild.src = LOGO_MOJI;
     if(bild.decode) bild.decode().then(los, los);
     else los();
-  });
+  }
+  w.addEventListener('click', anstossen);
+
+  /* Von selbst nur, wenn der Schriftzug wirklich zu sehen ist. Eine
+     Ueberraschung hinter einem Blatt oder auf einer fremden Seite ist
+     keine — sie ist nur verbraucht. */
+  function eiFrei(){
+    if(laeuft) return false;
+    try{ if(document.hidden) return false; }catch(e){}
+    try{ if(zaRuhig()) return false; }catch(e){}          /* wer es ruhig mag */
+    try{ if(introLaeuft() || schirmBelegt()) return false; }catch(e){}
+    const k = document.body.classList;
+    if(k.contains('nobar')) return false;                 /* Einstieg, Funnel, Assistent */
+    if(k.contains('locked')) return false;                /* ein Blatt liegt darueber */
+    if(k.contains('zrmodus')) return false;               /* dort weicht der Schriftzug */
+    if($('#menu').classList.contains('on')) return false;
+    const r = b.getBoundingClientRect();
+    return r.width > 0 && r.bottom > 0;
+  }
+  function planen(erste){
+    const von = erste ? EI_ERST : EI_VON;
+    const bis = erste ? EI_ERST_BIS : EI_BIS;
+    clearTimeout(osterei._p);
+    osterei._p = setTimeout(() => {
+      if(eiFrei()) anstossen();
+      planen();                       /* und gleich den naechsten wuerfeln */
+    }, von + Math.random() * (bis - von));
+  }
+  planen(true);
 })();
 
 $('#avatar').addEventListener('click', () => {
