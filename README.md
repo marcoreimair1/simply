@@ -829,14 +829,32 @@ Der Menüpunkt unter *Dienstzeiten bearbeiten* färbt das Menü — dieselbe Fl�
 Profilbildern — und zeigt zwei Stände, die beim Öffnen hochzählen:
 
 - **Zeitausgleich**: alle `zeit`-Einträge zusammen (jahresübergreifend) plus `konten.zaStart`.
-  Grün bei plus, rot bei minus, verstellbar in 0,25-h-Schritten.
+  Grün bei plus, rot bei minus, in **Viertelstunden** zu stellen.
 - **Urlaubstage**: der **Topf** minus alle genommenen Tage seit `konten.startJahr`
-  (halbe Tage zählen 0,5). Die Kachel zeigt nur an — gepflegt wird der Anspruch im
-  eigenen Menüpunkt.
+  (halbe Tage zählen 0,5), in **halben Tagen** zu stellen. Der Anspruch selbst wird im
+  eigenen Menüpunkt gepflegt.
+
+Gestellt wird seit 15. September 2026 **am Rad**, mit denselben Walzen wie im Zeit-Assistenten
+— nur in den Stufen, die hierher gehören. Davor standen dort zwei kleine **+/−**-Knöpfe; von
++0,00 auf +12,00 h waren das 48 Tipps.
+
+Und das Rad stellt den **Stand** ein, nicht den unsichtbaren Grundwert: was daraus für
+`konten.zaStart` bzw. `konten.topf` folgt, rechnet die App zurück — der Teil aus den Einträgen
+(`zaRoh`, `genommen`) ändert sich dabei ja nicht. Das Rad wird erst beim **Aufsperren** gebaut
+und beim Zusperren wieder abgeräumt: 801 Zeilen Zeitausgleich und 561 Zeilen Urlaub legt man
+niemandem hin, der nur nachsieht (gemessen: 118 ms für beide).
+
+Darüber sitzt dasselbe **Schloss** wie auf der Dienstzeiten-Seite — dieselbe Zeile, dieselbe
+Beschriftung, derselbe Wink, wenn man ins Gesperrte tippt. Der alte gestrichelte Riegel
+(`.kschloss`) ist entfallen.
 
 ### Urlaubsanspruch
 
-Eigener Punkt im Profilmenü, gleiche blaue Fläche mit Riegel und gelbem Speichern-Knopf.
+Eigener Punkt im Profilmenü, mit demselben Schloss. **Kein Rad**: das ist eine Zahl im Jahr,
+keine Uhrzeit, und sie ändert sich vielleicht einmal im Arbeitsleben — zwei Knöpfe für die
+Einheit, dann die Zahl zwischen Minus und Plus. Verschlossen bleibt die Zahl lesbar und nur
+das Verstellen ist fort.
+
 Der Jahresanspruch lässt sich in **Tagen oder Stunden** eintragen; Stunden werden über die
 durchschnittlichen Stunden eines Diensttages aus dem Dienstplan in Tage umgerechnet
 (`tagStunden()`).
@@ -1633,6 +1651,15 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Räder für die Stände, neue Oberfläche für den Anspruch** (15. September 2026):
+  Zeitausgleich und Urlaubstage werden am Rad gestellt statt mit +/− — Viertelstunden und
+  halbe Tage, dieselbe Walze wie im Assistenten. Dafür ist `radBau()` in `radKern()` (beliebige
+  Beschriftungen) und die zwei Sonderfälle `radBau()` für Uhrzeiten und `radZahl()` für Zahlen
+  zerlegt. Beide Flächen und der Urlaubsanspruch tragen jetzt das Schloss von der
+  Dienstzeiten-Seite. Und das Blatt der Anmeldung fährt in 0,34 s statt 0,46 s herauf, mit der
+  Kurve einer Karte statt des Expo — der Fokus muss in der Geste sitzen, sonst bleibt die
+  Tastatur am iPhone unten, und die braucht rund eine Drittelsekunde. 599 Prüfungen
 
 - **Dienstzeiten: Zurück-Knopf und ein Schloss** (15. September 2026): Die Seite hatte keinen
   sichtbaren Weg zurück — nur die Wischgeste — und ließ sich sofort verstellen. Jetzt dieselbe

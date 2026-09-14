@@ -245,6 +245,56 @@ window.__WEITER = function(){
   ok('Der Tipp ins Gesperrte stupst das Schloss', schloss.classList.contains('stups'),
      schloss.className);
 
+  /* ── Zeitausgleich und Urlaubstage: Schloss und Raeder ── */
+  ME.konten.zaStart = 6.5; ME.konten.topf = 25;
+  var kSchloss = document.getElementById('k-lock');
+  ok('Das Schloss ist dasselbe wie bei den Dienstzeiten',
+     kSchloss.classList.contains('swz') && kSchloss.classList.contains('hr-schloss'),
+     kSchloss.className);
+  ok('Der alte Riegel ist weg', !document.querySelector('.kschloss'));
+  kontenFrei(false);
+  ok('Verschlossen steht kein Rad da', document.querySelectorAll('#konten .rad').length === 0);
+  kontenFrei(true);
+  ok('Aufgesperrt kommen zwei Raeder', document.querySelectorAll('#konten .rad').length === 2,
+     document.querySelectorAll('#konten .rad').length);
+  ok('Zeitausgleich in Viertelstunden',
+     document.querySelectorAll('#k-za-rad .rad-roll i').length === 801,
+     document.querySelectorAll('#k-za-rad .rad-roll i').length);
+  ok('Urlaub in halben Tagen',
+     document.querySelectorAll('#k-ur-rad .rad-roll i').length === 561,
+     document.querySelectorAll('#k-ur-rad .rad-roll i').length);
+  ok('Und das Rad steht auf dem Stand',
+     document.querySelector('#k-za-rad .rad-roll i.on').textContent === '+6,50 h',
+     document.querySelector('#k-za-rad .rad-roll i.on').textContent);
+  ok('Auch beim Urlaub',
+     document.querySelector('#k-ur-rad .rad-roll i.on').textContent === '25 Tage',
+     document.querySelector('#k-ur-rad .rad-roll i.on').textContent);
+  kontenFrei(false);
+  ok('Zusperren raeumt die Raeder wieder weg',
+     document.querySelectorAll('#konten .rad').length === 0);
+  /* Ein Tipp auf die Kachel weist aufs Schloss. */
+  document.querySelector('#konten .kbox').dispatchEvent(
+    new window.MouseEvent('click', { bubbles:true }));
+  ok('Der Tipp ins Gesperrte stupst auch hier', kSchloss.classList.contains('stups'),
+     kSchloss.className);
+
+  /* ── Ein Zahlenrad kann man auch allein pruefen ── */
+  var probe = radZahl(0, 2, 0.5, 1.5, v => v + ' x', function(){});
+  ok('radZahl baut die Stufen', probe.querySelectorAll('i').length === 5,
+     probe.querySelectorAll('i').length);
+  ok('Und faengt beim naechsten Wert an',
+     probe.querySelector('i.on').textContent === '1.5 x',
+     probe.querySelector('i.on') && probe.querySelector('i.on').textContent);
+
+  /* ── Urlaubsanspruch: neues Schloss, kein Rad ── */
+  var uaSchloss = document.getElementById('ua-lock');
+  ok('Auch hier dasselbe Schloss', uaSchloss.classList.contains('hr-schloss'));
+  uaFrei(false);
+  ok('Verschlossen', !document.getElementById('uabox').classList.contains('frei'));
+  uaSchloss.click();
+  ok('Aufgesperrt', document.getElementById('uabox').classList.contains('frei'));
+  ok('Und dort steht kein Rad', document.querySelectorAll('#uabox .rad').length === 0);
+
   window.__FERTIG = true;
 };
 setTimeout(window.__WEITER, 400);
@@ -290,7 +340,16 @@ setTimeout(() => {
       dort nicht auch noch stehen. */
    ['Dienstzeiten ohne Kopfleiste',        /id === 'v-hours'/.test(roh)],
    ['Das Gesperrte ist taub',              /\.hr-sperre\.zu > \*\{ pointer-events:none \}/.test(roh)],
-   ['Und bleibt lesbar',                   /\.hr-sperre\.zu\{ opacity:\.46 \}/.test(roh)]
+   ['Und bleibt lesbar',                   /\.hr-sperre\.zu\{ opacity:\.46 \}/.test(roh)],
+   /* Die Plus-Minus-Knoepfe bei Zeitausgleich und Urlaub sind am
+      15.09.2026 den Raedern gewichen. */
+   ['Keine Stepper mehr bei den Staenden',  !/data-kstep/.test(roh)],
+   ['Verschlossen bleibt der Anspruch lesbar',
+    /#uabox \.zabtn,#uabox \.uaein\{opacity:\.3;pointer-events:none\}/.test(roh)],
+   /* Das Blatt der Anmeldung kommt im Takt der Tastatur, nicht langsamer. */
+   ['Das Blatt hat eine eigene Kurve',      /--ease-blatt:cubic-bezier/.test(roh)],
+   ['Und faehrt in einer Drittelsekunde',   /animation:blattRein \.34s var\(--ease-blatt\)/.test(roh)],
+   ['Der Inhalt kommt einen Hauch spaeter', /@keyframes blattInhalt/.test(roh)]
   ];
   /* Manche Pruefungen sind ein Muster, manche schon ein Ja/Nein. */
   css.forEach(([n, re]) => {

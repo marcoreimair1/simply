@@ -66,6 +66,10 @@ REIHEN.forEach(([name, was]) => {
     aus.split('\n').filter(z => /FEHL|Error|not defined/.test(z))
        .slice(0, 8).forEach(z => console.log('       ' + z.trim()));
     if (!m) console.log('       (die Reihe ist gar nicht durchgelaufen)');
+    /* Null Pruefungen heisst: das Skript ist beim Einlesen gescheitert —
+       etwa, weil ein Name doppelt vergeben ist. Ohne diesen Hinweis sieht
+       die Zeile fast aus wie eine bestandene. */
+    else if (n === 0) console.log('       (kein einziger Testfall gelaufen — Skriptfehler?)');
   }
 });
 

@@ -239,6 +239,8 @@
   --r-s:12px; --r-m:18px; --r-l:26px; --r-xl:34px;
   --ease:cubic-bezier(.22,.9,.25,1);
   --ease-out:cubic-bezier(.16,1,.3,1);
+  /* Die Kurve fuer Blaetter, die von unten kommen — wie am Telefon. */
+  --ease-blatt:cubic-bezier(.32,.72,0,1);
   --shadow:0 24px 70px -30px rgba(0,0,0,.9);
   --font-ui:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   --font-dis:'Fraunces','Iowan Old Style',Georgia,serif;
@@ -991,7 +993,29 @@ body.menuauf #avatar{transform:scale(.92)}
 .uaein button{flex:1;padding:10px 6px;border-radius:12px;border:1px solid var(--line-2);
   font-size:12.5px;font-weight:600;color:var(--tx-3);transition:.18s var(--ease)}
 .uaein button.on{border-color:var(--butter-dim);background:rgba(var(--marke-rgb),.12);color:var(--butter)}
-.uahint{margin:11px 0 0;font-size:11px;line-height:1.5;color:var(--tx-3)}
+.uahint{margin:12px 0 0;font-size:11px;line-height:1.5;color:var(--tx-3)}
+/* ─── Urlaubsanspruch ────────────────────────────────────────────
+   Hier braucht es kein Rad: das ist eine Zahl im Jahr, keine Uhrzeit,
+   und sie aendert sich vielleicht einmal im Arbeitsleben. Zwei Knoepfe
+   fuer die Einheit, dann die Zahl zwischen Minus und Plus — nur eben
+   im Anstrich der uebrigen App. */
+#uabox .uaein{gap:9px;margin:14px 0 12px}
+#uabox .uaein button{padding:13px 6px;border-radius:15px;font-size:13.5px;font-weight:650;
+  background:var(--karte);border:1px solid var(--karte-rand);box-shadow:var(--karte-schatten);
+  color:var(--tx-2);transition:.22s var(--ease)}
+#uabox .uaein button.on{border-color:transparent;color:var(--on-primary);
+  background:linear-gradient(140deg,var(--butter-2),var(--butter))}
+#uabox .zastepper{display:flex;align-items:center;gap:12px;padding:10px 12px;
+  border-radius:18px;background:rgba(var(--tx-rgb),.05);border:1px solid var(--line-2)}
+#uabox .zawert{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px}
+#uabox .zabtn{flex:none;width:46px;height:46px;border-radius:15px;display:grid;place-items:center;
+  background:var(--karte);border:1px solid var(--karte-rand);box-shadow:var(--karte-schatten);
+  color:var(--tx);transition:transform .18s var(--ease),opacity .3s var(--ease)}
+#uabox .zabtn:active{transform:scale(.92)}
+#uabox .zabtn svg{width:18px;height:18px}
+/* Verschlossen bleibt die Zahl lesbar, nur das Verstellen ist fort. */
+#uabox .zabtn,#uabox .uaein{opacity:.3;pointer-events:none}
+#uabox.frei .zabtn,#uabox.frei .uaein{opacity:1;pointer-events:auto}
 .uahint b{color:var(--tx-2);font-weight:600}
 #uabox .zawert b{font-size:26px}
 #uabox .zawert u{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
@@ -1053,34 +1077,26 @@ body.menuauf #avatar{transform:scale(.92)}
   transition:width .7s var(--ease-out)}
 .kfuss{display:flex;align-items:center;gap:10px;margin-top:9px}
 .kfuss small{flex:1;min-width:0;font-size:10.5px;line-height:1.45;color:var(--tx-3)}
-.kstep{flex:none;display:flex;gap:6px}
-.kstep button{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;
-  border:1px solid var(--line-2);color:var(--tx-2);font-size:16px;line-height:1;
-  transition:.16s var(--ease)}
-.kstep button:hover{border-color:var(--butter-dim);color:var(--butter)}
-.kstep button:active{transform:scale(.9)}
 
-/* Riegel oben: solange er zu ist, sind die Knöpfe fort und die Zahlen
-   stehen nur da. Ein Tipp gibt sie frei, der Speichern-Knopf fährt auf. */
-.kschloss{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
-  padding:10px 12px;border-radius:14px;border:1px dashed var(--line-2);
-  color:var(--tx-3);transition:.2s var(--ease)}
-.kschloss:hover{border-color:var(--butter-dim);color:var(--tx-2)}
-.kschloss-i{flex:none;width:26px;height:26px;border-radius:9px;display:grid;place-items:center;
-  border:1px solid var(--line-2);transition:.24s var(--ease)}
-.kschloss-i svg{width:14px;height:14px}
-.kschloss-t b{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);transition:color .2s}
-.kschloss-t small{display:block;font-size:10.5px;margin-top:1px}
-.konten.frei .kschloss{border-style:solid;border-color:var(--butter-dim);
-  background:rgba(var(--marke-rgb),.07)}
-.konten.frei .kschloss-i{color:var(--butter);border-color:var(--butter-dim);
-  background:rgba(var(--marke-rgb),.1);transform:rotate(-8deg)}
-.konten.frei .kschloss-t b{color:var(--butter)}
+/* Das Rad steht erst nach dem Aufsperren da — davor ist die Kachel eine
+   Anzeige und sonst nichts. Gebaut wird es auch erst dann, siehe
+   kRaeder(): 800 Zeilen legt man niemandem hin, der nur nachsieht. */
+.krad{margin:11px 0 1px;animation:kRadRein .42s var(--ease-out) both}
+.krad:empty{display:none}
+@keyframes kRadRein{from{opacity:0;transform:translateY(-8px)}}
+.krad .rad{height:120px}
+.krad .rad-roll{padding:43px 0}
+.krad .rad-roll i{font-size:16px}
 
-/* Die Verstellknöpfe gibt es erst nach dem Entsperren. */
-.kstep{opacity:0;transform:translateX(8px) scale(.9);pointer-events:none;
-  transition:opacity .26s var(--ease),transform .3s var(--ease-out)}
-.konten.frei .kstep{opacity:1;transform:none;pointer-events:auto}
+/* Das Schloss ueber den Kacheln: dieselbe Zeile wie bei den
+   Dienstzeiten, nur etwas schmaler — im Menue ist weniger Platz. */
+.konten .k-schloss{margin-bottom:2px;padding:12px 13px}
+.konten .k-schloss .swi{width:34px;height:34px;border-radius:11px}
+.konten .k-schloss .swt{font-size:13.5px}
+.konten .k-schloss .swt small{font-size:11px}
+.konten .k-schloss .swr{width:44px;height:26px}
+.konten .k-schloss .swr i{width:20px;height:20px}
+.konten .k-schloss[aria-pressed="true"] .swr i{transform:translateX(18px)}
 
 /* Speichern: gleiche Breite und Rundung wie die Kacheln, in Gelb. */
 .ksave{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
@@ -3487,7 +3503,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 .blatt{ position:fixed; inset:0; z-index:78; display:none }
 .blatt.on{ display:block }
 .blatt-grund{ position:absolute; inset:0; background:rgba(var(--s-schatten),.42);
-  animation:blattGrund .3s var(--ease-out) both }
+  animation:blattGrund .34s var(--ease-blatt) both }
 @keyframes blattGrund{ from{ opacity:0 } }
 .blatt-karte{
   position:absolute; left:0; right:0; bottom:0;
@@ -3496,14 +3512,26 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   padding:0 20px calc(env(safe-area-inset-bottom) + 24px);
   overflow-y:auto; -webkit-overflow-scrolling:touch;
   box-shadow:0 -20px 60px -26px rgba(var(--s-schatten),.55);
-  animation:blattRein .46s var(--ease-out) both;
+  animation:blattRein .34s var(--ease-blatt) both;
 }
-/* Ganz von unten herauf statt eines Aufpoppens um 52 px. */
+/* Ganz von unten herauf statt eines Aufpoppens um 52 px.
+
+   Die Dauer ist an der Tastatur gemessen, nicht am Auge: der Fokus wird
+   noch in der Geste gesetzt, sonst faehrt die Tastatur am iPhone gar
+   nicht hoch — und sie braucht rund eine Drittelsekunde. Mit den
+   frueheren 0,46 s stand sie lange vor dem Feld da, zu dem sie gehoert.
+   Und die Kurve ist die einer Karte, die von unten kommt: schnell weg,
+   ruhig an — nicht das Expo aus --ease-out, das fast alles im ersten
+   Sechstel erledigt und dann nachschleppt. */
 @keyframes blattRein{ from{ transform:translateY(100%) } }
+/* Der Inhalt kommt einen Hauch spaeter hinterher, sonst faehrt ein
+   fertiges Bild herauf statt einer Karte, die sich oeffnet. */
+.blatt.on:not(.weiter) .blatt-in{ animation:blattInhalt .42s .08s var(--ease-out) both }
+@keyframes blattInhalt{ from{ opacity:0; transform:translateY(10px) } }
 
 /* Und es geht auch wieder — vorher verschwand es einfach. */
-.blatt.raus .blatt-karte{ animation:blattRaus .32s var(--ease-blend) forwards }
-.blatt.raus .blatt-grund{ animation:blattGrundRaus .32s var(--ease-blend) forwards }
+.blatt.raus .blatt-karte{ animation:blattRaus .3s var(--ease-blatt) forwards }
+.blatt.raus .blatt-grund{ animation:blattGrundRaus .3s var(--ease-blend) forwards }
 @keyframes blattRaus{ to{ transform:translateY(100%) } }
 @keyframes blattGrundRaus{ to{ opacity:0 } }
 
@@ -3519,7 +3547,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
 /* Der Einstieg tritt zurueck, waehrend das Blatt kommt — dieselbe
    Tiefe wie bei einer Karte, die sich ueber eine andere legt. */
-#lg-start{ transition:transform .46s var(--ease-out), opacity .46s var(--ease-out) }
+#lg-start{ transition:transform .34s var(--ease-blatt), opacity .34s var(--ease-blatt) }
 body.blattoffen #lg-start{ transform:scale(.93); opacity:.5 }
 /* Hinunterschieben zum Schliessen — dieselbe Mechanik wie bei allen
    Blaettern der App, siehe wireSheetDrag(). */
@@ -3956,7 +3984,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
    bewussten Tipp. Das Schloss traegt dieselbe Zeile wie die Schalter
    im Funnel — es ist ja auch ein Schalter. */
 #v-hours{ padding-top:calc(env(safe-area-inset-top) + 6px) }
-#v-hours > .za-kopf, .hr-h, .hr-schloss, .hr-sperre{
+#v-hours > .za-kopf, #v-hours .hr-h, #v-hours .hr-schloss, #v-hours .hr-sperre{
   max-width:430px; width:100%; margin-left:auto; margin-right:auto }
 .hr-h{ margin:14px auto 18px; font-size:clamp(26px,7.2vw,34px) }
 .hr-si{ position:relative }
@@ -4529,10 +4557,15 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <!-- Zweite Fläche im selben Blau: die beiden Stände. -->
       <div class="konten" id="konten" role="group" aria-label="Zeitausgleich und Urlaubstage">
         <button class="zurueckbtn" data-zurueck aria-label="Zurück zum Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
-        <!-- Erst schauen, dann ändern: der Riegel oben gibt die Knöpfe frei. -->
-        <button class="kschloss" id="k-lock" aria-pressed="false">
-          <span class="kschloss-i" id="k-lock-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 018 0v2.7"/></svg></span>
-          <span class="kschloss-t"><b id="k-lock-b">Ansicht gesperrt</b><small id="k-lock-s">Zum Entsperren drücken</small></span>
+        <!-- Erst schauen, dann ändern — dasselbe Schloss wie bei den
+             Dienstzeiten, damit man es nur einmal lernen muss. -->
+        <button class="swz hr-schloss k-schloss" id="k-lock" aria-pressed="false">
+          <span class="swi hr-si">
+            <span class="hrs-zu" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10.5" rx="3"/><path d="M8.2 10.5V7.4a3.8 3.8 0 0 1 7.6 0v3.1"/></svg></span>
+            <span class="hrs-auf" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10.5" rx="3"/><path d="M8.2 10.5V7.4a3.8 3.8 0 0 1 7.3-1.2"/></svg></span>
+          </span>
+          <span class="swt">Bearbeiten<small id="k-lock-s">Zum Ändern aufsperren</small></span>
+          <span class="swr"><i></i></span>
         </button>
         <div class="kbox" data-k="za">
           <div class="kkopf">
@@ -4540,13 +4573,9 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
             <span class="ktxt"><b>Zeitausgleich</b><small>Stand heute</small></span>
           </div>
           <div class="kzahl" id="k-za-wrap"><b id="k-za">0,00</b><u>h</u></div>
-          <div class="kfuss">
-            <small id="k-za-sub">—</small>
-            <span class="kstep">
-              <button data-kstep="za-" aria-label="Eine Viertelstunde weniger">−</button>
-              <button data-kstep="za+" aria-label="Eine Viertelstunde mehr">+</button>
-            </span>
-          </div>
+          <div class="kfuss"><small id="k-za-sub">—</small></div>
+          <!-- Das Rad kommt erst beim Aufsperren dazu, siehe kRaeder(). -->
+          <div class="krad" id="k-za-rad"></div>
         </div>
         <div class="kbox" data-k="ur">
           <div class="kkopf">
@@ -4555,13 +4584,8 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
           </div>
           <div class="kzahl"><b id="k-ur">0</b><u>Tage offen</u></div>
           <div class="kbar"><i id="k-ur-bar"></i></div>
-          <div class="kfuss">
-            <small id="k-ur-sub">—</small>
-            <span class="kstep">
-              <button data-kstep="ur-" aria-label="Einen halben Tag weniger">−</button>
-              <button data-kstep="ur+" aria-label="Einen halben Tag mehr">+</button>
-            </span>
-          </div>
+          <div class="kfuss"><small id="k-ur-sub">—</small></div>
+          <div class="krad" id="k-ur-rad"></div>
         </div>
         <button class="ksave" id="k-save">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>
@@ -4571,9 +4595,13 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <!-- Urlaubsanspruch: derselbe blaue Grund, eigener Riegel. -->
       <div class="konten" id="uabox" role="group" aria-label="Urlaubsanspruch">
         <button class="zurueckbtn" data-zurueck aria-label="Zurück zum Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
-        <button class="kschloss" id="ua-lock" aria-pressed="false">
-          <span class="kschloss-i" id="ua-lock-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 018 0v2.7"/></svg></span>
-          <span class="kschloss-t"><b id="ua-lock-b">Ansicht gesperrt</b><small id="ua-lock-s">Zum Entsperren drücken</small></span>
+        <button class="swz hr-schloss k-schloss" id="ua-lock" aria-pressed="false">
+          <span class="swi hr-si">
+            <span class="hrs-zu" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10.5" rx="3"/><path d="M8.2 10.5V7.4a3.8 3.8 0 0 1 7.6 0v3.1"/></svg></span>
+            <span class="hrs-auf" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10.5" rx="3"/><path d="M8.2 10.5V7.4a3.8 3.8 0 0 1 7.3-1.2"/></svg></span>
+          </span>
+          <span class="swt">Bearbeiten<small id="ua-lock-s">Zum Ändern aufsperren</small></span>
+          <span class="swr"><i></i></span>
         </button>
         <div class="kbox" data-k="ua">
           <div class="kkopf">
@@ -5177,7 +5205,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-0320';
+const APP_STAND = '2026-09-15-0450';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7169,14 +7197,17 @@ function zaNaechste(t){
   }
   return best;
 }
-function radBau(wert, aendert){
+/* Der Kern eines Rades: eine Liste Beschriftungen, ein Anfangsplatz, und
+   bei jeder Aenderung der neue Platz. Die Uhrzeitraeder im Assistenten
+   und die Zahlenraeder im Menue benutzen ihn beide. */
+function radKern(texte, start, aendert){
   const el = document.createElement('div');
   el.className = 'rad';
   el.innerHTML = '<div class="rad-band"></div><div class="rad-roll">'
-    + ZA_ZEITEN.map(t => '<i>' + t + '</i>').join('') + '</div>';
+    + texte.map(t => '<i>' + t + '</i>').join('') + '</div>';
   const roll = $('.rad-roll', el);
   const zeilen = $$('i', roll);
-  let stand = zaNaechste(wert);
+  let stand = clamp(start, 0, texte.length - 1);
   /* Bis das Rad steht, ist jede Bewegung unsere eigene und keine
      Eingabe. Ohne diese Sperre schrieb ein misslungenes Einstellen den
      ersten Eintrag (04:00) in den Plan — genau das war am Geraet zu
@@ -7186,12 +7217,12 @@ function radBau(wert, aendert){
   const stelle = () => { roll.scrollTop = stand * RAD_H; markiere(); };
   roll.addEventListener('scroll', () => {
     if(!bereit) return;
-    const idx = clamp(Math.round(roll.scrollTop / RAD_H), 0, ZA_ZEITEN.length - 1);
+    const idx = clamp(Math.round(roll.scrollTop / RAD_H), 0, texte.length - 1);
     if(idx === stand) return;
     stand = idx; markiere(); zaKlopf();
-    if(aendert) aendert(ZA_ZEITEN[idx]);
+    if(aendert) aendert(idx);
   }, { passive:true });
-  el._setz = t => { stand = zaNaechste(t); stelle(); };
+  el._setz = i => { stand = clamp(i, 0, texte.length - 1); stelle(); };
   /* Erst wenn der Kasten im Dokument haengt, laesst sich scrollen — und
      das Einrasten von scroll-snap kann sich danach noch einmal melden.
      Darum zweimal setzen und erst dann zuhoeren. */
@@ -7219,10 +7250,39 @@ function radBau(wert, aendert){
      ist 04:00. Genau das stand da, wenn man den Nachmittag am naechsten
      Tag wieder einschaltete. Darum richtet der Abschnitt seine Raeder
      neu, sobald er sichtbar wird. */
-  el._neu = t => { if(t) stand = zaNaechste(t); richten(); };
+  el._neu = i => { if(i !== undefined && i !== null) stand = clamp(i, 0, texte.length - 1); richten(); };
   richten();
   return el;
 }
+/* Der Sonderfall Uhrzeit: derselbe Kern, nur rechnet er in 'HH:MM'. */
+function radBau(wert, aendert){
+  const el = radKern(ZA_ZEITEN, zaNaechste(wert), i => { if(aendert) aendert(ZA_ZEITEN[i]); });
+  const setz = el._setz, neu = el._neu;
+  el._setz = t => setz(zaNaechste(t));
+  el._neu  = t => neu(t ? zaNaechste(t) : undefined);
+  return el;
+}
+/* Und der Sonderfall Zahl: von bis in festen Schritten, mit eigener
+   Beschriftung. Fuer Zeitausgleich (Viertelstunden) und Urlaub (halbe
+   Tage) im Profilmenue. */
+function radZahl(von, bis, schritt, wert, beschriften, aendert){
+  const werte = [];
+  /* Auf ein Vielfaches des Schrittes runden — sonst summiert sich die
+     Ungenauigkeit von 0,25 und 0,5 ueber hunderte Runden auf. */
+  for(let n = 0; von + n * schritt <= bis + 1e-9; n++)
+    werte.push(Math.round((von + n * schritt) / schritt) * schritt);
+  let idx = 0, nah = Infinity;
+  werte.forEach((v, i) => { const d = Math.abs(v - wert); if(d < nah - 1e-9){ nah = d; idx = i; } });
+  const el = radKern(werte.map(beschriften), idx, i => { if(aendert) aendert(werte[i]); });
+  el._werte = werte;
+  el._aufWert = v => {
+    let j = 0, d = Infinity;
+    werte.forEach((w, i) => { const x = Math.abs(w - v); if(x < d - 1e-9){ d = x; j = i; } });
+    el._setz(j);
+  };
+  return el;
+}
+
 
 /* ─── Rahmen: Farbe der Woche, Balken, Kopfzeile ─────────────────── */
 function zaFarbe(){
@@ -9155,11 +9215,41 @@ function kontenFrei(an){
   f.classList.toggle('frei', auf);
   const k = $('#k-lock');
   if(k) k.setAttribute('aria-pressed', auf ? 'true' : 'false');
-  $('#k-lock-b').textContent = auf ? 'Ansicht entsperrt' : 'Ansicht gesperrt';
-  $('#k-lock-s').textContent = auf ? 'Werte anpassen, dann speichern' : 'Zum Entsperren drücken';
-  $('#k-lock-i').innerHTML = auf
-    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 017.7-1.5"/></svg>'
-    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 018 0v2.7"/></svg>';
+  $('#k-lock-s').textContent = auf ? 'Offen — mit dem Rad einstellen' : 'Zum Ändern aufsperren';
+  kRaeder(auf);
+}
+/* Die beiden Raeder. Sie stehen nicht dauernd da: 800 Zeilen Zeitausgleich
+   und 560 Zeilen Urlaub baut niemand fuer jemanden, der nur nachsieht.
+   Beim Aufsperren gebaut, beim Zusperren wieder weg. */
+let _kRad = { za:null, ur:null };
+function kRaeder(auf){
+  const hZa = $('#k-za-rad'), hUr = $('#k-ur-rad');
+  if(!hZa || !hUr) return;
+  hZa.innerHTML = ''; hUr.innerHTML = '';
+  _kRad.za = null; _kRad.ur = null;
+  if(!auf || !ME) return;
+  const st = kontenRechnen(ME) || {};
+  /* Das Rad stellt den STAND ein, nicht den unsichtbaren Grundwert.
+     Was daraus fuer zaStart folgt, rechnet die App zurueck: der Teil
+     aus den Eintraegen (zaRoh) aendert sich dabei ja nicht. */
+  _kRad.za = radZahl(-100, 100, 0.25, st.za || 0,
+    v => fmtVz(v) + ' h',
+    v => { ME.konten.zaStart = r25(v - (st.zaRoh || 0)); malKonten(false); kBaldSichern(); });
+  hZa.appendChild(_kRad.za);
+  /* Und hier die offenen Tage; der Topf ergibt sich aus dem, was schon
+     genommen wurde. */
+  _kRad.ur = radZahl(-30, 250, 0.5, st.urlaub || 0,
+    v => fmtTage(v) + (Math.abs(v - 1) < 0.001 ? ' Tag' : ' Tage'),
+    v => { ME.konten.topf = r05(v + (st.genommen || 0)); malKonten(false); kBaldSichern(); });
+  hUr.appendChild(_kRad.ur);
+  raederRichten($('#konten'));
+}
+/* Ein Rad rastet beim Ziehen ein Dutzend Mal ein — einmal sichern am
+   Ende genuegt. Der Knopf "Speichern" sichert ohnehin noch einmal. */
+let _kBaldT = null;
+function kBaldSichern(){
+  clearTimeout(_kBaldT);
+  _kBaldT = setTimeout(() => { _kBaldT = null; save(); }, 420);
 }
 /* Die Stufen im Menü: dieselbe Liste wie im Blatt, nur unter der aktuellen
    Stufe und rollbar bis zur Linie. Ein zweiter Tipp schließt wieder. */
@@ -9256,7 +9346,7 @@ document.addEventListener('click', e => {
     /* Der Löschen-Griff wird selbst nach rechts gezogen — der bleibt
        unberührt, sonst schöbe man beim Löschen das Fenster weg.
        Regler und Eingabefelder ziehen ebenfalls selbst. */
-    if(e.target.closest('.dlz, input, textarea, [role="slider"], .zastepper, .kstep')) return;
+    if(e.target.closest('.dlz, input, textarea, [role="slider"], .zastepper, .rad')) return;
     const l = lage(); if(!l) return;
     ziel = l.el; tun = l.tun;
     x0 = e.clientX; y0 = e.clientY; dx = 0; an = true; quer = false; t0 = performance.now();
@@ -9317,11 +9407,13 @@ function uaFrei(an){
   const auf = !!an;
   f.classList.toggle('frei', auf);
   const k = $('#ua-lock'); if(k) k.setAttribute('aria-pressed', auf ? 'true' : 'false');
-  $('#ua-lock-b').textContent = auf ? 'Ansicht entsperrt' : 'Ansicht gesperrt';
-  $('#ua-lock-s').textContent = auf ? 'Anspruch anpassen, dann speichern' : 'Zum Entsperren drücken';
-  $('#ua-lock-i').innerHTML = auf
-    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 017.7-1.5"/></svg>'
-    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6"/><path d="M8 10.5V7.8a4 4 0 018 0v2.7"/></svg>';
+  $('#ua-lock-s').textContent = auf ? 'Offen — Anspruch anpassen' : 'Zum Ändern aufsperren';
+}
+/* Ein Tipp ins Gesperrte weist aufs Schloss, statt nichts zu tun —
+   genauso wie auf der Dienstzeiten-Seite. */
+function schlossStups(kennung){
+  const b = $(kennung); if(!b) return;
+  b.classList.remove('stups'); void b.offsetWidth; b.classList.add('stups');
 }
 function malAnspruch(){
   if(!ME) return;
@@ -9407,18 +9499,18 @@ $('#k-save').addEventListener('click', () => {
 $('#konten').addEventListener('click', e => {
   /* Riegel und Speichern haben eigene Knöpfe — hier nicht mitschließen. */
   if(e.target.closest('#k-lock') || e.target.closest('#k-save')) return;
-  const b = e.target.closest('[data-kstep]');
-  /* Ein Tipp auf die Fläche daneben schließt wieder. */
-  if(!b){ if(!e.target.closest('.kbox')) kontenAuf(false); return; }
-  if(!$('#konten').classList.contains('frei')) return;   /* gesperrt: nichts tun */
-  const w = b.dataset.kstep;
-  if(w === 'za-') ME.konten.zaStart = r25(ME.konten.zaStart - 0.25);
-  if(w === 'za+') ME.konten.zaStart = r25(ME.konten.zaStart + 0.25);
-  /* Halbe Tage von Hand: das verschiebt den Topf, nicht den Jahresanspruch. */
-  if(w === 'ur-') ME.konten.topf = Math.max(0,   r05(ME.konten.topf - 0.5));
-  if(w === 'ur+') ME.konten.topf = Math.min(400, r05(ME.konten.topf + 0.5));
-  save();
-  malKonten(false);
+  /* Ein Tipp auf die Fläche neben den Kacheln schließt wieder. Die
+     Kacheln selbst regeln sich seit 15.09.2026 ueber ihre Raeder. */
+  if(e.target.closest('#k-lock') || e.target.closest('#k-save')) return;
+  if(e.target.closest('.kbox')){
+    if(!$('#konten').classList.contains('frei')) schlossStups('#k-lock');
+    return;
+  }
+  kontenAuf(false);
+});
+$('#uabox').addEventListener('click', e => {
+  if(e.target.closest('#ua-lock') || e.target.closest('#ua-save')) return;
+  if(e.target.closest('.kbox') && !$('#uabox').classList.contains('frei')) schlossStups('#ua-lock');
 });
 $('#avbig').addEventListener('click', () => avWahl());
 $('#avgrid').addEventListener('click', e => {
@@ -9680,7 +9772,7 @@ let _wischEnde = 0;
     if(_blaettert) return;
     if(e.pointerType === 'mouse' && e.button !== 0) return;
     /* Eingabefelder und Regler ziehen selbst — die bleiben unberührt. */
-    if(e.target.closest('input, textarea, [role="slider"], .zastepper, .kstep')) return;
+    if(e.target.closest('input, textarea, [role="slider"], .zastepper, .rad')) return;
     x0 = e.clientX; y0 = e.clientY; dx = 0; an = true; quer = false; t0 = performance.now();
   });
   flaeche.addEventListener('pointermove', e => {
