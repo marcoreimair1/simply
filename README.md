@@ -283,45 +283,39 @@ die Wortmarke steht darunter.
 
 ### Der Vorspann
 
-Auf dem Schirm stehen **nur zwei Dinge: das App-Symbol und der Ladebalken.** Wortmarke und
-Slogan standen bis 14. September 2026 darunter — beim Starten liest das niemand, und sie
-machten aus einem Zeichen eine Seite. Sie sind weg.
+Auf dem Schirm steht **eine einzige Sache: das freigestellte Männchen.** Wortmarke, Slogan und
+zuletzt auch der Ladebalken sind am 14. September 2026 gegangen — beim Starten liest und zählt
+das niemand, und zusammen machten sie aus einem Zeichen eine kleine Seite.
 
-Er läuft **der Reihe nach**, nicht übereinander: erst Symbol und Ladebalken, dann erst der
-Gruß mit dem Profilbild. Vorher lagen beide übereinander und endeten gemeinsam — vom Symbol
-blieb dabei oft nur das Profilbild darüber zu sehen.
+Er läuft **der Reihe nach**, nicht übereinander: erst das Zeichen, dann erst der Gruß mit dem
+Profilbild. Vorher lagen beide übereinander und endeten gemeinsam — vom Zeichen blieb dabei oft
+nur das Profilbild darüber zu sehen.
 
-Das App-Symbol steht als `LOGO_ICON` fest in `index.html` (256 px, base64). Als Datei geladen
-kam es regelmäßig zu spät: `icon-512.png` wiegt 250 KB, und der Vorspann ist vorbei, bevor das
-Netz antwortet.
+Gezeigt wird `LOGO_MOJI`, dasselbe freigestellte Bild wie beim Osterei am Schriftzug: Körper,
+Gesicht, grüner Punkt, weißer Umriss — weder Kachel noch Hintergrund. Das App-Symbol mit Kachel
+(`LOGO_ICON`) steht weiterhin in der Datei, aber nur noch fürs PDF. Beide sind base64 im
+Quelltext: als Datei geladen kämen sie regelmäßig zu spät, `icon-512.png` allein wiegt 250 KB.
 
-**Über das Symbol wandert ein Glanz wie über eine Metallkarte**, von links oben nach rechts
-unten. Gebaut ist er als senkrechter Streifen in `.mark-tile::after`, um 45 Grad gedreht;
-`translateX` läuft danach in der **gedrehten** Achse, also nach rechts unten. Die Kachel hat
-`overflow:hidden`, das Band ist deshalb nur auf dem Symbol zu sehen. Schmaler Kern, weiche
-Flanken — eine breite Aufhellung der halben Kachel liest sich nicht als Streiflicht.
+**Über das Männchen wandert ein Glanz wie über eine Metallkarte**, von links oben nach rechts
+unten. Gebaut ist er als senkrechter Streifen, um 45 Grad gedreht; `translateX` läuft danach in
+der **gedrehten** Achse, also nach rechts unten. Schmaler Kern, weiche Flanken — eine breite
+Aufhellung der halben Fläche liest sich nicht als Streiflicht.
 
-**Der Ladebalken zeigt den echten Start, keine Uhr.** `introBalken(ms, auf)` setzt die Breite
-als Inline-Wert, die Bewegung macht ein CSS-Übergang. Zwei Züge:
+Solange das Bild in einer Kachel saß, schnitt die das Band ab. Freigestellt muss das Bild selbst
+schneiden: die Hülle `.mark-glanz` trägt das Männchen als **Maske**, das Band liegt darin. Die
+Maske kommt als `--moji-maske` aus `playIntro()`, weil das Bild als Datenzeile im Skript steht
+und nicht als Datei. Kennt ein Browser keine Masken, bleibt das Band ganz weg (`@supports`) —
+als Rechteck über dem leeren Platz daneben wäre es schlimmer als gar keins.
 
-1. `playIntro()` schickt ihn auf **86 % in 2,9 s** — das ist die Schätzung.
-2. Sobald eine Ansicht steht, meldet `go()` das über `introAppSteht()`. Erst dann laufen die
-   letzten Prozent, und zwar über die **verbleibende Standzeit** gedehnt, damit der Balken
-   genau mit dem Vorspann fertig wird statt vorher voll herumzustehen.
+> **Der Ladebalken ist weg.** Er zeigte den echten Start statt einer Uhr: `introBalken()` schickte
+> ihn erst auf 86 % und dehnte die letzten Prozent über die verbleibende Standzeit, sobald `go()`
+> den Start meldete. Richtig gedacht — aber es blieb ein zweites Ding auf dem Schirm. Die
+> **Zeiten sind unberührt**, sie hingen nie am Balken: `introSchliessen()` entscheidet weiter, und
+> merkt sich den Endzeitpunkt jetzt in `window.__introEnde`, damit beim Nachsehen erkennbar ist,
+> worauf der Vorspann gerade wartet. Ohne Balken steht das Zeichen die volle Standzeit still —
+> wenn das zu lang wirkt, sind `INTRO_MIN` und `INTRO_LANG` die Stellschrauben.
 
-Ein unterbrochener CSS-Übergang läuft von der gerade erreichten Breite weiter — deshalb sieht
-man keinen Sprung, egal wann der Start durch ist. Der Glanzstreifen im Balken wandert auch
-dann weiter, wenn die Breite steht; ohne ihn sieht ein wartender Balken aus wie ein hängender.
-
-**Am 14. September 2026 überarbeitet, ohne an den Zeiten zu drehen:** voller Markenverlauf statt
-eines Ausblendens ins Blasse (der Balken sah am Anfang aus, als wäre er selbst noch halb da),
-ein weiches Licht an der Spitze, das mit der Breite mitwandert (die Kante allein war eine
-Abbruchkante), und der Glanzstreifen läuft jetzt im **selben Takt wie der Glanz auf der
-Kachel** — 3,4 s mit 1,2 s Vorlauf. Vorher lief er auf eigenen 1,6 s und kreuzte den oberen in
-immer neuen Abständen: zwei Bewegungen, die nichts miteinander zu tun hatten. Standzeiten,
-Züge und Kurven sind unverändert.
-
-Wie lange der Vorspann steht, hängt daran, wer da ist:
+Wie lange der Vorspann steht, hängt daran, wer da ist:Wie lange der Vorspann steht, hängt daran, wer da ist:
 
 | | Standzeit | warum |
 |---|---|---|
@@ -1442,6 +1436,13 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Vorspann: nur noch das freigestellte Männchen** (14. September 2026, zweiter Durchgang):
+  Der Ladebalken ist ganz entfallen, und statt des App-Symbols mit Kachel steht dort jetzt das
+  freigestellte Männchen. Der Glanz bleibt — er wird über eine CSS-Maske auf die Silhouette
+  beschnitten, weil ohne Kachel nichts mehr abschneidet. Die Zeiten sind unberührt;
+  `introSchliessen()` merkt sich den Endzeitpunkt nun in `window.__introEnde`, worüber auch die
+  Testreihe prüft, die vorher über die Dauer des letzten Balkenzugs ging. 62 Prüfungen in der
+  Vorspann-Reihe, alle neun zusammen 446
 - **Vorspann: nur noch Symbol und Balken** (14. September 2026): Wortmarke und Slogan sind
   raus, über das Symbol wandert ein Glanz wie über eine Metallkarte (von links oben nach rechts
   unten, als gedrehter Streifen in `.mark-tile::after`). Der Ladebalken ist überarbeitet —

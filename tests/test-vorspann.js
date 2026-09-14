@@ -25,44 +25,47 @@ ok('Abgemeldet (UID === null)', UID === null, 'UID=' + UID);
 ok('INTRO_MIN 4,4 s', INTRO_MIN === 4400, INTRO_MIN);
 ok('INTRO_LANG laenger als INTRO_MIN', INTRO_LANG > INTRO_MIN, INTRO_LANG + ' > ' + INTRO_MIN);
 ok('Notbremse liegt hinter beiden', INTRO_MAX > INTRO_LANG, INTRO_MAX);
-ok('Der Balken wird vor dem Ausblenden voll', BALKEN_VOR > 0 && BALKEN_VOR < INTRO_MIN, BALKEN_VOR);
 
-/* ── 2 · Der Balken im Markup ── */
-ok('Balken liegt im Vorspann', !!document.querySelector('#splash .sp-lade #sp-bar'));
-ok('Balken steht auch im gesicherten Markup', INTRO_HTML.indexOf('sp-bar') > -1);
+/* ── 2 · Auf dem Vorspann steht nur das Maennchen ──
+   Ladebalken, Wortmarke und Slogan sind am 14.09.2026 entfallen. */
+ok('Kein Ladebalken mehr',        !document.querySelector('#splash .sp-lade'));
+ok('Und auch nicht im gesicherten Markup', INTRO_HTML.indexOf('sp-bar') < 0);
+ok('Das Bild liegt im Vorspann',  !!document.querySelector('#splash .mark-logo #mark-img'));
+ok('Der Glanz liegt darueber',    !!document.querySelector('#splash .mark-logo #mark-glanz'));
 
-/* ── 3 · playIntro setzt den ersten Zug ── */
+/* ── 3 · playIntro setzt das freigestellte Maennchen ── */
 ME = null;
 playIntro();
-var b = document.querySelector('#sp-bar');
-ok('Erster Zug auf 86 %', b.style.width === '86%', b.style.width);
-ok('Erster Zug dauert 2,9 s', b.style.transitionDuration === '2900ms', b.style.transitionDuration);
+var bild = document.querySelector('#mark-img');
 ok('Vorspann laeuft', window.__introLaeuft === true);
+ok('Freigestellt, nicht die Kachel', bild.getAttribute('src') === LOGO_MOJI);
+ok('Der Glanz traegt es als Maske',
+   document.querySelector('#mark-glanz').style.getPropertyValue('--moji-maske').indexOf('data:image/png') > -1);
+ok('Noch kein Ende gesetzt', !window.__introEnde, window.__introEnde);
 
-/* ── 4 · Ohne Anmeldung die lange Fassung ── */
+/* ── 4 · Ohne Anmeldung die lange Fassung ──
+   Gemessen wird der gemerkte Endzeitpunkt. Frueher lief diese Pruefung
+   ueber die Dauer des letzten Balkenzugs — ein Umweg, der mit dem
+   Balken weggefallen ist. */
 introAppSteht();
-var langDauer = parseInt(b.style.transitionDuration, 10);
-ok('Ohne Anmeldung: Balken voll', b.style.width === '100%', b.style.width);
-ok('Ohne Anmeldung: rund INTRO_LANG minus Vorlauf',
-   Math.abs(langDauer - (INTRO_LANG - BALKEN_VOR)) < 200, langDauer + ' ms');
+var langRest = window.__introEnde - window.__introStart;
+ok('Ohne Anmeldung: rund INTRO_LANG',
+   Math.abs(langRest - INTRO_LANG) < 250, langRest + ' ms');
 endIntro();
 
 /* ── 5 · Angemeldet die kuerzere Fassung ── */
 playIntro();
-b = document.querySelector('#sp-bar');
 ME = { vorname: 'Test', nachname: 'Fall', dob: '1990-01-01' };
 introAppSteht();
-var kurzDauer = parseInt(b.style.transitionDuration, 10);
-ok('Angemeldet: kuerzer als ohne Anmeldung', kurzDauer < langDauer,
-   kurzDauer + ' ms < ' + langDauer + ' ms');
-ok('Angemeldet: rund INTRO_MIN minus Vorlauf',
-   Math.abs(kurzDauer - (INTRO_MIN - BALKEN_VOR)) < 200, kurzDauer + ' ms');
-ok('Letzter Zug nie unter BALKEN_MIN', kurzDauer >= BALKEN_MIN, kurzDauer);
+var kurzRest = window.__introEnde - window.__introStart;
+ok('Angemeldet: kuerzer als ohne Anmeldung', kurzRest < langRest,
+   kurzRest + ' ms < ' + langRest + ' ms');
+ok('Angemeldet: rund INTRO_MIN', Math.abs(kurzRest - INTRO_MIN) < 250, kurzRest + ' ms');
 
 /* ── 6 · Zweimal melden aendert nichts ── */
-var vorher = b.style.transitionDuration;
+var vorher = window.__introEnde;
 introAppSteht();
-ok('Zweite Meldung laesst den Balken in Ruhe', b.style.transitionDuration === vorher);
+ok('Zweite Meldung laesst das Ende in Ruhe', window.__introEnde === vorher);
 
 /* ── 7 · Der Gruss wartet, statt sich darueberzulegen ── */
 var hallo = document.querySelector('#hallo');
@@ -195,20 +198,22 @@ setTimeout(() => {
   [['Abmelden wartet, bis der Gruss deckt', /const gedeckt = wait\(GRUSS_REIN\);/],
    ['Und wechselt die Seite erst danach', /await gedeckt;[\s\S]{0,400}loginScreen\(\);/],
    ['GRUSS_REIN passt zu halloRein', /\.hallo\.on\{display:grid;animation:halloRein \.62s/],
-   /* Seit 14.09.2026 stehen auf dem Vorspann nur Symbol und Balken. */
-   ['Der Glanz liegt auf der Kachel', /\.mark-tile::after\{[\s\S]{0,600}kartenGlanz/],
+   /* Seit 14.09.2026 steht auf dem Vorspann nur das freigestellte Bild. */
+   ['Der Glanz liegt in einer eigenen Huelle', /\.mark-glanz::after\{[\s\S]{0,700}kartenGlanz/],
    ['Er wandert in der gedrehten Achse', /@keyframes kartenGlanz\{[\s\S]{0,200}rotate\(45deg\) translateX/],
-   ['Balken und Kachel im selben Takt',
-    /animation:ladeGlanz 3\.4s 1\.2s var\(--ease\) infinite/],
-   ['Der Balken hat ein Licht an der Spitze', /\.sp-lade i::before\{/],
-   ['Weniger Bewegung schaltet beides ab',
-    /prefers-reduced-motion:reduce\)\{\s*\n\s*\.sp-lade i::after, \.mark-tile::after\{ animation:none \}/]
+   ['Die Huelle traegt das Bild als Maske', /\.mark-glanz\{[\s\S]{0,400}mask-image:var\(--moji-maske\)/],
+   ['Ohne Maskenunterstuetzung kein Band', /@supports \(\(-webkit-mask-image[\s\S]{0,220}\.mark-glanz\{ display:block \}/],
+   ['Das Bild steht frei — keine Flaeche, kein Schatten',
+    /\.mark-logo\{[\s\S]{0,260}box-shadow:none!important/],
+   ['Weniger Bewegung schaltet den Glanz ab',
+    /prefers-reduced-motion:reduce\)\{\s*\n\s*\.mark-glanz\{ display:none!important \}/]
   ].forEach(([n, re]) => E.push({ n, ok: re.test(roh), z: re.test(roh) ? '' : 'fehlt' }));
-  /* Die Wortmarke darf im Vorspann-Markup nicht mehr vorkommen. */
+  /* Im Vorspann-Markup darf nichts davon mehr vorkommen. */
   const splash = (roh.match(/<div id="splash"[\s\S]*?\n<\/div>/) || [''])[0];
   [['Keine Unterzeile im Vorspann', splash.indexOf('subline') < 0],
    ['Keine Wortmarke im Vorspann',  splash.indexOf('mark-wort') < 0],
-   ['Symbol und Balken sind da',    splash.indexOf('mark-img') > -1 && splash.indexOf('sp-bar') > -1]
+   ['Kein Ladebalken im Vorspann',  splash.indexOf('sp-lade') < 0],
+   ['Bild und Glanz sind da',       splash.indexOf('mark-img') > -1 && splash.indexOf('mark-glanz') > -1]
   ].forEach(([n, gut]) => E.push({ n, ok: gut, z: gut ? '' : 'siehe #splash' }));
   let schlecht = 0;
   console.log('');
