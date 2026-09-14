@@ -905,7 +905,7 @@ Deshalb bleibt jede Pflichtangabe, wo sie war, und die Gestaltung passiert daneb
 | **Vier Karten** (42–57) | Dienstnehmer/in, Geburtsdatum, Dienstgeber, Zeitraum — je mit einem Streifen in einem der fünf Wolkentöne |
 | **Tabelle** (ab 61,6) | Kein Kasten um alles. Eine Kopfpille in Lavendel, darunter Zeilen mit haarfeinen Trennern. Zeilen mit Eintrag im Pastellton ihrer Kategorie, die volle Farbe trägt ein Streifen an der Kante |
 | **Summen** | Karten mit farbigem Streifen oben; *Gesamt* in Violett |
-| **Unterschrift** (274) | Die auf dem Telefon **gezeichnete** Unterschrift, höchstens 11 mm hoch und seitenverhältnisgetreu eingepasst. Rechts daneben der Vermerk *Elektronisch unterschrieben in der MOJI App* |
+| **Unterschrift** (271) | Die auf dem Telefon **gezeichnete** Unterschrift, höchstens 8 mm hoch und seitenverhältnisgetreu eingepasst, über einer 62 mm kurzen Leiste. Darunter der Vermerk *Elektronisch unterschrieben in der MOJI App* |
 
 **Farbflächen nur in schmalen Bändern, nie ganzseitig.** Das Blatt wird gedruckt, und Toner
 kostet. Den Verlauf im Kopfband zeichnet `verlauf()` aus achtzig schmalen Streifen mit einer
@@ -935,12 +935,13 @@ neben den Ausdruck legte, sah zwei verschiedene Urlaubsfarben.
 
 Seit 15. September 2026 wird **vor jedem Export unterschrieben**. *PDF erstellen* legt ein
 weißes Blatt über die ganze Kachel — eine hellgraue Linie, sonst nichts —, die Überschrift
-darüber wird zu *Bestätige jetzt mit deiner Unterschrift.*, und unten, wo sonst **Kalender**
-und **Export** stehen, steht ein einziger breiter Knopf: **Signieren**. Er bleibt stumpf, bis
-ein Strich auf dem Blatt liegt.
+darüber wird zu *Bestätige jetzt mit deiner Unterschrift.*, darunter steht **Unterschrift** in
+der Markenfarbe, und unten, wo sonst **Kalender** und **Export** stehen, steht ein einziger
+breiter Knopf: **Signieren**. Er bleibt stumpf, bis ein Strich auf dem Blatt liegt.
 
-Das Blatt ist in **beiden Fassungen weiß**. Es ist Papier, und Papier bleibt Papier, auch im
-Dunkeln.
+Im Hellen ist das Blatt weiß. Im Dunkeln ein **ruhiger Papierton** (`#ded9e6`) statt reinem
+Weiß — eine grelle Fläche mitten in einer dunklen Seite blendet, und geschrieben wird darauf
+ohnehin mit dunkler Tinte.
 
 **Eine Unterschrift, alle Monate.** Wer drei Monate auf einmal abgibt, unterschreibt einmal;
 derselbe Strich steht auf allen drei Seiten. Danach ist er wieder fort (`SIG_BILD = null`) —
@@ -954,8 +955,13 @@ einer Unterschrift die Zeichnung einer Unterschrift.
 Leinwand, sucht die Randpunkte und schneidet mit 8 px Rand aus — sonst hinge die Unterschrift
 im PDF irgendwo in einem großen leeren Rechteck. Das Seitenverhältnis wandert als `SIG_VERH`
 mit und bestimmt, wie sie ins Feld gesetzt wird: erst auf die Breite, und wird sie dabei höher
-als 11 mm, auf die Höhe. **Gestaucht wird nie** — die letzte Erklärzeile darüber hat ihre
+als 8 mm, auf die Höhe. **Gestaucht wird nie** — die letzte Erklärzeile darüber hat ihre
 Grundlinie bei 261,6 mm, gemessen, nicht geschätzt.
+
+**Kurz gehalten.** Bis zum 15. September 2026 (Abend) war die Leiste 86 mm lang und die
+Unterschrift bis 15 mm hoch — das las sich als Formularfeld, nicht als Unterschrift. Jetzt
+62 mm und 8 mm. Und der Vermerk steht **unter** der Leiste statt rechtsbündig am Blattrand:
+dort drüben gehörte er zu nichts und ging verloren.
 
 ### Die Handschrift
 
@@ -1679,6 +1685,13 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Drei Korrekturen am Unterschreiben** (15. September 2026): Die Leiste im PDF war 86 mm lang
+  und die Unterschrift bis 15 mm hoch — jetzt 62 und 8, das liest sich als Unterschrift und
+  nicht als Formularfeld. Der Vermerk *Elektronisch unterschrieben in der MOJI App* stand
+  rechtsbündig am Blattrand und gehörte dort zu nichts; er steht jetzt unter der Leiste. Über
+  der Kachel steht **Unterschrift** in der Markenfarbe, und im Dunkeln ist das Blatt ein
+  ruhiger Papierton statt grellem Weiß. 626 Prüfungen
 
 - **Unterschreiben vor dem Export** (15. September 2026): *PDF erstellen* macht die ganze Kachel
   zum weißen Blatt mit einer hellgrauen Linie; unten wird aus *Kalender* und *Export* ein

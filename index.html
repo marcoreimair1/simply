@@ -1647,9 +1647,23 @@ body.nobar .topbar{display:none}
 body.sigmodus .exhead{height:auto;min-height:52px}
 body.sigmodus .exh{white-space:normal;font-size:21px;line-height:1.15}
 body.sigmodus .exhbtn{display:none}
+/* Das Woertchen ueber der Kachel — in der Markenfarbe, damit klar ist,
+   was das weisse Blatt darunter ist. */
+.sig-titel{margin:0 2px 9px;font-size:11px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--butter)}
+.sig-titel[hidden]{display:none}
+/* Papier. Im Hellen weiss; im Dunkeln ein ruhiger Papierton — ein
+   grelles Weiss mitten in einer dunklen Seite blendet, und geschrieben
+   wird darauf ja mit dunkler Tinte. */
 .sigpad{position:absolute;inset:0;z-index:4;display:none;border-radius:inherit;
   overflow:hidden;background:#fff;
   box-shadow:inset 0 0 0 1px rgba(20,16,34,.06)}
+:root[data-theme="dark"] .sigpad{background:#ded9e6;
+  box-shadow:inset 0 0 0 1px rgba(20,16,34,.10)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .sigpad{background:#ded9e6;
+    box-shadow:inset 0 0 0 1px rgba(20,16,34,.10)}
+}
 .sigpad.da{display:block;animation:sigRein .34s var(--ease-out) both}
 @keyframes sigRein{from{opacity:0;transform:scale(.985)}}
 .sigpad canvas{position:absolute;inset:0;width:100%;height:100%;
@@ -4483,6 +4497,8 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         </button>
       </div>
 
+      <p class="sig-titel" id="sig-titel" hidden>Unterschrift</p>
+
       <div class="card" id="ex-card">
         <!-- Liegt ueber der ganzen Kachel, sobald unterschrieben wird:
              weisses Papier, eine hellgraue Linie, sonst nichts. -->
@@ -5254,7 +5270,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-0610';
+const APP_STAND = '2026-09-15-0715';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -10763,6 +10779,7 @@ function sigAuf(){
   e.classList.add('da');
   e.setAttribute('aria-hidden','false');
   document.body.classList.add('sigmodus');
+  $('#sig-titel').hidden = false;
   $('#v-export .exh').textContent = 'Bestätige jetzt mit deiner Unterschrift.';
   /* Gleich messen — das Feld steht mit dem Klassenwechsel schon im
      Aufbau. Und danach noch einmal: liegt die Seite im Hintergrund,
@@ -10776,6 +10793,7 @@ function sigZu(){
   e.classList.remove('da');
   e.setAttribute('aria-hidden','true');
   document.body.classList.remove('sigmodus');
+  $('#sig-titel').hidden = true;
   $('#v-export .exh').innerHTML = 'Export <i>als PDF</i>';
 }
 /* Der Strich. Kein eigenes Glaetten mit Kurven — ein Zug mit dem Finger
@@ -11144,7 +11162,11 @@ function drawPage(doc, p, y, m){
      steht in der eingebetteten Blockhandschrift — dieselbe Schrift auf
      jedem Geraet, statt der Zufallsschrift, die das Betriebssystem
      frueher fuer "cursive" gerade zur Hand hatte. */
-  const sy = 274, sw = 86;
+  /* Kurz und klein: die Leiste war 86 mm lang und die Unterschrift bis
+     15 mm hoch — auf dem Blatt sah das nach Formularfeld aus und nicht
+     nach Unterschrift. Und drei Millimeter weiter herauf, damit der
+     Vermerk darunter Platz hat statt am rechten Rand zu verschwinden. */
+  const sy = 271, sw = 62;
   /* Seit 15.09.2026 steht hier die wirklich gezeichnete Unterschrift.
      Fehlt sie — etwa in einem alten Ablauf —, bleibt es beim Namen in
      der Blockhandschrift; ohne irgendeine Unterschrift ist die
@@ -11153,9 +11175,9 @@ function drawPage(doc, p, y, m){
     /* In das Feld einpassen, ohne sie zu verzerren: erst auf die Breite,
        und wird sie dabei zu hoch, auf die Hoehe. Eine gestauchte
        Unterschrift ist nicht mehr die Unterschrift. */
-    /* 11 mm hoch, mehr nicht: die letzte Erklaerzeile darueber hat ihre
+    /* 8 mm hoch, mehr nicht: die letzte Erklaerzeile darueber hat ihre
        Grundlinie bei 261,6 — gemessen, nicht geschaetzt. */
-    const maxB = sw - 7, maxH = 11;
+    const maxB = sw - 7, maxH = 8;
     let bre = maxB, hoch = bre / (SIG_VERH || 3.4);
     if(hoch > maxH){ hoch = maxH; bre = hoch * (SIG_VERH || 3.4); }
     try{ doc.addImage(SIG_BILD, 'PNG', L + 3.5, sy + 1 - hoch, bre, hoch, undefined, 'FAST'); }
@@ -11171,9 +11193,11 @@ function drawPage(doc, p, y, m){
   doc.setFont('helvetica','normal'); doc.setFontSize(6);
   setT(PAP.grau);
   doc.text('UNTERSCHRIFT DIENSTNEHMER/IN   ·   ' + name, L, sy + 6);
+  /* Der Vermerk steht unter der Leiste, nicht am rechten Blattrand —
+     dort drueben gehoerte er zu nichts und ging verloren. */
   if(SIG_BILD){
-    doc.setFontSize(5.6); setT(PAP.leise);
-    doc.text('Elektronisch unterschrieben in der MOJI App', R, sy + 6, { align:'right' });
+    doc.setFontSize(5.4); setT(PAP.leise);
+    doc.text('Elektronisch unterschrieben in der MOJI App', L, sy + 9);
   }
 
   /* ─── Fuss ─── */

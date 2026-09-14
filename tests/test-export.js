@@ -188,6 +188,11 @@ ok('Der grosse Knopf heisst Signieren',
 ok('Er steht bei Kalender und Export',
    document.getElementById('sig-ok').parentElement.id === 'fabbar');
 
+ok('Ueber der Kachel steht das Wort',
+   document.getElementById('sig-titel').textContent === 'Unterschrift',
+   document.getElementById('sig-titel').textContent);
+ok('Aber erst beim Unterschreiben', document.getElementById('sig-titel').hidden);
+
 const kopfVor = document.querySelector('#v-export .exh').textContent;
 EX.year = new Date().getFullYear(); EX.set = new Set([EX.year + '-0']);
 sigAuf();
@@ -197,9 +202,11 @@ ok('Und der Kopf fragt danach',
    document.querySelector('#v-export .exh').textContent === 'Bestätige jetzt mit deiner Unterschrift.',
    document.querySelector('#v-export .exh').textContent);
 ok('Signieren geht erst mit Strich', document.getElementById('sig-ok').disabled);
+ok('Jetzt steht das Wort da',        !document.getElementById('sig-titel').hidden);
 sigZu();
 ok('Zumachen raeumt auf',          !pad.classList.contains('da')
-   && !document.body.classList.contains('sigmodus'));
+   && !document.body.classList.contains('sigmodus')
+   && document.getElementById('sig-titel').hidden);
 ok('Und der Kopf heisst wieder wie vorher',
    document.querySelector('#v-export .exh').textContent === kopfVor,
    document.querySelector('#v-export .exh').textContent);
@@ -239,7 +246,20 @@ setTimeout(() => {
    ['Mit dem Vermerk darunter',
     /doc\.text\('Elektronisch unterschrieben in der MOJI App'/.test(roh)],
    ['Sie wird nicht aufgehoben', /\n  SIG_BILD = null;\n  _busy = false/.test(roh)],
-   ['Und nicht verzerrt', /if\(hoch > maxH\)\{ hoch = maxH; bre = hoch \* \(SIG_VERH \|\| 3\.4\); \}/.test(roh)]
+   ['Und nicht verzerrt', /if\(hoch > maxH\)\{ hoch = maxH; bre = hoch \* \(SIG_VERH \|\| 3\.4\); \}/.test(roh)],
+   /* Die Leiste war 86 mm lang und die Unterschrift bis 15 mm hoch —
+      das sah nach Formularfeld aus, nicht nach Unterschrift. */
+   ['Die Leiste ist kurz',              /const sy = 271, sw = 62;/.test(roh)],
+   ['Und die Unterschrift klein',       /const maxB = sw - 7, maxH = 8;/.test(roh)],
+   /* Am rechten Blattrand gehoerte der Vermerk zu nichts. */
+   ['Der Vermerk steht unter der Leiste',
+    /doc\.text\('Elektronisch unterschrieben in der MOJI App', L, sy \+ 9\)/.test(roh)],
+   ['Und nicht mehr rechts aussen',
+    !/'Elektronisch unterschrieben in der MOJI App', R,/.test(roh)],
+   ['Das Blatt blendet im Dunkeln nicht',
+    /:root\[data-theme="dark"\] \.sigpad\{background:#ded9e6/.test(roh)],
+   ['Das Wort darueber traegt die Markenfarbe',
+    /\.sig-titel\{[^}]*color:var\(--butter\)/.test(roh)]
   ].forEach(([n, re]) => {
     const gut = (typeof re === 'boolean') ? re : re.test(roh);
     E.push({ n, ok: gut, z: gut ? '' : 'Regel fehlt' });
