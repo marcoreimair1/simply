@@ -191,13 +191,21 @@ ok('Ohne Plan gilt der Schritt', stepValid(3) === true);
 /* ── 12 · Der Schluss hat eine eigene Fassung des Grusses ── */
 ok('GRUSS kennt fertig',      !!GRUSS.fertig);
 ok('Fertig traegt Konfetti',  GRUSS.fertig.konfetti === true);
-ok('Ring liegt im Markup',    !!document.querySelector('#hallo .hallo-ring .rg')
-                           && !!document.querySelector('#hallo .hallo-ring .hk'));
+ok('Reif liegt um das Profilbild',
+   !!document.querySelector('#hallo .hallo-rahmen .hallo-ring .rg'));
+ok('Der Haken steht daneben',  !!document.querySelector('#hallo .hallo-haken svg'));
 /* Der Gruss braucht jemanden zum Gruessen — sonst kehrt er sofort um. */
 ME = normalize({ id:'pGruss', vorname:'Anna', nachname:'Muster', dob:'1994-03-14' });
 zeigeGruss('fertig');
 ok('Buehne traegt fertig',    el('hallo').classList.contains('fertig'));
 ok('Name steht im Gruss',     el('hallo-t').textContent.indexOf('Anna') > -1, el('hallo-t').textContent);
+ok('Und zwar freundlich',     el('hallo-t').textContent.indexOf('Hi ') === 0, el('hallo-t').textContent);
+ok('Darunter das Willkommen', el('hallo-s').textContent === 'Willkommen bei MOJI.', el('hallo-s').textContent);
+/* Das zugeteilte Profilbild ist der Grund fuer diese Buehne — es muss zu sehen sein. */
+ok('Profilbild ist gesetzt',  (el('hallo-img').getAttribute('src') || '').indexOf('av-') === 0,
+   el('hallo-img').getAttribute('src'));
+ok('Und wird nicht versteckt', document.querySelector('#hallo .hallo-rahmen') !== null
+   && el('hallo').classList.contains('fertig'));
 grussEnde();
 
 /* ── 13 · Das Profil kommt aus dem Funnel ── */

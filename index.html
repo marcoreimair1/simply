@@ -2433,8 +2433,12 @@ body.zrmodus .fb-z{display:inline-flex}
    beschnittenen Bildfelds, sonst würde ihn die runde Ecke abschneiden. */
 .hallo-haken{position:absolute;right:-6px;top:-6px;width:54px;height:54px;border-radius:50%;
   background:var(--butter);color:var(--on-primary);display:grid;place-items:center;opacity:0;
-  border:4px solid #080D22;box-shadow:0 14px 28px -12px rgba(var(--s-schatten),.85)}
+  /* Stand fest auf Dunkelblau und war im Hellen ein dunkler Fleck auf
+     Pastell — der Rand traegt jetzt die Farbe der Flaeche darunter. */
+  border:4px solid rgba(var(--s-tief),.92);box-shadow:0 14px 28px -12px rgba(var(--s-schatten),.85)}
 .hallo.neu .hallo-haken{animation:hakenRein .58s .5s var(--ease-out) both}
+/* Am Ende des Funnels kommt er nach dem Reif. */
+.hallo.fertig .hallo-haken{animation:hakenRein .58s 1.15s var(--ease-out) both}
 @keyframes hakenRein{
   0%{opacity:0;transform:scale(.3) rotate(-25deg)}
   65%{opacity:1;transform:scale(1.14) rotate(4deg)}
@@ -3628,21 +3632,21 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 @keyframes swKlack{ 38%{ transform:scale(1.02) } 100%{ transform:none } }
 
 /* ─── Fertig ─────────────────────────────────────────────────────
-   Das Ende des Funnels bekommt eine eigene Fassung des Grusses: statt
-   des Profilbilds zieht ein Ring auf und ein Haken faehrt hinein.
+   Das Ende des Funnels bekommt eine eigene Fassung des Grusses. Das
+   Profilbild bleibt dabei stehen — es ist gerade zugeteilt worden und
+   soll hier zum ersten Mal zu sehen sein; eine erste Fassung deckte es
+   mit einem gezeichneten Haken zu, dann sah man es gar nicht.
+   Stattdessen wird es rund, ein Reif zieht sich darum, und zuletzt
+   springt der Haken an die Ecke.
    Danach kommt der Kalender nicht einfach, er faehrt herein. */
-.hallo-ring{ display:none; width:min(44vw,158px); margin:0 auto 26px }
-.hallo.fertig .hallo-rahmen{ display:none }
+.hallo-ring{ display:none; position:absolute; inset:-9%; pointer-events:none }
 .hallo.fertig .hallo-ring{ display:block }
-.hallo-ring svg{ display:block; width:100%; height:auto; overflow:visible }
-.hallo-ring .rg{ fill:none; stroke:var(--butter); stroke-width:4; stroke-linecap:round;
+.hallo.fertig .hallo-bild{ border-radius:50% }
+.hallo-ring svg{ display:block; width:100%; height:100%; overflow:visible }
+.hallo-ring .rg{ fill:none; stroke:var(--butter); stroke-width:3.4; stroke-linecap:round;
   stroke-dasharray:283; stroke-dashoffset:283;
-  animation:ringZieh .95s var(--ease-out) .08s forwards }
-.hallo-ring .hk{ fill:none; stroke:var(--butter); stroke-width:5.4; stroke-linecap:round;
-  stroke-linejoin:round; stroke-dasharray:56; stroke-dashoffset:56;
-  animation:hakenZieh .5s var(--ease-out) .74s forwards }
+  animation:ringZieh .9s var(--ease-out) .45s forwards }
 @keyframes ringZieh{ to{ stroke-dashoffset:0 } }
-@keyframes hakenZieh{ to{ stroke-dashoffset:0 } }
 body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 @keyframes kalRein{ from{ opacity:0; transform:scale(.965) translateY(12px); filter:blur(7px) } }
 
@@ -3651,7 +3655,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   .fassung{ right:2px }
 }
 @media(prefers-reduced-motion:reduce){
-  .hallo-ring .rg, .hallo-ring .hk{ stroke-dashoffset:0; animation:none }
+  .hallo-ring .rg{ stroke-dashoffset:0; animation:none }
 }
 
 </style>
@@ -4563,9 +4567,9 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
      unbeschnitten auftreten — 3:4 Feld auf 3:4 Motiv. -->
 <div class="hallo aurahg" id="hallo" aria-hidden="true">
   <div class="hallo-in">
-    <!-- Nur am Ende des Funnels: der Ring zieht auf, der Haken faehrt hinein. -->
-    <div class="hallo-ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="rg" cx="50" cy="50" r="45" transform="rotate(-90 50 50)"/><path class="hk" d="M31 51.5 44 64.5 70 37"/></svg></div>
     <div class="hallo-rahmen">
+      <!-- Nur am Ende des Funnels: der Reif zieht sich um das Profilbild. -->
+      <div class="hallo-ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="rg" cx="50" cy="50" r="45" transform="rotate(-90 50 50)"/></svg></div>
       <div class="hallo-bild"><img id="hallo-img" alt=""></div>
       <span class="hallo-haken" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"/></svg></span>
     </div>
@@ -4783,7 +4787,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-1015';
+const APP_STAND = '2026-09-14-1055';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7107,10 +7111,10 @@ const GRUSS = {
          dauer: 3600, konfetti: true },
   ab:  { kopf: n => 'Bis bald, <i>' + n + '</i>!',    zeile: () => CLOUD_ON ? 'Deine Zeiten sind gesichert.' : 'Bis zum nächsten Mal.',
          dauer: 1750 },
-  /* Das Ende des Funnels. Statt des Profilbilds zieht ein Ring auf und
-     ein Haken faehrt hinein — danach faehrt der Kalender herein. */
-  fertig:{ kopf: n => 'Fertig, <i>' + n + '</i>.',  zeile: () => 'Dein Profil steht.',
-         dauer: 2600, konfetti: true }
+  /* Das Ende des Funnels. Das Profilbild wird rund, ein Reif zieht sich
+     darum, der Haken springt an die Ecke — und Konfetti steigt. */
+  fertig:{ kopf: n => 'Hi <i>' + n + '</i>!',  zeile: () => 'Willkommen bei MOJI.',
+         dauer: 2900, konfetti: true }
 };
 /* wennOben laeuft, sobald der Gruss den Schirm deckt. Dafuer ist er da:
    Er ist nicht nur Zierde, er ist der Vorhang, hinter dem die Ansicht

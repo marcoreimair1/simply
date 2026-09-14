@@ -163,8 +163,15 @@ Face ID — und wenn beides fehlt, fällt Schritt 3 ganz weg.
 *Später* beim Dienstplan heißt: es gilt die Vorgabe (Montag bis Freitag 08:00–12:00 und
 13:00–18:00, Samstag 08:00–12:00). Die Zeiten lassen sich jederzeit im Profilmenü eintragen.
 
-Zum Schluss zieht ein Ring auf, ein Haken fährt hinein, Konfetti steigt — und dahinter baut sich
-der Kalender auf, der beim Auflösen des Grußes hereinfährt.
+Zum Schluss kommt das **Profilbild**, das MOJI gerade zugeteilt hat: rund, ein Reif zieht sich
+darum, der Haken springt an die Ecke, Konfetti steigt. Darüber steht *Hi Anna!* und darunter
+*Willkommen bei MOJI.* Dahinter baut sich der Kalender auf und fährt herein, sobald der Gruß
+sich auflöst.
+
+> Eine erste Fassung deckte das Bild mit einem gezeichneten Haken zu — dann sah man das
+> zugeteilte Motiv gar nicht, obwohl genau das der Moment dafür ist. Das Bild leitet sich aus
+> Name und Geburtsdatum ab (`avZufall()`), ist also auf jedem Gerät dasselbe und lässt sich im
+> Profilmenü tauschen.
 
 **Was ersatzlos entfallen ist:** die Seite *Arbeitsort* (er steht fest und war eine Seite zum
 Wegklicken), die Schlussseite mit A4-Vorschau und Kartenkarussell, und damit auch die Karte
@@ -1417,6 +1424,13 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Willkommen zeigt das Profilbild** (14. September 2026): Der Schluss des Funnels deckte das
+  frisch zugeteilte Profilbild mit einem gezeichneten Haken zu — man sah es nie. Jetzt bleibt
+  das Bild stehen, wird rund, der Reif zieht sich darum und der Haken springt an die Ecke.
+  Text freundlicher: *Hi Anna!* / *Willkommen bei MOJI.* Nebenbei stand der Rand des Hakens
+  fest auf Dunkelblau und war im Hellen ein dunkler Fleck auf Pastell; er trägt jetzt die Farbe
+  der Fläche darunter. Geprüft mit 113 jsdom-Testfällen (alle neun Reihen 436) und im Browser
+  in beiden Fassungen angesehen
 - **Der Schriftzug schreibt sich selbst** (14. September 2026): Aus *Los geht's* wurde eine
   Schleife — erst nur das Männchen aus dem Osterei, dann schieben sich MOJI und beim nächsten
   Durchgang 文字 darunter hervor, das Männchen wackelt und schiebt sich wieder darüber. Je
