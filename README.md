@@ -905,7 +905,7 @@ Deshalb bleibt jede Pflichtangabe, wo sie war, und die Gestaltung passiert daneb
 | **Vier Karten** (42–57) | Dienstnehmer/in, Geburtsdatum, Dienstgeber, Zeitraum — je mit einem Streifen in einem der fünf Wolkentöne |
 | **Tabelle** (ab 61,6) | Kein Kasten um alles. Eine Kopfpille in Lavendel, darunter Zeilen mit haarfeinen Trennern. Zeilen mit Eintrag im Pastellton ihrer Kategorie, die volle Farbe trägt ein Streifen an der Kante |
 | **Summen** | Karten mit farbigem Streifen oben; *Gesamt* in Violett |
-| **Unterschrift** (273) | Die auf dem Telefon **gezeichnete** Unterschrift, bis 56 mm breit und 11,5 mm hoch, seitenverhältnisgetreu eingepasst, über einer 62 mm kurzen Leiste. Darunter der Vermerk *Elektronisch unterschrieben in der MOJI App* |
+| **Unterschrift** (273) | Die auf dem Telefon **gezeichnete** Unterschrift, bis 58 mm breit und so hoch, wie das Blatt es hergibt (9–15 mm). Die Leiste darunter richtet sich nach ihr (46–68 mm). Darunter der Vermerk *Elektronisch unterschrieben in der MOJI App* |
 
 **Farbflächen nur in schmalen Bändern, nie ganzseitig.** Das Blatt wird gedruckt, und Toner
 kostet. Den Verlauf im Kopfband zeichnet `verlauf()` aus achtzig schmalen Streifen mit einer
@@ -954,16 +954,23 @@ einer Unterschrift die Zeichnung einer Unterschrift.
 **Zugeschnitten wird auf den beschriebenen Teil.** `sigBild()` liest die Alphawerte der
 Leinwand, sucht die Randpunkte und schneidet mit 8 px Rand aus — sonst hinge die Unterschrift
 im PDF irgendwo in einem großen leeren Rechteck. Das Seitenverhältnis wandert als `SIG_VERH`
-mit und bestimmt, wie sie ins Feld gesetzt wird: erst auf die Breite (56 mm), und wird sie dabei
-höher als 11,5 mm, auf die Höhe. **Gestaucht wird nie**.
+mit und bestimmt, wie sie ins Feld gesetzt wird: erst auf die Breite (58 mm), und wird sie dabei
+zu hoch, auf die Höhe. **Gestaucht wird nie**.
 
-**Kurze Leiste, große Unterschrift.** Ursprünglich war die Leiste 86 mm lang und die
-Unterschrift bis 15 mm hoch — das las sich als Formularfeld. Die Leiste auf 62 mm zu kürzen war
-richtig, die Unterschrift auf 8 mm mitzukürzen nicht: dann stand ein kleiner Strich über einer
-langen Linie. Sie nutzt jetzt die volle Höhe, die zwischen der letzten Erklärzeile und der
-Leiste überhaupt da ist. Dafür ist der Fuß zwei Millimeter tiefer gerückt (Linie 283,2 statt
-281) und die Erklärung darüber einen halben herauf — die Grundlinie liegt bei 261,0, die
-Unterkante der Unterschrift bei 274. Alles gemessen, nicht geschätzt.
+**Die Höhe rechnet das Blatt selbst aus**, statt fest zu sein: von der Unterkante der
+Unterschrift herauf bis anderthalb Millimeter über die letzte Erklärzeile, begrenzt auf 9 bis
+15 mm. Bei einem Monat mit 31 Zeilen sind das gut 12 mm, bei einem kurzen Februar 15 — kürzere
+Tabelle, mehr Platz.
+
+**Warum das zählt:** die Breite einer Unterschrift hängt an ihrer Höhe, sobald das
+Seitenverhältnis klein ist. Bei fest 8 mm wurde eine hohe, schmale Unterschrift nur 10 mm breit
+und kam auf einer 62-mm-Linie winzig heraus. **Und die Leiste richtet sich jetzt nach der
+Unterschrift**, nicht umgekehrt: `bre + 10`, begrenzt auf 46 bis 68 mm. Ohne gezeichnete
+Unterschrift bleibt sie bei 62.
+
+Damit das hineinpasst, ist der Fuß zwei Millimeter tiefer gerückt (Linie 284 statt 281) und die
+Erklärung darüber einen halben herauf — Grundlinie 261,0, Unterkante der Unterschrift 275.
+Alles gemessen, nicht geschätzt.
 
 Und der Vermerk steht **unter** der Leiste statt rechtsbündig am Blattrand: dort drüben gehörte
 er zu nichts und ging verloren.
@@ -1690,6 +1697,13 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Hohe Unterschriften kamen winzig heraus** (15. September 2026): Bei kleinem Seitenverhältnis
+  hängt die Breite an der Höhe — mit einer festen Höhe von 8 mm wurde eine schmale, hohe
+  Unterschrift nur 10 mm breit. Die Höhe rechnet das Blatt jetzt selbst aus (9–15 mm, je
+  nachdem wie lang die Tabelle des Monats ist), und die Leiste richtet sich nach der
+  Unterschrift statt umgekehrt (46–68 mm). Mit drei Seitenverhältnissen nachgestellt und die
+  PDFs angesehen. 627 Prüfungen
 
 - **Die Unterschrift war zu klein geraten** (15. September 2026): Die Leiste zu kürzen war
   richtig, die Unterschrift mitzukürzen nicht — 8 mm über einer 62-mm-Linie sah verloren aus.
