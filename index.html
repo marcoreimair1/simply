@@ -1203,25 +1203,6 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .locked-field{display:flex;align-items:center;gap:13px;padding:16px;border-radius:var(--r-m);
   background:linear-gradient(120deg,rgba(var(--marke-rgb),.1),rgba(var(--marke-rgb),.02));border:1px solid var(--butter-dim)}
 .locked-field .lf-i{width:40px;height:40px;border-radius:12px;background:var(--butter);color:var(--on-primary);display:grid;place-items:center;flex:none}
-/* Der Dienstgeber steht fest — hier gibt es nichts einzutragen. Also keine
-   Zeile mit Feld und Knopf, sondern eine ruhige mittige Anordnung: sein
-   Zeichen groß, darunter der Name. */
-.firmenkarte{display:flex;flex-direction:column;align-items:center;text-align:center;
-  padding:6px 4px 4px}
-.fk-logo{width:104px;height:104px;border-radius:30%;overflow:hidden;background:var(--f-1);
-  border:1px solid rgba(var(--s-auf),.16);
-  box-shadow:0 18px 40px -20px rgba(var(--s-schatten),.8),0 0 0 6px rgba(var(--marke-rgb),.05)}
-.fk-logo img{width:100%;height:100%;object-fit:cover;display:block}
-.firmenkarte b{display:block;margin-top:16px;font-family:var(--font-dis);font-weight:400;
-  font-size:21px;letter-spacing:-.01em}
-.firmenkarte small{display:block;margin-top:5px;font-size:10px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--tx-3)}
-.fk-go{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:11px 20px;
-  border-radius:13px;font-size:13.5px;font-weight:600;color:var(--on-primary);
-  background:linear-gradient(120deg,var(--butter-2),var(--butter));
-  box-shadow:0 10px 26px -12px rgba(var(--marke-rgb),.65);transition:.24s var(--ease)}
-.fk-go svg{width:17px;height:17px}
-.fk-go:active{transform:scale(.97)}
 .locked-field b{display:block;font-size:15.5px}
 .locked-field small{color:var(--tx-3);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase}
 
@@ -1242,12 +1223,6 @@ h1.dis i{font-style:italic;color:var(--butter)}
   box-shadow:0 12px 34px -14px var(--knopf-schatten)}
 .btn-p:hover{transform:translateY(-2px);box-shadow:0 18px 44px -14px var(--knopf-schatten)}
 .btn-p:disabled{opacity:.32;transform:none;box-shadow:none;cursor:not-allowed}
-/* wartet, bis man unten war — soll zum Weiterscrollen einladen, nicht blockieren */
-.btn-p.btn-wait{background:transparent;color:var(--tx-3);border:1px solid var(--line-2);
-  box-shadow:none;transition:.45s var(--ease)}
-.btn-p.btn-wait:hover{transform:none;color:var(--tx-2);border-color:var(--butter-dim)}
-.btn-p.btn-wait:active{transform:none}
-.btn-p.btn-wait svg{opacity:.5}
 .btn-g{border:1px solid var(--line-2);color:var(--tx-2)}
 .btn-g:hover{border-color:var(--butter-dim);color:var(--butter)}
 .btn-sm{padding:10px 17px;font-size:12.5px;border-radius:12px}
@@ -1313,11 +1288,6 @@ h1.dis i{font-style:italic;color:var(--butter)}
 /* ============================================================
    KARUSSELL
    ============================================================ */
-.rail{display:flex;gap:6px;margin:0 0 26px;max-width:420px}
-.rail i{flex:1;height:3px;border-radius:3px;background:var(--line-2);overflow:hidden;position:relative}
-.rail i::after{content:"";position:absolute;inset:0;background:var(--butter);transform:scaleX(0);transform-origin:left;
-  transition:transform .5s var(--ease-out)}
-.rail i.done::after{transform:scaleX(1)}
 .viewport{overflow:hidden;padding:2px}
 .track{position:relative}
 .slide{display:none;padding:0 2px}
@@ -1329,11 +1299,6 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .navrow.sticky{position:sticky;bottom:0;z-index:20;margin:18px -20px 0;
   padding:16px 24px calc(16px + env(safe-area-inset-bottom));transition:background .3s}
 .navrow.hide{display:none}
-.obtop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;min-height:24px;max-width:420px}
-.obback{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--tx-3);transition:.2s;padding:4px 0}
-.obback:hover{color:var(--butter)}
-.obback svg{width:14px;height:14px}
-.obback.hide{visibility:hidden}
 .field.hasgo input{padding-right:64px}
 .inline-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:46px;height:46px;
   border-radius:13px;                      /* 18px Boxradius minus 6px Abstand = konzentrisch */
@@ -1346,21 +1311,6 @@ h1.dis i{font-style:italic;color:var(--butter)}
   border-color:var(--line-2);box-shadow:none;transform:translateY(-50%)}
 .inline-go:disabled:hover{transform:translateY(-50%)}
 .inline-go svg{width:21px;height:21px}
-/* Häkchen mit eigenem Kästchen — das Systemkästchen lässt sich am Handy
-   nicht anständig einfärben. */
-.okbox{display:flex;align-items:flex-start;gap:12px;margin:18px 0 4px;padding:13px 14px;
-  border-radius:var(--r-m);border:1px solid var(--line-2);background:rgba(var(--s-tief),.4);
-  cursor:pointer;transition:.2s;max-width:430px}
-.okbox:hover{border-color:var(--butter-dim)}
-.okbox input{position:absolute;opacity:0;width:0;height:0}
-.okmark{flex:none;width:24px;height:24px;margin-top:1px;border-radius:8px;display:grid;
-  place-items:center;border:1px solid var(--line-2);color:transparent;transition:.22s var(--ease)}
-.okmark svg{width:15px;height:15px}
-.okbox input:checked ~ .okmark{background:var(--butter);border-color:var(--butter);color:var(--on-primary)}
-.okbox input:focus-visible ~ .okmark{box-shadow:0 0 0 3px rgba(var(--marke-rgb),.3)}
-.oktext{min-width:0}
-.oktext b{display:block;font-size:13.5px;font-weight:600}
-.oktext small{display:block;margin-top:3px;font-size:11.5px;line-height:1.55;color:var(--tx-3)}
 
 .autonext{display:flex;align-items:center;gap:9px;margin-top:16px;font-size:12.5px;color:var(--butter)}
 .autonext .dots{display:inline-flex;gap:4px}
@@ -1369,7 +1319,6 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .autonext .dots i:nth-child(3){animation-delay:.32s}
 @keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
 .navrow.sticky.solid{background:linear-gradient(180deg,rgba(var(--s-tief),0),rgba(var(--s-tief),.94) 42%);backdrop-filter:blur(10px)}
-.stepno{font-size:11px;letter-spacing:.2em;color:var(--tx-3);font-variant-numeric:tabular-nums}
 
 /* Monatsgitter */
 .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
@@ -1495,87 +1444,10 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .tp-grid button.on{background:var(--butter);color:var(--on-primary)}
 .tp-sep{height:1px;background:var(--line-2);margin:10px 0}
 
-/* ============================================================
-   SCHLUSSSEITE: drei Punkte und Vorschau der A4-Seite
-   ============================================================ */
-.feat-card .pi{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;
-  background:rgba(var(--marke-rgb),.12);color:var(--butter);margin-bottom:14px}
-.feat-card .pi svg{width:19px;height:19px;display:block}
-#pk-card .pi svg{width:22px;height:22px}
-
-/* Karussell zum Ziehen */
-.feat{margin-top:26px}
-.feat-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
-  padding:2px 4px 14px;margin:0 -4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
-  cursor:grab;user-select:none}
-.feat-track::-webkit-scrollbar{display:none}
-.feat-track.drag{cursor:grabbing;scroll-snap-type:none}
-.feat-card{flex:0 0 82%;max-width:320px;scroll-snap-align:center;box-sizing:border-box;
-  background:linear-gradient(165deg,rgba(var(--s-hoch),.40),rgba(var(--s-tief),.28));
-  border:1px solid var(--line);border-radius:var(--r-l);padding:20px;
-  backdrop-filter:blur(18px) saturate(1.25);-webkit-backdrop-filter:blur(18px) saturate(1.25)}
-@media(min-width:640px){.feat-card{flex:0 0 290px}}
-.feat-card b{display:block;font-size:15px;margin-bottom:6px}
-.feat-card span{color:var(--tx-3);font-size:12.5px;line-height:1.5;display:block}
-.feat-dots{display:flex;gap:6px;justify-content:center;margin-top:2px}
-.feat-dots i{width:6px;height:6px;border-radius:50%;background:var(--line-2);transition:.32s var(--ease)}
-.feat-dots i.on{background:var(--butter);width:20px;border-radius:3px}
-.feat-hint{text-align:center;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--tx-3);margin:12px 0 0}
-/* Auf der Schlussseite weicht die Kopfleiste, damit die Karten sichtbar werden */
+/* Einstieg und Funnel gehoeren der ganzen Flaeche — dort steht keine Kopfleiste. */
 body.nobar .topbar{display:none}
-body.nobar #v-onboard{padding-top:14px}
-
-/* Kachel für den Home-Bildschirm */
-.feat-card.install{background:linear-gradient(165deg,rgba(var(--marke-rgb),.14),rgba(var(--s-tief),.3));
-  border-color:var(--butter-dim)}
-.tilewrap{display:flex;align-items:center;gap:13px;margin-bottom:14px}
-.tile{width:56px;height:56px;border-radius:14px;display:block;flex:none;
-  box-shadow:0 10px 24px -10px rgba(var(--s-schatten),.8),0 0 0 1px rgba(var(--s-auf),.08)}
-.tilelabel{font-size:12px;color:var(--tx-2);letter-spacing:.02em}
-.tilelabel b{display:block;font-size:13.5px;color:var(--tx);margin-bottom:2px}
-.steps{margin:12px 0 0;padding-left:18px;color:var(--tx-3);font-size:12.5px;line-height:1.6}
-.steps li{margin-bottom:3px}
-.steps b{color:var(--butter);font-weight:600}
 
 
-.pdfprev{perspective:1000px;display:flex;justify-content:center;margin-top:24px}
-.pdfsheet{width:min(74vw,300px);aspect-ratio:1/1.414;background:#FBFAF7;color:#141a28;border-radius:6px;
-  padding:13px 12px 11px;display:flex;flex-direction:column;font-size:5px;line-height:1.35;
-  box-shadow:0 30px 60px -24px rgba(var(--s-schatten),.85),0 0 0 1px rgba(var(--s-schatten),.3);
-  transform:rotateX(6deg) rotate(-1.2deg);transition:transform .6s var(--ease-out);
-  animation:sheetIn .85s .15s var(--ease-out) both}
-.pdfprev:hover .pdfsheet{transform:none}
-@keyframes sheetIn{from{opacity:0;transform:rotateX(16deg) translateY(24px) scale(.94)}}
-.s-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.s-head b{font-size:6.4px;letter-spacing:.02em;display:block}
-.s-head small{font-size:4.6px;color:#5a6070}
-.s-logo{font-size:7.5px;font-weight:800;letter-spacing:.04em}
-.s-rule{height:1px;background:#D6A828;margin:5px 0 6px}
-.s-info{display:flex;gap:8px;background:#F1F1F4;border-radius:2px;padding:4px 5px;margin-bottom:6px}
-.s-info div{flex:1;min-width:0}
-.s-info u{display:block;font-size:3.5px;letter-spacing:.1em;color:var(--tx-3);text-decoration:none}
-.s-info span{font-size:4.8px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
-.s-tab{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-.s-tab th{background:var(--f-2);color:#fff;font-size:3.4px;letter-spacing:.06em;text-align:left;padding:2.6px 3px;font-weight:700}
-.s-tab td{font-size:4px;padding:2.1px 3px;border-bottom:.5px solid #E4E6EC}
-.s-tab td.c{text-align:center}
-.s-tab tr.so td{background:#F2F3F6;color:#9096a4}
-.s-tab tr.ur td{background:#FDF4E0}
-.s-more{font-size:3.9px;color:#9096a4;padding:3px 3px 0}
-.s-sum{display:flex;gap:3px;margin-top:auto;padding-top:7px}
-.s-sum i{flex:1;border:.5px solid #E4E6EC;border-radius:2px;padding:3px 2px;text-align:center;font-style:normal}
-.s-sum i u{display:block;font-size:3.1px;letter-spacing:.05em;color:var(--tx-3);text-decoration:none}
-.s-sum i b{font-size:6px}
-.s-sum i.t{background:var(--f-2);color:#fff;border-color:var(--f-2)}
-.s-sum i.t u{color:#c9cede}
-.s-sig{display:flex;gap:9px;margin-top:9px}
-.s-sig div{flex:1;min-width:0}
-.s-sig .leer{visibility:hidden}
-.s-sig em{display:block;font-family:var(--font-sig);font-size:9.5px;line-height:1.05;margin-bottom:1px;
-  white-space:nowrap;overflow:hidden}
-.s-sig hr{border:none;border-top:.5px solid #9a9ea8;margin:0 0 1.5px}
-.s-sig small{font-size:3.1px;letter-spacing:.06em;color:var(--tx-3);display:block}
 
 /* ============================================================
    KALENDER
@@ -1731,7 +1603,6 @@ body.nobar #v-onboard{padding-top:14px}
   opacity:0;animation:fadeUp .7s 1.62s var(--ease-out) forwards}
 #geb-close{margin-top:26px;opacity:0;animation:fadeUp .6s 2.1s var(--ease-out) forwards}
 
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 /* ─── Nur dieser Tag oder die ganze Serie? ───────────────────────
    Dieselbe Leiste wie beim Passkey, aber mit zwei etwa gleich schweren
    Entscheidungen. Die passen nicht neben den Text — also bricht sie um:
@@ -1831,137 +1702,9 @@ body.nobar #v-onboard{padding-top:14px}
 .shist-weg:hover{border-color:rgba(var(--za-minus-rgb),.5);color:var(--za-minus)}
 .mi .miico{display:grid;place-items:center;width:16px;height:16px;flex:none}
 .mi .miico svg{width:16px;height:16px;opacity:.9}
-/* ─── Begrüßungsseite ─────────────────────────────────────
-   Drei Merkmale, jedes mit einem Musterbild. Die Bilder sind aus Formen
-   gebaut statt aus Dateien — nichts lädt nach, nichts blitzt auf. */
-#lg-choice{margin-top:30px}
-/* Beim Scrollen einblenden. Ohne die Klasse .sicht bleibt alles verborgen —
-   darum setzt sie der Beobachter unten auch dann, wenn er nicht arbeiten kann. */
-.wfeat{max-width:430px;margin:0 0 42px;opacity:0;transform:translateY(30px);
-  transition:opacity .75s var(--ease-out),transform .75s var(--ease-out)}
-.wfeat.sicht{opacity:1;transform:none}
-.wfeat .wmock{transform:scale(.965);transition:transform .8s .08s var(--ease-out)}
-.wfeat.sicht .wmock{transform:none}
-.wfeat > b,.wfeat > span{opacity:0;transition:opacity .6s .18s var(--ease-out)}
-.wfeat.sicht > b,.wfeat.sicht > span{opacity:1}
-@media(prefers-reduced-motion:reduce){
-  .wfeat,.wfeat .wmock,.wfeat > b,.wfeat > span{transition:none;opacity:1;transform:none}
-}
-.wfeat:last-of-type{margin-bottom:20px}
-.wfeat > b{display:block;font-size:16px;margin:22px 0 8px}
-.wfeat > span{display:block;color:var(--tx-3);font-size:13px;line-height:1.66}
-.wmock{position:relative;border-radius:var(--r-m);padding:17px;overflow:hidden;
-  background:linear-gradient(165deg,rgba(var(--s-hoch),.4),rgba(var(--s-tief),.26));
-  border:1px solid var(--line-2);box-shadow:0 14px 34px rgba(var(--s-schatten),.28)}
-.wmock.light{background:#F6F7FB;border-color:rgba(var(--s-schatten),.07)}
-.wtag{position:absolute;right:10px;top:10px;z-index:2;font-size:8px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--tx-3);background:rgba(var(--s-tief),.5);
-  border:1px solid var(--line-2);border-radius:6px;padding:3px 6px}
-/* Auf dem Dokument sitzt oben rechts schon die Wortmarke — der Aufkleber
-   wandert nach unten, sonst überlappen die zwei. */
-.wtag.dark{color:var(--tx-3);background:rgba(var(--s-auf),.72);border-color:rgba(var(--s-schatten),.08);
-  top:auto;bottom:12px}
 
-/* Musterkalender */
-.mk-head{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
-.mk-head b{font-family:var(--font-dis);font-size:15px;font-weight:400}
-.mk-head small{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-3)}
-.mk-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
-.mk-dow u{text-decoration:none;font-size:7.5px;text-align:center;color:var(--tx-3)}
-.mk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.mk-grid i{display:block;aspect-ratio:1.25;border-radius:5px;background:rgba(var(--tx-rgb),.07)}
-.mk-grid i.so{background:transparent;border:1px dashed var(--line-2)}
-.mk-grid i.u{background:rgba(var(--c-urlaub-rgb),.42)}
-.mk-grid i.k{background:rgba(var(--c-krank-rgb),.42)}
-.mk-grid i.f{background:rgba(var(--c-feier-rgb),.42)}
-.mk-leg{display:flex;align-items:center;gap:5px;margin-top:13px;font-size:8px;color:var(--tx-3)}
-.mk-leg s{text-decoration:none;width:8px;height:8px;border-radius:3px;display:inline-block}
-.mk-leg s + *{margin-right:6px}
-.mk-leg s.u{background:rgba(var(--c-urlaub-rgb),.6)}
-.mk-leg s.k{background:rgba(var(--c-krank-rgb),.6)}
-.mk-leg s.f{background:rgba(var(--c-feier-rgb),.6)}
-
-/* Musterbild Dienstzeiten */
-.mz-tabs{display:flex;gap:5px;margin-bottom:9px}
-.mz-tabs i{font-style:normal;font-size:8px;letter-spacing:.06em;color:var(--tx-3);
-  border:1px solid var(--line-2);border-radius:6px;padding:4px 8px}
-.mz-tabs i.on{color:var(--butter);border-color:var(--butter-dim);background:rgba(var(--marke-rgb),.1)}
-.mz-tabs i.add{color:var(--tx-3);padding:4px 7px;border-style:dashed}
-.mz-rows p{display:flex;align-items:center;gap:5px;margin:0 0 7px}
-.mz-rows u{text-decoration:none;font-size:8px;color:var(--tx-3);flex:0 0 15px}
-.mz-rows s{text-decoration:none;font-size:8px;color:var(--tx-2);flex:1;text-align:center;
-  background:rgba(var(--tx-rgb),.07);border-radius:5px;padding:4px 0;
-  font-variant-numeric:tabular-nums}
-.mz-rows s.off{color:var(--tx-3);background:transparent;border:1px dashed var(--line-2)}
-.mz-rows b{font-size:8px;color:var(--butter);flex:0 0 26px;text-align:right;
-  font-variant-numeric:tabular-nums}
-.mz-note{margin-top:9px;font-size:8px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--tx-3)}
-
-/* Musterdokument */
-.mb-head{display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid rgba(var(--s-schatten),.1);padding-bottom:6px;margin-bottom:8px}
-.mb-head b{font-size:6.5px;letter-spacing:.14em;color:var(--f-4)}
-.mb-head i{font-style:normal;font-size:8px;font-weight:800;letter-spacing:.06em;color:var(--f-1)}
-.mb-rows p{display:flex;gap:5px;align-items:center;margin:0 0 6px;padding-bottom:4px;
-  border-bottom:1px solid rgba(var(--s-schatten),.055)}
-.mb-rows p.hl{background:rgba(var(--marke-rgb),.22);border-radius:3px;padding:2px 3px 3px}
-.mb-rows p.frei{opacity:.5}
-.mb-rows u{text-decoration:none;font-size:6px;color:var(--f-4);flex:0 0 26px;
-  font-variant-numeric:tabular-nums}
-.mb-rows i{font-style:normal;font-size:6px;color:var(--tx-3);flex:0 0 13px}
-.mb-rows s{text-decoration:none;height:3px;border-radius:2px;background:rgba(var(--s-schatten),.14);flex:1}
-.mb-rows s.v{background:rgba(160,120,20,.3)}
-.mb-rows s.off{background:rgba(var(--s-schatten),.06)}
-.mb-rows b{font-size:6px;font-weight:600;color:var(--f-2);flex:0 0 27px;text-align:right;
-  font-variant-numeric:tabular-nums}
-.mb-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
-.mb-sum span{font-size:7.5px;text-align:center;color:var(--f-2);background:rgba(var(--s-schatten),.05);
-  border-radius:4px;padding:4px 0;font-variant-numeric:tabular-nums}
-.mb-sum span u{display:block;text-decoration:none;font-size:5px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--tx-3);margin-bottom:2px}
-.mb-sum span.t{background:var(--f-1);color:#F7D774}
-.mb-sum span.t u{color:rgba(var(--marke-rgb),.7)}
-.mb-sig{margin-top:10px}
-.mb-sig em{display:block;font-family:var(--font-sig);font-size:15px;color:var(--f-2);line-height:1}
-.mb-sig hr{border:none;border-top:.5px solid #9a9ea8;margin:1px 0 2px}
-.mb-sig u{text-decoration:none;font-size:5.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-3)}
-
-/* Musterbild Datenschutz */
-.ds-row{display:flex;align-items:flex-start;gap:12px}
-.ds-row + .ds-row{margin-top:14px;padding-top:14px;border-top:1px solid var(--line-2)}
-.ds-row .oi{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:none;
-  background:rgba(var(--c-eigen-rgb-f),.14);color:var(--c-eigen)}
-.ds-row .oi svg{width:17px;height:17px}
-.ds-row b{display:block;font-size:12.5px;margin-bottom:2px}
-.ds-row small{display:block;color:var(--tx-3);font-size:11px;line-height:1.5}
-
-/* Musterbild Passkey */
-.mp-pill{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;
-  color:var(--butter);background:rgba(var(--marke-rgb),.09);border:1px solid var(--butter-dim);
-  border-radius:var(--r-s);padding:11px 14px}
-.mp-pill svg{width:16px;height:16px;flex:none}
-.mp-ok{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:15px;
-  font-size:12px;color:var(--c-eigen)}
-.mp-hak{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;
-  background:rgba(121,232,198,.16)}
-.mp-hak svg{width:12px;height:12px}
-.mp-note{text-align:center;margin-top:8px;font-size:9.5px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--tx-3)}
-
-/* Die zwei Wege: einer gefüllt, einer umrandet — beide gleich groß und breit */
-/* Der Untergrund läuft über die ganze Breite — begrenzt sind nur die Knöpfe,
-   damit sie mit der Textspalte darüber auf einer Linie stehen. Vorher war die
-   Leiste selbst auf 430 Pixel begrenzt und endete rechts im Nichts. */
-#lg-bar{gap:10px}
-#lg-bar .btn{flex:1 1 0;max-width:210px;justify-content:center;padding:16px 14px;font-size:14px}
-#lg-bar .btn svg{width:17px;height:17px}
 .btn-out{background:rgba(var(--tx-rgb),.05);border:1px solid rgba(var(--tx-rgb),.18);color:var(--tx-1)}
 .btn-out:hover{background:rgba(var(--tx-rgb),.09);border-color:var(--butter-dim);color:var(--butter)}
-@media(max-width:400px){
-  #lg-bar{flex-direction:column}
-  #lg-bar .btn{width:100%;max-width:none}
-}
 
 /* Zeilen auf der Passkey-Frage */
 .pkrow{display:flex;align-items:flex-start;gap:13px}
@@ -1972,25 +1715,6 @@ body.nobar #v-onboard{padding-top:14px}
 .pkrow b{display:block;font-size:14px;margin-bottom:3px}
 .pkrow small{color:var(--tx-3);font-size:12px;line-height:1.55;display:block}
 
-/* Erledigt-Zeichen auf der Funnel-Karte */
-.feat-card .pi.fertig{background:rgba(var(--c-eigen-rgb-f),.16);color:var(--c-eigen)}
-.feat-card .tagok{display:inline-flex;align-items:center;gap:5px;font-size:10px;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--c-eigen);line-height:1;
-  background:rgba(121,232,198,.12);border-radius:999px;padding:5px 10px;margin-bottom:10px}
-.feat-card .tagok svg{width:11px;height:11px;flex:none}
-
-/* Passkey: einladend, aber die E-Mail bleibt der verlässliche Weg */
-.btn-pk{width:100%;justify-content:center;background:rgba(var(--marke-rgb),.09);
-  border:1px solid var(--butter-dim);color:var(--butter)}
-.btn-pk:hover{background:rgba(var(--marke-rgb),.16);transform:translateY(-1px)}
-.btn-pk:disabled{opacity:.5;transform:none}
-
-.orline{display:flex;align-items:center;gap:12px;margin:26px 0 18px;max-width:430px}
-.orline::before,.orline::after{content:"";flex:1;height:1px;background:var(--line-2)}
-.orline span{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3)}
-.lg{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--tx-2);padding:7px 11px;
-  border-radius:var(--r-s);border:1px solid var(--line-2)}
-.lg svg{width:14px;height:14px}
 
 /* ─── Zeitraum eintragen ────────────────────────────────────────────────
    Die Zeile öffnet nur noch das Blatt. Alles was früher zum Aufklappen
@@ -2228,16 +1952,6 @@ body.zrmodus .fb-z{display:inline-flex}
   background:rgba(var(--s-tief),.9);backdrop-filter:blur(12px);animation:qdoneIn .28s var(--ease-out)}
 @keyframes qdoneIn{from{opacity:0}}
 .qd-in{display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center;padding:20px}
-.qd-ring{position:relative;width:76px;height:76px}
-.qd-ring svg{width:100%;height:100%;overflow:visible}
-.qd-ring circle{fill:none;stroke:rgba(var(--marke-rgb),.85);stroke-width:3;stroke-linecap:round;
-  stroke-dasharray:220;stroke-dashoffset:220;transform:rotate(-90deg);transform-origin:center;
-  animation:draw .58s var(--ease-out) forwards}
-.qd-ring path{fill:none;stroke:var(--butter-2);stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round;
-  stroke-dasharray:48;stroke-dashoffset:48;animation:draw .38s .4s var(--ease-out) forwards}
-.qd-ring .puls{position:absolute;inset:0;border-radius:50%;border:2px solid var(--butter);opacity:0;
-  animation:qpuls .95s .46s var(--ease-out) forwards}
-@keyframes qpuls{0%{opacity:.75;transform:scale(1)}100%{opacity:0;transform:scale(2.2)}}
 .qd-in b{font-family:var(--font-dis);font-size:24px;font-weight:400;letter-spacing:-.01em;
   opacity:0;animation:fadeUp .5s .5s var(--ease-out) forwards}
 .qd-in small{color:var(--tx-3);font-size:12.5px;max-width:34ch;
@@ -3144,13 +2858,6 @@ body.zrmodus .fb-z{display:inline-flex}
   78%{transform:rotate(-1.5deg)}
   100%{transform:rotate(0)}
 }
-.exdone .qd-ring circle.track{fill:none;stroke:rgba(var(--tx-rgb),.13);stroke-width:3;animation:none;stroke-dasharray:none;stroke-dashoffset:0}
-.exdone .qd-ring circle.prog{fill:none;stroke:var(--butter);stroke-width:3;stroke-linecap:round;animation:none;
-  stroke-dasharray:220;stroke-dashoffset:220;transform:rotate(-90deg);transform-origin:center;
-  transition:stroke-dashoffset .45s var(--ease-out)}
-.exdone .qd-ring path.tick{animation:none}
-.exdone.done .qd-ring path.tick{animation:draw .42s var(--ease-out) forwards}
-.exdone.done .qd-ring .puls{animation:qpuls .95s var(--ease-out) forwards}
 .exdone .qd-in b{animation-delay:.05s}
 .exdone .qd-in small{animation-delay:.16s}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));translate:-50% 0;z-index:80;padding:14px 22px;border-radius:999px;
@@ -3163,9 +2870,10 @@ body.zrmodus .fb-z{display:inline-flex}
 .toast.klickbar:active{transform:translateY(-6px) scale(.97)}
 .toast svg{width:17px;height:17px;color:var(--butter)}
 
-/* Feste Leiste am unteren Rand — dieselben Knöpfe, Maße und Verläufe wie die
-   Anmeldeleiste #lg-bar. Vorher schwebte hier eine Pille 18 px über dem Rand;
-   die kostete Höhe und stand mitten im Bild. */
+/* Feste Leiste am unteren Rand. Vorher schwebte hier eine Pille 18 px über
+   dem Rand; die kostete Höhe und stand mitten im Bild. (Ihr Vorbild war die
+   Knopfleiste der alten Anmeldeseite — die gibt es seit dem Umbau des
+   Einstiegs am 14. September 2026 nicht mehr.) */
 .fabbar{position:fixed;left:0;right:0;bottom:0;z-index:35;
   display:flex;align-items:center;justify-content:center;gap:10px;
   padding:16px 20px calc(16px + env(safe-area-inset-bottom));
@@ -3197,14 +2905,6 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   *,*::after,*::before{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
-/* Schlussseite am Handy: kleineres Blatt, damit die Karten ins Bild rutschen.
-   Muss ans Ende, sonst gewinnt die Grundregel weiter oben. */
-@media(max-width:520px){
-  .pdfsheet{width:min(56vw,214px)}
-  .pdfprev{margin-top:14px}
-  .feat{margin-top:16px}
-  .feat-hint{margin-top:10px}
-}
 
 /* Dünneres Glas am Handy — muss am Ende stehen, sonst gewinnt die Basisregel.
    Doppelte Weichzeichnung (90px Hintergrund + 18px Karte) macht sonst alles flach. */
@@ -3732,6 +3432,198 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
    die Bewegung nicht, um die es hier geht. */
 .sp-veil{ opacity:.35!important }
 
+
+/* ═══ EINSTIEG, BLAETTER UND FUNNEL ═════════════════════════════════
+   Der Weg von der ersten Sekunde bis zum Kalender. Vorbild ist das
+   Anmeldefenster grosser Apps: eine Zeile in der Mitte, die Knoepfe
+   unten in einer Schale, sonst nichts auf dem Schirm. Die Farben
+   kommen aus der App und folgen Hell und Dunkel — kein hartes Weiss.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Auf dem Einstieg und im Funnel gibt es keine Kopfleiste. */
+#v-login{ padding-top:0 }
+.ein{
+  display:none; position:relative; flex-direction:column;
+  min-height:100vh; min-height:100svh;
+  padding:calc(env(safe-area-inset-top) + 16px) 4px calc(env(safe-area-inset-bottom) + 14px);
+}
+.ein.on{ display:flex }
+
+/* Der Fassungsschalter sitzt dort, wo in der Vorlage das Schliesskreuz
+   sitzt. Er zeigt die Fassung, die GERADE laeuft — Sonne im Hellen,
+   Mond im Dunkeln — und dreht beim Umlegen das eine heraus und das
+   andere herein. Die Seite laedt danach neu, siehe erscheinungUmschalten();
+   die halbe Sekunde davor sieht man die Bewegung. */
+.fassung{
+  position:absolute; top:calc(env(safe-area-inset-top) + 12px); right:6px;
+  width:46px; height:46px; border-radius:50%; z-index:2;
+  display:grid; place-items:center; color:var(--tx-2);
+  background:rgba(var(--tx-rgb),.06); border:1px solid var(--line-2);
+  transition:transform .2s var(--ease), background .2s var(--ease);
+}
+.fassung:active{ transform:scale(.9) }
+.fassung > span{ grid-area:1/1; display:grid; place-items:center;
+  transition:opacity .34s var(--ease), transform .48s var(--ease) }
+.fassung svg{ width:21px; height:21px }
+.fa-sonne{ opacity:1; transform:none }
+.fa-mond{ opacity:0; transform:rotate(-85deg) scale(.35) }
+:root[data-theme="dark"] .fa-sonne{ opacity:0; transform:rotate(85deg) scale(.35) }
+:root[data-theme="dark"] .fa-mond{ opacity:1; transform:none }
+
+/* Die Zeile in der Mitte. Das Zeichen daneben ist dieselbe Form wie im
+   App-Symbol, freigestellt und in der Markenfarbe — so wie der
+   Schriftzug oben in der App. */
+.ein-h{
+  margin:auto 0; display:flex; align-items:center; justify-content:center; gap:.14em;
+  font-family:var(--font-dis); font-weight:400; letter-spacing:-.035em;
+  font-size:clamp(36px,10.5vw,58px); line-height:1;
+  animation:einRein .7s .06s var(--ease-out) both;
+}
+.ein-mark{ display:block; width:.62em; color:var(--butter) }
+.ein-mark svg{ display:block; width:100%; height:auto }
+@keyframes einRein{ from{ opacity:0; transform:translateY(12px) } }
+
+/* Die Schale unten */
+.einbox{
+  width:100%; max-width:460px; margin:0 auto; border-radius:28px; padding:10px;
+  background:var(--karte); border:1px solid var(--karte-rand);
+  box-shadow:var(--shadow); display:grid; gap:9px;
+  animation:einRein .66s .16s var(--ease-out) both;
+}
+.einb{
+  width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
+  padding:17px 20px; border-radius:19px; font-size:15.5px; font-weight:650;
+  letter-spacing:-.01em; transition:transform .18s var(--ease), opacity .2s, background .2s;
+}
+.einb svg{ width:19px; height:19px; flex:none }
+.einb:active{ transform:scale(.985) }
+.einb.prim{ background:linear-gradient(120deg,var(--butter-2),var(--butter));
+  color:var(--on-primary); box-shadow:0 14px 34px -16px var(--knopf-schatten) }
+.einb.zweit{ background:rgba(var(--tx-rgb),.06); color:var(--tx);
+  border:1px solid rgba(var(--tx-rgb),.12) }
+.einb:disabled{ opacity:.38; box-shadow:none }
+.ein-err{ display:none; margin:2px 6px 4px; font-size:12.5px; line-height:1.45; color:var(--coral) }
+.ein-err.da{ display:block }
+
+/* ─── Blatt: E-Mail und Code ─────────────────────────────────────
+   Legt sich ueber den Einstieg statt ihn zu ersetzen. Man ist nicht
+   woanders, man ist einen Schritt weiter. */
+.blatt{ position:fixed; inset:0; z-index:78; display:none }
+.blatt.on{ display:block }
+.blatt-grund{ position:absolute; inset:0; background:rgba(var(--s-schatten),.42);
+  animation:blattGrund .3s var(--ease-out) both }
+@keyframes blattGrund{ from{ opacity:0 } }
+.blatt-karte{
+  position:absolute; left:0; right:0; bottom:0;
+  top:calc(env(safe-area-inset-top) + 30px);
+  background:var(--ink-1); border-radius:30px 30px 0 0;
+  padding:0 20px calc(env(safe-area-inset-bottom) + 24px);
+  overflow-y:auto; -webkit-overflow-scrolling:touch;
+  box-shadow:0 -20px 60px -26px rgba(var(--s-schatten),.55);
+  animation:blattRein .44s var(--ease-out) both;
+}
+@keyframes blattRein{ from{ transform:translateY(52px); opacity:0 } }
+.blatt-zu{
+  position:absolute; top:14px; right:14px; width:40px; height:40px; border-radius:50%;
+  display:grid; place-items:center; color:var(--tx-2); z-index:2;
+  background:rgba(var(--tx-rgb),.06);
+}
+.blatt-zu svg{ width:17px; height:17px }
+.blatt-in{ max-width:430px; margin:0 auto; padding-top:46px; text-align:center }
+.blatt-mark{ display:block; width:42px; margin:0 auto 20px; color:var(--tx) }
+.blatt-mark svg{ display:block; width:100%; height:auto }
+.blatt-h{ font-family:var(--font-dis); font-weight:400; letter-spacing:-.025em;
+  font-size:clamp(23px,6.4vw,29px); line-height:1.14; margin:0 }
+.blatt-s{ color:var(--tx-2); font-size:13.5px; line-height:1.5; margin:9px 0 0 }
+.blatt-s b{ color:var(--tx); font-weight:600 }
+.blatt .field{ margin-top:22px; text-align:left }
+.blatt .field input{ border-radius:16px }
+.blatt-weiter{ margin-top:11px }
+.blatt-nochmal{ display:inline-block; margin-top:20px }
+.blatt-nochmal:disabled{ color:var(--tx-3); text-decoration-color:transparent;
+  cursor:default; font-variant-numeric:tabular-nums }
+
+/* ─── Funnel ─────────────────────────────────────────────────────
+   Oben die Zaehlung und ein Balken, darunter die Frage. Sonst nichts. */
+#v-onboard{ padding-top:calc(env(safe-area-inset-top) + 18px) }
+.obkopf{ display:flex; align-items:center; gap:10px; max-width:430px; margin:0 auto; width:100% }
+.obzurueck{ width:34px; height:34px; margin-left:-8px; border-radius:50%;
+  display:grid; place-items:center; color:var(--tx-2); flex:none }
+.obzurueck.hide{ visibility:hidden }
+.obzurueck svg{ width:19px; height:19px }
+.obschritt{ font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--tx-3); font-variant-numeric:tabular-nums }
+.obbalken{ max-width:430px; width:100%; margin:13px auto 32px; height:4px;
+  border-radius:99px; background:rgba(var(--tx-rgb),.10); overflow:hidden }
+.obbalken i{ display:block; height:100%; width:0; border-radius:99px;
+  background:linear-gradient(90deg,var(--butter-2),var(--butter));
+  transition:width .55s var(--ease-out) }
+#v-onboard .viewport{ max-width:430px; width:100%; margin:0 auto }
+/* Der Knopf steht in derselben Spalte wie die Frage darueber und ist so
+   breit wie sie — dieselbe Form wie die Knoepfe am Einstieg. */
+#ob-nav{ max-width:430px; width:100%; margin:18px auto 0;
+  padding:14px 0 calc(14px + env(safe-area-inset-bottom)) }
+#ob-nav .btn{ flex:1 1 auto; justify-content:center; border-radius:19px;
+  padding:17px 20px; font-size:15.5px; font-weight:650; letter-spacing:-.01em }
+.obh{ font-family:var(--font-dis); font-weight:400; letter-spacing:-.03em;
+  font-size:clamp(28px,7.6vw,38px); line-height:1.06; margin:0 0 20px }
+.obecho{ margin:15px 2px 0; font-size:12.5px; color:var(--tx-3) }
+#v-onboard .field:first-of-type{ margin-top:0 }
+.jn{ display:grid; gap:10px }
+
+/* Zwei Zeilen mit Regler. Eingeschaltet faerbt sich die Zeile, der Knauf
+   faehrt hinueber, das Zeichen nimmt die Markenfarbe an. */
+.swz{ width:100%; display:flex; align-items:center; gap:13px; text-align:left;
+  padding:15px 15px; border-radius:20px; margin-bottom:11px;
+  background:var(--karte); border:1px solid var(--karte-rand);
+  box-shadow:var(--karte-schatten);
+  transition:background .28s var(--ease), border-color .28s var(--ease), transform .2s var(--ease) }
+.swz[aria-pressed="true"]{ border-color:var(--butter-dim); background:rgba(var(--marke-rgb),.07) }
+.swz .swi{ width:38px; height:38px; border-radius:12px; flex:none;
+  display:grid; place-items:center; color:var(--tx-2);
+  background:rgba(var(--tx-rgb),.06); transition:.28s var(--ease) }
+.swz[aria-pressed="true"] .swi{ color:var(--butter); background:rgba(var(--marke-rgb),.15) }
+.swz .swi svg{ width:20px; height:20px }
+.swz .swt{ flex:1; min-width:0; font-size:14.5px; font-weight:600; letter-spacing:-.01em }
+.swz .swt small{ display:block; margin-top:2px; font-size:11.5px; font-weight:500;
+  letter-spacing:0; color:var(--tx-3) }
+.swz .swr{ flex:none; width:48px; height:28px; border-radius:99px; position:relative;
+  background:rgba(var(--tx-rgb),.16); transition:background .28s var(--ease) }
+.swz .swr i{ position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%;
+  background:#fff; box-shadow:0 1px 5px rgba(0,0,0,.3); transition:transform .3s var(--ease) }
+.swz[aria-pressed="true"] .swr{ background:var(--butter) }
+.swz[aria-pressed="true"] .swr i{ transform:translateX(20px) }
+.swz[aria-busy="true"]{ opacity:.55; pointer-events:none }
+.swz.klack{ animation:swKlack .44s var(--ease-out) }
+@keyframes swKlack{ 38%{ transform:scale(1.02) } 100%{ transform:none } }
+
+/* ─── Fertig ─────────────────────────────────────────────────────
+   Das Ende des Funnels bekommt eine eigene Fassung des Grusses: statt
+   des Profilbilds zieht ein Ring auf und ein Haken faehrt hinein.
+   Danach kommt der Kalender nicht einfach, er faehrt herein. */
+.hallo-ring{ display:none; width:min(44vw,158px); margin:0 auto 26px }
+.hallo.fertig .hallo-rahmen{ display:none }
+.hallo.fertig .hallo-ring{ display:block }
+.hallo-ring svg{ display:block; width:100%; height:auto; overflow:visible }
+.hallo-ring .rg{ fill:none; stroke:var(--butter); stroke-width:4; stroke-linecap:round;
+  stroke-dasharray:283; stroke-dashoffset:283;
+  animation:ringZieh .95s var(--ease-out) .08s forwards }
+.hallo-ring .hk{ fill:none; stroke:var(--butter); stroke-width:5.4; stroke-linecap:round;
+  stroke-linejoin:round; stroke-dasharray:56; stroke-dashoffset:56;
+  animation:hakenZieh .5s var(--ease-out) .74s forwards }
+@keyframes ringZieh{ to{ stroke-dashoffset:0 } }
+@keyframes hakenZieh{ to{ stroke-dashoffset:0 } }
+body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
+@keyframes kalRein{ from{ opacity:0; transform:scale(.965) translateY(12px); filter:blur(7px) } }
+
+@media(max-width:520px){
+  .ein{ padding-left:0; padding-right:0 }
+  .fassung{ right:2px }
+}
+@media(prefers-reduced-motion:reduce){
+  .hallo-ring .rg, .hallo-ring .hk{ stroke-dashoffset:0; animation:none }
+}
+
 </style>
 </head>
 <body>
@@ -3819,185 +3711,100 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
   <div class="wrap">
 
-    <!-- ─────────── ANMELDEN ─────────── -->
-    <section class="view pt" id="v-login">
-      <div class="eyebrow" id="lg-eyebrow">Willkommen zurück</div>
-      <h1 class="dis" id="lg-title">Schön, dich <i>wiederzusehen</i>.</h1>
-      <p class="lede" id="lg-lede">Vorname und Geburtsdatum — mehr braucht MOJI nicht, um dich und deine Dienstzeiten zu erkennen.</p>
+    <!-- ─────────── EINSTIEG ───────────
+         Der erste Bildschirm nach dem Vorspann. Frueher standen hier fuenf
+         Musterbilder, drei Absaetze Erklaerung und zwei Wege, die dieselbe
+         Mail verschickten. Angemeldet hat das niemanden — geblaettert schon.
 
-      <!-- Cloud: Anmeldung per E-Mail-Link -->
-      <div id="lg-cloud" style="display:none">
+         Jetzt: eine Zeile in der Mitte, zwei Knoepfe in einer Schale unten,
+         der Fassungsschalter dort, wo sonst das Schliesskreuz sitzt. Alles
+         Weitere erklaert die App, wenn sie offen ist.                      -->
+    <section class="view" id="v-login">
 
-        <!-- Erst die Weiche -->
-        <div id="lg-choice">
+      <!-- Mit Cloud: der Einstieg selbst -->
+      <div class="ein" id="lg-start">
+        <button class="fassung" id="lg-fassung" aria-label="Hell oder dunkel">
+          <span class="fa-sonne" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.7v2.3M12 19v2.3M2.7 12H5M19 12h2.3M5.4 5.4 7 7M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg></span>
+          <span class="fa-mond" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.3 14.1A8.6 8.6 0 0 1 9.9 3.7a8.6 8.6 0 1 0 10.4 10.4Z"/></svg></span>
+        </button>
 
-          <!-- Musterbilder: alles aus Formen gebaut, es lädt nichts nach -->
-          <div class="wfeat">
-            <div class="wmock">
-              <span class="wtag">Beispiel</span>
-              <div class="mk-head"><b>Dienstzeiten</b><small>Vormittag · Nachmittag</small></div>
-              <div class="mz-tabs"><i class="on">Woche 1</i><i>Woche 2</i><i class="add">+</i></div>
-              <div class="mz-rows">
-                <p><u>Mo</u><s>08:00–12:00</s><s>13:00–18:00</s><b>9,00</b></p>
-                <p><u>Di</u><s>08:00–12:00</s><s>13:00–18:00</s><b>9,00</b></p>
-                <p><u>Fr</u><s>09:00–12:00</s><s>13:00–17:00</s><b>7,00</b></p>
-                <p><u>Sa</u><s>08:00–12:00</s><s class="off">frei</s><b>4,00</b></p>
-              </div>
-              <div class="mz-note">Pause und Tagesstunden rechnet MOJI daraus</div>
-            </div>
-            <b>Einmal den Rhythmus hinterlegen</b>
-            <span>Montag bis Samstag, Vormittag und Nachmittag getrennt, in Viertelstunden.
-              Wer im Wechsel arbeitet, legt bis zu vier Wochen an und tippt an, in welcher er
-              gerade steckt — MOJI führt den Turnus danach von selbst weiter. Die Pause ergibt
-              sich aus der Lücke zwischen Vormittag und Nachmittag.</span>
-          </div>
+        <h1 class="ein-h">Los geht&rsquo;s<span class="ein-mark"><svg viewBox="0 0 115 100" aria-hidden="true"><path d="M2 100A2 2 0 0 1 0 98L0 23A23 23 0 0 1 23 0L92 0A23 23 0 0 1 115 23L115 98A2 2 0 0 1 113 100L96 100A2 2 0 0 1 94 98L94 23A2 2 0 0 0 92 21L70 21A2 2 0 0 0 68 23L68 98A2 2 0 0 1 66 100L49 100A2 2 0 0 1 47 98L47 23A2 2 0 0 0 45 21L23 21A2 2 0 0 0 21 23L21 98A2 2 0 0 1 19 100Z" fill="currentColor" fill-rule="evenodd"/></svg></span></h1>
 
-          <div class="wfeat">
-            <div class="wmock">
-              <span class="wtag">Beispiel</span>
-              <div class="mk-head"><b>Juli 2026</b><small>Kalender von Anna</small></div>
-              <div class="mk-dow"><u>M</u><u>D</u><u>M</u><u>D</u><u>F</u><u>S</u><u>S</u></div>
-              <div class="mk-grid"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class="u"></i><i class="u"></i><i class="u"></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class="k"></i><i class=""></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="f"></i><i class=""></i><i class="so"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="so"></i></div>
-              <div class="mk-leg"><s class="u"></s>Urlaub<s class="k"></s>Krank<s class="f"></s>Feiertag</div>
-            </div>
-            <b>Nur antippen, was abweicht</b>
-            <span>Deine Dienstzeiten stehen einmal fest. Danach tippst du im Kalender nur
-              Urlaub, Krankenstand oder einen eigenen Vermerk an. Feiertage kennt MOJI selbst.</span>
-          </div>
-
-          <div class="wfeat">
-            <div class="wmock light">
-              <span class="wtag dark">Beispiel</span>
-              <div class="mb-head"><b>ARBEITSZEITAUFZEICHNUNG</b><i>MOJI</i></div>
-              <div class="mb-rows">
-                <p><u>01.07.</u><i>Mi</i><s></s><s></s><b>9,00</b></p>
-                <p><u>02.07.</u><i>Do</i><s></s><s></s><b>9,00</b></p>
-                <p class="hl"><u>03.07.</u><i>Fr</i><s class="v"></s><s class="v"></s><b>Urlaub</b></p>
-                <p><u>04.07.</u><i>Sa</i><s></s><s class="off"></s><b>4,00</b></p>
-                <p class="frei"><u>05.07.</u><i>So</i><s class="off"></s><s class="off"></s><b>—</b></p>
-              </div>
-              <div class="mb-sum">
-                <span><u>Arbeit</u>223,00</span><span><u>Urlaub</u>13,00</span>
-                <span><u>Krank</u>9,00</span><span class="t"><u>Gesamt</u>245,00</span>
-              </div>
-              <div class="mb-sig"><em>Anna Muster</em><hr><u>Unterschrift Dienstnehmer/in</u></div>
-            </div>
-            <b>Am Monatsende ein Tipp</b>
-            <span>Ein Monat wird eine fertige A4-Seite: jeder Tag mit Vormittag, Nachmittag,
-              Pause und Stunden, die Summen getrennt ausgewiesen, deine Unterschriftsleiste darunter.</span>
-          </div>
-
-          <div class="wfeat">
-            <div class="wmock">
-              <span class="wtag">Beispiel</span>
-              <div class="mp-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>Mit Passkey anmelden</div>
-              <div class="mp-ok"><span class="mp-hak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg></span>Face ID erkannt</div>
-              <div class="mp-note">Kein Passwort, kein Code aus dem Postfach</div>
-            </div>
-            <b>Anmelden ohne Code</b>
-            <span>Beim ersten Mal bekommst du eine E-Mail. Danach genügt Face ID oder dein
-              Fingerabdruck — und deine Aufzeichnungen liegen sicher auf jedem deiner Geräte.</span>
-          </div>
-
-          <div class="wfeat">
-            <div class="wmock">
-              <div class="ds-row"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8.2 10.5V7.8a3.8 3.8 0 017.6 0v2.7"/></svg></span>
-                <span><b>Verschlüsselt übertragen</b><small>Zwischen deinem Gerät und dem
-                  Server liest niemand mit.</small></span></div>
-              <div class="ds-row"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5a13 13 0 010 17M12 3.5a13 13 0 000 17"/></svg></span>
-                <span><b>Gespeichert in der EU</b><small>Die Datenbank steht in Frankfurt,
-                  nicht außerhalb Europas.</small></span></div>
-              <div class="ds-row"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.3A9.6 9.6 0 0112 6.2c5 0 9 5.8 9 5.8a17 17 0 01-2.4 3M6.5 8.2A17.6 17.6 0 003 12s4 5.8 9 5.8c1.3 0 2.5-.4 3.6-1"/><path d="M9.9 9.9a3 3 0 004.2 4.2"/></svg></span>
-                <span><b>Nur deine eigene Zeile</b><small>Die Datenbank selbst verweigert
-                  jeden Zugriff auf fremde Daten.</small></span></div>
-            </div>
-            <b>Nur du siehst deine Zeiten</b>
-            <span>Dass jede Person ausschließlich ihre eigene Zeile lesen darf, ist in der
-              Datenbank hinterlegt — nicht bloß in der App. Das gilt auch für jemanden, der den
-              Quelltext liest. Beim Dienstgeber landet allein das PDF, das du selbst abgibst.
-              Krankenstände sind Gesundheitsdaten und werden entsprechend behandelt.</span>
-          </div>
-
-          <div class="navrow sticky solid" id="lg-bar">
-            <button class="btn btn-p" data-lg="login"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>Anmelden</button>
-            <button class="btn btn-out" data-lg="signup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Registrieren</button>
-          </div>
+        <div class="einbox">
+          <p class="ein-err" id="ein-err"></p>
+          <button class="einb prim" id="ein-pk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.6V6.4A2.4 2.4 0 0 1 6.4 4h2.2M15.4 4h2.2A2.4 2.4 0 0 1 20 6.4v2.2M20 15.4v2.2a2.4 2.4 0 0 1-2.4 2.4h-2.2M8.6 20H6.4A2.4 2.4 0 0 1 4 17.6v-2.2"/><path d="M9 10.2v1.6M15 10.2v1.6M12 10v3.6l-1.2.7"/><path d="M9.3 16.1a4.2 4.2 0 0 0 5.4 0"/></svg><span id="ein-pk-t">Mit Face ID anmelden</span></button>
+          <button class="einb zweit" id="ein-mail">Anmelden oder registrieren</button>
         </div>
+      </div>
 
-        <!-- Dann die E-Mail-Zeile, für beide Wege dieselbe -->
-        <div id="lg-form" style="display:none">
-          <div class="card mt" style="max-width:430px">
-            <div class="field hasgo" id="f-mail">
-              <input id="lg-mail" type="email" inputmode="email" autocomplete="email" placeholder=" ">
+      <!-- Blatt 1 · E-Mail-Adresse.
+           Faehrt von unten herein und laesst den Einstieg dahinter stehen.
+           Der Fokus wird noch in der Geste gesetzt, die es oeffnet — nur
+           dann faehrt am iPhone die Tastatur mit hoch. -->
+      <div class="blatt" id="lg-mailstep" aria-hidden="true">
+        <div class="blatt-grund" data-blattzu="lg-mailstep"></div>
+        <div class="blatt-karte">
+          <button class="blatt-zu" data-blattzu="lg-mailstep" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          <div class="blatt-in">
+            <span class="blatt-mark" aria-hidden="true"><svg viewBox="0 0 115 100" aria-hidden="true"><path d="M2 100A2 2 0 0 1 0 98L0 23A23 23 0 0 1 23 0L92 0A23 23 0 0 1 115 23L115 98A2 2 0 0 1 113 100L96 100A2 2 0 0 1 94 98L94 23A2 2 0 0 0 92 21L70 21A2 2 0 0 0 68 23L68 98A2 2 0 0 1 66 100L49 100A2 2 0 0 1 47 98L47 23A2 2 0 0 0 45 21L23 21A2 2 0 0 0 21 23L21 98A2 2 0 0 1 19 100Z" fill="currentColor" fill-rule="evenodd"/></svg></span>
+            <h2 class="blatt-h">Anmelden oder registrieren</h2>
+            <div class="field" id="f-mail">
+              <input id="lg-mail" type="email" inputmode="email" autocomplete="email" enterkeyhint="go" placeholder=" ">
               <label for="lg-mail">E-Mail-Adresse</label>
-              <button class="inline-go" id="lg-send" aria-label="Anmeldelink senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
             </div>
-            <p class="hint" id="lg-hint" style="margin-top:14px">Kein Passwort. Der Link gilt eine Stunde.</p>
-            <div id="lg-err2" style="display:none;margin-top:14px;font-size:12.5px;color:var(--coral)"></div>
-          </div>
-
-          <!-- Der schnelle Weg, bewusst unter der E-Mail-Zeile -->
-          <div id="lg-pk" style="display:none;max-width:430px">
-            <div class="orline"><span>oder ohne Code</span></div>
-            <button class="btn btn-pk" id="lg-pk-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>Mit Passkey anmelden</button>
-            <p class="hint" style="margin-top:12px">Geht, sobald du auf diesem Gerät einmal einen Passkey angelegt hast.</p>
-            <div id="lg-pk-err" style="display:none;margin-top:12px;font-size:12.5px;color:var(--coral)"></div>
-          </div>
-
-          <div style="margin-top:26px">
-            <button class="linkbtn" id="lg-back">Zurück zur Auswahl</button>
+            <button class="einb prim blatt-weiter" id="lg-send" disabled>Weiter</button>
+            <p class="ein-err" id="lg-err2"></p>
           </div>
         </div>
       </div>
 
-      <!-- Cloud: Mail ist unterwegs -->
-      <div id="lg-sent" style="display:none">
-        <div class="card mt" style="max-width:430px;text-align:center;padding:34px 22px">
-          <div class="qd-ring" style="margin:0 auto 18px">
-            <svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="35"/><path d="M25 41l11 11 20-22"/></svg>
-            <span class="puls"></span>
-          </div>
-          <h3 style="font-family:var(--font-dis);font-size:23px;font-weight:400;margin:0 0 6px">Schau in dein Postfach</h3>
-          <p class="hint" id="lg-sent-t" style="margin:0 0 16px"></p>
-          <p class="hint" style="margin:0 0 16px">Kommt nichts an, schau einmal im Spam-Ordner —
-            die Absenderadresse ist neu und muss sich bei den Anbietern erst einen Ruf erarbeiten.</p>
-          <div style="margin:4px 0 18px;padding-top:18px;border-top:1px solid var(--line-2);text-align:left">
-            <small style="display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3);margin-bottom:10px">Oder Code aus der Mail</small>
-            <div class="field hasgo" id="f-otp">
-              <input id="lg-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder=" ">
-              <label for="lg-otp">Code aus der Mail</label>
-              <button class="inline-go" id="lg-otp-go" disabled aria-label="Code bestätigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
+      <!-- Blatt 2 · Code aus der Mail.
+           Es steht schon da, waehrend die Mail noch rausgeht: so bleibt die
+           Geste erhalten und die Tastatur kommt gleich mit. -->
+      <div class="blatt" id="lg-codestep" aria-hidden="true">
+        <div class="blatt-grund" data-blattzu="lg-codestep"></div>
+        <div class="blatt-karte">
+          <button class="blatt-zu" data-blattzu="lg-codestep" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          <div class="blatt-in">
+            <span class="blatt-mark" aria-hidden="true"><svg viewBox="0 0 115 100" aria-hidden="true"><path d="M2 100A2 2 0 0 1 0 98L0 23A23 23 0 0 1 23 0L92 0A23 23 0 0 1 115 23L115 98A2 2 0 0 1 113 100L96 100A2 2 0 0 1 94 98L94 23A2 2 0 0 0 92 21L70 21A2 2 0 0 0 68 23L68 98A2 2 0 0 1 66 100L49 100A2 2 0 0 1 47 98L47 23A2 2 0 0 0 45 21L23 21A2 2 0 0 0 21 23L21 98A2 2 0 0 1 19 100Z" fill="currentColor" fill-rule="evenodd"/></svg></span>
+            <h2 class="blatt-h">Prüfe deinen Posteingang</h2>
+            <p class="blatt-s">Gib den Code ein, den wir an <b id="lg-sent-t"></b> gesendet haben.</p>
+            <div class="field" id="f-otp">
+              <input id="lg-otp" inputmode="numeric" autocomplete="one-time-code" enterkeyhint="go" maxlength="10" placeholder=" ">
+              <label for="lg-otp">Code</label>
             </div>
-            <p class="hint" style="margin-top:12px">Am Handy praktisch, wenn du MOJI vom Home-Bildschirm öffnest — der Link aus der Mail landet dort sonst im Browser.</p>
-            <div id="lg-otp-err" style="display:none;margin-top:12px;font-size:12.5px;color:var(--coral)"></div>
+            <button class="einb prim blatt-weiter" id="lg-otp-go" disabled>Weiter</button>
+            <button class="linkbtn blatt-nochmal" id="lg-again">E-Mail erneut senden</button>
+            <p class="ein-err" id="lg-otp-err"></p>
           </div>
-          <button class="linkbtn" id="lg-again">Keine Mail bekommen? Nochmal senden</button>
         </div>
       </div>
 
-      <div id="known" class="mt" style="display:none">
-        <div class="eyebrow" style="margin-bottom:9px">Bekannte Profile</div>
-        <div id="known-list" style="display:flex;flex-wrap:wrap;gap:9px"></div>
-      </div>
-
-      <div class="card mt" style="max-width:430px" id="lg-local">
-        <div class="field" id="f-lg-vn"><input id="lg-vn" autocomplete="given-name" placeholder=" "><label for="lg-vn">Vorname</label></div>
-        <div style="margin-top:16px">
-          <small style="display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3)">Geburtsdatum</small>
-          <div class="dob" data-dob="lg">
-            <div class="g"><input inputmode="numeric" maxlength="2" data-p="d" placeholder="TT"><small>Tag</small></div>
-            <span class="sep">/</span>
-            <div class="g"><input inputmode="numeric" maxlength="2" data-p="m" placeholder="MM"><small>Monat</small></div>
-            <span class="sep">/</span>
-            <div class="g y"><input inputmode="numeric" maxlength="4" data-p="y" placeholder="JJJJ"><small>Jahr</small></div>
-          </div>
+      <!-- Ohne Cloud: Vorname und Geburtsdatum, wie gehabt. Dieser Weg
+           laeuft nur, wenn Supabase nicht erreichbar ist. -->
+      <div id="lg-local" class="pt" style="display:none">
+        <h1 class="dis">Schön, dich <i>wiederzusehen</i>.</h1>
+        <div id="known" class="mt" style="display:none">
+          <div class="eyebrow" style="margin-bottom:9px">Bekannte Profile</div>
+          <div id="known-list" style="display:flex;flex-wrap:wrap;gap:9px"></div>
         </div>
-        <div id="lg-err" style="display:none;margin-top:14px;font-size:12.5px;color:var(--coral)"></div>
-        <div class="navrow">
-          <button class="btn btn-p" id="lg-go">Anmelden
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
-          <button class="btn btn-g" id="lg-new">Neu anmelden</button>
+        <div class="card mt" style="max-width:430px">
+          <div class="field" id="f-lg-vn"><input id="lg-vn" autocomplete="given-name" placeholder=" "><label for="lg-vn">Vorname</label></div>
+          <div style="margin-top:16px">
+            <small style="display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3)">Geburtsdatum</small>
+            <div class="dob" data-dob="lg">
+              <div class="g"><input inputmode="numeric" maxlength="2" data-p="d" placeholder="TT"><small>Tag</small></div>
+              <span class="sep">/</span>
+              <div class="g"><input inputmode="numeric" maxlength="2" data-p="m" placeholder="MM"><small>Monat</small></div>
+              <span class="sep">/</span>
+              <div class="g y"><input inputmode="numeric" maxlength="4" data-p="y" placeholder="JJJJ"><small>Jahr</small></div>
+            </div>
+          </div>
+          <div id="lg-err" style="display:none;margin-top:14px;font-size:12.5px;color:var(--coral)"></div>
+          <div class="navrow">
+            <button class="btn btn-p" id="lg-go">Anmelden<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
+            <button class="btn btn-g" id="lg-new">Neu anmelden</button>
+          </div>
         </div>
       </div>
     </section>
@@ -4068,165 +3875,81 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
       </div>
     </section>
 
-    <!-- ─────────── ONBOARDING ─────────── -->
-    <section class="view pt" id="v-onboard">
-      <div class="obtop">
-        <button class="obback hide" id="ob-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>Zurück</button>
-        <span class="stepno" id="ob-step"></span>
+    <!-- ─────────── FUNNEL ───────────
+         Vier Schritte, oben die Zaehlung und ein Balken. Was frueher fuenf
+         Seiten waren, sind vier: der Arbeitsort steht fest und war damit
+         eine Seite zum Wegklicken, und die Schlussseite mit Vorschau,
+         Haekchen und Kartenkarussell kam, als das Profil laengst stand.
+         Erinnerung und Passkey sind jetzt zwei Schalter mitten im Weg.  -->
+    <section class="view" id="v-onboard">
+      <div class="obkopf">
+        <button class="obzurueck hide" id="ob-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <span class="obschritt" id="ob-step"></span>
       </div>
-      <div class="rail" id="rail"></div>
+      <div class="obbalken"><i id="ob-bar"></i></div>
+
       <div class="viewport">
         <div class="track" id="track">
 
           <!-- 1 Name -->
           <div class="slide">
-            <div class="eyebrow">Schritt 1 · Person</div>
-            <h1 class="dis">Wie heißt du, <i>eigentlich</i>?</h1>
-            <p class="lede">Der Name steht später auf jedem Export — also gern so, wie er im Dienstvertrag steht.</p>
-            <div class="card mt" style="max-width:430px">
-              <div class="field" id="f-vn"><input id="in-vn" autocomplete="given-name" placeholder=" "><label for="in-vn">Vorname</label></div>
-              <div class="field hasgo" id="f-nn"><input id="in-nn" autocomplete="family-name" placeholder=" "><label for="in-nn">Nachname</label>
-                <button class="inline-go" id="go-name" aria-label="Weiter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
-              </div>
+            <h1 class="obh">Dein Name</h1>
+            <div class="field" id="f-vn"><input id="in-vn" autocomplete="given-name" enterkeyhint="next" placeholder=" "><label for="in-vn">Vorname</label></div>
+            <div class="field hasgo" id="f-nn"><input id="in-nn" autocomplete="family-name" enterkeyhint="go" placeholder=" "><label for="in-nn">Nachname</label>
+              <button class="inline-go" id="go-name" aria-label="Weiter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
             </div>
           </div>
 
           <!-- 2 Geburtsdatum -->
           <div class="slide">
-            <div class="eyebrow">Schritt 2 · Geburtsdatum</div>
-            <h1 class="dis">Dein <i>Geburtsdatum</i>.</h1>
-            <p class="lede">Es steht im Kopf jeder A4-Seite — ein Name allein genügt dort nicht.
-              Und im Kalender wartet an dem Tag eine kleine Überraschung.</p>
-            <div class="card mt" style="max-width:430px">
-              <div class="dob" data-dob="ob" style="margin-top:2px">
-                <div class="g"><input inputmode="numeric" maxlength="2" data-p="d" placeholder="TT"><small>Tag</small></div>
-                <span class="sep">/</span>
-                <div class="g"><input inputmode="numeric" maxlength="2" data-p="m" placeholder="MM"><small>Monat</small></div>
-                <span class="sep">/</span>
-                <div class="g y"><input inputmode="numeric" maxlength="4" data-p="y" placeholder="JJJJ"><small>Jahr</small></div>
-              </div>
-              <p class="hint" style="margin-top:14px" id="dob-echo"></p>
-              <div class="autonext" id="dob-auto" style="display:none">
-                <span class="dots"><i></i><i></i><i></i></span> geht automatisch weiter
-              </div>
+            <h1 class="obh">Dein Geburtsdatum</h1>
+            <div class="dob" data-dob="ob">
+              <div class="g"><input inputmode="numeric" maxlength="2" data-p="d" placeholder="TT"><small>Tag</small></div>
+              <span class="sep">/</span>
+              <div class="g"><input inputmode="numeric" maxlength="2" data-p="m" placeholder="MM"><small>Monat</small></div>
+              <span class="sep">/</span>
+              <div class="g y"><input inputmode="numeric" maxlength="4" data-p="y" placeholder="JJJJ"><small>Jahr</small></div>
+            </div>
+            <p class="obecho" id="dob-echo"></p>
+            <div class="autonext" id="dob-auto" style="display:none">
+              <span class="dots"><i></i><i></i><i></i></span> geht automatisch weiter
             </div>
           </div>
 
-          <!-- 3 Arbeitsort -->
+          <!-- 3 Zwei Schalter -->
           <div class="slide">
-            <div class="eyebrow">Schritt 3 · Dienstgeber</div>
-            <h1 class="dis">Dein <i>Arbeitsort</i>.</h1>
-            <p class="lede">Steht schon fest und lässt sich nicht ändern.</p>
-            <div class="card mt" style="max-width:430px">
-              <div class="firmenkarte">
-                <span class="fk-logo"><img src="firma-miller.png?v=1" alt="Miller United Optics"></span>
-                <b>Miller Optik GmbH</b>
-                <small>Arbeitsort · fix</small>
-                <button class="fk-go" id="go-ort" aria-label="Weiter">
-                  Weiter
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg>
-                </button>
+            <h1 class="obh" id="ob-sw-h">Zwei Schalter</h1>
+            <button class="swz" id="sw-mail" aria-pressed="false">
+              <span class="swi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/></svg></span>
+              <span class="swt">Monatserinnerung per Mail<small id="sw-mail-s">Am Ersten, sonst nie</small></span>
+              <span class="swr"><i></i></span>
+            </button>
+            <button class="swz" id="sw-pk" aria-pressed="false">
+              <span class="swi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.6V6.4A2.4 2.4 0 0 1 6.4 4h2.2M15.4 4h2.2A2.4 2.4 0 0 1 20 6.4v2.2M20 15.4v2.2a2.4 2.4 0 0 1-2.4 2.4h-2.2M8.6 20H6.4A2.4 2.4 0 0 1 4 17.6v-2.2"/><path d="M9 10.2v1.6M15 10.2v1.6M12 10v3.6l-1.2.7"/><path d="M9.3 16.1a4.2 4.2 0 0 0 5.4 0"/></svg></span>
+              <span class="swt" id="sw-pk-t">Face ID aktivieren<small id="sw-pk-s">Anmelden ohne Code</small></span>
+              <span class="swr"><i></i></span>
+            </button>
+          </div>
+
+          <!-- 4 Dienstplan -->
+          <div class="slide">
+            <div id="ob-plan-frage">
+              <h1 class="obh">Dienstplan gleich anlegen?</h1>
+              <div class="jn">
+                <button class="einb prim" id="ob-plan-ja">Ja, jetzt</button>
+                <button class="einb zweit" id="ob-plan-no">Später</button>
               </div>
             </div>
-          </div>
-
-          <!-- 4 Dienstzeiten -->
-          <div class="slide">
-            <div class="eyebrow">Schritt 4 · Dienstzeiten</div>
-            <h1 class="dis">Dein <i>Rhythmus</i>.</h1>
-            <p class="lede">Montag bis Samstag, in 15-Minuten-Schritten. Pause und Stunden rechnet MOJI automatisch. Arbeitest du im Wechsel, legst du bis zu vier Wochen an.</p>
-            <div id="sched-onboard" class="mt"></div>
-          </div>
-
-          <!-- 6 Fertig -->
-          <div class="slide">
-            <div class="eyebrow">Fertig</div>
-            <h1 class="dis">Das war's <i>schon</i>.</h1>
-            <p class="lede" id="done-text"></p>
-
-            <!-- Erinnerung per E-Mail. Freiwillig, standardmäßig aus — ohne
-                 Häkchen wird nichts verschickt. -->
-            <label class="okbox" id="mailok-box">
-              <input type="checkbox" id="mailok">
-              <span class="okmark" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>
-              </span>
-              <span class="oktext">
-                <b>Erinnere mich per E-Mail</b>
-                <small>Einmal im Monat, wenn der Vormonat zum Abgeben bereit ist.
-                  Nur dafür — kein Newsletter, keine Weitergabe. Du kannst es im
-                  Profilmenü jederzeit abschalten.</small>
-              </span>
-            </label>
-
-            <!-- zuerst das Dokument, danach die Funktionen zum Ziehen -->
-            <div class="pdfprev" id="pdfprev"></div>
-
-            <div class="feat">
-              <div class="feat-track" id="feat-track">
-                <article class="feat-card install" id="pk-card" style="display:none">
-                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span>
-                  <span class="tagok" id="pk-card-ok" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>Erledigt</span>
-                  <b id="pk-card-b">Ohne Code anmelden</b>
-                  <span id="pk-card-t">Ein Passkey merkt sich die Anmeldung im Gerät. Beim nächsten
-                    Besuch genügt Face ID oder Fingerabdruck — keine E-Mail, kein Code aus dem Postfach.</span>
-                  <button class="btn btn-p btn-sm" id="pk-card-go" style="margin-top:14px">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>Passkey einrichten
-                  </button>
-                </article>
-                <article class="feat-card install">
-                  <div class="tilewrap">
-                    <img class="tile" src="icon-180.png" alt="MOJI als App-Kachel">
-                    <span class="tilelabel"><b>MOJI</b>so sieht sie am Gerät aus</span>
-                  </div>
-                  <b>Aufs Handy legen</b>
-                  <span id="install-text">Als App gespeichert startet MOJI ohne Browserleiste — und hat ihren eigenen Speicher.</span>
-                  <button class="btn btn-p btn-sm" id="install-go" style="margin-top:14px;display:none">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>
-                    Zum Home-Bildschirm
-                  </button>
-                  <ol class="steps" id="install-steps" style="display:none"></ol>
-                </article>
-                <article class="feat-card">
-                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
-                  <b>Nur Ausnahmen antippen</b>
-                  <span>Urlaub, Krankenstand oder ein eigener Vermerk. Längeres am Stück über „Zeitraum eintragen". Feiertage kennt MOJI selbst.</span>
-                </article>
-                <article class="feat-card">
-                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
-                  <b>Stunden rechnet MOJI</b>
-                  <span>Pause und Tagesstunden ergeben sich aus deinem Rhythmus, auf die Viertelstunde genau. Urlaub, Krankenstand und Feiertag zählen getrennt.</span>
-                </article>
-                <article class="feat-card">
-                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg></span>
-                  <b>Am Monatsende ein Tipp</b>
-                  <span>Ein Monat wird eine A4-Seite mit deiner Unterschriftsleiste — fertig zum Abgeben, oben siehst du sie.</span>
-                </article>
-                <article class="feat-card">
-                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 100 18 9 9 0 000-18M3.6 9h16.8M3.6 15h16.8M12 3c2.5 2.4 3.8 5.4 3.8 9s-1.3 6.6-3.8 9c-2.5-2.4-3.8-5.4-3.8-9S9.5 5.4 12 3"/></svg></span>
-                  <b>Auf jedem Gerät</b>
-                  <span>Deine Aufzeichnungen liegen gesichert. Am Handy, am Geschäfts-PC, auf einem neuen Telefon — deine E-Mail-Adresse genügt.</span>
-                </article>
-                <article class="feat-card">
-                  <span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M5 5l1.8 1.8M17.2 17.2L19 19M19 5l-1.8 1.8M6.8 17.2L5 19"/></svg></span>
-                  <b>Farben und Zeichen</b>
-                  <span id="feat-legend-text">Im Kalender erkennst du jeden Tag auf einen Blick:</span>
-                  <div class="legend" style="margin-top:12px">
-                    <span class="lg" id="lg1"></span><span class="lg" id="lg2"></span><span class="lg" id="lg3"></span><span class="lg" id="lg4"></span>
-                  </div>
-                </article>
-              </div>
-              <div class="feat-dots" id="feat-dots"></div>
-              <p class="feat-hint">Zum Blättern ziehen</p>
+            <div id="ob-plan-edit" style="display:none">
+              <h1 class="obh">Deine Dienstzeiten</h1>
+              <div id="sched-onboard"></div>
             </div>
           </div>
 
         </div>
       </div>
       <div class="navrow sticky" id="ob-nav">
-        <button class="btn btn-p" id="ob-next">Weiter
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
+        <button class="btn btn-p" id="ob-next">Weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
       </div>
     </section>
 
@@ -4805,6 +4528,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
      unbeschnitten auftreten — 3:4 Feld auf 3:4 Motiv. -->
 <div class="hallo aurahg" id="hallo" aria-hidden="true">
   <div class="hallo-in">
+    <!-- Nur am Ende des Funnels: der Ring zieht auf, der Haken faehrt hinein. -->
+    <div class="hallo-ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="rg" cx="50" cy="50" r="45" transform="rotate(-90 50 50)"/><path class="hk" d="M31 51.5 44 64.5 70 37"/></svg></div>
     <div class="hallo-rahmen">
       <div class="hallo-bild"><img id="hallo-img" alt=""></div>
       <span class="hallo-haken" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"/></svg></span>
@@ -5023,7 +4748,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-13-2357';
+const APP_STAND = '2026-09-14-0930';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5964,26 +5689,10 @@ function paintPasskey(){
     else mi.removeAttribute('aria-busy');
   }
 
-  const karte = $('#pk-card'), knopf = $('#pk-card-go'), txt = $('#pk-card-t');
-  if(karte){
-    karte.style.display = PASSKEY ? '' : 'none';
-    const pi = $('#pk-card .pi'), tag = $('#pk-card-ok');
-    if(hat){
-      if(tag) tag.style.display = 'inline-flex';
-      if(pi){ pi.classList.add('fertig'); pi.innerHTML = PK_HAKEN; }
-      $('#pk-card-b').textContent = 'Anmelden ohne Code';
-      txt.textContent = 'Steht. Beim nächsten Anmelden genügt Face ID oder Fingerabdruck — '
-                      + 'keine E-Mail, kein Code.';
-      knopf.style.display = 'none';
-    }else{
-      if(tag) tag.style.display = 'none';
-      if(pi){ pi.classList.remove('fertig'); pi.innerHTML = PK_KEY; }
-      $('#pk-card-b').textContent = 'Ohne Code anmelden';
-      txt.textContent = 'Ein Passkey merkt sich die Anmeldung im Gerät. Beim nächsten Besuch '
-                      + 'genügt Face ID oder Fingerabdruck — keine E-Mail, kein Code aus dem Postfach.';
-      knopf.style.display = '';
-    }
-  }
+  /* Im Funnel hängt derselbe Stand am Schalter. Die alte Karte auf der
+     Schlussseite gibt es nicht mehr — sie kam, als das Profil längst
+     stand, und war damit ein Angebot nach Ladenschluss. */
+  try{ if(typeof obSchalterMalen === 'function') obSchalterMalen(); }catch(e){}
 }
 
 async function cloudLoad(){
@@ -6532,7 +6241,12 @@ function go(id){
   /* Der erste Bildschirm heisst: der Start ist durch. Der Vorspann darf
      sich dann verabschieden — fruehestens nach seiner Mindestzeit. */
   try{ introAppSteht(); }catch(e){ console.warn(e); }
-  if(id !== 'v-onboard') document.body.classList.remove('nobar');
+  /* Einstieg und Funnel gehoeren der ganzen Flaeche — dort steht keine
+     Kopfleiste. Und ein offenes Blatt der Anmeldung darf nirgends
+     stehenbleiben: es liegt fest ueber allem. */
+  document.body.classList.toggle('nobar',
+    id === 'v-onboard' || (id === 'v-login' && CLOUD_ON));
+  if(id !== 'v-login') try{ blattAllesZu(); }catch(e){}
   $$('.view').forEach(v => v.classList.toggle('on', v.id === id));
   const inApp = (id === 'v-cal' || id === 'v-export');
   $('#fabbar').style.display = inApp ? 'flex' : 'none';
@@ -6615,31 +6329,52 @@ function echoDob(){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ONBOARDING
+   FUNNEL
+
+   Vier Schritte: Name, Geburtsdatum, zwei Schalter, Dienstplan.
+
+   Frueher waren es fuenf. Der Arbeitsort steht fest und war damit eine
+   Seite zum Wegklicken. Und die Schlussseite mit A4-Vorschau, Haekchen
+   fuer die Erinnerung und einem Kartenkarussell kam, als das Profil
+   laengst gespeichert war — sie hielt nur auf. Erinnerung und Passkey
+   sind jetzt zwei Schalter mitten im Weg, der Dienstplan eine Frage mit
+   zwei Antworten. Wer "Später" tippt, arbeitet mit der Vorgabe weiter
+   und traegt seine Zeiten im Profilmenü ein.
    ═══════════════════════════════════════════════════════════ */
 const NOW = new Date();
 const PREV = new Date(NOW.getFullYear(), NOW.getMonth()-1, 1);
-const OB = { step:0, year:PREV.getFullYear(), months:new Set([PREV.getFullYear()+'-'+PREV.getMonth()]), sched:defaultSched(), edit:false };
-const STEPS = 5;
+const OB = { step:0, months:new Set([PREV.getFullYear()+'-'+PREV.getMonth()]),
+             sched:defaultSched(), mailOk:false, pkOk:false, plan:false };
+const STEPS = 4;
+const OB_PFEIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg>';
+
+/* Derselbe Passkey heisst am iPhone Face ID und anderswo Fingerabdruck.
+   Nur das Wort, das am Geraet steht, ist ein anderes — und genau das
+   soll auch im Schalter stehen. */
+function apfelGeraet(){
+  return /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function pkWort(){ return apfelGeraet() ? 'Face ID' : 'Fingerabdruck'; }
 
 function obInit(){
   /* Ein neuer Durchlauf darf ein neues Profil anlegen — hier und nur hier
      wird die Merknummer gelöscht. Früher geschah das am Ende des Funnels,
      und jeder spätere Aufruf von sichereProfil legte ein zweites Profil an. */
   _funnelId = null;
-  OB.step = 0; OB.year = PREV.getFullYear();
+  OB.step = 0;
   OB.months = new Set([PREV.getFullYear()+'-'+PREV.getMonth()]);
   OB.sched = defaultSched();
+  OB.mailOk = false; OB.pkOk = false; OB.plan = false;
   $('#in-vn').value = ''; $('#in-nn').value = '';
+  _nPrev['in-vn'] = ''; _nPrev['in-nn'] = '';
   $$('[data-dob="ob"] input').forEach(i => i.value = '');
   echoDob(); $('#dob-auto').style.display = 'none';
-  $('#pdfprev').innerHTML = '';
-  renderSched($('#sched-onboard'), OB.sched, refreshNav);
+  $('#ob-plan-frage').style.display = '';
+  $('#ob-plan-edit').style.display = 'none';
+  $('#sched-onboard').innerHTML = '';
+  obSchalterMalen();
   obPaint();
-  ['lg1','lg2','lg3','lg4'].forEach((id, i) => {
-    const t = ['feier','urlaub','krank','eigen'][i];
-    $('#'+id).innerHTML = '<span style="color:'+TYPES[t].color+'">'+ICONS[t]+'</span>'+TYPES[t].label;
-  });
 }
 /* Eine Ansicht reicht genau bis zum unteren Bildschirmrand — nicht weiter.
    Sonst klebt die Knopfleiste mitten im Bild oder es erscheint ein Rollbalken,
@@ -6658,9 +6393,7 @@ let _prevStep = 0;
 function obPaint(){
   const gewechselt = OB.step !== _prevStep;
   const back = OB.step < _prevStep; _prevStep = OB.step;
-  /* Neuer Schritt fängt oben an, sonst hängt man in der Mitte des vorigen.
-     Und die Tastatur geht zu: sie blieb vom vorigen Feld offen und schob die
-     Überschrift aus dem Bild. Wer tippen will, tippt ins Feld. */
+  /* Neuer Schritt fängt oben an, sonst hängt man in der Mitte des vorigen. */
   if(gewechselt){
     const fokus = document.activeElement;
     if(fokus && fokus.blur && /INPUT|TEXTAREA/.test(fokus.tagName)) fokus.blur();
@@ -6673,242 +6406,157 @@ function obPaint(){
     s.classList.toggle('active', i === OB.step);
     s.classList.toggle('back', i === OB.step && back);
   });
-  $('#rail').innerHTML = Array.from({length:STEPS}, (_,i) => '<i class="'+(i<=OB.step?'done':'')+'"></i>').join('');
-  $('#ob-step').textContent = (OB.step+1) + ' / ' + STEPS;
-  const last = OB.step === STEPS-1;
-  $('#ob-next').innerHTML = last
-    ? 'Los geht\'s <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
-    : 'Weiter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-  if(OB.step === STEPS-1){
-    const vn = $('#in-vn').value.trim(), nn = $('#in-nn').value.trim();
-    /* Ohne Cloud gibt es keine E-Mail-Adresse — dann auch kein Häkchen. */
-    const box = $('#mailok-box');
-    if(box) box.style.display = (CLOUD_ON && MAIL) ? 'flex' : 'none';
-    $('#mailok').checked = !!(OB.mailOk || (ME && ME.mailOk));
-    /* Hier ist alles beisammen — also jetzt speichern, nicht erst beim Knopf */
-    try{ sichereProfil(); }catch(e){ console.warn('Sichern nicht möglich', e); }
-    $('#done-text').textContent = CLOUD_ON
-      ? 'Alles steht, ' + vn + '. Dein Profil ist schon gespeichert — auch wenn du MOJI jetzt gleich auf den Home-Bildschirm legst.'
-      : 'Alles steht, ' + vn + '. Dein Profil ist schon gespeichert. Beim nächsten Besuch genügen Vorname und Geburtsdatum.';
-    try{ renderPdfPreview(vn, nn); }catch(e){ console.warn('Vorschau nicht möglich', e); }
-    try{ paintPasskey(); }catch(e){ console.warn(e); }
-    try{ initFeatCarousel(); nudgeCarousel(); }catch(e){ console.warn(e); }
-    requestAnimationFrame(() => requestAnimationFrame(checkDoneScroll));
-  }
-  document.body.classList.toggle('nobar', OB.step === STEPS-1);
+  /* Ohne Konto (dann keine Erinnerung) und ohne Passkey stuende der
+     Schritt leer da — also faellt er weg, in beide Richtungen. */
+  if(OB.step === 2 && obSchalterAnzahl() === 0){ obGo(back ? 1 : 3); return; }
+  $('#ob-step').textContent = 'Schritt ' + (OB.step+1) + ' von ' + STEPS;
+  $('#ob-bar').style.width = Math.round((OB.step+1) / STEPS * 100) + '%';
+  if(OB.step === 2) obSchalterMalen();
   fitOnboard();                       /* erst jetzt — die obere Leiste steht fest */
   const nav = $('#ob-nav');
   requestAnimationFrame(() => { fitOnboard(); nav.classList.toggle('solid',
     document.documentElement.scrollHeight > window.innerHeight + 12); });
   refreshNav();
+  if(gewechselt) obFokus();
 }
-/* Miniatur der A4-Seite — aus den echten Dienstzeiten, die gerade eingetragen wurden */
-function renderPdfPreview(vn, nn){
-  const host = $('#pdfprev'); if(!host) return;
-  const erste = Array.from(OB.months).sort()[0] || (PREV.getFullYear() + '-' + PREV.getMonth());
-  const teile = erste.split('-'), yy = +teile[0], mm = +teile[1];
-  const probe = normalize({
-    vorname: vn || 'Vorname', nachname: nn || 'Nachname', dob: '2000-01-01',
-    sched: JSON.parse(JSON.stringify(OB.sched)), months: [], events: {}
-  });
-  const rows = monthRows(probe, yy, mm), sum = monthSums(rows);
-  const zeige = rows.slice(0, 18);   /* so viele, dass die Seite gefüllt wirkt */
-  const name = ((vn || 'Vorname') + ' ' + (nn || 'Nachname')).trim();
-
-  let tr = '';
-  zeige.forEach(r => {
-    const cls = r.dow === 0 ? ' class="so"' : (r.type ? ' class="ur"' : '');
-    tr += '<tr' + cls + '>'
-      + '<td>' + p2(r.day) + '.' + p2(mm+1) + '.</td>'
-      + '<td>' + DOWSHORT[r.dow] + '</td>'
-      + '<td class="c">' + (r.vmFrom ? r.vmFrom + '–' + r.vmTo : '—') + '</td>'
-      + '<td class="c">' + (r.nmFrom ? r.nmFrom + '–' + r.nmTo : '—') + '</td>'
-      + '<td class="c">' + (r.pause > 0 ? fmtH(r.pause) : '—') + '</td>'
-      + '<td class="c"><b>' + (r.work > 0 ? fmtH(r.work) : '—') + '</b></td>'
-      + '</tr>';
-  });
-
-  host.innerHTML =
-    '<div class="pdfsheet" role="img" aria-label="Vorschau der Arbeitsaufzeichnung als A4-Seite">'
-    + '<div class="s-head"><div><b>ARBEITSZEITAUFZEICHNUNG</b>'
-    + '<small>' + MONTHS[mm] + ' ' + yy + '</small></div><span class="s-logo">MOJI</span></div>'
-    + '<div class="s-rule"></div>'
-    + '<div class="s-info">'
-    + '<div><u>DIENSTNEHMER/IN</u><span>' + esc(name) + '</span></div>'
-    + '<div><u>DIENSTGEBER</u><span>' + EMPLOYER + '</span></div></div>'
-    + '<table class="s-tab"><tr><th>DATUM</th><th>TAG</th><th>VORMITTAG</th><th>NACHMITTAG</th>'
-    + '<th>PAUSE</th><th>STD.</th></tr>' + tr + '</table>'
-    + '<div class="s-more">… und ' + (rows.length - zeige.length) + ' weitere Tage</div>'
-    + '<div class="s-sum">'
-    + '<i><u>ARBEITSZEIT</u><b>' + fmtH(sum.work) + '</b></i>'
-    + '<i><u>URLAUB</u><b>' + fmtH(sum.urlaub) + '</b></i>'
-    + '<i><u>KRANK</u><b>' + fmtH(sum.krank) + '</b></i>'
-    + '<i class="t"><u>GESAMT</u><b>' + fmtH(sum.total) + '</b></i></div>'
-    + '<div class="s-sig">'
-    + '<div><em>' + esc(name) + '</em><hr><small>UNTERSCHRIFT DIENSTNEHMER/IN</small></div>'
-    + '<div class="leer"></div></div>'
-    + '</div>';
+/* Wer auf einem Schritt mit Feld ankommt, soll tippen koennen, ohne erst
+   ins Feld zu tippen. Am iPhone faehrt die Tastatur dabei nur hoch, wenn
+   noch eine Geste dahintersteht — kommt der Schritt aus einer Antwort des
+   Servers, bleibt sie unten. Der Versuch kostet nichts. */
+function obFokus(){
+  const ziel = OB.step === 0 ? $('#in-vn')
+             : OB.step === 1 ? $('[data-dob="ob"] input[data-p="d"]')
+             : null;
+  if(!ziel) return;
+  try{ ziel.focus({ preventScroll:true }); }catch(e){ try{ ziel.focus(); }catch(e2){} }
 }
 
-/* Home-Bildschirm: Chrome bietet einen echten Knopf an, Safari nur eine Anleitung */
-let _installEvt = null;
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); _installEvt = e; paintInstall(); });
-window.addEventListener('appinstalled', () => { _installEvt = null; paintInstall(); });
-function istStandalone(){
-  try{ return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; }
-  catch(e){ return false; }
-}
-function paintInstall(){
-  const t = $('#install-text'), b = $('#install-go'), st = $('#install-steps');
-  if(!t || !b || !st) return;
-  if(istStandalone()){
-    t.textContent = 'Schon erledigt — du hast MOJI als App geöffnet. Sie startet ohne Browserleiste.';
-    b.style.display = 'none'; st.style.display = 'none'; return;
+/* ─── Die zwei Schalter ───────────────────────────────────────────
+   Sichtbar ist nur, was hier auch geht: ohne Konto keine Erinnerung,
+   ohne Passkey-Unterstuetzung kein Face ID. Stehen beide, geht es von
+   selbst weiter — sonst der Knopf darunter.                          */
+function obMailMoeglich(){ return !!(CLOUD_ON && MAIL); }
+function obPkMoeglich(){ return !!(PASSKEY && UID); }
+function obSchalterMalen(){
+  const m = $('#sw-mail'), p = $('#sw-pk');
+  const h = $('#ob-sw-h');
+  if(h) h.textContent = obSchalterAnzahl() > 1 ? 'Zwei Schalter' : 'Ein Schalter';
+  if(m){
+    m.style.display = obMailMoeglich() ? 'flex' : 'none';
+    m.setAttribute('aria-pressed', String(!!OB.mailOk));
+    const s = $('#sw-mail-s');
+    if(s) s.textContent = (OB.mailOk && MAIL) ? 'Am Ersten an ' + MAIL : 'Am Ersten, sonst nie';
   }
-  if(_installEvt){
-    t.textContent = 'Ein Tipp, und MOJI liegt als App auf dem Gerät — ohne Browserleiste, mit eigenem Speicher.';
-    b.style.display = 'inline-flex'; st.style.display = 'none'; return;
+  if(p){
+    p.style.display = obPkMoeglich() ? 'flex' : 'none';
+    const hat = !!OB.pkOk || (Array.isArray(PK_LISTE) && PK_LISTE.length > 0);
+    OB.pkOk = hat;
+    p.setAttribute('aria-pressed', String(hat));
+    const t = $('#sw-pk-t');
+    if(t && t.firstChild) t.firstChild.nodeValue = pkWort() + ' aktivieren';
+    const s = $('#sw-pk-s');
+    if(s) s.textContent = hat ? 'Steht — Anmelden ohne Code' : 'Anmelden ohne Code';
   }
-  const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  t.textContent = iOS
-    ? 'So liegt MOJI als App auf dem Home-Bildschirm, ohne Browserleiste:'
-    : 'Über das Browsermenü lässt sich MOJI als App installieren:';
-  st.innerHTML = iOS
-    ? '<li>Unten auf <b>Teilen</b> tippen</li><li><b>Zum Home-Bildschirm</b> wählen</li><li>Mit <b>Hinzufügen</b> bestätigen</li>'
-    : '<li>Menü des Browsers öffnen</li><li><b>App installieren</b> oder <b>Verknüpfung erstellen</b> wählen</li>';
-  st.style.display = 'block'; b.style.display = 'none';
 }
-$('#install-go').addEventListener('click', async () => {
-  if(!_installEvt) return;
-  try{ _installEvt.prompt(); await _installEvt.userChoice; }catch(e){ console.warn(e); }
-  _installEvt = null; paintInstall();
+/* Wie viele Schalter stehen hier wirklich? Danach richtet sich die
+   Ueberschrift — und ob der Schritt ueberhaupt etwas zu zeigen hat. */
+function obSchalterAnzahl(){
+  return (obMailMoeglich() ? 1 : 0) + (obPkMoeglich() ? 1 : 0);
+}
+function obSchalterFertig(){
+  const offen = [];
+  if(obMailMoeglich()) offen.push(!!OB.mailOk);
+  if(obPkMoeglich())   offen.push(!!OB.pkOk);
+  return offen.length > 0 && offen.every(Boolean);
+}
+function obSchalterPruef(){
+  if(OB.step !== 2 || !obSchalterFertig()) return;
+  clearAutos();
+  _autoT2 = setTimeout(() => { _autoT2 = null; if(OB.step === 2) obGo(3); }, 640);
+}
+function obKlack(el){
+  if(!el) return;
+  el.classList.remove('klack'); void el.offsetWidth; el.classList.add('klack');
+}
+$('#sw-mail').addEventListener('click', () => {
+  const an = !OB.mailOk;
+  OB.mailOk = an;
+  /* Wer den Funnel laeuft, hat ein Konto — die Antwort gehoert sofort
+     ins Profil, nicht erst ans Ende. */
+  if(ME){ ME.mailOk = an; ME.mailGefragt = true; save(); try{ malErinnerung(); }catch(e){} }
+  if(an) obKlack($('#sw-mail'));
+  obSchalterMalen();
+  obSchalterPruef();
+});
+$('#sw-pk').addEventListener('click', async () => {
+  const z = $('#sw-pk');
+  z.setAttribute('aria-busy','true');
+  try{
+    /* Hier oeffnet das Geraet selbst seine Abfrage — Face ID, Fingerabdruck
+       oder der Schluesselbund. MOJI sieht davon nichts als das Ergebnis. */
+    if(OB.pkOk) await pkReset();
+    else        await pkAdd(null);
+  }catch(e){ console.warn('[MOJI] Passkey im Funnel', e); }
+  z.removeAttribute('aria-busy');
+  const hat = Array.isArray(PK_LISTE) && PK_LISTE.length > 0;
+  if(hat && !OB.pkOk) obKlack(z);
+  OB.pkOk = hat;
+  obSchalterMalen();
+  obSchalterPruef();
 });
 
-/* Karussell: mit dem Finger wischen geht von selbst, mit der Maus ziehen nicht — das hier ergänzt es */
-let _featBereit = false;
-function initFeatCarousel(){
-  const tr = $('#feat-track'), dots = $('#feat-dots');
-  if(!tr || _featBereit) return;
-  _featBereit = true;
-  const karten = $$('.feat-card', tr);
-  dots.innerHTML = karten.map((_, i) => '<i' + (i === 0 ? ' class="on"' : '') + '></i>').join('');
-  const punkte = $$('i', dots);
-
-  const markiere = () => {
-    const mitte = tr.scrollLeft + tr.clientWidth / 2;
-    let beste = 0, dist = 1e9;
-    karten.forEach((k, i) => {
-      const km = k.offsetLeft + k.offsetWidth / 2, d = Math.abs(km - mitte);
-      if(d < dist){ dist = d; beste = i; }
-    });
-    punkte.forEach((p, i) => p.classList.toggle('on', i === beste));
-  };
-  tr.addEventListener('scroll', markiere, { passive:true });
-
-  let zieht = false, startX = 0, startL = 0, bewegt = 0;
-  tr.addEventListener('pointerdown', e => {
-    if(e.pointerType === 'touch') return;      /* Finger kann der Browser selbst */
-    zieht = true; bewegt = 0;
-    startX = e.clientX; startL = tr.scrollLeft;
-    tr.classList.add('drag'); tr.setPointerCapture(e.pointerId);
-  });
-  tr.addEventListener('pointermove', e => {
-    if(!zieht) return;
-    const d = e.clientX - startX;
-    bewegt = Math.max(bewegt, Math.abs(d));
-    tr.scrollLeft = startL - d;
-  });
-  const los = () => {
-    if(!zieht) return;
-    zieht = false; tr.classList.remove('drag');
-    /* auf die nächste Karte einrasten */
-    const karte = karten[0];
-    if(karte){
-      const schritt = karte.offsetWidth + 12;
-      tr.scrollTo({ left: Math.round(tr.scrollLeft / schritt) * schritt, behavior:'smooth' });
-    }
-  };
-  tr.addEventListener('pointerup', los);
-  tr.addEventListener('pointercancel', los);
-  tr.addEventListener('click', e => { if(bewegt > 6) e.preventDefault(); }, true);
-  markiere();
-  paintInstall();
+/* ─── Dienstplan: eine Frage, zwei Antworten ─────────────────────── */
+function obPlanAuf(){
+  OB.plan = true;
+  $('#ob-plan-frage').style.display = 'none';
+  $('#ob-plan-edit').style.display = '';
+  renderSched($('#sched-onboard'), OB.sched, refreshNav);
+  refreshNav(); fitOnboard();
 }
-
-/* Auf der Schlussseite bleibt der Knopf blass, bis man unten angekommen ist.
-   So sieht man die Karten — vor allem die zum Home-Bildschirm. */
-function checkDoneScroll(){
-  const nx = $('#ob-next'); if(!nx) return;
-  if(OB.step !== STEPS-1){
-    nx.classList.remove('btn-wait'); nx.setAttribute('aria-disabled','false'); nx.title='';
-    return;
-  }
-  const rest = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
-  const wartet = rest > 80;
-  nx.classList.toggle('btn-wait', wartet);
-  nx.setAttribute('aria-disabled', wartet ? 'true' : 'false');
-  nx.title = wartet ? 'Erst noch bis zum Seitenende schauen' : '';
+function obPlanZu(){
+  OB.plan = false;
+  $('#ob-plan-frage').style.display = '';
+  $('#ob-plan-edit').style.display = 'none';
+  refreshNav(); fitOnboard();
 }
-window.addEventListener('scroll', checkDoneScroll, { passive:true });
-window.addEventListener('resize', checkDoneScroll);
-
-/* Kurzer Anstoß, damit man sieht, dass sich die Karten schieben lassen */
-function nudgeCarousel(){
-  const tr = $('#feat-track'); if(!tr) return;
-  if(tr.scrollLeft > 4) return;                 /* schon selbst geblättert */
-  setTimeout(() => {
-    if(tr.scrollLeft > 4) return;
-    tr.scrollTo({ left:64, behavior:'smooth' });
-    setTimeout(() => { if(tr.scrollLeft <= 70) tr.scrollTo({ left:0, behavior:'smooth' }); }, 700);
-  }, 750);
-}
+$('#ob-plan-ja').addEventListener('click', obPlanAuf);
+$('#ob-plan-no').addEventListener('click', () => finishOnboarding());
 
 function stepValid(s){
   if(s === 0) return !!($('#in-vn').value.trim() && $('#in-nn').value.trim());
   if(s === 1) return !!dobIso(readDob('ob'));
-  if(s === 3) return [0,1,2,3].slice(0, clamp(OB.sched.weekCount,1,4)).some(i => weekTotal(OB.sched, i) > 0);
+  if(s === 3) return !OB.plan
+    || [0,1,2,3].slice(0, clamp(OB.sched.weekCount,1,4)).some(i => weekTotal(OB.sched, i) > 0);
   return true;
 }
 function refreshNav(){
   const nx = $('#ob-next'); if(!nx) return;
   nx.disabled = !stepValid(OB.step);
+  nx.innerHTML = (OB.step === STEPS-1 ? 'Fertig' : 'Weiter') + OB_PFEIL;
   $$('.field').forEach(f => { const i = $('input', f); if(i) f.classList.toggle('filled', !!i.value); });
-  /* Schritt 1 und 3 führen über den Pfeil im Feld, Schritt 2 geht von selbst weiter */
-  const inField = OB.step === 0 || OB.step === 2, auto = OB.step === 1;
-  $('#ob-nav').classList.toggle('hide', inField || auto);
+  /* Schritt 1 führt über den Pfeil im Feld, Schritt 2 geht von selbst weiter,
+     und die Dienstplanfrage hat ihre eigenen zwei Knöpfe. */
+  const ohneNav = OB.step === 0 || OB.step === 1 || (OB.step === 3 && !OB.plan);
+  $('#ob-nav').classList.toggle('hide', ohneNav);
   $('#ob-back').classList.toggle('hide', OB.step === 0);
   const gn = $('#go-name'); if(gn) gn.disabled = !stepValid(0);
-  const gm = $('#lg-send'); if(gm && CLOUD_ON) gm.disabled = !mailOk($('#lg-mail').value);
 }
 function obGo(step){
   OB.step = clamp(step, 0, STEPS-1);
   obPaint();
-  const nx = $('#ob-next');
-  if(nx && step !== STEPS-1){ nx.classList.remove('btn-wait'); nx.setAttribute('aria-disabled','false'); nx.title=''; }
 }
 $('#ob-next').addEventListener('click', () => {
   if(!stepValid(OB.step)) return;
-  /* Blass heißt gesperrt: erst die Seite zu Ende sehen. Der Tipp scrollt hin. */
-  if($('#ob-next').classList.contains('btn-wait')){
-    window.scrollTo({ top: document.documentElement.scrollHeight, behavior:'smooth' });
-    return;
-  }
-  if(OB.step < STEPS-1){ OB.step++; obPaint(); }
+  if(OB.step < STEPS-1) obGo(OB.step + 1);
   else finishOnboarding();
 });
-$('#ob-back').addEventListener('click', () => { if(OB.step > 0) obGo(OB.step - 1); });
-$('#go-name').addEventListener('click', () => { if(stepValid(0)) obGo(1); });
-$('#go-ort').addEventListener('click', () => obGo(3));
-/* Häkchen sofort ins Profil schreiben — der Funnel speichert schon beim
-   Betreten des letzten Schritts, ein späterer Klick muss also nachziehen. */
-$('#mailok').addEventListener('change', () => {
-  const an = $('#mailok').checked;
-  if(ME){ ME.mailOk = an; ME.mailGefragt = true; save(); }
-  if(OB) OB.mailOk = an;
-  malErinnerung();
-  toast(an ? 'Erinnerung eingeschaltet' : 'Erinnerung aus');
+$('#ob-back').addEventListener('click', () => {
+  /* Aus dem offenen Dienstplan führt Zurück erst einmal zur Frage. */
+  if(OB.step === STEPS-1 && OB.plan){ obPlanZu(); return; }
+  if(OB.step > 0) obGo(OB.step - 1);
 });
+$('#go-name').addEventListener('click', () => { if(stepValid(0)) obGo(1); });
+
 const _nPrev = { 'in-vn':'', 'in-nn':'' };
 ['in-vn','in-nn'].forEach(id => {
   $('#'+id).addEventListener('input', e => {
@@ -6918,15 +6566,14 @@ const _nPrev = { 'in-vn':'', 'in-nn':'' };
     if(OB.step === 0 && jump > 3 && stepValid(0)) armAuto(0, 1);
   });
 });
-$$('#in-vn,#in-nn').forEach(i => i.addEventListener('keydown', e => {
-  if(e.key === 'Enter' && stepValid(0)) obGo(1);
-}));
+$('#in-vn').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); $('#in-nn').focus(); } });
+$('#in-nn').addEventListener('keydown', e => {
+  if(e.key === 'Enter' && stepValid(0)){ e.preventDefault(); obGo(1); }
+});
 
 /* ─── Profil sichern ───
-   Wird schon beim Erreichen der letzten Funnelseite aufgerufen, nicht erst bei
-   „Los geht's". Sonst wären die Daten weg, wenn jemand von dort direkt in die
-   Homescreen-App wechselt, ohne den Knopf zu drücken. Mehrfaches Aufrufen legt
-   kein zweites Profil an, sondern zieht das bestehende nach. */
+   Wird beim Abschluss aufgerufen. Mehrfaches Aufrufen legt kein zweites
+   Profil an, sondern zieht das bestehende nach. */
 let _funnelId = null;
 function sichereProfil(){
   const vn = $('#in-vn').value.trim(), nn = $('#in-nn').value.trim();
@@ -6935,10 +6582,10 @@ function sichereProfil(){
   const months = Array.from(OB.months).map(s => { const [y,m] = s.split('-'); return { y:+y, m:+m }; });
   const sched = JSON.parse(JSON.stringify(OB.sched));
 
-  /* Der Funnel zeigt das Häkchen auf der letzten Seite — wer hier durchgeht,
-     wurde also gefragt, ganz gleich ob er es angehakt hat oder nicht. Nur
-     dort, wo eine Adresse bekannt ist: ohne Cloud bleibt das Häkchen
-     ausgeblendet, dann wurde auch nichts gefragt. */
+  /* Der Funnel zeigt den Schalter für die Erinnerung — wer hier durchgeht,
+     wurde also gefragt, ganz gleich wie er geantwortet hat. Nur dort, wo
+     eine Adresse bekannt ist: ohne Cloud bleibt der Schalter unsichtbar,
+     dann wurde auch nichts gefragt. */
   const gefragt = !!(CLOUD_ON && MAIL);
   if(_funnelId && ME && ME.id === _funnelId){
     ME.vorname = vn; ME.nachname = nn; ME.dob = dob;
@@ -6969,12 +6616,18 @@ function sichereProfil(){
   return ME;
 }
 
+/* Am Ende: der Haken zeichnet sich, dahinter baut sich der Kalender auf,
+   und wenn der Gruß sich löst, fährt er herein. */
 function finishOnboarding(){
   const p = sichereProfil();
   if(!p) return;
   postWillkommen();
-  enterApp();
-  zeigeGruss('neu');
+  zeigeGruss('fertig', enterApp);
+  setTimeout(kalenderRein, GRUSS.fertig.dauer);
+}
+function kalenderRein(){
+  document.body.classList.add('kalrein');
+  setTimeout(() => document.body.classList.remove('kalrein'), 950);
 }
 
 /* Legt die persönliche Begrüßung ins Postfach. Die allgemeine Willkommens-
@@ -7003,120 +6656,213 @@ function postWillkommen(){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ANMELDEN
+   EINSTIEG
+
+   Drei Bilder, die einander nicht ablösen, sondern sich übereinander
+   legen: der Startbildschirm, das Blatt für die Adresse, das Blatt
+   für den Code. Kein Weichenknopf mehr für "anmelden" gegen
+   "registrieren" — beide schickten ohnehin dieselbe Mail, und
+   Supabase legt beim ersten Mal selbst ein Konto an.
    ═══════════════════════════════════════════════════════════ */
+function fehlerZeile(el, text){
+  if(!el) return;
+  el.textContent = text || '';
+  el.classList.toggle('da', !!text);
+}
+
 function loginScreen(){
   $('#lg-err').style.display = 'none';
-  $('#lg-err2').style.display = 'none';
-  $('#lg-sent').style.display = 'none';
+  blattAllesZu();
+  fehlerZeile($('#ein-err'), '');
+  fehlerZeile($('#lg-err2'), '');
+  fehlerZeile($('#lg-otp-err'), '');
   if(CLOUD_ON){
-    $('#lg-cloud').style.display = 'block';
+    $('#lg-start').classList.add('on');
     $('#lg-local').style.display = 'none';
-    $('#known').style.display = 'none';
     $('#sync').style.display = 'none';
-    lgMode('choice');
+    $('#ein-pk').style.display = PASSKEY ? 'flex' : 'none';
+    $('#ein-pk-t').textContent = 'Mit ' + pkWort() + ' anmelden';
   } else {
     const list = DB.profiles;
-    $('#lg-cloud').style.display = 'none';
+    $('#lg-start').classList.remove('on');
     $('#lg-local').style.display = 'block';
     $('#known').style.display = list.length ? 'block' : 'none';
     $('#known-list').innerHTML = list.map(p =>
       '<button class="chip" data-pid="'+p.id+'">'+esc(p.vorname)+' '+esc(p.nachname.charAt(0))+'.</button>').join('');
-    $('#lg-title').innerHTML = 'Schön, dich <i>wiederzusehen</i>.';
-    $('#lg-lede').textContent = 'Vorname und Geburtsdatum — mehr braucht MOJI nicht, um dich und deine Dienstzeiten zu erkennen.';
-    $('#lg-eyebrow').textContent = 'Willkommen zurück';
   }
   go('v-login');
 }
 
-/* ─── Weiche: anmelden oder registrieren ─────────────────────
-   Beide Wege schicken dieselbe Mail — Supabase legt beim ersten Mal
-   selbst ein Konto an. Getrennt sind sie nur, weil niemand raten soll,
-   welcher Knopf für ihn gilt. Der Passkey erscheint nur beim Anmelden:
-   wer neu ist, kann noch keinen haben.                                 */
-let LG_MODE = 'choice';
-function lgMode(m){
-  LG_MODE = m;
-  const wahl = (m === 'choice');
-  $('#lg-choice').style.display = wahl ? 'block' : 'none';
-  $('#lg-form').style.display   = wahl ? 'none'  : 'block';
-  $('#lg-pk').style.display     = (!wahl && m === 'login' && PASSKEY) ? 'block' : 'none';
-  $('#lg-pk-err').style.display = 'none';
-  $('#lg-err2').style.display   = 'none';
-  if(wahl){
-    $('#lg-eyebrow').textContent = 'Willkommen';
-    $('#lg-title').innerHTML     = 'Arbeitszeit, <i>ohne Aufwand</i>.';
-    $('#lg-lede').textContent    = 'Antippen was abweicht, am Monatsende eine fertige A4-Seite. '
-                                 + 'So sieht das aus:';
-    requestAnimationFrame(zeigeFeatures);
-  }else if(m === 'login'){
-    $('#lg-eyebrow').textContent = 'Anmelden';
-    $('#lg-title').innerHTML     = 'Schön, dich <i>wiederzusehen</i>.';
-    $('#lg-lede').textContent    = 'E-Mail-Adresse eingeben — du bekommst Link und Code zugeschickt.';
-    $('#lg-hint').textContent    = 'Kein Passwort. Der Link gilt eine Stunde.';
-  }else{
-    $('#lg-eyebrow').textContent = 'Registrieren';
-    $('#lg-title').innerHTML     = 'Willkommen bei <i>MOJI</i>.';
-    $('#lg-lede').textContent    = 'E-Mail-Adresse eingeben — danach richten wir deine Dienstzeiten gemeinsam ein.';
-    $('#lg-hint').textContent    = 'Kein Passwort. Der Link gilt eine Stunde, den Code findest du im Betreff der Mail.';
-  }
-  fitAll();
+/* ─── Die Blätter ───────────────────────────────────────────── */
+function blattAuf(id){
+  const el = $('#'+id); if(!el) return;
+  el.classList.add('on');
+  el.setAttribute('aria-hidden','false');
+  document.body.classList.add('locked');
 }
-/* Bewusst kein Fokus: die Tastatur würde hochfahren und den Passkey-Knopf
-   verdecken. Wer die Adresse tippen will, tippt zuerst ins Feld. */
-$$('[data-lg]').forEach(b => b.addEventListener('click', () => lgMode(b.dataset.lg)));
+function blattZu(id){
+  const el = $('#'+id); if(!el || !el.classList.contains('on')) return;
+  el.classList.remove('on');
+  el.setAttribute('aria-hidden','true');
+  if(!$('.blatt.on')) document.body.classList.remove('locked');
+}
+function blattAllesZu(){ blattZu('lg-mailstep'); blattZu('lg-codestep'); }
+$$('[data-blattzu]').forEach(b => b.addEventListener('click', () => blattZu(b.dataset.blattzu)));
 
-/* Merkmale erscheinen, sobald sie ins Bild kommen */
-let _beo = null;
-function zeigeFeatures(){
-  const ziele = $$('#lg-choice .wfeat');
-  if(!ziele.length) return;
-  if(!('IntersectionObserver' in window)){ ziele.forEach(z => z.classList.add('sicht')); return; }
-  if(!_beo){
-    _beo = new IntersectionObserver(list => {
-      list.forEach(e => { if(e.isIntersecting){ e.target.classList.add('sicht'); _beo.unobserve(e.target); } });
-    }, { threshold:.15, rootMargin:'0px 0px -10% 0px' });
-  }
-  ziele.forEach(z => { if(!z.classList.contains('sicht')) _beo.observe(z); });
-}
-$('#lg-back').addEventListener('click', () => {
-  $('#lg-mail').value = ''; _mailPrev = ''; mailPaint();
-  lgMode('choice');
+/* ─── Startbildschirm ───────────────────────────────────────── */
+$('#lg-fassung').addEventListener('click', () => {
+  try{ erscheinungUmschalten(); }catch(e){ console.warn(e); }
+});
+$('#ein-mail').addEventListener('click', () => {
+  fehlerZeile($('#ein-err'), '');
+  fehlerZeile($('#lg-err2'), '');
+  blattAuf('lg-mailstep');
+  /* Der Fokus muss in derselben Geste sitzen, sonst bleibt am iPhone
+     die Tastatur unten — und genau die soll hier schon stehen. */
+  const f = $('#lg-mail');
+  try{ f.focus({ preventScroll:true }); }catch(e){ try{ f.focus(); }catch(e2){} }
+});
+$('#ein-pk').addEventListener('click', async () => {
+  const b = $('#ein-pk');
+  fehlerZeile($('#ein-err'), '');
+  b.disabled = true;
+  try{
+    const r = await sb.auth.signInWithPasskey();
+    if(r.error) throw r.error;
+    /* Geglückt heißt: hier gibt es einen brauchbaren Passkey. Der Vermerk
+       wird gleich gesetzt, sobald das Konto bekannt ist.
+       Ab hier übernimmt der SIGNED_IN-Horcher. */
+    _pkHostNachLogin = true;
+  }catch(e){
+    const t = ((e && e.code) || '') + ' ' + ((e && e.name) || '') + ' ' + ((e && e.message) || '');
+    fehlerZeile($('#ein-err'), /NotAllowedError|AbortError|not_found|cancel/i.test(t)
+      ? 'Auf diesem Gerät liegt noch kein MOJI-Passkey. Melde dich einmal mit deiner E-Mail-Adresse an.'
+      : pkText(e));
+  }finally{ b.disabled = false; }
 });
 
-/* ─── Anmeldelink verschicken ─── */
-let _lastMail = '';
-async function sendLink(){
+/* ─── Blatt 1: die Adresse ──────────────────────────────────── */
+const mailOk = v => /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(String(v).trim());
+let _lastMail = '', _mailPrev = '';
+function mailPaint(){
+  const v = $('#lg-mail').value;
+  $('#f-mail').classList.toggle('filled', !!v);
+  $('#lg-send').disabled = !mailOk(v);
+}
+$('#lg-mail').addEventListener('input', () => { _mailPrev = $('#lg-mail').value; mailPaint(); });
+$('#lg-mail').addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ e.preventDefault(); weiterZumCode(); }
+});
+$('#lg-send').addEventListener('click', weiterZumCode);
+mailPaint();
+
+/* Der Übergang passiert SOFORT, noch in der Geste: das Blatt mit dem Code
+   steht da, die Tastatur bleibt oben, und die Mail geht daneben raus.
+   Wartet man erst auf den Server, ist die Geste verbraucht und am iPhone
+   fällt die Tastatur zu. Geht das Senden schief, kommt man zurück zur
+   Adresse und liest dort, warum.                                        */
+function weiterZumCode(){
   const mail = $('#lg-mail').value.trim();
-  const err = $('#lg-err2');
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(mail)){
-    err.textContent = 'Das sieht nicht wie eine E-Mail-Adresse aus.';
-    err.style.display = 'block'; return;
-  }
-  err.style.display = 'none';
-  const btn = $('#lg-send'); btn.disabled = true;
+  if(!mailOk(mail)){ fehlerZeile($('#lg-err2'), 'Das sieht nicht wie eine E-Mail-Adresse aus.'); return; }
+  fehlerZeile($('#lg-err2'), '');
+  _lastMail = mail;
+  $('#lg-sent-t').textContent = mail;
+  $('#lg-otp').value = ''; $('#f-otp').classList.remove('filled');
+  $('#lg-otp-go').disabled = true;
+  fehlerZeile($('#lg-otp-err'), '');
+  blattAuf('lg-codestep');
+  blattZu('lg-mailstep');
+  const f = $('#lg-otp');
+  try{ f.focus({ preventScroll:true }); }catch(e){ try{ f.focus(); }catch(e2){} }
+  sendeCode(mail, true);
+}
+
+async function sendeCode(mail, ersteRunde){
+  cooldownStart(60);
   try{
     const r = await sb.auth.signInWithOtp({
       email: mail,
       options: { emailRedirectTo: location.origin + location.pathname }
     });
     if(r.error) throw r.error;
-    _lastMail = mail;
-    $('#lg-cloud').style.display = 'none';
-    $('#lg-sent').style.display = 'block';
-    $('#lg-sent-t').textContent = 'Wir haben einen Anmeldelink an ' + mail
-      + ' geschickt. Der Link gilt eine Stunde. Du kannst ihn auch auf einem anderen Gerät öffnen.';
   }catch(e){
-    err.textContent = 'Konnte nicht senden: ' + (e.message || 'unbekannter Fehler');
-    err.style.display = 'block';
+    cooldownStopp();
+    const txt = 'Konnte nicht senden: ' + ((e && e.message) || 'unbekannter Fehler');
+    if(ersteRunde){
+      blattZu('lg-codestep');
+      blattAuf('lg-mailstep');
+      fehlerZeile($('#lg-err2'), txt);
+    } else {
+      fehlerZeile($('#lg-otp-err'), txt);
+    }
   }
-  btn.disabled = false;
 }
+
+/* ─── Blatt 2: der Code ─────────────────────────────────────────
+   Nach jedem Versand eine Minute Ruhe. Supabase selbst wehrt sich
+   gegen zu viele Anfragen mit einem Fehler — schöner ist es, wenn
+   der Knopf gar nicht erst mitspielt und die Sekunden zeigt.       */
+let _cdT = null, _cdBis = 0;
+function cooldownStart(sek){ _cdBis = Date.now() + sek*1000; cooldownMalen(); }
+function cooldownStopp(){ _cdBis = 0; cooldownMalen(); }
+function cooldownMalen(){
+  const b = $('#lg-again'); if(!b) return;
+  clearTimeout(_cdT); _cdT = null;
+  const rest = Math.ceil((_cdBis - Date.now()) / 1000);
+  if(rest > 0){
+    b.disabled = true;
+    b.textContent = 'Erneut senden in ' + rest + ' s';
+    _cdT = setTimeout(cooldownMalen, 250);
+  } else {
+    b.disabled = false;
+    b.textContent = 'E-Mail erneut senden';
+  }
+}
+$('#lg-again').addEventListener('click', () => {
+  if($('#lg-again').disabled || !_lastMail) return;
+  fehlerZeile($('#lg-otp-err'), '');
+  sendeCode(_lastMail, false);
+  toast('Neue Mail unterwegs');
+});
+
+async function verifyCode(){
+  const token = $('#lg-otp').value.replace(/\D/g,'');
+  if(token.length < 6 || !_lastMail) return;
+  const btn = $('#lg-otp-go'); btn.disabled = true;
+  fehlerZeile($('#lg-otp-err'), '');
+  try{
+    /* Bei einer neuen Adresse verschickt Supabase eine Bestätigungsmail, und
+       deren Code will als 'signup' geprüft werden — bei bekannten Adressen als
+       'email'. Von außen ist nicht zu sehen, welcher Fall vorliegt, also
+       probieren wir beides. */
+    let r = await sb.auth.verifyOtp({ email:_lastMail, token, type:'email' });
+    if(r.error) r = await sb.auth.verifyOtp({ email:_lastMail, token, type:'signup' });
+    if(r.error) throw r.error;
+    cooldownStopp();
+    blattAllesZu();
+    if(r.data && r.data.session && !UID) await afterLogin(r.data.session, true);
+  }catch(e){
+    fehlerZeile($('#lg-otp-err'), 'Der Code passt nicht oder ist abgelaufen. Lass dir einen neuen schicken.');
+    btn.disabled = false;
+  }
+}
+$('#lg-otp').addEventListener('input', e => {
+  const v = e.target.value.replace(/\D/g,'').slice(0,10);
+  e.target.value = v;
+  $('#f-otp').classList.toggle('filled', !!v);
+  $('#lg-otp-go').disabled = v.length < 6;
+  /* Supabase verschickt je nach Einstellung 6 oder 8 Stellen — bei 8 gleich prüfen,
+     sonst wartet der Knopf auf dich, damit kein halber Code verbraucht wird */
+  if(v.length === 8) verifyCode();
+});
+$('#lg-otp').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); verifyCode(); } });
+$('#lg-otp-go').addEventListener('click', verifyCode);
+
+/* ─── Ohne Cloud: Vorname und Geburtsdatum ─────────────────────── */
 $('#known-list').addEventListener('click', e => {
   const b = e.target.closest('[data-pid]'); if(!b) return;
   const p = DB.profiles.find(x => x.id === b.dataset.pid); if(!p) return;
   $('#lg-vn').value = p.vorname;
-  refreshNav();
   $('[data-dob="lg"] input[data-p="d"]').focus();
 });
 $('#lg-go').addEventListener('click', () => {
@@ -7130,70 +6876,7 @@ $('#lg-go').addEventListener('click', () => {
   appBetreten(true);
 });
 $('#lg-new').addEventListener('click', () => { obInit(); go('v-onboard'); });
-$('#lg-send').addEventListener('click', sendLink);
-$('#lg-mail').addEventListener('keydown', e => { if(e.key === 'Enter') sendLink(); });
-const mailOk = v => /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(String(v).trim());
-let _mailPrev = '', _mailT = null;
-function mailPaint(){
-  const v = $('#lg-mail').value;
-  $('#f-mail').classList.toggle('filled', !!v);
-  $('#lg-send').disabled = !mailOk(v);
-}
-$('#lg-mail').addEventListener('input', () => {
-  const v = $('#lg-mail').value, jump = v.length - _mailPrev.length;
-  _mailPrev = v;
-  mailPaint();
-  clearTimeout(_mailT);
-  /* Adresse in einem Rutsch eingesetzt und gültig -> gleich abschicken */
-  if(jump > 3 && mailOk(v)){
-    _mailT = setTimeout(() => { _mailT = null; if(mailOk($('#lg-mail').value)) sendLink(); }, 600);
-  }
-});
-mailPaint();
-/* Code aus der Mail — der Weg, der auch in der Home-Bildschirm-App funktioniert */
-async function verifyCode(){
-  const token = $('#lg-otp').value.replace(/\D/g,'');
-  const err = $('#lg-otp-err');
-  if(token.length < 6 || !_lastMail) return;
-  const btn = $('#lg-otp-go'); btn.disabled = true;
-  err.style.display = 'none';
-  try{
-    /* Bei einer neuen Adresse verschickt Supabase eine Bestätigungsmail, und
-       deren Code will als 'signup' geprüft werden — bei bekannten Adressen als
-       'email'. Von außen ist nicht zu sehen, welcher Fall vorliegt, also
-       probieren wir beides. */
-    let r = await sb.auth.verifyOtp({ email:_lastMail, token, type:'email' });
-    if(r.error) r = await sb.auth.verifyOtp({ email:_lastMail, token, type:'signup' });
-    if(r.error) throw r.error;
-    if(r.data && r.data.session && !UID) await afterLogin(r.data.session, true);
-  }catch(e){
-    err.textContent = 'Der Code passt nicht oder ist abgelaufen. Lass dir einen neuen schicken.';
-    err.style.display = 'block';
-    btn.disabled = false;
-  }
-}
-$('#lg-otp').addEventListener('input', e => {
-  const v = e.target.value.replace(/\D/g,'').slice(0,10);
-  e.target.value = v;
-  $('#f-otp').classList.toggle('filled', !!v);
-  $('#lg-otp-go').disabled = v.length < 6;
-  /* Supabase verschickt je nach Einstellung 6 oder 8 Stellen — bei 8 gleich prüfen,
-     sonst wartet der Pfeil auf dich, damit kein halber Code verbraucht wird */
-  if(v.length === 8) verifyCode();
-});
-$('#lg-otp').addEventListener('keydown', e => { if(e.key === 'Enter') verifyCode(); });
-$('#lg-otp-go').addEventListener('click', verifyCode);
-
-$('#lg-again').addEventListener('click', () => {
-  $('#lg-sent').style.display = 'none';
-  $('#lg-cloud').style.display = 'block';
-  $('#lg-mail').value = _lastMail; _mailPrev = _lastMail; mailPaint();
-  $('#lg-otp').value = ''; $('#f-otp').classList.remove('filled');
-  $('#lg-otp-go').disabled = true; $('#lg-otp-err').style.display = 'none';
-});
-$('#lg-vn').addEventListener('input', refreshNav);
 $('#lg-vn').addEventListener('keydown', e => { if(e.key === 'Enter') $('[data-dob="lg"] input[data-p="d"]').focus(); });
-
 /* ═══════════════════════════════════════════════════════════
    APP BETRETEN
    ═══════════════════════════════════════════════════════════ */
@@ -7255,7 +6938,11 @@ const GRUSS = {
   neu: { kopf: n => 'Willkommen, <i>' + n + '</i>!',  zeile: () => 'Dein Profil ist angelegt.',
          dauer: 3600, konfetti: true },
   ab:  { kopf: n => 'Bis bald, <i>' + n + '</i>!',    zeile: () => CLOUD_ON ? 'Deine Zeiten sind gesichert.' : 'Bis zum nächsten Mal.',
-         dauer: 1750 }
+         dauer: 1750 },
+  /* Das Ende des Funnels. Statt des Profilbilds zieht ein Ring auf und
+     ein Haken faehrt hinein — danach faehrt der Kalender herein. */
+  fertig:{ kopf: n => 'Fertig, <i>' + n + '</i>.',  zeile: () => 'Dein Profil steht.',
+         dauer: 2600, konfetti: true }
 };
 /* wennOben laeuft, sobald der Gruss den Schirm deckt. Dafuer ist er da:
    Er ist nicht nur Zierde, er ist der Vorhang, hinter dem die Ansicht
@@ -7272,8 +6959,8 @@ function zeigeGruss(art, wennOben){
   $('#hallo-img').src = avDatei(avNummer());
   $('#hallo-t').innerHTML = g.kopf(esc(ME.vorname));
   $('#hallo-s').textContent = g.zeile();
-  el.classList.remove('weg','ab','neu');
-  if(art === 'ab' || art === 'neu') el.classList.add(art);
+  el.classList.remove('weg','ab','neu','fertig');
+  if(art !== 'an') el.classList.add(art);
   void el.offsetWidth;                       /* Animationen neu anstoßen */
   el.classList.add('on');
   /* Erst jetzt: vorher ist die Leinwand nicht sichtbar und damit null groß. */
@@ -7467,8 +7154,8 @@ function malErinnerung(){
     mi.removeAttribute('aria-busy');
   }
   mi.classList.remove('done');
-  const box = $('#mailok');
-  if(box) box.checked = an;
+  /* Der Funnel zeigt denselben Stand als Schalter. */
+  try{ if(typeof obSchalterMalen === 'function') obSchalterMalen(); }catch(e){}
 }
 /* Umschalten mit Zwischenschritt: die Glocke geht über Orange von Grün nach
    Grau und umgekehrt. Das Menü bleibt dabei offen. */
@@ -10957,8 +10644,10 @@ async function afterLogin(session, frisch){
        überschreiben. Also lieber warten lassen. */
     if(offline){ setSync('offline'); go('v-wait'); return; }
     setSync('ok');
-    /* Erst der Passkey, dann der Funnel — jetzt weiß die Person, wofür er gut ist */
-    await askPasskey(() => { obInit(); go('v-onboard'); });
+    /* Direkt in den Funnel. Der Passkey wird dort als Schalter gefragt,
+       zusammen mit der Erinnerung — eine eigene Seite davor war ein
+       Zwischenhalt, den niemand gebraucht hat. */
+    obInit(); go('v-onboard');
     return;
   }
 
@@ -10979,27 +10668,10 @@ $('#wt-out').addEventListener('click', async () => {
   location.reload();
 });
 
-/* ─── Passkey-Knöpfe ─────────────────────────────────────── */
-$('#lg-pk-go').addEventListener('click', async () => {
-  const b = $('#lg-pk-go'), err = $('#lg-pk-err');
-  err.style.display = 'none';
-  b.disabled = true;
-  try{
-    const r = await sb.auth.signInWithPasskey();
-    if(r.error) throw r.error;
-    /* Geglückt heißt: hier gibt es einen brauchbaren Passkey. Der Vermerk
-       wird gleich gesetzt, sobald das Konto bekannt ist. */
-    _pkHostNachLogin = true;
-    /* Ab hier übernimmt der SIGNED_IN-Horcher. */
-  }catch(e){
-    const t = ((e && e.code) || '') + ' ' + ((e && e.name) || '') + ' ' + ((e && e.message) || '');
-    err.textContent = /NotAllowedError|AbortError|not_found|cancel/i.test(t)
-      ? 'Auf diesem Gerät ist noch kein MOJI-Passkey gespeichert. Melde dich einmal mit deiner E-Mail-Adresse an — danach kannst du einen anlegen.'
-      : pkText(e);
-    err.style.display = 'block';
-  }finally{ b.disabled = false; }
-});
-$('#pk-card-go').addEventListener('click', () => pkAdd($('#pk-card-go')));
+/* ─── Passkey-Knöpfe ───────────────────────────────────────
+   Der Knopf fuer die Anmeldung steht jetzt am Einstieg (#ein-pk),
+   die Karte im Funnel gibt es nicht mehr — dort ist es ein Schalter.
+   Hier bleibt nur die einmalige Nachfrage fuer bestehende Profile. */
 $('#pk-ask-go').addEventListener('click', async () => {
   const ok = await pkAdd($('#pk-ask-go'));
   if(ok) pkAskWeiter();
@@ -11068,6 +10740,17 @@ $('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
   /* Sobald das Profil steht, gilt dessen Wert. */
   window.erscheinungAusProfil = function(){
     if (typeof ME === 'undefined' || !ME) return;
+    /* Wer am Einstiegsbildschirm umgelegt hat, war da noch niemand — die
+       Wahl liegt deshalb nur im Geraet. Sobald ein Profil da ist, zieht sie
+       hinein: es soll gelten, was man gerade getroffen hat, nicht der Stand
+       aus einer frueheren Sitzung. Der Vermerk wird dabei verbraucht. */
+    try {
+      var frisch = sessionStorage.getItem('moji.fassung.wahl');
+      if (frisch === 'dark' || frisch === 'light') {
+        sessionStorage.removeItem('moji.fassung.wahl');
+        if (ME.erscheinung !== frisch) { ME.erscheinung = frisch; try { save(); } catch(e){} }
+      }
+    } catch(e){}
     var wahl = ME.erscheinung === 'dark' ? 'dark' : 'light';
     try { localStorage.setItem(SCHLUESSEL, wahl); } catch(e){}
     anwenden(wahl);
@@ -11095,6 +10778,9 @@ $('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
     _laedt = true;
     try { localStorage.setItem(SCHLUESSEL, neu); } catch(e){}
     if (typeof ME !== 'undefined' && ME) { ME.erscheinung = neu; try { save(); } catch(e){} }
+    /* Noch niemand angemeldet: die Wahl wartet im Sitzungsspeicher,
+       bis ein Profil da ist. Siehe erscheinungAusProfil(). */
+    else { try { sessionStorage.setItem('moji.fassung.wahl', neu); } catch(e){} }
     anwenden(neu);
     zeileMalen();
 

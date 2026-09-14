@@ -61,13 +61,91 @@ umgeht ihn für Tests.
 
 ## 2 · Anmelden
 
-Adresse eintippen, Mail kommt, fertig — kein Passwort. In der Mail stehen ein Link **und** ein
-sechsstelliger Code. Der Code ist wichtig: wer MOJI vom iPhone-Startbildschirm öffnet, kann den
-Link nicht nutzen, weil er in Safari landet und eine Startbildschirm-App auf iOS einen eigenen
-Speicher hat.
+Seit 14. September 2026 ist der ganze Weg von der ersten Sekunde bis zum Kalender neu.
+Vorher standen vor der Anmeldung fünf Musterbilder mit drei Absätzen Erklärung, danach ein
+Funnel aus fünf Seiten und am Ende eine Schlussseite mit A4-Vorschau und Kartenkarussell.
+Angemeldet hat das niemanden, geblättert schon.
 
-Beim ersten Mal läuft danach der Funnel: Vorname, Nachname, Geburtsdatum, Arbeitsort,
-Dienstzeiten und die Einwilligung zur Monats-Erinnerung. Alles Weitere hängt am Konto.
+### Der Einstieg
+
+Nach dem Vorspann steht ein Bildschirm mit **einer Zeile und zwei Knöpfen**:
+
+| Wo | Was |
+|---|---|
+| oben rechts | **Sonne oder Mond** — die Fassung, die gerade läuft. Ein Tipp legt sie um |
+| Mitte | *Los geht's* mit dem freigestellten MOJI-Zeichen |
+| unten, in einer Schale | **Mit Face ID anmelden** (nur wenn das Gerät Passkeys kann) und **Anmelden oder registrieren** |
+
+Der Fassungsschalter sitzt dort, wo in gängigen Anmeldefenstern das Schließkreuz sitzt. Er
+läuft über dieselbe Routine wie der Schalter im Profilmenü und **lädt die Seite neu**
+(→ [Hell und Dunkel umschalten](#hell-und-dunkel-umschalten)). Wer hier umlegt, ist noch
+niemand — die Wahl liegt deshalb vorerst nur im Gerät. Sie wandert ins Profil, sobald eines da
+ist: `erscheinungUmschalten()` legt sie ohne angemeldetes Profil in `sessionStorage` unter
+`moji.fassung.wahl`, `erscheinungAusProfil()` holt sie beim ersten Profil heraus und verbraucht
+den Vermerk. So gilt, was man gerade getroffen hat, und nicht der Stand aus einer früheren
+Sitzung.
+
+**Face ID** führt direkt in `signInWithPasskey()` — die Abfrage kommt vom Gerät, MOJI sieht
+davon nur das Ergebnis. Geht es schief, steht der Grund über den Knöpfen.
+
+### Die zwei Blätter
+
+**Anmelden oder registrieren** legt ein Blatt über den Einstieg: MOJI-Zeichen, Überschrift,
+E-Mail-Feld, *Weiter*. Keine zweite Option, keine Trennlinie mit „oder" — beide Wege schickten
+ohnehin dieselbe Mail, und Supabase legt beim ersten Mal selbst ein Konto an.
+
+Ein Tipp auf *Weiter* schaltet **sofort** auf das zweite Blatt, noch bevor die Mail raus ist.
+Das ist Absicht: am iPhone fährt die Tastatur nur dann mit hoch, wenn der Fokus **in derselben
+Geste** gesetzt wird. Wartet man erst auf die Antwort des Servers, ist die Geste verbraucht und
+die Tastatur fällt zu. Geht das Senden schief, kommt man zurück aufs erste Blatt und liest dort,
+warum.
+
+Auf dem zweiten Blatt steht der Code aus der Mail. **Erneut senden ist danach 60 Sekunden
+gesperrt** und zählt die Sekunden herunter; jeder Versand — auch der erste — setzt die Sperre
+neu. Supabase wehrt sich gegen zu viele Anfragen von selbst, mit einem Fehler; schöner ist es,
+wenn der Knopf gar nicht erst mitspielt.
+
+In der Mail stehen weiterhin ein Link **und** ein Code. Der Code ist der wichtigere: wer MOJI
+vom iPhone-Startbildschirm öffnet, kann den Link nicht nutzen, weil er in Safari landet und eine
+Startbildschirm-App auf iOS einen eigenen Speicher hat.
+
+### Danach: bekannt oder neu
+
+Nach dem Code entscheidet der Datensatz in der Cloud, nicht die App:
+
+- **Datensatz da** → der Gruß *Hallo …* und der Kalender
+- **kein Datensatz** → der Funnel
+
+### Der Funnel — vier Schritte
+
+Oben steht *Schritt n von 4* und ein Balken in der Markenfarbe.
+
+| # | Frage | Weiter geht es |
+|---|---|---|
+| 1 | Vor- und Nachname | Pfeil im Feld, Enter, oder von selbst beim Einsetzen |
+| 2 | Geburtsdatum | von selbst, sobald es vollständig ist |
+| 3 | Zwei Schalter: **Monatserinnerung per Mail** und **Face ID aktivieren** | von selbst, wenn beide stehen — sonst über den Knopf |
+| 4 | **Dienstplan gleich anlegen?** *Ja, jetzt* / *Später* | *Ja* öffnet die Dienstzeiten im selben Schritt, *Später* ist fertig |
+
+Der Schalter für Face ID öffnet die Abfrage des Geräts (`registerPasskey()`), der für die
+Erinnerung schreibt `mailOk` und `mailGefragt` sofort ins Profil. Was das Gerät oder das Konto
+nicht hergibt, wird nicht gezeigt: ohne Cloud keine Erinnerung, ohne Passkey-Unterstützung kein
+Face ID — und wenn beides fehlt, fällt Schritt 3 ganz weg.
+
+*Später* beim Dienstplan heißt: es gilt die Vorgabe (Montag bis Freitag 08:00–12:00 und
+13:00–18:00, Samstag 08:00–12:00). Die Zeiten lassen sich jederzeit im Profilmenü eintragen.
+
+Zum Schluss zieht ein Ring auf, ein Haken fährt hinein, Konfetti steigt — und dahinter baut sich
+der Kalender auf, der beim Auflösen des Grußes hereinfährt.
+
+**Was ersatzlos entfallen ist:** die Seite *Arbeitsort* (er steht fest und war eine Seite zum
+Wegklicken), die Schlussseite mit A4-Vorschau und Kartenkarussell, und damit auch die Karte
+*Aufs Handy legen*. Wer MOJI auf den Home-Bildschirm legen will, findet den Weg noch auf der
+Desktop-Sperrseite; in der App am Handy steht er derzeit nirgends.
+
+Die einmaligen Nachfragen `#v-pkask` und `#v-erinask` gibt es weiterhin — sie gelten
+**bestehenden** Profilen, die den Funnel nie gesehen haben (→ Abschnitt 15.7). Neue Profile
+beantworten beides mit den Schaltern in Schritt 3.
 
 **Passkey.** Im Profilmenü steht dafür **eine** Zeile: das Schlüsselsymbol in Normalgröße,
 darunter der Zustand in Farbe.
@@ -345,6 +423,9 @@ las sich als Blinzeln. Jetzt: 0,15 / 0,27 / 0,57 / 0,88 / 1,00 über 550 ms.
 
 ### Hell und Dunkel umschalten
 
+**Den Schalter gibt es an zwei Stellen:** im Profilmenü und — als Sonne beziehungsweise Mond —
+oben rechts am Einstiegsbildschirm. Beide laufen über dieselbe Routine.
+
 **Der Schalter lädt die Seite neu.** Zwei Gründe:
 
 1. Die **Statusleiste des Betriebssystems** übernimmt `theme-color` nur beim Laden. Ändert man
@@ -360,6 +441,12 @@ absurd. `FASSUNG_NEU` liest ihn beim Start einmal und löscht ihn sofort.
 Vor dem Neuladen wird noch **hochgeladen**, falls etwas offen ist: die Sammelroutine sendet
 verzögert, sonst fände ein zweites Gerät die alte Fassung vor. Hängt die Verbindung, geht es
 nach 1,4 s trotzdem weiter — die Wahl liegt ja schon im Gerätespeicher und im Profil.
+
+**Wer vor der Anmeldung umlegt, dessen Wahl wandert mit.** Am Einstieg ist noch kein Profil da,
+die Wahl liegt also nur im Gerät. `erscheinungUmschalten()` legt sie in diesem Fall zusätzlich
+unter `moji.fassung.wahl` in den `sessionStorage`; `erscheinungAusProfil()` holt sie beim ersten
+Profil heraus, schreibt sie hinein und löscht den Vermerk. Umgekehrt gilt weiterhin das Profil:
+ohne Vermerk zieht die App den Stand aus `ME.erscheinung`.
 
 **Die Fassung steht jetzt vor dem ersten Anstrich.** Ein kleines Skript im `<head>`, noch vor
 dem Stilblock, liest `moji.erscheinung` und setzt `data-theme` *und* `theme-color`. Bisher tat
@@ -1123,7 +1210,7 @@ Stand 14. September 2026, gegen `git ls-files` geprüft.
 | `manifest.webmanifest` | Name und Symbol am Startbildschirm |
 | `icon-180.png`, `icon-512.png` | ebendieses Symbol, zwei Größen |
 | `av-1.png` … `av-12.png` | die zwölf Profilbilder |
-| `firma-miller.png` | Logo Miller Optik, nur bei der Firmenauswahl |
+| `firma-miller.png` | Logo Miller Optik, in der Ansicht *Meine Firma* im Profilmenü |
 | `schwein-troete.png` | Schwein mit Tröte. Erscheint im Block `#bleib`, wenn jemand das Löschen des Profils abbricht — „Schön, dass du dich nochmal umentschieden hast" |
 | `moji-bricolage*.woff2`, `moji-jakarta*.woff2`, `moji-caveat*.woff2` | die drei Schriften, selbst gehostet |
 
@@ -1153,6 +1240,7 @@ Stand 14. September 2026, gegen `git ls-files` geprüft.
 | `tests/test-rhythmus.js` | Wochenrhythmus über Jahre mit 53 Kalenderwochen |
 | `tests/test-dienstzeiten.js` | Dienstzeiten mit Datum, `schedAlt` und `schedFuer()` |
 | `tests/test-erinnerung.js` | die einmalige Frage nach der Monats-Erinnerung |
+| `tests/test-einstieg.js` | Einstieg, die zwei Blätter, die 60-Sekunden-Sperre und der Funnel |
 | `tests/test-serie.js` | Serien erkennen, fragen, wegfliegen lassen |
 | `tests/test-export.js` | Exportseite — und die PDF-Seite selbst, mit echtem jsPDF |
 | `tests/test-vorspann.js` | Vorspann, Übergabe an den Gruß, Anlauf der Kopfleiste |
@@ -1180,7 +1268,7 @@ Geräte die alten Bilder aus dem Zwischenspeicher.
 
 ## 18 · Offene Punkte
 
-Durchgesehen am 13. September 2026. Was nachprüfbar war, wurde nachgeprüft — bei jedem Punkt
+Durchgesehen am 14. September 2026. Was nachprüfbar war, wurde nachgeprüft — bei jedem Punkt
 steht, woran man das erkennt.
 
 ### Zu tun, mit Priorität
@@ -1200,7 +1288,13 @@ im Klartext (→ Abschnitt 15.4), muss dort also mitgetauscht werden — sonst s
 **„MARU Anmeldemails"** löschen — sie hängen an `studiomaru.at` und funktionieren nicht mehr.
 Der Schlüssel **„simply"** (Full access) wird ebenfalls nicht gebraucht.
 
-**4 · Die alte GitHub-Rückkehradresse** in Supabase entfernen. Der Umzug ist über einen Monat
+**4 · Der Weg auf den Home-Bildschirm fehlt am Handy.** Er stand in der Karte *Aufs Handy
+legen* auf der Schlussseite des Funnels, und die ist mit dem Umbau vom 14. September entfallen
+(→ Abschnitt 2). Auf der Desktop-Sperrseite steht die Anleitung weiterhin, in der App am Handy
+nirgends. Eine Zeile im Profilmenü wäre der naheliegende Platz — `beforeinstallprompt` und
+`istStandalone()` sind mit entfernt worden und müssten dafür zurückkommen.
+
+**5 · Die alte GitHub-Rückkehradresse** in Supabase entfernen. Der Umzug ist über einen Monat
 her; wer noch einen alten Anmeldelink im Postfach liegen hat, wird ihn nicht mehr brauchen.
 
 ### Erledigt seit der letzten Durchsicht
@@ -1219,6 +1313,8 @@ her; wer noch einen alten Anmeldelink im Postfach liegen hat, wird ihn nicht meh
 - ~~**Schriften ins Repo holen**~~ — erledigt. Bricolage, Plus Jakarta und Caveat liegen als
   `.woff2` neben `index.html`, der Google-Link ist raus. Nachgemessen: **null** Anfragen an
   fonts.googleapis.com beim Laden der Seite
+- ~~**Einstieg und Funnel**~~ — neu gebaut am 14. September 2026, siehe
+  [Abschnitt 2](#2--anmelden) und 19.4
 - ~~**Passkey-Hinweis nannte die alte Adresse**~~ — `pkText()` sagte bei einem
   `InvalidStateError`, man solle den Schlüsselbund-Eintrag für `marcoreimair1.github.io`
   löschen. Die RP ID ist aber `moji-app.at`, und genau dafür meldet das Gerät „habe ich schon" —
@@ -1293,6 +1389,18 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Einstieg und Funnel neu** (14. September 2026): Der Weg von der ersten Sekunde bis zum
+  Kalender ist ersetzt. Statt der Werbeseite mit fünf Musterbildern ein Anmeldefenster mit
+  einer Zeile und zwei Knöpfen, Fassungsschalter oben rechts; Adresse und Code liegen in zwei
+  Blättern, der Übergang passiert noch in der Geste, damit am iPhone die Tastatur mit
+  hochfährt; *Erneut senden* ist 60 Sekunden gesperrt. Der Funnel hat vier statt fünf Schritte,
+  Erinnerung und Passkey sind zwei Schalter darin, der Dienstplan eine Frage mit zwei
+  Antworten. Zum Schluss ein gezeichneter Haken und der Kalender, der hereinfährt.
+  Entfallen: Arbeitsort-Seite, A4-Vorschau, Kartenkarussell — und damit auch die Karte
+  *Aufs Handy legen*, die es in der App am Handy derzeit nirgends mehr gibt. Rund 17 KB toter
+  Stil sind mitgegangen. Einzelheiten in [Abschnitt 2](#2--anmelden). Geprüft mit 91 neuen
+  jsdom-Testfällen (`tests/test-einstieg.js`, alle 9 Reihen zusammen 414) und im Browser hell
+  und dunkel einmal ganz durchgespielt
 - **Fassungswechsel lädt neu** (13. September 2026): Hell/Dunkel-Umschalten lädt die Seite neu,
   gedeckt und ohne Vorspann und Gruß, damit die Statusleiste die neue Farbe übernimmt. Dabei
   kam ein alter Fehler heraus: die Fassung wurde erst am Seitenende gesetzt, dunkle Nutzer

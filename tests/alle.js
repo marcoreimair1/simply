@@ -24,6 +24,7 @@ const REIHEN = [
   ['test-rhythmus',     'Wochenrhythmus über Jahre mit 53 Kalenderwochen'],
   ['test-dienstzeiten', 'Dienstzeiten mit Datum, schedAlt und schedFuer'],
   ['test-erinnerung',   'Die einmalige Frage nach der Monats-Erinnerung'],
+  ['test-einstieg',     'Einstieg, die zwei Blaetter und der Funnel'],
   ['test-serie',        'Serien erkennen, fragen, wegfliegen lassen'],
   ['test-export',       'Exportseite und die PDF-Seite selbst'],
   ['test-vorspann',     'Vorspann, Übergabe an den Gruß, Kopfleiste'],
