@@ -451,12 +451,48 @@ ok('Und keine Merkzeilen mehr', !fid.querySelector('.pkrow'));
 go('v-pkask');
 ok('Ohne Kopfleiste', document.body.classList.contains('nobar'), document.body.className);
 
-window.__FERTIG = true;
+/* ── 17b · Die Frage nach Face ID kommt nur bei sicherem Stand ──
+   Ein gescheiterter Abruf sah fuer diese Abfrage bis 14.09.2026 aus wie
+   ein leeres Konto. Wer dann einrichtete, obwohl laengst ein Passkey da
+   war, verlor ihn — pkAdd() raeumte damals erst alles ab. Asynchron,
+   weil askPasskey() bei unbekanntem Stand erst nachsieht. */
+(async function(){
+  PASSKEY = true; UID = 'u-test';
+  try{ localStorage.removeItem('maru.pkask.' + UID); }catch(e){}
+
+  let weiter = 0;
+  PK_LISTE = null; go('v-cal');
+  await askPasskey(() => { weiter++; });
+  ok('Unbekannter Stand fragt nicht', weiter === 1
+     && !el('v-pkask').classList.contains('on'),
+     'weiter=' + weiter + ' liste=' + PK_LISTE);
+
+  weiter = 0; PK_LISTE = [];
+  await askPasskey(() => { weiter++; });
+  ok('Leeres Konto wird gefragt', weiter === 0
+     && el('v-pkask').classList.contains('on'), 'weiter=' + weiter);
+
+  weiter = 0; PK_LISTE = [{ id:'p1' }]; go('v-cal');
+  await askPasskey(() => { weiter++; });
+  ok('Mit Passkey wird nicht gefragt', weiter === 1
+     && !el('v-pkask').classList.contains('on'), 'weiter=' + weiter);
+
+  PK_LISTE = null; PASSKEY = false; UID = null;
+  window.__FERTIG = true;
+})();
 `;
 
 const s = dom.window.document.createElement('script');
 s.textContent = pruef;
 dom.window.document.body.appendChild(s);
+
+/* Der letzte Abschnitt laeuft asynchron — erst abwarten, dann auswerten.
+   Ohne das stuenden die letzten Pruefungen gar nicht in der Liste. */
+(async function(){
+  const bis = Date.now() + 8000;
+  while (!dom.window.__FERTIG && Date.now() < bis) {
+    await new Promise(r => setTimeout(r, 40));
+  }
 
 /* ── 18 · Was sich in jsdom nicht messen laesst ──
    Ohne Layout ist jede Hoehe 0 und requestAnimationFrame zeichnet
@@ -478,6 +514,16 @@ roh('MOJI hat einen Auftritt', /@keyframes zaAuftritt/.test(HTML)
     && /#v-zeitassi\.on \.za-moji\{ animation:zaAuftritt/.test(HTML));
 roh('Die Raeder stehen vor der Einblendung', /function raederRichten/.test(HTML)
     && (HTML.match(/raederRichten\(/g) || []).length >= 3);
+/* Ein Anlegen darf nichts wegnehmen. */
+roh('Anlegen raeumt nicht mehr von selbst auf',
+    /async function pkAdd\(knopf\)\{/.test(HTML) && !/pkAdd\(knopf, true\)/.test(HTML));
+/* Genau ein Aufruf, und der steht in pkErneuern() — dem Weg, den man im
+   Menue bewusst waehlt. */
+roh('Aufgeraeumt wird nur auf dem bewussten Weg',
+    (HTML.match(/await pkAlleLoeschen\(\)/g) || []).length === 1,
+    (HTML.match(/await pkAlleLoeschen\(\)/g) || []).length + ' Aufrufe');
+roh('Und gefragt nur bei sicherem Stand',
+    /if\(!Array\.isArray\(PK_LISTE\) \|\| PK_LISTE\.length\)\{ weiter\(\); return; \}/.test(HTML));
 roh('Ruhige Geraete bekommen nichts davon',
     /#za-inhalt > \.za-wahl > button, #za-inhalt > \.za-tage > button,\s*\n\s*#v-zeitassi\.on \.za-moji\{ animation:none \}/.test(HTML));
 
@@ -494,3 +540,4 @@ console.log(E.length + ' Prüfungen, ' + (E.length - schlecht) + ' bestanden, ' 
    sah in der Übersicht wie ein Haken aus. */
 if (!dom.window.__FERTIG) console.log('  FEHL  Der Testlauf ist vorzeitig abgebrochen.');
 process.exit(schlecht || !dom.window.__FERTIG ? 1 : 0);
+})();

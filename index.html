@@ -5310,7 +5310,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-2359b';
+const APP_STAND = '2026-09-14-2359c';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5970,8 +5970,15 @@ function pkStand(){
   return PK_LISTE.length ? 'aktiv' : 'aus';
 }
 
-/* Anlegen. Gibt true zurück, wenn danach ein Passkey vorhanden ist. */
-async function pkAdd(knopf, zweiterVersuch){
+/* Anlegen. Gibt true zurück, wenn danach ein Passkey vorhanden ist.
+
+   Wichtig: diese Stelle löscht nichts. Bis 14. September 2026 fing sie
+   „gibt es schon" ab, rief pkAlleLoeschen() — das räumt ALLE Passkeys des
+   Kontos ab — und versuchte es neu. Brach der zweite Versuch ab oder
+   tippte jemand in dem Moment auf Abbrechen, stand das Konto ohne jeden
+   Passkey da. Ein Anlegen darf nichts wegnehmen. Aufgeräumt wird nur auf
+   dem Weg, den man im Menü bewusst wählt: pkErneuern(). */
+async function pkAdd(knopf){
   if(!PASSKEY) return false;
   const alt = knopf ? knopf.innerHTML : '';
   if(knopf){ knopf.disabled = true; knopf.textContent = 'Warte auf Bestätigung …'; }
@@ -5984,16 +5991,7 @@ async function pkAdd(knopf, zweiterVersuch){
     await pkRefresh();
     return true;
   }catch(e){
-    const txt = ((e && e.code) || '') + ' ' + ((e && e.name) || '') + ' ' + ((e && e.message) || '');
     console.warn('[MOJI] Passkey anlegen:', e);
-    /* „Habe ich schon" heißt: am Konto hängt noch ein alter Eintrag, den der
-       Server beim Anlegen ausschließt. Einmal aufräumen und neu versuchen —
-       das ist genau der Fall nach dem Umzug auf die neue Adresse. */
-    if(!zweiterVersuch && /InvalidStateError|credential_exists|already/i.test(txt)){
-      if(knopf){ knopf.disabled = false; knopf.innerHTML = alt; }
-      const weg = await pkAlleLoeschen();
-      if(weg) return pkAdd(knopf, true);
-    }
     PK_FEHLER = pkText(e);
     toast(PK_FEHLER);
     paintPasskey();
@@ -6116,7 +6114,12 @@ function pkAbgelehnt(){
 async function askPasskey(weiter){
   if(!PASSKEY || !UID || pkAbgelehnt()){ weiter(); return; }
   if(PK_LISTE === null) await pkRefresh();
-  if(Array.isArray(PK_LISTE) && PK_LISTE.length){ weiter(); return; }
+  /* Gefragt wird nur, wenn wirklich keiner da ist. null heisst nicht
+     „keiner", sondern „nicht abrufbar" — und ein Netzaussetzer sah fuer
+     diese Abfrage bis 14. September 2026 aus wie ein leeres Konto. Wer
+     dann einrichtete, obwohl laengst ein Passkey da war, verlor ihn. Im
+     Zweifel lieber nicht fragen: im Profilmenue steht die Zeile ohnehin. */
+  if(!Array.isArray(PK_LISTE) || PK_LISTE.length){ weiter(); return; }
   NACH_PK = weiter;
   go('v-pkask');
 }
@@ -6185,8 +6188,9 @@ function pkText(e){
      Leute zum falschen Eintrag im Schlüsselbund. */
   if(/InvalidStateError/i.test(t))
     return 'Für ' + location.hostname + ' liegt im Schlüsselbund schon ein '
-         + 'MOJI-Passkey. Bitte in den Geräte-Einstellungen unter Passwörter '
-         + 'den Eintrag für ' + location.hostname + ' löschen — dann geht es.';
+         + 'MOJI-Passkey. Entweder du meldest dich gleich damit an, oder du '
+         + 'löschst in den Geräte-Einstellungen unter Passwörter den Eintrag '
+         + 'für ' + location.hostname + ' und legst ihn neu an.';
   /* Bleibt es unbekannt, wird der Name mitgeschickt — sonst rätselt man. */
   const kurz = ((e && e.name) || (e && e.code) || '').toString().slice(0, 28);
   return 'Mit dem Passkey hat es nicht geklappt' + (kurz ? ' (' + kurz + ')' : '') + '.';

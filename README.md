@@ -1376,8 +1376,21 @@ Passkeys laufen bei Supabase noch als Beta und liegen in `auth.webauthn_credenti
 
 Die RP ID muss ein registrierbares Suffix der Adresse sein, sonst lehnt der Browser stumm ab.
 Beim Domainumzug wurden alle bestehenden Passkeys ungültig; die App merkt sich pro Konto im
-Gerätespeicher, für welche Adresse ihr Passkey gilt, räumt bei `InvalidStateError` selbständig
-auf und legt neu an.
+Gerätespeicher, für welche Adresse ihr Passkey gilt.
+
+**Ein Anlegen nimmt nichts weg.** Bis 14. September 2026 fing `pkAdd()` ein
+`InvalidStateError` oder `credential_exists` ab, rief `pkAlleLoeschen()` — das räumt **alle**
+Passkeys des Kontos am Server ab — und versuchte es neu. Brach der zweite Versuch ab oder
+tippte jemand in dem Moment auf *Abbrechen*, stand das Konto **ohne jeden Passkey** da. Gedacht
+war das für den Domainumzug; dafür gibt es aber `pkErneuern()`, den Weg über den Balken im
+Profilmenü, den man bewusst wählt. Die stille Variante ist entfallen — `pkAlleLoeschen()` wird
+nur noch von dort aufgerufen, und zwar genau einmal im ganzen Code.
+
+**Und gefragt wird nur bei sicherem Stand.** `askPasskey()` prüfte `Array.isArray(PK_LISTE) &&
+PK_LISTE.length` und zeigte die Einrichten-Seite sonst. `PK_LISTE === null` heißt aber nicht
+„keiner da", sondern „nicht abrufbar" — ein Netzaussetzer beim `passkey.list()` sah für diese
+Abfrage aus wie ein leeres Konto und führte geradewegs in den Absatz darüber. Jetzt wird bei
+unbekanntem Stand **nicht** gefragt; die Zeile im Profilmenü steht ohnehin immer da.
 
 Im Code hängt alles an `pkStand()` — `aktiv`, `aus`, `problem`, `laden`. Die Menüzeile nimmt
 davon Farbe und Text (`pk-ok` / `pk-warn` / `pk-bad`), der Balken `#pkbar` seine Beschriftung
@@ -1753,6 +1766,14 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Ein Anlegen darf nichts wegnehmen** (14. September 2026): `pkAdd()` löschte bei
+  „gibt es schon" alle Passkeys des Kontos und legte neu an — brach der zweite Versuch ab,
+  blieb keiner übrig. Die stille Variante ist entfallen, aufgeräumt wird nur noch über
+  `pkErneuern()` im Profilmenü. Dazu fragt `askPasskey()` nicht mehr, wenn der Stand gar nicht
+  abrufbar war: `null` heißt „unbekannt", nicht „keiner da". Sechs neue Prüfungen, darunter
+  drei am laufenden Ablauf — dafür hat `test-einstieg.js` jetzt einen asynchronen Abschnitt.
+  679 Prüfungen
 
 - **Das Osterei kommt auch von selbst** (14. September 2026): Das erste Mal nach 1 bis 2½
   Minuten, danach zwischen 4 und 9, jedes Mal neu gewürfelt — und nur, wenn der Schriftzug
