@@ -2686,26 +2686,32 @@ body.sigmodus .fb-s{display:inline-flex}
   height:calc(100vh - 14px);
   height:calc(100dvh - 14px);
   max-height:none;
-  padding:10px 0 0;
+  /* Oben die Aussparung des Geraets mitrechnen — sonst sitzt der Griff
+     unter der Uhr des Telefons. An den Seiten dieselben 20 px wie im
+     Menue und im uebrigen App-Raster, nicht 18. */
+  padding:calc(8px + env(safe-area-inset-top)) 0 0;
   display:flex;flex-direction:column;
   overflow:hidden}
 .pf-kopf{display:flex;align-items:center;gap:13px;flex:none;
-  padding:2px 18px 15px;border-bottom:1px solid var(--line-2)}
+  padding:2px 20px 15px;border-bottom:1px solid var(--line-2)}
 .pf-marke{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;flex:none;
   background:rgba(var(--marke-rgb),.13);color:var(--butter);border:1px solid var(--butter-dim)}
 .pf-marke svg{width:20px;height:20px}
 .pf-kopf-t{flex:1;min-width:0}
 .pf-kopf-t h3{margin:0 0 1px;font-size:23px}
 .pf-kopf-t .sd{margin:0;font-size:12px}
-.pf-zu{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;
-  border:1px solid var(--line-2);color:var(--tx-2);background:rgba(var(--s-tief),.45);
-  transition:.2s var(--ease)}
-.pf-zu:hover{border-color:var(--butter-dim);color:var(--butter);transform:rotate(90deg)}
-.pf-zu svg{width:15px;height:15px}
+/* Dasselbe Kaestchen wie im Profilmenue (.mzurueck) — ein rundes Kreuz
+   daneben las sich wie ein anderer Knopf. */
+.pf-zu{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;flex:none;
+  border:1px solid var(--karte-rand);background:var(--karte);color:var(--tx-2);
+  box-shadow:var(--karte-schatten);transition:.2s var(--ease)}
+.pf-zu:hover{border-color:var(--butter-dim);color:var(--butter)}
+.pf-zu:active{transform:scale(.93)}
+.pf-zu svg{width:17px;height:17px}
 #pf-liste{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;padding:16px 18px 22px}
+  -webkit-overflow-scrolling:touch;padding:16px 20px 26px}
 .pf-fuss{flex:none;display:flex;justify-content:center;
-  padding:12px 18px calc(14px + env(safe-area-inset-bottom));
+  padding:12px 20px calc(16px + env(safe-area-inset-bottom));
   border-top:1px solid var(--line-2);background:rgba(var(--s-tief),.55)}
 .pf-fuss .btn{width:100%;max-width:300px}
 
@@ -5118,7 +5124,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         <p class="sd" id="pf-sub">—</p>
       </span>
       <button class="pf-zu" id="pf-zu" aria-label="Postfach schließen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
     </header>
     <div id="pf-liste"></div>
@@ -5304,7 +5310,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-2355';
+const APP_STAND = '2026-09-14-2359';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;

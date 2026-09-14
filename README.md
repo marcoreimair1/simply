@@ -886,6 +886,11 @@ Beim Öffnen steht die **neueste ungelesene** Nachricht schon offen — sie ist 
 warum die Zahl am Profilbild stand — und ist damit sofort vermerkt. Das Vermerken passiert
 *vor* dem Zählen, sonst stünde oben noch die alte Zahl.
 
+**Die Ränder** sind dieselben wie überall: 20 px an den Seiten, und oben rechnet die Karte die
+Geräteaussparung mit (`env(safe-area-inset-top)`) — sonst säße der Griff unter der Uhr des
+Telefons. Der Schließen-Knopf ist dasselbe Kästchen wie im Profilmenü (`.mzurueck`); ein rundes
+Kreuz daneben las sich wie ein anderer Knopf.
+
 `postText()` macht aus dem Klartext Absätze; Zeilen, die mit `•` beginnen, werden zur Liste,
 und `*so markiertes*` wird fett. Eine Nachricht mit `bild: true` zeigt oben `LOGO_MOJI` —
 so stellt sich MOJI in `moji-stellt-sich-vor-2026-09` selbst vor.
