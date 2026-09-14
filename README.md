@@ -195,7 +195,7 @@ steht dieselbe `sched`-Struktur wie vorher.
 |---|---|
 | Gruß | MOJI in der Mitte des Schirms: *Hi Anna! Ich bin MOJI.* → *Lass uns kurz deine Arbeitszeiten festlegen…* Zwei Wege: **Ja, starten wir!** / **Hab's mir anders überlegt**. Hier gibt es weder Zählung noch Balken — es ist ja noch nichts geschehen |
 | Abbruch | *…* — dann *Ok, schade. Du kannst deine Zeiten jederzeit im Profilmenü nachtragen.* Erst ein weiterer Tipp führt in die App |
-| Wochen | MOJI rückt nach oben und bleibt dort. *Arbeitest du jede Woche gleich?* → vier Knöpfe: 1 bis 4 Wochen |
+| Wochen | MOJI rückt nach oben und bleibt dort. *Arbeitest du jede Woche gleich?* → darunter die Aufforderung *Wähle aus, in welchem Wochen-Intervall du arbeitest:* und vier Knöpfe: 1 bis 4 Wochen |
 | Tage | *Heute ist Montag in der KW 38. An welchen Tagen arbeitest du diese Woche?* → sechs Knöpfe, angetippt bekommen sie einen **grünen Rand** im Grün aus der Kugel des Männchens (`--moji-gruen`, aus dem Bild gemessen) |
 | Tag für Tag | Vormittag und Nachmittag je mit Schalter, den Stunden bündig rechts an der Kachel und **zwei Rädern**. Darunter *8,00 h Arbeitszeit · 1,00 h Pause* |
 | Schluss | MOJI wieder mittig: *Super, Anna! …* → **Abschließen** → Willkommensgruß → Kalender |
@@ -1612,6 +1612,10 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Eine Zeile über den Wochenknöpfen** (14. September 2026): Die Frage *Arbeitest du jede Woche
+  gleich?* sagte nicht, dass die vier Knöpfe darunter eine Antwort sind. Jetzt steht dazwischen
+  *Wähle aus, in welchem Wochen-Intervall du arbeitest:* (`.za-vor`). 534 Prüfungen
 
 - **Dienstzeiten bearbeiten, neu** (14. September 2026): Das Profilmenü zeigt jetzt eine
   kompakte Tagesliste statt des alten Formulars; angetippt klappt ein Tag auf und trägt dieselben

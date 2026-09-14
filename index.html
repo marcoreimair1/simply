@@ -3711,6 +3711,9 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 
 /* ─── Antwortknoepfe ─────────────────────────────────────────────── */
 .za-knoepfe{ display:grid; gap:10px }
+/* Eine ruhige Zeile ueber einer Knopfreihe, wenn die Frage allein nicht
+   sagt, was zu tun ist. */
+.za-vor{ margin:0 3px 10px; font-size:12.5px; line-height:1.45; color:var(--tx-3) }
 .za-wahl{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px }
 .za-wahl button{ padding:16px 4px 13px; border-radius:16px; text-align:center;
   background:var(--karte); border:1px solid var(--karte-rand); box-shadow:var(--karte-schatten);
@@ -5045,7 +5048,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-2145';
+const APP_STAND = '2026-09-14-2210';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7101,7 +7104,8 @@ function zaWochen(){
   ZA.schritt = 'wochen'; ZA.wi = 0;
   zaMoji('oben'); zaFarbe(); zaFortschritt();
   mojiSagt('Arbeitest du *jede Woche gleich*? Oder wechselt sich das ab?', () => {
-    zaInhalt('<div class="za-wahl">'
+    zaInhalt('<p class="za-vor">Wähle aus, in welchem Wochen-Intervall du arbeitest:</p>'
+      + '<div class="za-wahl">'
       + [1,2,3,4].map(n => '<button data-wc="' + n + '">' + n
           + '<small>' + (n === 1 ? 'Woche' : 'Wochen') + '</small></button>').join('')
       + '</div>');

@@ -238,6 +238,12 @@ ok('Oben steht nur Zurueck',   el('za-back').textContent.trim() === 'Zurück',
 ok('Und sonst nichts',         !document.getElementById('za-schritt'));
 ok('MOJI rueckt nach oben',   el('za-moji').classList.contains('oben'));
 ok('Vier Intervalle zur Wahl', document.querySelectorAll('[data-wc]').length === 4);
+ok('Eine Zeile sagt, was zu tun ist',
+   (el('za-inhalt').querySelector('.za-vor') || {}).textContent === 'W\u00e4hle aus, in welchem Wochen-Intervall du arbeitest:',
+   (el('za-inhalt').querySelector('.za-vor') || {}).textContent);
+ok('Die Zeile steht vor den Kn\u00f6pfen',
+   el('za-inhalt').firstElementChild && el('za-inhalt').firstElementChild.classList.contains('za-vor'),
+   el('za-inhalt').firstElementChild && el('za-inhalt').firstElementChild.className);
 document.querySelector('[data-wc="2"]').click();
 ok('Zwei Wochen gemerkt',     ZA.wc === 2, ZA.wc);
 
