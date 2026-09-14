@@ -22,7 +22,7 @@ function ok(n, b, z){ window.__E.push({ n:n, ok:!!b, z: z===undefined?'':String(
 ok('Abgemeldet (UID === null)', UID === null, 'UID=' + UID);
 
 /* ── 1 · Zeiten stehen und sind plausibel ── */
-ok('INTRO_MIN 4,4 s', INTRO_MIN === 4400, INTRO_MIN);
+ok('INTRO_MIN 2,45 s', INTRO_MIN === 2450, INTRO_MIN);
 ok('INTRO_LANG laenger als INTRO_MIN', INTRO_LANG > INTRO_MIN, INTRO_LANG + ' > ' + INTRO_MIN);
 ok('Notbremse liegt hinter beiden', INTRO_MAX > INTRO_LANG, INTRO_MAX);
 
@@ -36,6 +36,10 @@ ok('Der Glanz liegt darueber',    !!document.querySelector('#splash .mark-logo #
 ok('Der Balken kommt nach dem Hintergrund', BALKEN_AB > 0 && BALKEN_AB < LOGO_AB,
    BALKEN_AB + ' < ' + LOGO_AB);
 ok('Das Zeichen kommt vor dem Ende', LOGO_AB < INTRO_MIN, LOGO_AB + ' < ' + INTRO_MIN);
+/* Der Vorspann soll ein Moment sein, kein Warten: wer ihn wieder
+   verlaengert, faellt hier auf. */
+ok('Das Zeichen kommt in der ersten Sekunde', LOGO_AB < 1000, LOGO_AB);
+ok('Der Vorspann steht keine drei Sekunden', INTRO_LANG < 3000, INTRO_LANG);
 
 /* ── 3 · playIntro setzt das freigestellte Maennchen ── */
 ME = null;

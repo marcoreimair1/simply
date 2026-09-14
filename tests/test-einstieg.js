@@ -452,6 +452,7 @@ roh('Getippt wird im Bildtakt', /_zaTippT = requestAnimationFrame\(schritt\)/.te
 roh('Und nicht mehr mit einem Zeitgeber je Zeichen',
     HTML.indexOf('setTimeout(tick, 22)') === -1);
 roh('Das erste Zeichen steht sofort', HTML.indexOf('zeichne(1);') > -1);
+roh('Getippt wird im Lesetempo', /const ZA_TAKT = 32;/.test(HTML));
 roh('Die Kacheln kommen nacheinander', /@keyframes zaKachel/.test(HTML)
     && /#za-inhalt > \.za-tage > button:nth-child\(6\)\{ animation-delay/.test(HTML));
 roh('MOJI hat einen Auftritt', /@keyframes zaAuftritt/.test(HTML)

@@ -413,11 +413,16 @@ machten sie aus einem Zeichen eine kleine Seite.
 
 **Der Ablauf, in vier Bildern:**
 
-1. **Nur der Hintergrund.** 0,38 s lang steht da nichts als die Farbwolken.
+1. **Nur der Hintergrund.** 0,24 s lang steht da nichts als die Farbwolken.
 2. **Der Balken kommt** und läuft bis zur Hälfte (`BALKEN_AB` → `LOGO_AB`).
 3. **Bei der Hälfte erscheint das Männchen**, und der Glanz wandert **einmal** darüber.
 4. Der Balken läuft weiter auf 86 %, die letzten Prozent erst, wenn eine Ansicht wirklich steht.
    Dann der Übergang in die App.
+
+Zusammen dauert das **2,45 s** (angemeldet) oder **2,95 s** (ohne Anmeldung). Bis zum
+15. September 2026 waren es 4,4 und 5,4 — das las sich nicht als Vorspann, sondern als Hänger.
+Das Ausblenden von 1,1 s bleibt, wie es ist: dort ist die App schon sichtbar, gewartet wird da
+nicht mehr.
 
 **Das Männchen erscheint erst, wenn es wirklich dekodiert ist.** Es liegt als Datenzeile im
 Quelltext, *geladen* wird also nichts — *dekodiert* aber schon, und beim ersten Besuch dauert
@@ -1612,6 +1617,15 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Vorspann kürzer, Assistent langsamer** (15. September 2026): Zwei Tempi in
+  entgegengesetzte Richtungen. Der Vorspann stand 4,4 s (angemeldet) bzw. 5,4 s und las sich als
+  Hänger — jetzt 2,45 s und 2,95 s, das Zeichen kommt nach 0,82 s statt 1,45 s, der Glanz
+  wandert in 1,4 s statt 1,9 s. Das Ausblenden bleibt bei 1,1 s: dort ist die App schon
+  sichtbar, gewartet wird da nicht. Im Assistenten umgekehrt alles ruhiger: ein Zeichen alle
+  32 ms statt 22, die Sprechblase wächst in 0,55 s statt 0,34, die Kacheln kommen in 0,78 s mit
+  75 ms Versatz statt 0,5 s mit 45, MOJIs Auftritt dauert 0,95 s statt 0,62, sein Wippen 1,6 s
+  statt 1,15. 556 Prüfungen
 
 - **Der Assistent laeuft ruhiger** (15. September 2026): Vier Stellen, an denen es geruckelt hat.
   Geschrieben wird jetzt im Bildtakt statt mit einem Zeitgeber je Zeichen — 22 ms gehen in 16,7 ms
