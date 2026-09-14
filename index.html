@@ -1282,9 +1282,11 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .slide.weg.back{animation:slideWegBack .3s var(--ease-blend) forwards}
 @keyframes slideWegFwd{to{opacity:0;transform:translateX(-24px)}}
 @keyframes slideWegBack{to{opacity:0;transform:translateX(24px)}}
-/* Und innerhalb des letzten Schritts: Frage und Dienstzeiten wechseln
-   sich ab, also auch die mit einer Bewegung. */
-#ob-plan-frage, #ob-plan-edit{animation:slideFwd .42s var(--ease-out) both}
+/* Die Dienstplanfrage kommt mit derselben Bewegung wie die Schritte. */
+#ob-plan-frage{animation:slideFwd .42s var(--ease-out) both}
+.obdauer{display:inline-flex;align-items:center;gap:7px;margin:-8px 0 20px;
+  font-size:12.5px;color:var(--tx-3)}
+.obdauer svg{width:15px;height:15px}
 .navrow{display:flex;align-items:center;gap:12px;margin-top:24px}
 .navrow.sticky{position:sticky;bottom:0;z-index:20;margin:18px -20px 0;
   padding:16px 24px calc(16px + env(safe-area-inset-bottom));transition:background .3s}
@@ -3711,6 +3713,172 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   .hallo-ring .rg{ stroke-dashoffset:0; animation:none }
 }
 
+
+/* ═══ ZEIT-ASSISTENT ════════════════════════════════════════════════
+   MOJI fuehrt durch die Dienstzeiten. Eine Frage je Bild, die Antwort
+   zum Antippen oder am Rad. Kein Tastaturfeld: eine Uhrzeit tippt
+   niemand gern, und die Tastatur schiebt am Handy das halbe Bild weg.
+   =============================================================== */
+#v-zeitassi{ padding-top:calc(env(safe-area-inset-top) + 18px);
+  padding-bottom:calc(env(safe-area-inset-bottom) + 20px) }
+.za-kopf{ display:flex; align-items:center; gap:10px; max-width:430px; margin:0 auto; width:100% }
+.za-schritt{ font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--tx-3); font-variant-numeric:tabular-nums }
+.za-balken{ max-width:430px; width:100%; margin:13px auto 0; height:4px;
+  border-radius:99px; background:rgba(var(--tx-rgb),.10); overflow:hidden }
+.za-balken i{ display:block; height:100%; width:0; border-radius:99px;
+  background:linear-gradient(90deg,var(--butter-2),var(--butter));
+  transition:width .5s var(--ease-out) }
+/* Die Farbe der laufenden Woche faerbt den Balken mit — so sieht man
+   auf einen Blick, in welchem Intervall man steckt. */
+.za-balken i[data-w]{ background:linear-gradient(90deg,var(--zaf,var(--butter-2)),var(--butter)) }
+
+.za-buehne{ max-width:430px; width:100%; margin:0 auto; display:flex; flex-direction:column }
+
+/* ─── MOJI und seine Sprechblase ─────────────────────────────────
+   In der Mitte, solange er nur redet. Sobald es etwas zu tun gibt,
+   rueckt er nach oben und wird kleiner — der Platz gehoert dann der
+   Antwort. */
+.za-moji{ display:flex; align-items:flex-end; gap:12px; transition:.5s var(--ease-out) }
+.za-bild{ flex:none; display:block; width:74px; aspect-ratio:385/315;
+  transition:width .5s var(--ease-out) }
+.za-bild img{ width:100%; height:100%; object-fit:contain; display:block;
+  transform-origin:50% 86% }
+.za-blase{ position:relative; flex:1; min-width:0;
+  background:var(--karte); border:1px solid var(--karte-rand); box-shadow:var(--shadow);
+  border-radius:20px 20px 20px 6px; padding:14px 16px;
+  font-size:15px; line-height:1.5; letter-spacing:-.005em }
+.za-blase::after{ content:""; position:absolute; left:-7px; bottom:9px;
+  width:12px; height:12px; background:var(--karte);
+  border-left:1px solid var(--karte-rand); border-bottom:1px solid var(--karte-rand);
+  transform:rotate(45deg); border-radius:0 0 0 4px }
+.za-text b{ font-weight:650; color:var(--butter) }
+/* Der Strich, der beim Tippen blinkt — verschwindet, wenn der Satz steht. */
+.za-text.tippt::after{ content:""; display:inline-block; width:2px; height:1em;
+  margin-left:2px; background:var(--butter); vertical-align:-.14em;
+  animation:zaStrich .8s steps(2) infinite }
+@keyframes zaStrich{ 50%{ opacity:0 } }
+.za-mehr{ display:inline-flex; align-items:center; gap:4px; margin-top:9px;
+  font-size:12px; font-weight:650; letter-spacing:.02em; color:var(--butter);
+  padding:5px 10px 5px 11px; border-radius:99px;
+  background:rgba(var(--marke-rgb),.1); animation:zaRein .3s var(--ease-out) both }
+.za-mehr svg{ width:13px; height:13px }
+/* display aus der eigenen Regel schlaegt das [hidden] des Browsers —
+   beide haben dieselbe Spezifitaet, und das Blatt der Seite gewinnt.
+   Ohne diese Zeile blieb das "weiter" stehen, wenn nichts mehr kam. */
+.za-mehr[hidden]{ display:none }
+
+/* In der Mitte: gross, untereinander, mittig — fuer Gruss und Schluss. */
+.za-moji.mitte{ flex-direction:column; align-items:center; gap:18px;
+  margin:auto 0; text-align:center }
+.za-moji.mitte .za-bild{ width:min(42vw,158px) }
+.za-moji.mitte .za-blase{ flex:none; width:100%; border-radius:20px;
+  padding:18px 18px; font-size:16px }
+.za-moji.mitte .za-blase::after{ left:50%; top:-7px; bottom:auto; margin-left:-6px;
+  border:none; border-top:1px solid var(--karte-rand); border-left:1px solid var(--karte-rand);
+  border-radius:4px 0 0 0 }
+#v-zeitassi.on{ display:flex; flex-direction:column }
+.za-moji.mitte ~ .za-inhalt{ margin-top:24px; margin-bottom:auto }
+.za-moji.oben{ margin:22px 0 0 }
+.za-bild img.wackelt{ animation:eiWackel .9s var(--ease) 1 }
+
+.za-inhalt{ margin-top:26px }
+.za-inhalt > *{ animation:zaRein .42s var(--ease-out) both }
+@keyframes zaRein{ from{ opacity:0; transform:translateY(10px) } }
+
+/* ─── Antwortknoepfe ─────────────────────────────────────────────── */
+.za-knoepfe{ display:grid; gap:10px }
+.za-wahl{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px }
+.za-wahl button{ padding:16px 4px 13px; border-radius:16px; text-align:center;
+  background:var(--karte); border:1px solid var(--karte-rand); box-shadow:var(--karte-schatten);
+  font-size:19px; font-weight:650; line-height:1; transition:.22s var(--ease) }
+.za-wahl button small{ display:block; margin-top:5px; font-size:10px; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--tx-3) }
+.za-wahl button:active{ transform:scale(.95) }
+.za-wahl button.on{ border-color:transparent; color:var(--on-primary);
+  background:linear-gradient(140deg,var(--butter-2),var(--butter)) }
+.za-wahl button.on small{ color:rgba(255,255,255,.75) }
+
+/* Die Tage: antippen faerbt gruen und laesst sie kurz aufspringen. */
+.za-tage{ display:grid; grid-template-columns:repeat(6,1fr); gap:7px }
+.za-tage button{ padding:15px 2px; border-radius:15px; text-align:center;
+  font-size:14px; font-weight:650;
+  background:var(--karte); border:1px solid var(--karte-rand); box-shadow:var(--karte-schatten);
+  transition:background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease) }
+.za-tage button.on{ color:var(--on-primary); border-color:transparent;
+  background:linear-gradient(140deg,var(--za-plus),var(--c-eigen)) }
+.za-tage button.klack{ animation:zaKlack .42s var(--ease-out) }
+@keyframes zaKlack{ 35%{ transform:scale(1.14) } 100%{ transform:none } }
+
+/* ─── Ein Tag: Vormittag und Nachmittag ──────────────────────────── */
+.za-seg{ background:var(--karte); border:1px solid var(--karte-rand);
+  box-shadow:var(--karte-schatten); border-radius:20px; padding:14px 14px 4px;
+  margin-bottom:11px; transition:.26s var(--ease) }
+.za-seg.aus{ padding-bottom:14px; opacity:.62 }
+.za-seg-kopf{ display:flex; align-items:center; gap:11px }
+.za-seg-kopf b{ flex:1; min-width:0; font-size:14.5px; font-weight:650 }
+.za-seg-kopf .swr{ flex:none; width:46px; height:27px; border-radius:99px; position:relative;
+  background:rgba(var(--tx-rgb),.16); transition:background .26s var(--ease) }
+.za-seg-kopf .swr i{ position:absolute; top:3px; left:3px; width:21px; height:21px;
+  border-radius:50%; background:#fff; box-shadow:0 1px 5px rgba(0,0,0,.3);
+  transition:transform .28s var(--ease) }
+.za-seg[aria-pressed="true"] .swr{ background:var(--butter) }
+.za-seg[aria-pressed="true"] .swr i{ transform:translateX(19px) }
+.za-seg-raeder{ display:flex; align-items:center; gap:9px; margin-top:12px }
+.za-seg.aus .za-seg-raeder{ display:none }
+.za-bis{ flex:none; color:var(--tx-3); font-size:15px }
+
+/* ─── Das Rad ────────────────────────────────────────────────────
+   Wie beim Wecker: eine Spalte, die einrastet. Der Browser macht das
+   Einrasten selbst (scroll-snap), gelesen wird nur, welcher Eintrag in
+   der Mitte steht. Kein Zeigerereignis, kein eigenes Traegheitsmodell —
+   das faehlt sich auf dem Handy immer falsch an. */
+.rad{ position:relative; flex:1; min-width:0; height:136px; border-radius:16px;
+  background:rgba(var(--tx-rgb),.05); border:1px solid var(--line-2); overflow:hidden }
+.rad-band{ position:absolute; left:5px; right:5px; top:50%; height:34px; margin-top:-17px;
+  border-radius:11px; background:rgba(var(--marke-rgb),.13); pointer-events:none; z-index:1 }
+.rad-roll{ position:relative; z-index:2; height:100%; overflow-y:auto;
+  scroll-snap-type:y mandatory; overscroll-behavior:contain;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch; padding:51px 0;
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 24%,#000 76%,transparent);
+          mask-image:linear-gradient(180deg,transparent,#000 24%,#000 76%,transparent) }
+.rad-roll::-webkit-scrollbar{ display:none }
+.rad-roll i{ display:flex; align-items:center; justify-content:center; height:34px;
+  scroll-snap-align:center; font-style:normal; font-size:17px;
+  font-variant-numeric:tabular-nums; color:var(--tx-3);
+  transition:color .18s, transform .18s, font-weight .18s }
+.rad-roll i.on{ color:var(--tx); font-weight:700; transform:scale(1.06) }
+
+/* ─── Die Zusammenfassung unter den Raedern ─────────────────────── */
+.za-summe{ display:flex; align-items:center; gap:9px; margin:2px 2px 0;
+  font-size:12.5px; color:var(--tx-2) }
+.za-summe b{ color:var(--tx); font-weight:650 }
+.za-summe em{ font-style:normal; font-size:15px; line-height:1 }
+
+/* ─── Zeiten aus einer frueheren Woche holen ─────────────────────── */
+.za-kopie{ display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin:0 0 12px }
+.za-kopie span{ font-size:12px; color:var(--tx-3) }
+.za-kopie button{ font-size:12px; font-weight:650; padding:7px 12px; border-radius:99px;
+  border:1px solid var(--zaf,var(--line-2)); color:var(--zaf,var(--tx-2));
+  background:rgba(var(--tx-rgb),.04); transition:.2s var(--ease) }
+.za-kopie button:active{ transform:scale(.96) }
+
+/* Die Woche, in der man gerade steckt — als Band ueber der Frage. */
+.za-woche{ display:inline-flex; align-items:center; gap:7px; margin-bottom:12px;
+  font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  padding:6px 11px; border-radius:99px; color:var(--zaf);
+  background:color-mix(in srgb, var(--zaf) 14%, transparent) }
+.za-woche s{ text-decoration:none; width:8px; height:8px; border-radius:50%; background:var(--zaf) }
+
+@media(max-width:380px){
+  .za-tage button{ font-size:13px; padding:13px 1px }
+  .za-wahl button{ font-size:17px }
+}
+@media(prefers-reduced-motion:reduce){
+  .za-text.tippt::after{ animation:none }
+  .za-inhalt > *{ animation:none }
+}
+
 </style>
 </head>
 <body>
@@ -4028,14 +4196,11 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
           <div class="slide">
             <div id="ob-plan-frage">
               <h1 class="obh">Dienstplan gleich anlegen?</h1>
+              <p class="obdauer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.4 2"/></svg>circa 2 Minuten</p>
               <div class="jn">
                 <button class="einb prim" id="ob-plan-ja">Ja, jetzt</button>
                 <button class="einb zweit" id="ob-plan-no">Später</button>
               </div>
-            </div>
-            <div id="ob-plan-edit" style="display:none">
-              <h1 class="obh">Deine Dienstzeiten</h1>
-              <div id="sched-onboard"></div>
             </div>
           </div>
 
@@ -4043,6 +4208,35 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       </div>
       <div class="navrow sticky" id="ob-nav">
         <button class="btn btn-p" id="ob-next">Weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ─────────── ZEIT-ASSISTENT ───────────
+         Die Dienstzeiten das erste Mal eintragen. Frueher stand hier das
+         ganze Formular auf einmal: Wochenintervall, vier Wochenreiter,
+         sechs Tageszeilen mit je vier Uhrzeiten — 24 Felder, bevor man
+         den ersten Wert gesetzt hat.
+
+         Jetzt fuehrt MOJI durch. Eine Frage je Bild, die Antwort immer
+         zum Antippen oder am Rad, und der Text kommt Zeichen fuer
+         Zeichen wie in einem Spiel. Gerechnet wird danach genau wie
+         vorher — das Ergebnis ist dieselbe sched-Struktur.            -->
+    <section class="view" id="v-zeitassi">
+      <div class="za-kopf">
+        <button class="obzurueck hide" id="za-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <span class="za-schritt" id="za-schritt"></span>
+      </div>
+      <div class="za-balken" aria-hidden="true"><i id="za-bar"></i></div>
+
+      <div class="za-buehne" id="za-buehne">
+        <div class="za-moji" id="za-moji">
+          <span class="za-bild"><img id="za-bild" alt="MOJI"></span>
+          <span class="za-blase" id="za-blase">
+            <span class="za-text" id="za-text"></span>
+            <button class="za-mehr" id="za-mehr" hidden>weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          </span>
+        </div>
+        <div class="za-inhalt" id="za-inhalt"></div>
       </div>
     </section>
 
@@ -4841,7 +5035,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-1515';
+const APP_STAND = '2026-09-14-1650';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6315,7 +6509,7 @@ function go(id){
      Kopfleiste. Und ein offenes Blatt der Anmeldung darf nirgends
      stehenbleiben: es liegt fest ueber allem. */
   document.body.classList.toggle('nobar',
-    id === 'v-onboard' || (id === 'v-login' && CLOUD_ON));
+    id === 'v-onboard' || id === 'v-zeitassi' || (id === 'v-login' && CLOUD_ON));
   if(id !== 'v-login'){
     try{ blattAllesZu(); }catch(e){}
     try{ msStop(); }catch(e){}
@@ -6417,7 +6611,7 @@ function echoDob(){
 const NOW = new Date();
 const PREV = new Date(NOW.getFullYear(), NOW.getMonth()-1, 1);
 const OB = { step:0, months:new Set([PREV.getFullYear()+'-'+PREV.getMonth()]),
-             sched:defaultSched(), mailOk:false, pkOk:false, plan:false };
+             sched:defaultSched(), mailOk:false, pkOk:false };
 const STEPS = 4;
 const OB_PFEIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg>';
 
@@ -6438,14 +6632,11 @@ function obInit(){
   OB.step = 0;
   OB.months = new Set([PREV.getFullYear()+'-'+PREV.getMonth()]);
   OB.sched = defaultSched();
-  OB.mailOk = false; OB.pkOk = false; OB.plan = false;
+  OB.mailOk = false; OB.pkOk = false;
   $('#in-vn').value = ''; $('#in-nn').value = '';
   _nPrev['in-vn'] = ''; _nPrev['in-nn'] = '';
   $$('[data-dob="ob"] input').forEach(i => i.value = '');
   echoDob(); $('#dob-auto').style.display = 'none';
-  $('#ob-plan-frage').style.display = '';
-  $('#ob-plan-edit').style.display = 'none';
-  $('#sched-onboard').innerHTML = '';
   obSchalterMalen();
   obPaint();
 }
@@ -6594,27 +6785,15 @@ $('#sw-pk').addEventListener('click', async () => {
 });
 
 /* ─── Dienstplan: eine Frage, zwei Antworten ─────────────────────── */
-function obPlanAuf(){
-  OB.plan = true;
-  $('#ob-plan-frage').style.display = 'none';
-  $('#ob-plan-edit').style.display = '';
-  renderSched($('#sched-onboard'), OB.sched, refreshNav);
-  refreshNav(); fitOnboard();
-}
-function obPlanZu(){
-  OB.plan = false;
-  $('#ob-plan-frage').style.display = '';
-  $('#ob-plan-edit').style.display = 'none';
-  refreshNav(); fitOnboard();
-}
-$('#ob-plan-ja').addEventListener('click', obPlanAuf);
+/* "Ja, jetzt" uebergibt an den Assistenten — siehe zaStart(). Der alte
+   Inline-Editor stand hier bis 14. September 2026; er zeigte alle
+   vierundzwanzig Felder auf einmal. */
+$('#ob-plan-ja').addEventListener('click', () => zaStart());
 $('#ob-plan-no').addEventListener('click', () => finishOnboarding());
 
 function stepValid(s){
   if(s === 0) return !!($('#in-vn').value.trim() && $('#in-nn').value.trim());
   if(s === 1) return !!dobIso(readDob('ob'));
-  if(s === 3) return !OB.plan
-    || [0,1,2,3].slice(0, clamp(OB.sched.weekCount,1,4)).some(i => weekTotal(OB.sched, i) > 0);
   return true;
 }
 function refreshNav(){
@@ -6624,7 +6803,7 @@ function refreshNav(){
   $$('.field').forEach(f => { const i = $('input', f); if(i) f.classList.toggle('filled', !!i.value); });
   /* Schritt 1 führt über den Pfeil im Feld, Schritt 2 geht von selbst weiter,
      und die Dienstplanfrage hat ihre eigenen zwei Knöpfe. */
-  const ohneNav = OB.step === 0 || OB.step === 1 || (OB.step === 3 && !OB.plan);
+  const ohneNav = OB.step === 0 || OB.step === 1 || OB.step === 3;
   $('#ob-nav').classList.toggle('hide', ohneNav);
   $('#ob-back').classList.toggle('hide', OB.step === 0);
   const gn = $('#go-name'); if(gn) gn.disabled = !stepValid(0);
@@ -6638,11 +6817,7 @@ $('#ob-next').addEventListener('click', () => {
   if(OB.step < STEPS-1) obGo(OB.step + 1);
   else finishOnboarding();
 });
-$('#ob-back').addEventListener('click', () => {
-  /* Aus dem offenen Dienstplan führt Zurück erst einmal zur Frage. */
-  if(OB.step === STEPS-1 && OB.plan){ obPlanZu(); return; }
-  if(OB.step > 0) obGo(OB.step - 1);
-});
+$('#ob-back').addEventListener('click', () => { if(OB.step > 0) obGo(OB.step - 1); });
 $('#go-name').addEventListener('click', () => { if(stepValid(0)) obGo(1); });
 
 const _nPrev = { 'in-vn':'', 'in-nn':'' };
@@ -6742,6 +6917,435 @@ function postWillkommen(){
   save();
   malZaehler();
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   ZEIT-ASSISTENT
+
+   Die Dienstzeiten das erste Mal eintragen. Frueher stand hier das
+   ganze Formular: Wochenintervall, vier Wochenreiter, sechs Tageszeilen
+   mit je vier Uhrzeiten — vierundzwanzig Felder, bevor man den ersten
+   Wert gesetzt hat. Wer das zum ersten Mal sieht, legt das Handy weg.
+
+   Jetzt fuehrt MOJI durch: eine Frage je Bild, die Antwort zum
+   Antippen oder am Rad, der Text kommt Zeichen fuer Zeichen. Am Ende
+   steht dieselbe sched-Struktur wie vorher — gerechnet wird nichts
+   anders, nur gefragt.
+
+   Sonntag kommt nicht vor: WORKDAYS ist [1..6], und Sonntag gilt in
+   der ganzen App als frei (dayPlan, qTouched, die A4-Seite). Sechs
+   Knoepfe also, nicht sieben.
+   ═══════════════════════════════════════════════════════════ */
+const ZA_ZEITEN = (function(){
+  const a = [];
+  for(let m = 4*60; m <= 23*60+45; m += 15) a.push(p2(Math.floor(m/60)) + ':' + p2(m%60));
+  return a;
+})();
+const RAD_H = 34;                      /* Zeilenhoehe im Rad, siehe .rad-roll i */
+const ZA = { wc:1, wi:0, tage:[[],[],[],[]], idx:0, sched:null, schritt:'' };
+
+function zaRuhig(){
+  try{ return matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; }
+}
+/* Ein kurzer Klopfer beim Einrasten des Rades — dort, wo der Browser
+   eine Vibration kennt. Am iPhone bleibt es still, Safari kennt keine. */
+function zaKlopf(){
+  try{
+    if(!navigator.vibrate) return;
+    const ua = navigator.userActivation;
+    if(ua && !ua.hasBeenActive) return;
+    navigator.vibrate(4);
+  }catch(e){}
+}
+
+/* ─── MOJI redet ─────────────────────────────────────────────────
+   Ein Satz je Blase. Kommt mehr, steht darunter ein kleines "weiter" —
+   niemand liest drei Saetze, die auf einmal erscheinen. Mit * markierte
+   Stellen werden fett. */
+let _zaTeile = [], _zaTippT = null, _zaDanach = null;
+function mojiSagt(teile, danach){
+  clearTimeout(_zaTippT);
+  _zaTeile = (Array.isArray(teile) ? teile : [teile]).slice();
+  _zaDanach = danach || null;
+  $('#za-inhalt').innerHTML = '';
+  zaTeilZeigen();
+}
+function zaTeilZeigen(){
+  const txt = _zaTeile.shift();
+  const el = $('#za-text'), mehr = $('#za-mehr');
+  mehr.hidden = true;
+  el.classList.add('tippt');
+  zaTippen(el, txt, () => {
+    el.classList.remove('tippt');
+    if(_zaTeile.length){ mehr.hidden = false; return; }
+    const cb = _zaDanach; _zaDanach = null;
+    if(cb) cb();
+  });
+}
+/* Der Name, den MOJI benutzt. Waehrend des Funnels steht er noch im
+   Feld, danach im Profil. Nicht ueber esc() — geschrieben wird mit
+   textContent, da wuerde ein & zu &amp;. */
+function zaName(){
+  return (ME && ME.vorname) || $('#in-vn').value.trim() || 'du';
+}
+let _zaTippEnde = null;
+function zaTippen(el, roh, fertig){
+  el.innerHTML = '';
+  const teile = String(roh).split('*');          /* ungerade Stuecke sind fett */
+  const stuecke = teile.map((t, i) => {
+    const k = document.createElement(i % 2 ? 'b' : 'span');
+    el.appendChild(k);
+    return { k:k, t:t, n:0 };
+  });
+  const alles = () => {
+    clearTimeout(_zaTippT); _zaTippT = null; _zaTippEnde = null;
+    stuecke.forEach(x => { x.k.textContent = x.t; });
+    fertig();
+  };
+  if(zaRuhig()){ alles(); return; }
+  _zaTippEnde = alles;
+  let i = 0;
+  const tick = () => {
+    for(let k = 0; k < 2; k++){
+      while(i < stuecke.length && stuecke[i].n >= stuecke[i].t.length) i++;
+      if(i >= stuecke.length){ _zaTippEnde = null; fertig(); return; }
+      stuecke[i].n++;
+      stuecke[i].k.textContent = stuecke[i].t.slice(0, stuecke[i].n);
+    }
+    _zaTippT = setTimeout(tick, 24);
+  };
+  tick();
+}
+/* Wer schneller liest als MOJI tippt, tippt die Blase an: der Satz steht
+   sofort, ein zweiter Tipp holt den naechsten. So macht es jedes Spiel. */
+function zaDurchtippen(){
+  if(_zaTippEnde){ _zaTippEnde(); return; }
+  if(!$('#za-mehr').hidden) zaTeilZeigen();
+}
+$('#za-mehr').addEventListener('click', zaTeilZeigen);
+$('#za-blase').addEventListener('click', e => {
+  if(e.target.closest('.za-mehr')) return;
+  zaDurchtippen();
+});
+
+/* ─── Das Rad ────────────────────────────────────────────────────
+   Wie beim Wecker: eine Spalte, die einrastet. Das Einrasten macht der
+   Browser selbst (scroll-snap) — ein eigenes Traegheitsmodell faehlt
+   sich am Handy immer falsch an. Gelesen wird nur, welche Zeile in der
+   Mitte steht. */
+function zaNaechste(t){
+  const m = t2m(t || '08:00');
+  let best = 0, d = 1e9;
+  for(let i = 0; i < ZA_ZEITEN.length; i++){
+    const x = Math.abs(t2m(ZA_ZEITEN[i]) - m);
+    if(x < d){ d = x; best = i; }
+  }
+  return best;
+}
+function radBau(wert, aendert){
+  const el = document.createElement('div');
+  el.className = 'rad';
+  el.innerHTML = '<div class="rad-band"></div><div class="rad-roll">'
+    + ZA_ZEITEN.map(t => '<i>' + t + '</i>').join('') + '</div>';
+  const roll = $('.rad-roll', el);
+  const zeilen = $$('i', roll);
+  let stand = zaNaechste(wert);
+  const markiere = () => zeilen.forEach((n, k) => n.classList.toggle('on', k === stand));
+  roll.addEventListener('scroll', () => {
+    const idx = clamp(Math.round(roll.scrollTop / RAD_H), 0, ZA_ZEITEN.length - 1);
+    if(idx === stand) return;
+    stand = idx; markiere(); zaKlopf();
+    if(aendert) aendert(ZA_ZEITEN[idx]);
+  }, { passive:true });
+  el._setz = t => { stand = zaNaechste(t); roll.scrollTop = stand * RAD_H; markiere(); };
+  /* Erst wenn der Kasten im Dokument haengt, laesst sich scrollen. */
+  requestAnimationFrame(() => { roll.scrollTop = stand * RAD_H; markiere(); });
+  return el;
+}
+
+/* ─── Rahmen: Farbe der Woche, Balken, Kopfzeile ─────────────────── */
+function zaFarbe(){
+  const el = $('#v-zeitassi');
+  if(el) el.style.setProperty('--zaf', WOCHENFARBE[clamp(ZA.wi, 0, 3)]);
+}
+function zaFortschritt(){
+  let ganz = 1, durch = 0;
+  for(let w = 0; w < ZA.wc; w++){
+    const gewaehlt = ZA.tage[w].length;
+    /* Was noch nicht gewaehlt ist, wird mit fuenf Tagen geschaetzt —
+       sonst spraenge der Balken bei jeder Wochenauswahl. */
+    ganz += 1 + (gewaehlt || (w <= ZA.wi ? 0 : 5));
+  }
+  if(ZA.schritt !== 'gruss' && ZA.schritt !== 'wochen') durch = 1;
+  for(let w = 0; w < ZA.wi; w++) durch += 1 + ZA.tage[w].length;
+  if(ZA.schritt === 'tag') durch += 1 + ZA.idx;
+  if(ZA.schritt === 'fertig') durch = ganz;
+  $('#za-bar').style.width = clamp(Math.round(durch / Math.max(1, ganz) * 100), 0, 100) + '%';
+  const k = $('#za-schritt');
+  if(k) k.textContent = ZA.schritt === 'fertig' ? 'Fertig'
+       : (ZA.schritt === 'gruss' || ZA.schritt === 'abbruch') ? 'Dienstzeiten'
+       : ZA.wc > 1 ? 'Woche ' + (ZA.wi + 1) + ' von ' + ZA.wc
+       : 'Deine Woche';
+  $('#za-back').classList.toggle('hide', ZA.schritt === 'gruss' || ZA.schritt === 'fertig'
+                                      || ZA.schritt === 'abbruch');
+}
+function zaMoji(wo){
+  const m = $('#za-moji');
+  m.classList.toggle('mitte', wo === 'mitte');
+  m.classList.toggle('oben',  wo !== 'mitte');
+}
+function zaWackeln(){
+  const b = $('#za-bild');
+  if(!b) return;
+  b.classList.remove('wackelt'); void b.offsetWidth; b.classList.add('wackelt');
+}
+
+/* ─── Los ─────────────────────────────────────────────────────────── */
+function zaStart(){
+  ZA.wc = 1; ZA.wi = 0; ZA.idx = 0;
+  ZA.tage = [[],[],[],[]];
+  ZA.sched = defaultSched();
+  /* Alle Tage erst einmal frei — was gearbeitet wird, setzt der Weg. */
+  for(let w = 0; w < 4; w++)
+    WORKDAYS.forEach(d => { ZA.sched.weeks[w][d].vmOn = false; ZA.sched.weeks[w][d].nmOn = false; });
+  const b = $('#za-bild');
+  if(b && !b.getAttribute('src')) b.src = LOGO_MOJI;
+  go('v-zeitassi');
+  zaGruss();
+}
+function zaGruss(){
+  ZA.schritt = 'gruss';
+  zaMoji('mitte'); zaFarbe(); zaFortschritt(); zaWackeln();
+  mojiSagt([
+    'Hi *' + zaName() + '*! Ich bin MOJI.',
+    'Lass uns kurz deine Arbeitszeiten festlegen — danach rechne ich sie für immer selbst.'
+  ], () => {
+    zaInhalt('<div class="za-knoepfe">'
+      + '<button class="einb prim" data-za="los">Ja, starten wir!</button>'
+      + '<button class="einb zweit" data-za="spaeter">Hab\'s mir anders überlegt</button>'
+      + '</div>');
+  });
+}
+function zaAbbruch(){
+  ZA.schritt = 'abbruch';
+  zaMoji('mitte'); zaFortschritt();
+  mojiSagt([
+    '…',
+    'Ok, schade. Du kannst deine Zeiten jederzeit im *Profilmenü* nachtragen.'
+  ], () => {
+    zaInhalt('<div class="za-knoepfe">'
+      + '<button class="einb prim" data-za="fertigab">Alles klar, weiter</button></div>');
+  });
+}
+function zaWochen(){
+  ZA.schritt = 'wochen'; ZA.wi = 0;
+  zaMoji('oben'); zaFarbe(); zaFortschritt();
+  mojiSagt('Arbeitest du *jede Woche gleich*? Oder wechselt sich das ab?', () => {
+    zaInhalt('<div class="za-wahl">'
+      + [1,2,3,4].map(n => '<button data-wc="' + n + '">' + n
+          + '<small>' + (n === 1 ? 'Woche' : 'Wochen') + '</small></button>').join('')
+      + '</div>');
+  });
+}
+function zaTageFrage(){
+  ZA.schritt = 'tage'; ZA.idx = 0;
+  zaMoji('oben'); zaFarbe(); zaFortschritt();
+  const heute = DOWFULL[new Date().getDay()];
+  const frage = ZA.wc > 1
+    ? 'Nehmen wir an, es ist *Woche ' + (ZA.wi + 1) + '*. An welchen Tagen arbeitest du da?'
+    : 'Heute ist *' + heute + '*. An welchen Tagen arbeitest du?';
+  mojiSagt(frage, () => {
+    const gewaehlt = ZA.tage[ZA.wi];
+    zaInhalt(zaWochenband()
+      + '<div class="za-tage">'
+      + WORKDAYS.map(d => '<button data-tag="' + d + '"'
+          + (gewaehlt.indexOf(d) > -1 ? ' class="on"' : '') + '>' + DOWSHORT[d] + '</button>').join('')
+      + '</div>'
+      + '<div class="navrow"><button class="einb prim" id="za-tage-ok" data-za="tageok">Weiter</button></div>');
+    zaTageKnopf();
+  });
+}
+function zaWochenband(){
+  return ZA.wc > 1
+    ? '<span class="za-woche"><s></s>Woche ' + (ZA.wi + 1) + ' von ' + ZA.wc + '</span>'
+    : '';
+}
+function zaTageKnopf(){
+  const b = $('#za-tage-ok');
+  if(b) b.disabled = !ZA.tage[ZA.wi].length;
+}
+
+/* ─── Ein Tag ────────────────────────────────────────────────────── */
+function zaTagFrage(){
+  ZA.schritt = 'tag';
+  zaMoji('oben'); zaFarbe(); zaFortschritt();
+  const d = ZA.tage[ZA.wi][ZA.idx];
+  const erster = ZA.idx === 0;
+  const txt = erster
+    ? 'Gut. Dann der Reihe nach — *' + DOWFULL[d] + '*: wann arbeitest du da?'
+    : '*' + DOWFULL[d] + '*?';
+  mojiSagt(txt, () => zaTagBild());
+}
+function zaTagBild(){
+  const wi = ZA.wi, d = ZA.tage[wi][ZA.idx];
+  const cfg = ZA.sched.weeks[wi][d];
+  /* Beim ersten Antippen eines Tages steht noch nichts — dann die
+     uebliche Vormittagsschicht als Vorschlag, nicht ein leeres Feld. */
+  if(!cfg.vmOn && !cfg.nmOn){ cfg.vmOn = true; cfg.nmOn = d !== 6; }
+
+  const host = document.createElement('div');
+  host.innerHTML = zaWochenband() + zaKopieBand(d);
+  host.appendChild(zaSegment('Vormittag', cfg, 'vm'));
+  host.appendChild(zaSegment('Nachmittag', cfg, 'nm'));
+  const summe = document.createElement('p');
+  summe.className = 'za-summe'; summe.id = 'za-summe';
+  host.appendChild(summe);
+  const nav = document.createElement('div');
+  nav.className = 'navrow';
+  nav.innerHTML = '<button class="einb prim" data-za="tagok">'
+    + (ZA.idx === ZA.tage[wi].length - 1 && ZA.wi === ZA.wc - 1 ? 'Fertig' : 'Weiter') + '</button>';
+  host.appendChild(nav);
+  zaInhalt(host);
+  zaSummeMalen();
+}
+/* Zeiten aus einer frueheren Woche holen — nur, wenn es dort welche gibt. */
+function zaKopieBand(d){
+  if(ZA.wi === 0) return '';
+  let h = '';
+  for(let w = 0; w < ZA.wi; w++){
+    const c = ZA.sched.weeks[w][d];
+    if(c && (c.vmOn || c.nmOn)) h += '<button data-kopie="' + w + '">Wie Woche ' + (w+1) + '</button>';
+  }
+  return h ? '<div class="za-kopie"><span>Übernehmen:</span>' + h + '</div>' : '';
+}
+function zaSegment(name, cfg, art){
+  const an = cfg[art + 'On'];
+  const el = document.createElement('div');
+  el.className = 'za-seg' + (an ? '' : ' aus');
+  el.setAttribute('aria-pressed', String(!!an));
+  el.dataset.seg = art;
+  el.innerHTML = '<button class="za-seg-kopf" data-segan="' + art + '">'
+    + '<b>' + name + '</b><span class="swr"><i></i></span></button>'
+    + '<div class="za-seg-raeder"></div>';
+  const raeder = $('.za-seg-raeder', el);
+  const von = radBau(cfg[art + 'From'], t => { cfg[art + 'From'] = t; zaSummeMalen(); });
+  const bis = radBau(cfg[art + 'To'],   t => { cfg[art + 'To']   = t; zaSummeMalen(); });
+  raeder.appendChild(von);
+  raeder.insertAdjacentHTML('beforeend', '<span class="za-bis">bis</span>');
+  raeder.appendChild(bis);
+  return el;
+}
+function zaSummeMalen(){
+  const el = $('#za-summe'); if(!el) return;
+  const cfg = ZA.sched.weeks[ZA.wi][ZA.tage[ZA.wi][ZA.idx]];
+  const vm = segH(cfg.vmOn, cfg.vmFrom, cfg.vmTo);
+  const nm = segH(cfg.nmOn, cfg.nmFrom, cfg.nmTo);
+  let pause = 0;
+  if(cfg.vmOn && cfg.nmOn && vm > 0 && nm > 0){
+    const p = (t2m(cfg.nmFrom) - t2m(cfg.vmTo)) / 60;
+    pause = p > 0 ? r25(p) : 0;
+  }
+  const std = vm + nm;
+  el.innerHTML = std > 0
+    ? '<em>⏱️</em><span><b>' + fmtH(std) + ' h</b> an dem Tag'
+      + (pause > 0 ? ' · <em>☕</em> ' + fmtH(pause) + ' h Pause rechne ich selbst' : '') + '</span>'
+    : '<em>🌤️</em><span>An dem Tag ist frei.</span>';
+  const ok = $('[data-za="tagok"]');
+  if(ok) ok.disabled = std <= 0;
+}
+
+/* ─── Schluss ────────────────────────────────────────────────────── */
+function zaFertig(){
+  ZA.schritt = 'fertig';
+  zaMoji('mitte'); zaFortschritt(); zaWackeln();
+  OB.sched = JSON.parse(JSON.stringify(ZA.sched));
+  OB.sched.weekCount = ZA.wc;
+  OB.sched.tab = 0;
+  mojiSagt([
+    'Super, *' + zaName() + '*! Deine Arbeitszeiten stehen.',
+    'Ab jetzt trägst du nur noch *Urlaub und Krankenstand* im Kalender ein — den Rest rechne ich.',
+    'Ändern kannst du sie jederzeit im Profilmenü. Viel Spaß!'
+  ], () => {
+    zaInhalt('<div class="za-knoepfe"><button class="einb prim" data-za="schluss">Abschließen</button></div>');
+  });
+}
+
+function zaInhalt(x){
+  const el = $('#za-inhalt');
+  el.innerHTML = '';
+  if(typeof x === 'string') el.innerHTML = x;
+  else el.appendChild(x);
+}
+
+/* ─── Zurueck ────────────────────────────────────────────────────── */
+function zaZurueck(){
+  if(ZA.schritt === 'tag'){
+    if(ZA.idx > 0){ ZA.idx--; zaTagFrage(); return; }
+    zaTageFrage(); return;
+  }
+  if(ZA.schritt === 'tage'){
+    if(ZA.wi > 0){ ZA.wi--; ZA.idx = Math.max(0, ZA.tage[ZA.wi].length - 1); zaTagFrage(); return; }
+    zaWochen(); return;
+  }
+  if(ZA.schritt === 'wochen'){ zaGruss(); return; }
+}
+$('#za-back').addEventListener('click', zaZurueck);
+
+/* ─── Ein Klick, alle Wege ───────────────────────────────────────── */
+$('#za-inhalt').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+
+  if(b.dataset.wc){
+    ZA.wc = clamp(+b.dataset.wc, 1, 4);
+    $$('[data-wc]').forEach(x => x.classList.toggle('on', x === b));
+    setTimeout(() => { ZA.wi = 0; zaTageFrage(); }, 240);
+    return;
+  }
+  if(b.dataset.tag){
+    const d = +b.dataset.tag, liste = ZA.tage[ZA.wi];
+    const i = liste.indexOf(d);
+    if(i > -1) liste.splice(i, 1); else { liste.push(d); liste.sort((x,y) => x-y); }
+    b.classList.toggle('on', i < 0);
+    if(i < 0){ b.classList.remove('klack'); void b.offsetWidth; b.classList.add('klack'); zaKlopf(); }
+    zaTageKnopf();
+    return;
+  }
+  if(b.dataset.kopie){
+    const w = +b.dataset.kopie, d = ZA.tage[ZA.wi][ZA.idx];
+    const q = ZA.sched.weeks[w][d], z = ZA.sched.weeks[ZA.wi][d];
+    ['vmOn','vmFrom','vmTo','nmOn','nmFrom','nmTo'].forEach(k => { z[k] = q[k]; });
+    zaTagBild();
+    toast('Zeiten aus Woche ' + (w+1) + ' übernommen');
+    return;
+  }
+  if(b.dataset.segan){
+    const art = b.dataset.segan, seg = b.closest('.za-seg');
+    const cfg = ZA.sched.weeks[ZA.wi][ZA.tage[ZA.wi][ZA.idx]];
+    cfg[art + 'On'] = !cfg[art + 'On'];
+    seg.classList.toggle('aus', !cfg[art + 'On']);
+    seg.setAttribute('aria-pressed', String(!!cfg[art + 'On']));
+    zaSummeMalen(); zaKlopf();
+    return;
+  }
+
+  switch(b.dataset.za){
+    case 'los':      zaWochen(); break;
+    case 'spaeter':  zaAbbruch(); break;
+    case 'fertigab': finishOnboarding(); break;
+    case 'tageok':
+      if(!ZA.tage[ZA.wi].length) return;
+      ZA.idx = 0; zaTagFrage();
+      break;
+    case 'tagok': {
+      const liste = ZA.tage[ZA.wi];
+      if(ZA.idx < liste.length - 1){ ZA.idx++; zaTagFrage(); break; }
+      if(ZA.wi < ZA.wc - 1){ ZA.wi++; zaTageFrage(); break; }
+      zaFertig();
+      break;
+    }
+    case 'schluss':  finishOnboarding(); break;
+  }
+});
 
 /* ═══════════════════════════════════════════════════════════
    EINSTIEG

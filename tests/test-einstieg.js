@@ -185,18 +185,88 @@ ok('Schritt 4 steht',         el('ob-step').textContent === 'Schritt 4 von 4', e
 ok('Balken ist voll',         el('ob-bar').style.width === '100%', el('ob-bar').style.width);
 ok('Frage ist sichtbar',      el('ob-plan-frage').style.display !== 'none');
 ok('Kein Weiter bei der Frage', el('ob-nav').classList.contains('hide'));
-obPlanAuf();
-ok('Dienstzeiten offen',      el('ob-plan-edit').style.display !== 'none');
-ok('Plan ist gebaut',         el('sched-onboard').innerHTML.length > 100);
-ok('Jetzt gibt es Fertig',    !el('ob-nav').classList.contains('hide'));
-ok('Knopf heisst Fertig',     el('ob-next').innerHTML.indexOf('Fertig') === 0, el('ob-next').textContent);
-el('ob-back').click();
-ok('Zurueck fuehrt zur Frage', el('ob-plan-frage').style.display !== 'none' && OB.plan === false);
-ok('Und bleibt auf Schritt 4', el('ob-step').textContent === 'Schritt 4 von 4');
+ok('Dauer steht an der Frage', /circa 2 Minuten/.test(el('ob-plan-frage').textContent),
+   el('ob-plan-frage').textContent.replace(/\s+/g,' ').trim());
 
 /* ── 11 · Spaeter heisst: mit der Vorgabe weiter ── */
 ok('Vorgabe traegt Stunden', weekTotal(OB.sched, 0) > 0, weekTotal(OB.sched, 0));
-ok('Ohne Plan gilt der Schritt', stepValid(3) === true);
+ok('Der Schritt gilt immer',  stepValid(3) === true);
+
+/* ── 11b · Der Zeit-Assistent ──
+   Getippt wird nicht: jede Blase wird mit zaDurchtippen() sofort
+   fertiggestellt, so wie ein Tipp darauf es auch tut. */
+const durch = () => { for(let i = 0; i < 12; i++) zaDurchtippen(); };
+zaStart();
+ok('Der Assistent steht',     el('v-zeitassi').classList.contains('on'));
+ok('MOJI steht in der Mitte', el('za-moji').classList.contains('mitte'));
+ok('Er traegt das Maennchen', (el('za-bild').getAttribute('src')||'').indexOf('data:image/webp') === 0);
+ok('Alle Tage fangen frei an',
+   WORKDAYS.every(d => !ZA.sched.weeks[0][d].vmOn && !ZA.sched.weeks[0][d].nmOn));
+zaDurchtippen();                       /* nur der erste Satz */
+ok('Der Name steht im Gruss', el('za-text').textContent.indexOf('Anna') > -1, el('za-text').textContent);
+ok('Und es kommt noch mehr',  !el('za-mehr').hidden);
+durch();
+ok('Zwei Wege stehen bereit', !!document.querySelector('[data-za="los"]')
+                           && !!document.querySelector('[data-za="spaeter"]'));
+
+/* Abbruch: MOJI wird traurig, und es braucht noch einen Tipp zur App. */
+document.querySelector('[data-za="spaeter"]').click();
+durch();
+ok('Abbruch fuehrt nicht sofort weiter', ZA.schritt === 'abbruch');
+ok('Und nennt das Profilmenue', el('za-text').textContent.indexOf('Profilmen') > -1,
+   el('za-text').textContent);
+ok('Ein Knopf fuehrt in die App', !!document.querySelector('[data-za="fertigab"]'));
+
+/* Der andere Weg: Wochen, Tage, dann Tag fuer Tag. */
+zaStart(); durch();
+document.querySelector('[data-za="los"]').click(); durch();
+ok('Jetzt die Wochenfrage',   ZA.schritt === 'wochen');
+ok('MOJI rueckt nach oben',   el('za-moji').classList.contains('oben'));
+ok('Vier Intervalle zur Wahl', document.querySelectorAll('[data-wc]').length === 4);
+document.querySelector('[data-wc="2"]').click();
+ok('Zwei Wochen gemerkt',     ZA.wc === 2, ZA.wc);
+
+/* ── 11c · Die Raeder ── */
+ok('Das Rad kennt den Viertelstundentakt', ZA_ZEITEN.length === 80
+   && ZA_ZEITEN[0] === '04:00' && ZA_ZEITEN[79] === '23:45',
+   ZA_ZEITEN.length + ' ' + ZA_ZEITEN[0] + '…' + ZA_ZEITEN[79]);
+ok('Krumme Zeiten rasten ein', ZA_ZEITEN[zaNaechste('08:07')] === '08:00',
+   ZA_ZEITEN[zaNaechste('08:07')]);
+
+/* ── 11d · Einmal ganz durch, mit zwei Wochen ──
+   Der Sprung nach der Wochenwahl laeuft ueber eine kurze Pause, damit
+   man die Auswahl noch sieht — hier wird direkt weitergeschaltet. */
+ZA.wc = 2; zaTageFrage(); durch();
+[1,2,3].forEach(d => document.querySelector('[data-tag="' + d + '"]').click());
+ok('Drei Tage gemerkt',       ZA.tage[0].join(',') === '1,2,3', ZA.tage[0].join(','));
+document.querySelector('[data-za="tageok"]').click(); durch();
+ok('Es beginnt bei Montag',   ZA.tage[0][ZA.idx] === 1);
+ok('Vier Raeder stehen da',   document.querySelectorAll('#za-inhalt .rad').length === 4,
+   document.querySelectorAll('#za-inhalt .rad').length);
+ok('Mit einem Vorschlag drin', ZA.sched.weeks[0][1].vmOn === true);
+for(let i = 0; i < 3; i++){ document.querySelector('[data-za="tagok"]').click(); durch(); }
+ok('Danach Woche 2',          ZA.wi === 1 && ZA.schritt === 'tage', ZA.schritt + ' w' + ZA.wi);
+document.querySelector('[data-tag="1"]').click();
+document.querySelector('[data-za="tageok"]').click(); durch();
+ok('Woche 2 darf uebernehmen', document.querySelectorAll('[data-kopie]').length === 1);
+ZA.sched.weeks[0][1].vmFrom = '07:30';
+document.querySelector('[data-kopie="0"]').click();
+ok('Und uebernimmt wirklich', ZA.sched.weeks[1][1].vmFrom === '07:30',
+   ZA.sched.weeks[1][1].vmFrom);
+document.querySelector('[data-za="tagok"]').click(); durch();
+ok('Am Schluss steht MOJI mittig', ZA.schritt === 'fertig'
+   && el('za-moji').classList.contains('mitte'), ZA.schritt);
+ok('Der Balken ist voll',     el('za-bar').style.width === '100%', el('za-bar').style.width);
+ok('Kein Zurueck mehr',       el('za-back').classList.contains('hide'));
+
+/* ── 11e · Was am Ende im Plan steht ── */
+ok('Das Intervall steht',     OB.sched.weekCount === 2, OB.sched.weekCount);
+ok('Woche 1 traegt drei Tage', [1,2,3].every(d => OB.sched.weeks[0][d].vmOn)
+   && !OB.sched.weeks[0][4].vmOn && !OB.sched.weeks[0][4].nmOn);
+ok('Woche 2 traegt einen',    OB.sched.weeks[1][1].vmOn && !OB.sched.weeks[1][2].vmOn);
+ok('Und Sonntag kommt nicht vor', OB.sched.weeks[0][0] === undefined);
+ok('Die Stunden rechnen sich', weekTotal(OB.sched, 0) === 27.5, weekTotal(OB.sched, 0));
+
 
 /* ── 12 · Der Schluss hat eine eigene Fassung des Grusses ── */
 ok('GRUSS kennt fertig',      !!GRUSS.fertig);

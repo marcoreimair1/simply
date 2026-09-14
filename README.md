@@ -166,7 +166,7 @@ Oben steht *Schritt n von 4* und ein Balken in der Markenfarbe.
 | 1 | Vor- und Nachname | Pfeil im Feld, Enter, oder von selbst beim Einsetzen |
 | 2 | Geburtsdatum | von selbst, sobald es vollständig ist |
 | 3 | Zwei Schalter: **Monatserinnerung per Mail** und **Face ID aktivieren** | von selbst, wenn beide stehen — sonst über den Knopf |
-| 4 | **Dienstplan gleich anlegen?** *Ja, jetzt* / *Später* | *Ja* öffnet die Dienstzeiten im selben Schritt, *Später* ist fertig |
+| 4 | **Dienstplan gleich anlegen?** *Ja, jetzt* / *Später* — mit der Angabe **circa 2 Minuten** | *Ja* übergibt an den Zeit-Assistenten (siehe unten), *Später* ist fertig |
 
 Zwischen den Schritten **geht der alte mit, statt zu verschwinden**: er legt sich für 0,3 s aus
 dem Fluss (`position:absolute`) und zieht zur Seite ab, während der neue hereinkommt. Vorher war
@@ -180,6 +180,44 @@ Face ID — und wenn beides fehlt, fällt Schritt 3 ganz weg.
 
 *Später* beim Dienstplan heißt: es gilt die Vorgabe (Montag bis Freitag 08:00–12:00 und
 13:00–18:00, Samstag 08:00–12:00). Die Zeiten lassen sich jederzeit im Profilmenü eintragen.
+
+### Der Zeit-Assistent
+
+Bis 14. September 2026 öffnete *Ja, jetzt* das ganze Formular: Wochenintervall, vier
+Wochenreiter, sechs Tageszeilen mit je vier Uhrzeiten — **vierundzwanzig Felder**, bevor der
+erste Wert gesetzt war. Wer das zum ersten Mal sieht, legt das Handy weg.
+
+Jetzt führt **MOJI** durch. Eine Frage je Bild, die Antwort immer zum Antippen oder am Rad, der
+Text kommt Zeichen für Zeichen wie in einem Spiel. **Gerechnet wird nichts anders** — am Ende
+steht dieselbe `sched`-Struktur wie vorher.
+
+| Bild | Was passiert |
+|---|---|
+| Gruß | MOJI in der Mitte: *Hi Anna! Ich bin MOJI.* → *Lass uns kurz deine Arbeitszeiten festlegen…* Zwei Wege: **Ja, starten wir!** / **Hab's mir anders überlegt** |
+| Abbruch | *…* — dann *Ok, schade. Du kannst deine Zeiten jederzeit im Profilmenü nachtragen.* Erst ein weiterer Tipp führt in die App |
+| Wochen | MOJI rückt nach oben und bleibt dort. *Arbeitest du jede Woche gleich?* → vier Knöpfe: 1 bis 4 Wochen |
+| Tage | *An welchen Tagen arbeitest du?* → sechs Knöpfe, angetippt färben sie **grün** und springen kurz auf |
+| Tag für Tag | Vormittag und Nachmittag je mit Schalter und **zwei Rädern**. Darunter die Stunden und, wenn eine Lücke da ist, die Pause mit ☕ |
+| Schluss | MOJI wieder mittig: *Super, Anna! …* → **Abschließen** → Willkommensgruß → Kalender |
+
+**Die Räder statt einer Tastatur.** Eine Uhrzeit tippt niemand gern, und die Tastatur schiebt am
+Handy das halbe Bild weg. Die Räder rasten ein wie beim Wecker — das Einrasten macht der Browser
+selbst (`scroll-snap`), gelesen wird nur, welche Zeile in der Mitte steht. Ein eigenes
+Trägheitsmodell fühlt sich am Handy immer falsch an. Werte im Viertelstundentakt von 04:00 bis
+23:45; eine krumme Zeit rastet auf den nächsten Wert ein.
+
+**Mehrere Wochen.** Jedes Intervall trägt seine eigene Farbe (`WOCHENFARBE`, dieselben vier wie
+im alten Formular), als Band über der Frage und im Fortschrittsbalken. Vor jedem neuen Intervall
+fragt MOJI erneut nach den Tagen, und bei jedem Tag steht oben **Wie Woche 1** (bzw. 2, 3) zum
+Übernehmen — dort, wo es in einer früheren Woche überhaupt Zeiten gibt.
+
+**MOJI redet in Häppchen.** Ein Satz je Blase; kommt mehr, steht darunter ein kleines *weiter*.
+Wer schneller liest, tippt die Blase an: der Satz steht sofort, ein zweiter Tipp holt den
+nächsten.
+
+> **Sonntag kommt nicht vor.** Die Tage sind sechs, nicht sieben: `WORKDAYS` ist `[1…6]`, und
+> Sonntag gilt in der ganzen App als frei — in `dayPlan()`, in `qTouched()` und auf der A4-Seite.
+> Sonntagsarbeit wäre ein eigener Umbau quer durch die Rechnung, nicht eine Taste mehr.
 
 Zum Schluss kommt das **Profilbild**, das MOJI gerade zugeteilt hat: rund, ein Reif zieht sich
 darum, der Haken springt an die Ecke, Konfetti steigt. Darüber steht *Hi Anna!* und darunter
@@ -1507,6 +1545,15 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Der Zeit-Assistent** (14. September 2026): Die Dienstzeiten das erste Mal eintragen läuft
+  nicht mehr über ein Formular mit vierundzwanzig Feldern, sondern über MOJI: eine Frage je Bild,
+  Antworten zum Antippen, Uhrzeiten an Rädern wie beim Wecker, Text Zeichen für Zeichen. Mehrere
+  Wochenintervalle bekommen eigene Farben und eine Übernahme aus früheren Wochen. Gerechnet wird
+  nichts anders — am Ende steht dieselbe `sched`-Struktur. Einzelheiten in
+  [Abschnitt 2](#2--anmelden), Unterabschnitt *Der Zeit-Assistent*. Geprüft mit 144 Prüfungen in
+  der Einstiegs-Reihe (alle neun zusammen 489), darunter ein kompletter Durchlauf mit zwei
+  Wochen, und im Browser hell und dunkel durchgespielt. **Noch offen:** dasselbe für das
+  Bearbeiten im Profilmenü — dort steht weiterhin `renderSched()`
 - **Vorspann: leiser Balken, und das Zeichen wartet aufs Bild** (14. September 2026): Der Balken
   ist zurück, aber sehr zurückgenommen — 2 px, höchstens 132 px breit, ohne eigene Farbe (im
   Hellen Grau, im Dunkeln ein leises Weiß, beides aus `--tx-rgb`). Der Ablauf ist jetzt erzählt:
