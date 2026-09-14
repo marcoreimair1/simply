@@ -212,7 +212,9 @@ fragt MOJI erneut nach den Tagen, und bei jedem Tag steht oben **Wie Woche 1** (
 Übernehmen — dort, wo es in einer früheren Woche überhaupt Zeiten gibt.
 
 **MOJI redet in Häppchen.** Ein Satz je Blase; kommt mehr, steht **unter** der Blase ein kleines
-*weiter* — in der Blase saß es dem Satz im Weg und las sich, als gehöre es zum Text. Wer
+*Weiter* — in der Blase saß es dem Satz im Weg und las sich, als gehöre es zum Text. Es trägt
+`.einb.zweit` wie die übrigen Knöpfe der App, nur nicht über die ganze Breite; als Pille in
+Markenfarbe sah es nach Etikett aus statt nach Knopf. Wer
 schneller liest, tippt die Blase an: der Satz steht sofort, ein zweiter Tipp holt den nächsten.
 
 **Aussteigen geht jederzeit** über das Kreuz oben rechts. Gefragt wird trotzdem — *Wirklich

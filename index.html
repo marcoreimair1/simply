@@ -3771,14 +3771,15 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   margin-left:2px; background:var(--butter); vertical-align:-.14em;
   animation:zaStrich .8s steps(2) infinite }
 @keyframes zaStrich{ 50%{ opacity:0 } }
-.za-mehr{ display:inline-flex; align-items:center; gap:4px; align-self:flex-start;
-  margin:11px 0 0 86px;
-  font-size:12px; font-weight:650; letter-spacing:.02em; color:var(--butter);
-  padding:6px 12px 6px 13px; border-radius:99px;
-  background:rgba(var(--marke-rgb),.1); animation:zaRein .3s var(--ease-out) both }
+/* Es traegt .einb.zweit wie die uebrigen Knoepfe der App — nur nicht
+   ueber die ganze Breite, dafuer ist es zu klein gedacht. Als Pille in
+   Markenfarbe sah es vorher nach Etikett aus, nicht nach Knopf. */
+.za-mehr{ width:auto; align-self:flex-start; margin:12px 0 0 86px;
+  padding:13px 20px; border-radius:16px; font-size:14.5px;
+  animation:zaRein .3s var(--ease-out) both }
 /* Unter der mittigen Gruppe steht es auch mittig. */
 #v-zeitassi.mitte .za-mehr{ align-self:center; margin-left:0 }
-.za-mehr svg{ width:13px; height:13px }
+.za-mehr svg{ width:16px; height:16px }
 /* display aus der eigenen Regel schlaegt das [hidden] des Browsers —
    beide haben dieselbe Spezifitaet, und das Blatt der Seite gewinnt.
    Ohne diese Zeile blieb das "weiter" stehen, wenn nichts mehr kam. */
@@ -4255,7 +4256,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         </div>
         <!-- Steht unter der Blase, nicht darin: in der Blase sass es dem
              Satz im Weg und las sich, als gehoere es zum Text. -->
-        <button class="za-mehr" id="za-mehr" hidden>weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="einb zweit za-mehr" id="za-mehr" hidden>Weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 6l6 6-6 6"/></svg></button>
         <div class="za-inhalt" id="za-inhalt"></div>
       </div>
     </section>
@@ -5069,7 +5070,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-1740';
+const APP_STAND = '2026-09-14-1805';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
