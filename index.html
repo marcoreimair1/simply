@@ -197,6 +197,10 @@
 
   --marke-rgb:198,67,254;
   --tx-rgb:243,238,255;
+  /* Das Gruen der kleinen Kugel im Maennchen, aus dem Bild gemessen.
+     Es gilt in beiden Fassungen — die Kugel ist ja auch in beiden
+     dieselbe. */
+  --moji-gruen:#8FE07F;
   /* Im Dunkeln tragen die Tinten auch als Text — kein Unterschied noetig. */
   --c-urlaub-tx:#F7C980; --c-krank-tx:#F4A19E; --c-feier-tx:#7ADFF7;
   --c-eigen-tx:#81C08A;  --c-zeit-tx:#9AB5FB;
@@ -3821,8 +3825,11 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   font-size:14px; font-weight:650;
   background:var(--karte); border:1px solid var(--karte-rand); box-shadow:var(--karte-schatten);
   transition:background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease) }
-.za-tage button.on{ color:var(--on-primary); border-color:transparent;
-  background:linear-gradient(140deg,var(--za-plus),var(--c-eigen)) }
+/* Umrandet statt gefuellt, im Gruen aus der Kugel des Maennchens —
+   direkt aus dem Bild gemessen, nicht geschaetzt. */
+.za-tage button.on{ border-color:var(--moji-gruen); border-width:2px; padding:14px 1px;
+  background:color-mix(in srgb, var(--moji-gruen) 16%, var(--karte));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--moji-gruen) 18%, transparent) }
 .za-tage button.klack{ animation:zaKlack .42s var(--ease-out) }
 @keyframes zaKlack{ 35%{ transform:scale(1.14) } 100%{ transform:none } }
 
@@ -3831,8 +3838,8 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   box-shadow:var(--karte-schatten); border-radius:20px; padding:14px 14px 4px;
   margin-bottom:11px; transition:.26s var(--ease) }
 .za-seg.aus{ padding-bottom:14px; opacity:.62 }
-.za-seg-kopf{ display:flex; align-items:center; gap:11px }
-.za-seg-kopf b{ flex:1; min-width:0; font-size:14.5px; font-weight:650 }
+.za-seg-kopf{ display:flex; align-items:center; gap:11px; width:100% }
+.za-seg-kopf b{ flex:none; font-size:14.5px; font-weight:650 }
 .za-seg-kopf .swr{ flex:none; width:46px; height:27px; border-radius:99px; position:relative;
   background:rgba(var(--tx-rgb),.16); transition:background .26s var(--ease) }
 .za-seg-kopf .swr i{ position:absolute; top:3px; left:3px; width:21px; height:21px;
@@ -3853,7 +3860,13 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   background:rgba(var(--tx-rgb),.05); border:1px solid var(--line-2); overflow:hidden }
 .rad-band{ position:absolute; left:5px; right:5px; top:50%; height:34px; margin-top:-17px;
   border-radius:11px; background:rgba(var(--marke-rgb),.13); pointer-events:none; z-index:1 }
-.rad-roll{ position:relative; z-index:2; height:100%; overflow-y:auto;
+/* touch-action:pan-y sagt dem Browser, dass hier nur senkrecht gezogen
+   wird. Ohne das rutschte der Finger seitlich weg und der Zug ging
+   verloren — es fuehlte sich an, als haenge das Rad. overflow-x muss
+   dazu ausdruecklich aus: sobald eine Achse nicht visible ist, macht
+   CSS aus der anderen auto. */
+.rad-roll{ position:relative; z-index:2; height:100%; overflow-y:auto; overflow-x:hidden;
+  touch-action:pan-y;
   scroll-snap-type:y mandatory; overscroll-behavior:contain;
   scrollbar-width:none; -webkit-overflow-scrolling:touch; padding:51px 0;
   -webkit-mask-image:linear-gradient(180deg,transparent,#000 24%,#000 76%,transparent);
@@ -3866,10 +3879,14 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 .rad-roll i.on{ color:var(--tx); font-weight:700; transform:scale(1.06) }
 
 /* ─── Die Zusammenfassung unter den Raedern ─────────────────────── */
-.za-summe{ display:flex; align-items:center; gap:9px; margin:2px 2px 0;
-  font-size:12.5px; color:var(--tx-2) }
-.za-summe b{ color:var(--tx); font-weight:650 }
-.za-summe em{ font-style:normal; font-size:15px; line-height:1 }
+.za-summe{ display:flex; align-items:center; gap:5px; margin:3px 3px 0;
+  font-size:12.5px; color:var(--tx-3) }
+.za-summe b{ color:var(--tx); font-weight:650; font-variant-numeric:tabular-nums }
+/* Der Trenner zwischen Arbeitszeit und Pause. */
+.za-summe u{ text-decoration:none; width:3px; height:3px; border-radius:50%;
+  background:var(--tx-3); margin:0 4px }
+.za-seg-std{ margin-left:auto; font-size:12.5px; color:var(--tx-3);
+  font-variant-numeric:tabular-nums }
 
 /* ─── Zeiten aus einer frueheren Woche holen ─────────────────────── */
 .za-kopie{ display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin:0 0 12px }
@@ -5070,7 +5087,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-1805';
+const APP_STAND = '2026-09-14-1910';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5143,9 +5160,11 @@ function holidays(y){
 function defaultWeek(){
   const w = {};
   WORKDAYS.forEach(d => {
+    /* Dieselbe Vorgabe, die auch der Zeit-Assistent vorschlaegt
+       (ZA_STD) — sonst haette "Später" andere Zeiten als "Ja, jetzt". */
     w[d] = d === 6
       ? { vmOn:true,  vmFrom:'08:00', vmTo:'12:00', nmOn:false, nmFrom:'13:00', nmTo:'17:00' }
-      : { vmOn:true,  vmFrom:'08:00', vmTo:'12:00', nmOn:true,  nmFrom:'13:00', nmTo:'18:00' };
+      : { vmOn:true,  vmFrom:'08:00', vmTo:'12:00', nmOn:true,  nmFrom:'13:00', nmTo:'17:00' };
   });
   return w;
 }
@@ -6977,7 +6996,11 @@ const ZA_ZEITEN = (function(){
   return a;
 })();
 const RAD_H = 34;                      /* Zeilenhoehe im Rad, siehe .rad-roll i */
-const ZA = { wc:1, wi:0, tage:[[],[],[],[]], idx:0, sched:null, schritt:'' };
+/* Die Zeiten, mit denen ein Tag anfaengt, wenn nichts Besseres da ist.
+   Sie gelten fuer den ersten Tag jeder Woche; danach schlaegt der Tag
+   davor vor, siehe zaVorlage(). */
+const ZA_STD = { vmFrom:'08:00', vmTo:'12:00', nmFrom:'13:00', nmTo:'17:00' };
+const ZA = { wc:1, wi:0, tage:[[],[],[],[]], idx:0, sched:null, schritt:'', gesetzt:{} };
 
 function zaRuhig(){
   try{ return matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; }
@@ -7085,16 +7108,34 @@ function radBau(wert, aendert){
   const roll = $('.rad-roll', el);
   const zeilen = $$('i', roll);
   let stand = zaNaechste(wert);
+  /* Bis das Rad steht, ist jede Bewegung unsere eigene und keine
+     Eingabe. Ohne diese Sperre schrieb ein misslungenes Einstellen den
+     ersten Eintrag (04:00) in den Plan — genau das war am Geraet zu
+     sehen, waehrend es am Rechner ging. */
+  let bereit = false;
   const markiere = () => zeilen.forEach((n, k) => n.classList.toggle('on', k === stand));
+  const stelle = () => { roll.scrollTop = stand * RAD_H; markiere(); };
   roll.addEventListener('scroll', () => {
+    if(!bereit) return;
     const idx = clamp(Math.round(roll.scrollTop / RAD_H), 0, ZA_ZEITEN.length - 1);
     if(idx === stand) return;
     stand = idx; markiere(); zaKlopf();
     if(aendert) aendert(ZA_ZEITEN[idx]);
   }, { passive:true });
-  el._setz = t => { stand = zaNaechste(t); roll.scrollTop = stand * RAD_H; markiere(); };
-  /* Erst wenn der Kasten im Dokument haengt, laesst sich scrollen. */
-  requestAnimationFrame(() => { roll.scrollTop = stand * RAD_H; markiere(); });
+  el._setz = t => { stand = zaNaechste(t); stelle(); };
+  /* Erst wenn der Kasten im Dokument haengt, laesst sich scrollen — und
+     das Einrasten von scroll-snap kann sich danach noch einmal melden.
+     Darum zweimal setzen und erst dann zuhoeren. */
+  requestAnimationFrame(() => {
+    stelle();
+    requestAnimationFrame(() => {
+      stelle();
+      setTimeout(() => {
+        if(Math.round(roll.scrollTop / RAD_H) !== stand) stelle();
+        bereit = true;
+      }, 140);
+    });
+  });
   return el;
 }
 
@@ -7165,7 +7206,7 @@ function zaWackeln(){
 /* ─── Los ─────────────────────────────────────────────────────────── */
 function zaStart(){
   ZA.wc = 1; ZA.wi = 0; ZA.idx = 0;
-  ZA.tage = [[],[],[],[]];
+  ZA.tage = [[],[],[],[]]; ZA.gesetzt = {};
   ZA.sched = defaultSched();
   /* Alle Tage erst einmal frei — was gearbeitet wird, setzt der Weg. */
   for(let w = 0; w < 4; w++)
@@ -7213,10 +7254,13 @@ function zaWochen(){
 function zaTageFrage(){
   ZA.schritt = 'tage'; ZA.idx = 0;
   zaMoji('oben'); zaFarbe(); zaFortschritt();
-  const heute = DOWFULL[new Date().getDay()];
+  const jetzt = new Date();
+  /* "Heute ist Montag. An welchen Tagen arbeitest du?" war kein Satz,
+     der eine Woche meint — die Kalenderwoche macht daraus einen. */
   const frage = ZA.wc > 1
     ? 'Nehmen wir an, es ist *Woche ' + (ZA.wi + 1) + '*. An welchen Tagen arbeitest du da?'
-    : 'Heute ist *' + heute + '*. An welchen Tagen arbeitest du?';
+    : 'Heute ist *' + DOWFULL[jetzt.getDay()] + '* in der *KW ' + isoWeek(jetzt)
+      + '*. An welchen Tagen arbeitest du diese Woche?';
   mojiSagt(frage, () => {
     const gewaehlt = ZA.tage[ZA.wi];
     zaInhalt(zaWochenband()
@@ -7249,12 +7293,31 @@ function zaTagFrage(){
     : '*' + DOWFULL[d] + '*?';
   mojiSagt(txt, () => zaTagBild());
 }
+/* Womit ein Tag anfaengt, den man zum ersten Mal sieht.
+
+   Der Tag davor in derselben Woche ist die beste Vermutung — wer Montag
+   acht bis vier arbeitet, arbeitet Dienstag meistens auch so. Eine neue
+   Woche faengt dagegen wieder bei der Vorgabe an: sonst schleppte man
+   die Zeiten aus Woche 1 in Woche 2, wo sie ja gerade anders sind. */
+function zaVorlage(wi, d, idx){
+  if(idx > 0){
+    const vor = ZA.sched.weeks[wi][ZA.tage[wi][idx - 1]];
+    if(vor) return { vmOn:vor.vmOn, vmFrom:vor.vmFrom, vmTo:vor.vmTo,
+                     nmOn:vor.nmOn, nmFrom:vor.nmFrom, nmTo:vor.nmTo };
+  }
+  return { vmOn:true,     vmFrom:ZA_STD.vmFrom, vmTo:ZA_STD.vmTo,
+           nmOn:d !== 6,  nmFrom:ZA_STD.nmFrom, nmTo:ZA_STD.nmTo };
+}
 function zaTagBild(){
   const wi = ZA.wi, d = ZA.tage[wi][ZA.idx];
   const cfg = ZA.sched.weeks[wi][d];
-  /* Beim ersten Antippen eines Tages steht noch nichts — dann die
-     uebliche Vormittagsschicht als Vorschlag, nicht ein leeres Feld. */
-  if(!cfg.vmOn && !cfg.nmOn){ cfg.vmOn = true; cfg.nmOn = d !== 6; }
+  /* Nur beim ersten Mal vorbelegen — wer zurueckgeht, findet seine
+     eigenen Zeiten vor, nicht wieder den Vorschlag. */
+  const merk = wi + '-' + d;
+  if(!ZA.gesetzt[merk]){
+    Object.assign(cfg, zaVorlage(wi, d, ZA.idx));
+    ZA.gesetzt[merk] = true;
+  }
 
   const host = document.createElement('div');
   host.innerHTML = zaWochenband() + zaKopieBand(d);
@@ -7288,7 +7351,8 @@ function zaSegment(name, cfg, art){
   el.setAttribute('aria-pressed', String(!!an));
   el.dataset.seg = art;
   el.innerHTML = '<button class="za-seg-kopf" data-segan="' + art + '">'
-    + '<b>' + name + '</b><span class="swr"><i></i></span></button>'
+    + '<b>' + name + '</b><span class="swr"><i></i></span>'
+    + '<small class="za-seg-std" data-std="' + art + '"></small></button>'
     + '<div class="za-seg-raeder"></div>';
   const raeder = $('.za-seg-raeder', el);
   const von = radBau(cfg[art + 'From'], t => { cfg[art + 'From'] = t; zaSummeMalen(); });
@@ -7308,11 +7372,17 @@ function zaSummeMalen(){
     const p = (t2m(cfg.nmFrom) - t2m(cfg.vmTo)) / 60;
     pause = p > 0 ? r25(p) : 0;
   }
+  /* Die Stunden stehen auch an der Kachel selbst, buendig rechts. */
+  const sv = $('[data-std="vm"]'), sn = $('[data-std="nm"]');
+  if(sv) sv.textContent = cfg.vmOn && vm > 0 ? fmtH(vm) + ' h' : '';
+  if(sn) sn.textContent = cfg.nmOn && nm > 0 ? fmtH(nm) + ' h' : '';
   const std = vm + nm;
+  /* Ohne Emoji: die waren am Geraet ein Fremdkoerper. Und ohne "davon" —
+     die Pause zaehlt nicht zur Arbeitszeit, sie liegt dazwischen. */
   el.innerHTML = std > 0
-    ? '<em>⏱️</em><span><b>' + fmtH(std) + ' h</b> an dem Tag'
-      + (pause > 0 ? ' · <em>☕</em> ' + fmtH(pause) + ' h Pause rechne ich selbst' : '') + '</span>'
-    : '<em>🌤️</em><span>An dem Tag ist frei.</span>';
+    ? '<b>' + fmtH(std) + ' h</b> Arbeitszeit'
+      + (pause > 0 ? '<u></u><b>' + fmtH(pause) + ' h</b> Pause' : '')
+    : 'An dem Tag ist frei.';
   const ok = $('[data-za="tagok"]');
   if(ok) ok.disabled = std <= 0;
 }

@@ -257,10 +257,29 @@ ok('Es beginnt bei Montag',   ZA.tage[0][ZA.idx] === 1);
 ok('Vier Raeder stehen da',   document.querySelectorAll('#za-inhalt .rad').length === 4,
    document.querySelectorAll('#za-inhalt .rad').length);
 ok('Mit einem Vorschlag drin', ZA.sched.weeks[0][1].vmOn === true);
-for(let i = 0; i < 3; i++){ document.querySelector('[data-za="tagok"]').click(); durch(); }
+ok('Und zwar mit der Vorgabe',  ZA.sched.weeks[0][1].vmFrom === '08:00'
+   && ZA.sched.weeks[0][1].nmTo === '17:00',
+   ZA.sched.weeks[0][1].vmFrom + '–' + ZA.sched.weeks[0][1].nmTo);
+ok('Die Stunden stehen an der Kachel',
+   document.querySelector('[data-std="vm"]').textContent === '4,00 h',
+   document.querySelector('[data-std="vm"]').textContent);
+ok('Die Summe kommt ohne Emoji aus',
+   /^8,00 h Arbeitszeit/.test(el('za-summe').textContent)
+   && el('za-summe').textContent.indexOf('Pause') > -1,
+   el('za-summe').textContent);
+/* Der naechste Tag uebernimmt, was beim Tag davor steht. */
+ZA.sched.weeks[0][1].vmFrom = '06:00';
+document.querySelector('[data-za="tagok"]').click(); durch();
+ok('Der naechste Tag uebernimmt', ZA.sched.weeks[0][2].vmFrom === '06:00',
+   ZA.sched.weeks[0][2].vmFrom);
+for(let i = 0; i < 2; i++){ document.querySelector('[data-za="tagok"]').click(); durch(); }
 ok('Danach Woche 2',          ZA.wi === 1 && ZA.schritt === 'tage', ZA.schritt + ' w' + ZA.wi);
 document.querySelector('[data-tag="1"]').click();
 document.querySelector('[data-za="tageok"]').click(); durch();
+/* Eine neue Woche faengt wieder bei der Vorgabe an, nicht bei den
+   Zeiten aus Woche 1 — die sind dort ja gerade anders. */
+ok('Woche 2 faengt bei der Vorgabe an', ZA.sched.weeks[1][1].vmFrom === '08:00',
+   ZA.sched.weeks[1][1].vmFrom);
 ok('Woche 2 darf uebernehmen', document.querySelectorAll('[data-kopie]').length === 1);
 ZA.sched.weeks[0][1].vmFrom = '07:30';
 document.querySelector('[data-kopie="0"]').click();
@@ -278,7 +297,10 @@ ok('Woche 1 traegt drei Tage', [1,2,3].every(d => OB.sched.weeks[0][d].vmOn)
    && !OB.sched.weeks[0][4].vmOn && !OB.sched.weeks[0][4].nmOn);
 ok('Woche 2 traegt einen',    OB.sched.weeks[1][1].vmOn && !OB.sched.weeks[1][2].vmOn);
 ok('Und Sonntag kommt nicht vor', OB.sched.weeks[0][0] === undefined);
-ok('Die Stunden rechnen sich', weekTotal(OB.sched, 0) === 27.5, weekTotal(OB.sched, 0));
+/* Montag steht auf 07:30–12:00 und 13:00–17:00 (8,5 h), Dienstag und
+   Mittwoch haben 06:00 uebernommen (je 10 h) — zusammen 28,5. */
+ok('Die Stunden rechnen sich', weekTotal(OB.sched, 0) === 28.5, weekTotal(OB.sched, 0));
+ok('Die Vorgabe endet um 17 Uhr', defaultWeek()[1].nmTo === '17:00', defaultWeek()[1].nmTo);
 
 
 /* ── 12 · Der Schluss hat eine eigene Fassung des Grusses ── */

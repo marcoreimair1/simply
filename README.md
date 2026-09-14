@@ -179,7 +179,7 @@ nicht hergibt, wird nicht gezeigt: ohne Cloud keine Erinnerung, ohne Passkey-Unt
 Face ID — und wenn beides fehlt, fällt Schritt 3 ganz weg.
 
 *Später* beim Dienstplan heißt: es gilt die Vorgabe (Montag bis Freitag 08:00–12:00 und
-13:00–18:00, Samstag 08:00–12:00). Die Zeiten lassen sich jederzeit im Profilmenü eintragen.
+13:00–17:00, Samstag 08:00–12:00). Die Zeiten lassen sich jederzeit im Profilmenü eintragen.
 
 ### Der Zeit-Assistent
 
@@ -196,8 +196,8 @@ steht dieselbe `sched`-Struktur wie vorher.
 | Gruß | MOJI in der Mitte des Schirms: *Hi Anna! Ich bin MOJI.* → *Lass uns kurz deine Arbeitszeiten festlegen…* Zwei Wege: **Ja, starten wir!** / **Hab's mir anders überlegt**. Hier gibt es weder Zählung noch Balken — es ist ja noch nichts geschehen |
 | Abbruch | *…* — dann *Ok, schade. Du kannst deine Zeiten jederzeit im Profilmenü nachtragen.* Erst ein weiterer Tipp führt in die App |
 | Wochen | MOJI rückt nach oben und bleibt dort. *Arbeitest du jede Woche gleich?* → vier Knöpfe: 1 bis 4 Wochen |
-| Tage | *An welchen Tagen arbeitest du?* → sechs Knöpfe, angetippt färben sie **grün** und springen kurz auf |
-| Tag für Tag | Vormittag und Nachmittag je mit Schalter und **zwei Rädern**. Darunter die Stunden und, wenn eine Lücke da ist, die Pause mit ☕ |
+| Tage | *Heute ist Montag in der KW 38. An welchen Tagen arbeitest du diese Woche?* → sechs Knöpfe, angetippt bekommen sie einen **grünen Rand** im Grün aus der Kugel des Männchens (`--moji-gruen`, aus dem Bild gemessen) |
+| Tag für Tag | Vormittag und Nachmittag je mit Schalter, den Stunden bündig rechts an der Kachel und **zwei Rädern**. Darunter *8,00 h Arbeitszeit · 1,00 h Pause* |
 | Schluss | MOJI wieder mittig: *Super, Anna! …* → **Abschließen** → Willkommensgruß → Kalender |
 
 **Die Räder statt einer Tastatur.** Eine Uhrzeit tippt niemand gern, und die Tastatur schiebt am
@@ -205,6 +205,30 @@ Handy das halbe Bild weg. Die Räder rasten ein wie beim Wecker — das Einraste
 selbst (`scroll-snap`), gelesen wird nur, welche Zeile in der Mitte steht. Ein eigenes
 Trägheitsmodell fühlt sich am Handy immer falsch an. Werte im Viertelstundentakt von 04:00 bis
 23:45; eine krumme Zeit rastet auf den nächsten Wert ein.
+
+Zwei Dinge daran waren am echten Gerät kaputt und sind es nicht mehr:
+
+- **`touch-action:pan-y`** sagt dem Browser, dass hier nur senkrecht gezogen wird. Ohne das
+  rutschte der Finger seitlich weg und der Zug ging verloren — es fühlte sich an, als hänge das
+  Rad. Dazu `overflow-x:hidden`: sobald eine Achse nicht `visible` ist, macht CSS aus der anderen
+  `auto`, und damit war das Rad auch seitlich schiebbar.
+- **Das Rad hört erst zu, wenn es steht.** Das Einstellen der Anfangsposition ist unsere eigene
+  Bewegung, keine Eingabe. Misslang sie — am iPhone kann `scroll-snap` nach dem Einfügen noch
+  einmal auf den ersten Eintrag schnappen —, schrieb der Scroll-Horcher **04:00** in den Plan.
+  Am Rechner fiel das nie auf, am Gerät stand danach überall 04:00. Jetzt wird zweimal gesetzt,
+  nach 140 ms nachgeprüft, und erst dann zählt eine Bewegung als Drehen.
+
+**Womit ein Tag anfängt.** Der erste Tag einer Woche steht auf der Vorgabe — **08:00–12:00 und
+13:00–17:00**, samstags nur vormittags (`ZA_STD`, dieselben Zeiten wie `defaultWeek()`, damit
+*Später* und *Ja, jetzt* nicht auseinanderlaufen). Jeder weitere Tag übernimmt, was beim **Tag
+davor** steht: wer Montag sechs bis vier arbeitet, arbeitet Dienstag meistens auch so. Eine neue
+Woche fängt wieder bei der Vorgabe an — dort sind die Zeiten ja gerade anders. Wer zurückgeht,
+findet seine eigenen Zeiten vor, nicht wieder den Vorschlag (`ZA.gesetzt`).
+
+> **Die Pause zählt nicht zur Arbeitszeit.** Unter den Kacheln steht *8,00 h Arbeitszeit ·
+> 1,00 h Pause*, nicht „8 h, davon 1 h Pause" — `segH()` summiert nur die beiden Abschnitte, die
+> Lücke dazwischen liegt daneben. Wer von 08:00 bis 17:00 im Haus ist, hat 8 h Arbeitszeit und
+> 1 h Pause, zusammen 9 h Anwesenheit.
 
 **Mehrere Wochen.** Jedes Intervall trägt seine eigene Farbe (`WOCHENFARBE`, dieselben vier wie
 im alten Formular), als Band über der Frage und im Fortschrittsbalken. Vor jedem neuen Intervall
@@ -1551,6 +1575,14 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Zeit-Assistent: sechs Korrekturen vom Gerät** (14. September 2026): Die Tagesfrage nennt jetzt
+  die Kalenderwoche und meint damit eine Woche; gewählte Tage bekommen einen grünen Rand im Grün
+  der Kugel statt einer Füllung; die Räder lassen sich nur noch senkrecht ziehen und schreiben
+  keine falsche Zeit mehr in den Plan (04:00 am iPhone, siehe Abschnitt 2); Vorgabe 08:00–12:00
+  und 13:00–17:00, jeder weitere Tag übernimmt vom Tag davor; die Stunden stehen bündig rechts an
+  jeder Kachel; die Summe darunter kommt ohne Emoji aus. 158 Prüfungen in der Einstiegs-Reihe,
+  alle neun zusammen 503
 
 - **Zeit-Assistent nachgezogen** (14. September 2026): Das *weiter* sitzt jetzt unter der Blase
   statt darin, die Begrüßung steht mittig auf dem Schirm und kommt ohne Zählung und Balken aus,
