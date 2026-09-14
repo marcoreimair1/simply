@@ -249,11 +249,11 @@ setTimeout(() => {
    ['Und nicht verzerrt', /if\(hoch > maxH\)\{ hoch = maxH; bre = hoch \* \(SIG_VERH \|\| 3\.4\); \}/.test(roh)],
    /* Die Leiste war 86 mm lang und die Unterschrift bis 15 mm hoch —
       das sah nach Formularfeld aus, nicht nach Unterschrift. */
-   ['Die Leiste ist kurz',              /const sy = 271, sw = 62;/.test(roh)],
-   ['Und die Unterschrift klein',       /const maxB = sw - 7, maxH = 8;/.test(roh)],
+   ['Die Leiste ist kurz',              /const sy = 273, sw = 62;/.test(roh)],
+   ['Die Unterschrift nutzt die Hoehe', /const maxB = sw - 6, maxH = 11\.5;/.test(roh)],
    /* Am rechten Blattrand gehoerte der Vermerk zu nichts. */
    ['Der Vermerk steht unter der Leiste',
-    /doc\.text\('Elektronisch unterschrieben in der MOJI App', L, sy \+ 9\)/.test(roh)],
+    /doc\.text\('Elektronisch unterschrieben in der MOJI App', L, sy \+ 9\.2\)/.test(roh)],
    ['Und nicht mehr rechts aussen',
     !/'Elektronisch unterschrieben in der MOJI App', R,/.test(roh)],
    ['Das Blatt blendet im Dunkeln nicht',

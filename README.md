@@ -905,7 +905,7 @@ Deshalb bleibt jede Pflichtangabe, wo sie war, und die Gestaltung passiert daneb
 | **Vier Karten** (42–57) | Dienstnehmer/in, Geburtsdatum, Dienstgeber, Zeitraum — je mit einem Streifen in einem der fünf Wolkentöne |
 | **Tabelle** (ab 61,6) | Kein Kasten um alles. Eine Kopfpille in Lavendel, darunter Zeilen mit haarfeinen Trennern. Zeilen mit Eintrag im Pastellton ihrer Kategorie, die volle Farbe trägt ein Streifen an der Kante |
 | **Summen** | Karten mit farbigem Streifen oben; *Gesamt* in Violett |
-| **Unterschrift** (271) | Die auf dem Telefon **gezeichnete** Unterschrift, höchstens 8 mm hoch und seitenverhältnisgetreu eingepasst, über einer 62 mm kurzen Leiste. Darunter der Vermerk *Elektronisch unterschrieben in der MOJI App* |
+| **Unterschrift** (273) | Die auf dem Telefon **gezeichnete** Unterschrift, bis 56 mm breit und 11,5 mm hoch, seitenverhältnisgetreu eingepasst, über einer 62 mm kurzen Leiste. Darunter der Vermerk *Elektronisch unterschrieben in der MOJI App* |
 
 **Farbflächen nur in schmalen Bändern, nie ganzseitig.** Das Blatt wird gedruckt, und Toner
 kostet. Den Verlauf im Kopfband zeichnet `verlauf()` aus achtzig schmalen Streifen mit einer
@@ -954,14 +954,19 @@ einer Unterschrift die Zeichnung einer Unterschrift.
 **Zugeschnitten wird auf den beschriebenen Teil.** `sigBild()` liest die Alphawerte der
 Leinwand, sucht die Randpunkte und schneidet mit 8 px Rand aus — sonst hinge die Unterschrift
 im PDF irgendwo in einem großen leeren Rechteck. Das Seitenverhältnis wandert als `SIG_VERH`
-mit und bestimmt, wie sie ins Feld gesetzt wird: erst auf die Breite, und wird sie dabei höher
-als 8 mm, auf die Höhe. **Gestaucht wird nie** — die letzte Erklärzeile darüber hat ihre
-Grundlinie bei 261,6 mm, gemessen, nicht geschätzt.
+mit und bestimmt, wie sie ins Feld gesetzt wird: erst auf die Breite (56 mm), und wird sie dabei
+höher als 11,5 mm, auf die Höhe. **Gestaucht wird nie**.
 
-**Kurz gehalten.** Bis zum 15. September 2026 (Abend) war die Leiste 86 mm lang und die
-Unterschrift bis 15 mm hoch — das las sich als Formularfeld, nicht als Unterschrift. Jetzt
-62 mm und 8 mm. Und der Vermerk steht **unter** der Leiste statt rechtsbündig am Blattrand:
-dort drüben gehörte er zu nichts und ging verloren.
+**Kurze Leiste, große Unterschrift.** Ursprünglich war die Leiste 86 mm lang und die
+Unterschrift bis 15 mm hoch — das las sich als Formularfeld. Die Leiste auf 62 mm zu kürzen war
+richtig, die Unterschrift auf 8 mm mitzukürzen nicht: dann stand ein kleiner Strich über einer
+langen Linie. Sie nutzt jetzt die volle Höhe, die zwischen der letzten Erklärzeile und der
+Leiste überhaupt da ist. Dafür ist der Fuß zwei Millimeter tiefer gerückt (Linie 283,2 statt
+281) und die Erklärung darüber einen halben herauf — die Grundlinie liegt bei 261,0, die
+Unterkante der Unterschrift bei 274. Alles gemessen, nicht geschätzt.
+
+Und der Vermerk steht **unter** der Leiste statt rechtsbündig am Blattrand: dort drüben gehörte
+er zu nichts und ging verloren.
 
 ### Die Handschrift
 
@@ -1685,6 +1690,12 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Die Unterschrift war zu klein geraten** (15. September 2026): Die Leiste zu kürzen war
+  richtig, die Unterschrift mitzukürzen nicht — 8 mm über einer 62-mm-Linie sah verloren aus.
+  Jetzt nutzt sie die volle Höhe zwischen Erklärzeile und Leiste (11,5 mm, bis 56 mm breit).
+  Dafür ist der Fuß zwei Millimeter tiefer gerückt und die Erklärung einen halben herauf.
+  626 Prüfungen
 
 - **Drei Korrekturen am Unterschreiben** (15. September 2026): Die Leiste im PDF war 86 mm lang
   und die Unterschrift bis 15 mm hoch — jetzt 62 und 8, das liest sich als Unterschrift und

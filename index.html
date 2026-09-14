@@ -5270,7 +5270,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-0715';
+const APP_STAND = '2026-09-15-0805';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -11153,20 +11153,21 @@ function drawPage(doc, p, y, m){
   });
 
   doc.setFont('helvetica','normal'); doc.setFontSize(6.2); setT(PAP.grau);
-  doc.text('Arbeitsstunden = tatsächlich geleistete Arbeitszeit ohne Pausen. Urlaub, Krankenstand, Feiertag, Sonstige und eingelöster Zeitausgleich sind gesondert ausgewiesen.', L, by + bh + 4.4);
+  doc.text('Arbeitsstunden = tatsächlich geleistete Arbeitszeit ohne Pausen. Urlaub, Krankenstand, Feiertag, Sonstige und eingelöster Zeitausgleich sind gesondert ausgewiesen.', L, by + bh + 4.2);
   doc.text('Stunden gerundet auf 0,25 h  ·  Tage anteilig, ein halber Tag zählt 0,5  ·  Pausen gesamt: '
-    + fmtH(s.pause) + ' h', L, by + bh + 8);
+    + fmtH(s.pause) + ' h', L, by + bh + 7.4);
 
   /* ─── Unterschrift ───
      Nur die der Person; der Dienstgeber zeichnet nicht mit. Der Name
      steht in der eingebetteten Blockhandschrift — dieselbe Schrift auf
      jedem Geraet, statt der Zufallsschrift, die das Betriebssystem
      frueher fuer "cursive" gerade zur Hand hatte. */
-  /* Kurz und klein: die Leiste war 86 mm lang und die Unterschrift bis
-     15 mm hoch — auf dem Blatt sah das nach Formularfeld aus und nicht
-     nach Unterschrift. Und drei Millimeter weiter herauf, damit der
-     Vermerk darunter Platz hat statt am rechten Rand zu verschwinden. */
-  const sy = 271, sw = 62;
+  /* Die Leiste bleibt kurz — 86 mm sahen nach Formularfeld aus. Die
+     Unterschrift darueber darf dafuer wieder gross sein: sie fuellt die
+     ganze Hoehe, die zwischen der letzten Erklaerzeile und der Leiste
+     ueberhaupt da ist. Dafuer ist der Fuss zwei Millimeter tiefer
+     gerueckt und die Erklaerung einen halben herauf. */
+  const sy = 273, sw = 62;
   /* Seit 15.09.2026 steht hier die wirklich gezeichnete Unterschrift.
      Fehlt sie — etwa in einem alten Ablauf —, bleibt es beim Namen in
      der Blockhandschrift; ohne irgendeine Unterschrift ist die
@@ -11175,12 +11176,13 @@ function drawPage(doc, p, y, m){
     /* In das Feld einpassen, ohne sie zu verzerren: erst auf die Breite,
        und wird sie dabei zu hoch, auf die Hoehe. Eine gestauchte
        Unterschrift ist nicht mehr die Unterschrift. */
-    /* 8 mm hoch, mehr nicht: die letzte Erklaerzeile darueber hat ihre
-       Grundlinie bei 261,6 — gemessen, nicht geschaetzt. */
-    const maxB = sw - 7, maxH = 8;
+    /* 11,5 mm hoch: die letzte Erklaerzeile darueber hat ihre Grundlinie
+       bei 261,0 — gemessen, nicht geschaetzt —, die Unterkante liegt bei
+       274. Mehr Hoehe gibt das Blatt nicht her. */
+    const maxB = sw - 6, maxH = 11.5;
     let bre = maxB, hoch = bre / (SIG_VERH || 3.4);
     if(hoch > maxH){ hoch = maxH; bre = hoch * (SIG_VERH || 3.4); }
-    try{ doc.addImage(SIG_BILD, 'PNG', L + 3.5, sy + 1 - hoch, bre, hoch, undefined, 'FAST'); }
+    try{ doc.addImage(SIG_BILD, 'PNG', L + 3, sy + 1 - hoch, bre, hoch, undefined, 'FAST'); }
     catch(e){ console.warn('[MOJI] Unterschrift nicht eingebettet', e); }
   } else {
     doc.setFont(hand ? 'MojiHand' : 'helvetica', hand ? 'normal' : 'italic');
@@ -11197,16 +11199,18 @@ function drawPage(doc, p, y, m){
      dort drueben gehoerte er zu nichts und ging verloren. */
   if(SIG_BILD){
     doc.setFontSize(5.4); setT(PAP.leise);
-    doc.text('Elektronisch unterschrieben in der MOJI App', L, sy + 9);
+    doc.text('Elektronisch unterschrieben in der MOJI App', L, sy + 9.2);
   }
 
-  /* ─── Fuss ─── */
+  /* ─── Fuss ───
+     Zwei Millimeter tiefer als frueher: die Unterschrift darueber braucht
+     die Hoehe, und unten war ohnehin Rand. */
   setD([238,233,246]); doc.setLineWidth(0.25);
-  doc.line(L, 281, R, 281);
+  doc.line(L, 283.2, R, 283.2);
   doc.setFontSize(5.8); setT(PAP.leise);
   doc.text('Erstellt am ' + fmtDate(heuteIso())
-    + ' mit MOJI — Mehr Zeit fürs Wesentliche.   ·   Eine App von Studio MARU', L, 285.4);
-  doc.text(MONTHS[m] + ' ' + y + '  ·  ' + name, R, 285.4, { align:'right' });
+    + ' mit MOJI — Mehr Zeit fürs Wesentliche.   ·   Eine App von Studio MARU', L, 287.4);
+  doc.text(MONTHS[m] + ' ' + y + '  ·  ' + name, R, 287.4, { align:'right' });
 }
 
 function pdfIcon(doc, type, x, y, r, c){
