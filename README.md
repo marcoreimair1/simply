@@ -1613,6 +1613,15 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Der Assistent laeuft ruhiger** (15. September 2026): Vier Stellen, an denen es geruckelt hat.
+  Geschrieben wird jetzt im Bildtakt statt mit einem Zeitgeber je Zeichen — 22 ms gehen in 16,7 ms
+  nicht auf, also kamen mal eines, mal zwei Zeichen je Bild. Die Sprechblase misst ihre Endhöhe,
+  bevor das erste Zeichen steht, und wächst einmal weich, statt beim Zeilenumbruch mitten im Wort
+  zu springen. Kachelreihen kommen nacheinander herein (`zaKachel`, 45 ms Versatz) statt als Block.
+  Und die Räder werden gestellt, während die Einblendung noch läuft — `raederRichten()` erledigt
+  das jetzt im selben Zug wie das Einhängen, im Funnel wie im Profilmenü. Dazu ein Auftritt für
+  MOJI beim Öffnen. 553 Prüfungen
+
 - **04:00 im wieder eingeschalteten Abschnitt** (14. September 2026): Wer den Nachmittag an einem
   Tag abschaltete, fand ihn am nächsten Tag beim Einschalten auf *04:00* — dem ersten Radeintrag.
   Ein ausgeblendeter Abschnitt hat keinen Kasten, und was keinen Kasten hat, lässt sich nicht

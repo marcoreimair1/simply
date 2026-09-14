@@ -3664,10 +3664,14 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   transition:width .5s var(--ease-out) }
 .za-bild img{ width:100%; height:100%; object-fit:contain; display:block;
   transform-origin:50% 86% }
+/* Die Hoehe wird beim Satzwechsel gesetzt, siehe zaTippen() — sonst
+   sprang die Blase mitten im Tippen um eine Zeile weiter. Kein
+   overflow:hidden: das schnitte den Zipfel ab, der links heraussteht. */
 .za-blase{ position:relative; flex:1; min-width:0;
   background:var(--karte); border:1px solid var(--karte-rand); box-shadow:var(--shadow);
   border-radius:20px 20px 20px 6px; padding:14px 16px;
-  font-size:15px; line-height:1.5; letter-spacing:-.005em }
+  font-size:15px; line-height:1.5; letter-spacing:-.005em;
+  transition:height .34s var(--ease-out) }
 .za-blase::after{ content:""; position:absolute; left:-7px; bottom:9px;
   width:12px; height:12px; background:var(--karte);
   border-left:1px solid var(--karte-rand); border-bottom:1px solid var(--karte-rand);
@@ -3737,6 +3741,27 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 .za-inhalt{ margin-top:26px }
 .za-inhalt > *{ animation:zaRein .42s var(--ease-out) both }
 @keyframes zaRein{ from{ opacity:0; transform:translateY(10px) } }
+
+/* Eine Reihe Kacheln kommt nicht als Block, sondern eine nach der
+   anderen — das liest sich als Angebot und nicht als Einblendung. Der
+   Kasten selbst haelt dann still, sonst liefen zwei Bewegungen
+   uebereinander. */
+#za-inhalt > .za-wahl, #za-inhalt > .za-tage{ animation:none }
+#za-inhalt > .za-wahl > button,
+#za-inhalt > .za-tage > button{ animation:zaKachel .5s var(--ease-out) both }
+#za-inhalt > .za-wahl > button:nth-child(2),
+#za-inhalt > .za-tage > button:nth-child(2){ animation-delay:.045s }
+#za-inhalt > .za-wahl > button:nth-child(3),
+#za-inhalt > .za-tage > button:nth-child(3){ animation-delay:.09s }
+#za-inhalt > .za-wahl > button:nth-child(4),
+#za-inhalt > .za-tage > button:nth-child(4){ animation-delay:.135s }
+#za-inhalt > .za-tage > button:nth-child(5){ animation-delay:.18s }
+#za-inhalt > .za-tage > button:nth-child(6){ animation-delay:.225s }
+@keyframes zaKachel{ from{ opacity:0; transform:translateY(12px) scale(.96) } }
+
+/* MOJI tritt auf, statt einfach dazustehen. */
+#v-zeitassi.on .za-moji{ animation:zaAuftritt .62s var(--ease-out) both }
+@keyframes zaAuftritt{ from{ opacity:0; transform:translateY(16px) scale(.94) } }
 
 /* ─── Antwortknoepfe ─────────────────────────────────────────────── */
 .za-knoepfe{ display:grid; gap:10px }
@@ -3846,6 +3871,9 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   .za-text.tippt::after{ animation:none }
   .za-inhalt > *{ animation:none }
   .za-bild.spricht, .za-bild.nickt, .za-bild.huepft{ animation:none }
+  #za-inhalt > .za-wahl > button, #za-inhalt > .za-tage > button,
+  #v-zeitassi.on .za-moji{ animation:none }
+  .za-blase{ transition:none }
 }
 
 
@@ -5078,7 +5106,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-2320';
+const APP_STAND = '2026-09-15-0030';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6388,6 +6416,10 @@ function renderZeiten(host, sched, onChange){
     host.appendChild(kp);
   }
 
+  /* Erst jetzt haengt alles im Dokument — vorher liesse sich kein Rad
+     stellen, siehe raederRichten(). */
+  raederRichten(host);
+
   host.onclick = e => {
     const b = e.target.closest('button');
     if(!b || !host.contains(b)) return;
@@ -6902,9 +6934,14 @@ function zaKlopf(){
    Ein Satz je Blase. Kommt mehr, steht darunter ein kleines "weiter" —
    niemand liest drei Saetze, die auf einmal erscheinen. Mit * markierte
    Stellen werden fett. */
-let _zaTeile = [], _zaTippT = null, _zaDanach = null, _zaGesagt = 0;
+let _zaTeile = [], _zaTippT = null, _zaDanach = null, _zaGesagt = 0, _zaBlaseT = null;
+/* Geschrieben wird im Takt der Bilder, nicht der Uhr — siehe zaTippen(). */
+function zaTippAus(){
+  if(_zaTippT !== null) cancelAnimationFrame(_zaTippT);
+  _zaTippT = null;
+}
 function mojiSagt(teile, danach){
-  clearTimeout(_zaTippT);
+  zaTippAus();
   _zaTeile = (Array.isArray(teile) ? teile : [teile]).slice();
   _zaDanach = danach || null;
   _zaGesagt = 0;
@@ -6967,7 +7004,11 @@ function zaName(){
   return (ME && ME.vorname) || $('#in-vn').value.trim() || 'du';
 }
 let _zaTippEnde = null;
+/* Ein Zeichen alle 22 ms, also rund 45 in der Sekunde. */
+const ZA_TAKT = 22;
 function zaTippen(el, roh, fertig){
+  const blase = $('#za-blase');
+  const vorher = blase ? blase.offsetHeight : 0;
   el.innerHTML = '';
   const teile = String(roh).split('*');          /* ungerade Stuecke sind fett */
   const stuecke = teile.map((t, i) => {
@@ -6975,25 +7016,59 @@ function zaTippen(el, roh, fertig){
     el.appendChild(k);
     return { k:k, t:t, n:0 };
   });
+  /* Erst den ganzen Satz hinschreiben, die Hoehe messen und wieder
+     leeren — alles in einem Zug, gezeichnet wird dazwischen nichts. So
+     steht die Blase von Anfang an in ihrer Endgroesse und waechst
+     einmal weich, statt beim Zeilenumbruch mitten im Wort zu springen. */
+  if(blase){
+    stuecke.forEach(x => { x.k.textContent = x.t; });
+    const ziel = blase.offsetHeight;
+    stuecke.forEach(x => { x.k.textContent = ''; });
+    clearTimeout(_zaBlaseT);
+    if(vorher && ziel && vorher !== ziel){
+      blase.style.height = vorher + 'px';
+      void blase.offsetHeight;
+      blase.style.height = ziel + 'px';
+      /* Danach wieder loslassen: die Hoehe stimmt dann ohnehin, und
+         fest bliebe sie beim Drehen des Geraets falsch stehen. */
+      _zaBlaseT = setTimeout(() => { blase.style.height = ''; }, 400);
+    } else {
+      blase.style.height = '';
+    }
+  }
   const alles = () => {
-    clearTimeout(_zaTippT); _zaTippT = null; _zaTippEnde = null;
+    zaTippAus(); _zaTippEnde = null;
     stuecke.forEach(x => { x.k.textContent = x.t; });
     fertig();
   };
   if(zaRuhig()){ alles(); return; }
   _zaTippEnde = alles;
-  /* Ein Zeichen alle 22 ms, also rund 45 in der Sekunde. Vorher waren
-     es zwei je Schritt und damit fast doppelt so schnell — das las sich
-     wie ein Ausdruck, nicht wie jemand, der spricht. */
-  let i = 0;
-  const tick = () => {
-    while(i < stuecke.length && stuecke[i].n >= stuecke[i].t.length) i++;
-    if(i >= stuecke.length){ _zaTippEnde = null; fertig(); return; }
-    stuecke[i].n++;
-    stuecke[i].k.textContent = stuecke[i].t.slice(0, stuecke[i].n);
-    _zaTippT = setTimeout(tick, 22);
+  /* Geschrieben wird im Bildtakt und nach verstrichener Zeit, nicht mit
+     einem Zeitgeber je Zeichen: 22 ms gehen in 16,7 ms nicht auf, also
+     kamen mal eines, mal zwei Zeichen je Bild — das war das Stocken. */
+  const ganz = stuecke.reduce((n, x) => n + x.t.length, 0);
+  let start = 0, steht = 0;
+  const zeichne = (soll) => {
+    if(soll <= steht) return;
+    steht = soll;
+    let rest = soll;
+    for(let j = 0; j < stuecke.length; j++){
+      const x = stuecke[j], n = Math.min(rest, x.t.length);
+      if(x.n !== n){ x.n = n; x.k.textContent = x.t.slice(0, n); }
+      rest -= n;
+    }
   };
-  tick();
+  /* Das erste Zeichen gleich, nicht erst im naechsten Bild — sonst
+     stuende die Blase einen Wimpernschlag lang leer da. */
+  zeichne(1);
+  if(steht >= ganz){ _zaTippEnde = null; fertig(); return; }
+  const schritt = (zeit) => {
+    if(!start) start = zeit - ZA_TAKT;         /* eines steht ja schon */
+    zeichne(Math.min(ganz, Math.floor((zeit - start) / ZA_TAKT)));
+    if(steht >= ganz){ _zaTippT = null; _zaTippEnde = null; fertig(); return; }
+    _zaTippT = requestAnimationFrame(schritt);
+  };
+  _zaTippT = requestAnimationFrame(schritt);
 }
 /* Wer schneller liest als MOJI tippt, tippt die Blase an: der Satz steht
    sofort, ein zweiter Tipp holt den naechsten. So macht es jedes Spiel. */
@@ -7373,6 +7448,13 @@ function zaInhalt(x){
   el.innerHTML = '';
   if(typeof x === 'string') el.innerHTML = x;
   else el.appendChild(x);
+  raederRichten(el);
+}
+/* Raeder stellen heisst scrollen, und Scrollen mitten in einer
+   Einblendung sieht man. Darum gleich beim Einhaengen, im selben Zug —
+   dann steht die Uhrzeit schon im ersten Bild richtig. */
+function raederRichten(wurzel){
+  $$('.rad', wurzel).forEach(r => { if(r._neu) r._neu(); });
 }
 
 /* ─── Zurueck ────────────────────────────────────────────────────── */

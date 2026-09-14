@@ -439,7 +439,28 @@ const s = dom.window.document.createElement('script');
 s.textContent = pruef;
 dom.window.document.body.appendChild(s);
 
+/* ── 18 · Was sich in jsdom nicht messen laesst ──
+   Ohne Layout ist jede Hoehe 0 und requestAnimationFrame zeichnet
+   nichts. Diese Punkte werden darum am Quelltext geprueft. */
 const E = dom.window.__E || [];
+const roh = (name, bedingung, zusatz) =>
+  E.push({ name: name, ok: !!bedingung, zusatz: zusatz === undefined ? '' : String(zusatz) });
+roh('Die Blase bekommt eine weiche Hoehe', /\.za-blase\{[^}]*transition:height/.test(HTML));
+roh('Die Hoehe wird vor dem Tippen gesetzt',
+    HTML.indexOf("blase.style.height = ziel + 'px'") > -1);
+roh('Getippt wird im Bildtakt', /_zaTippT = requestAnimationFrame\(schritt\)/.test(HTML));
+roh('Und nicht mehr mit einem Zeitgeber je Zeichen',
+    HTML.indexOf('setTimeout(tick, 22)') === -1);
+roh('Das erste Zeichen steht sofort', HTML.indexOf('zeichne(1);') > -1);
+roh('Die Kacheln kommen nacheinander', /@keyframes zaKachel/.test(HTML)
+    && /#za-inhalt > \.za-tage > button:nth-child\(6\)\{ animation-delay/.test(HTML));
+roh('MOJI hat einen Auftritt', /@keyframes zaAuftritt/.test(HTML)
+    && /#v-zeitassi\.on \.za-moji\{ animation:zaAuftritt/.test(HTML));
+roh('Die Raeder stehen vor der Einblendung', /function raederRichten/.test(HTML)
+    && (HTML.match(/raederRichten\(/g) || []).length >= 3);
+roh('Ruhige Geraete bekommen nichts davon',
+    /#za-inhalt > \.za-wahl > button, #za-inhalt > \.za-tage > button,\s*\n\s*#v-zeitassi\.on \.za-moji\{ animation:none \}/.test(HTML));
+
 let schlecht = 0;
 console.log('');
 E.forEach(e => {
