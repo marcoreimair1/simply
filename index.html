@@ -1295,6 +1295,16 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .slide.active.back{animation:slideBack .48s var(--ease-out)}
 @keyframes slideFwd{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
 @keyframes slideBack{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+/* Der vorige Schritt geht mit, statt einfach zu verschwinden. Er liegt
+   dabei ausserhalb des Flusses, sonst schoebe er den neuen nach unten. */
+.slide.weg{display:block;position:absolute;top:0;left:0;right:0;pointer-events:none;
+  animation:slideWegFwd .3s var(--ease-blend) forwards}
+.slide.weg.back{animation:slideWegBack .3s var(--ease-blend) forwards}
+@keyframes slideWegFwd{to{opacity:0;transform:translateX(-24px)}}
+@keyframes slideWegBack{to{opacity:0;transform:translateX(24px)}}
+/* Und innerhalb des letzten Schritts: Frage und Dienstzeiten wechseln
+   sich ab, also auch die mit einer Bewegung. */
+#ob-plan-frage, #ob-plan-edit{animation:slideFwd .42s var(--ease-out) both}
 .navrow{display:flex;align-items:center;gap:12px;margin-top:24px}
 .navrow.sticky{position:sticky;bottom:0;z-index:20;margin:18px -20px 0;
   padding:16px 24px calc(16px + env(safe-area-inset-bottom));transition:background .3s}
@@ -1822,6 +1832,9 @@ body.zrmodus .cell.zr-edge .hrs,body.zrmodus .cell.zr-edge .ico{color:var(--f-3)
   opacity:0; transition:opacity .3s var(--ease-blend); pointer-events:none;
 }
 .fassungsdeckel.da{ opacity:1 }
+/* Nach dem Neuladen liegt er schon da und geht erst, wenn die erste
+   Ansicht steht — etwas laenger, damit es ein Aufblenden wird. */
+#fassungsdeckel{ transition:opacity .34s var(--ease-blend) }
 /* Zurueck aus dem Neustart: die App blendet kurz auf statt der ueblichen
    1,1 s — es soll sich wie ein Umschalten anfuehlen, nicht wie ein Start. */
 body.fassung-neu #app{ transition:opacity .42s var(--ease-blend) }
@@ -3566,9 +3579,31 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   padding:0 20px calc(env(safe-area-inset-bottom) + 24px);
   overflow-y:auto; -webkit-overflow-scrolling:touch;
   box-shadow:0 -20px 60px -26px rgba(var(--s-schatten),.55);
-  animation:blattRein .44s var(--ease-out) both;
+  animation:blattRein .46s var(--ease-out) both;
 }
-@keyframes blattRein{ from{ transform:translateY(52px); opacity:0 } }
+/* Ganz von unten herauf statt eines Aufpoppens um 52 px. */
+@keyframes blattRein{ from{ transform:translateY(100%) } }
+
+/* Und es geht auch wieder — vorher verschwand es einfach. */
+.blatt.raus .blatt-karte{ animation:blattRaus .32s var(--ease-blend) forwards }
+.blatt.raus .blatt-grund{ animation:blattGrundRaus .32s var(--ease-blend) forwards }
+@keyframes blattRaus{ to{ transform:translateY(100%) } }
+@keyframes blattGrundRaus{ to{ opacity:0 } }
+
+/* Vom ersten aufs zweite Blatt wird nicht neu aufgezogen: die Karte
+   bleibt stehen, nur der Inhalt blaettert weiter. Beide Karten sind
+   gleich gebaut, man sieht also nur den Wechsel darin. */
+.blatt.weiter .blatt-karte,
+.blatt.weiter .blatt-grund{ animation:none }
+.blatt.weiter .blatt-in{ animation:blattWeiter .44s var(--ease-out) both }
+.blatt.weiter.rueck .blatt-in{ animation:blattZurueck .44s var(--ease-out) both }
+@keyframes blattWeiter{ from{ opacity:0; transform:translateX(30px) } }
+@keyframes blattZurueck{ from{ opacity:0; transform:translateX(-30px) } }
+
+/* Der Einstieg tritt zurueck, waehrend das Blatt kommt — dieselbe
+   Tiefe wie bei einer Karte, die sich ueber eine andere legt. */
+#lg-start{ transition:transform .46s var(--ease-out), opacity .46s var(--ease-out) }
+body.blattoffen #lg-start{ transform:scale(.93); opacity:.5 }
 /* Hinunterschieben zum Schliessen — dieselbe Mechanik wie bei allen
    Blaettern der App, siehe wireSheetDrag(). */
 .blatt-karte.zieht{ animation:none; transition:none }
@@ -4809,7 +4844,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-1230';
+const APP_STAND = '2026-09-14-1320';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6295,6 +6330,8 @@ function go(id){
   /* Der erste Bildschirm heisst: der Start ist durch. Der Vorspann darf
      sich dann verabschieden — fruehestens nach seiner Mindestzeit. */
   try{ introAppSteht(); }catch(e){ console.warn(e); }
+  /* Steht die erste Ansicht, darf der Deckel des Fassungswechsels weg. */
+  try{ if(typeof fassungsdeckelWeg === 'function') fassungsdeckelWeg(); }catch(e){}
   /* Einstieg und Funnel gehoeren der ganzen Flaeche — dort steht keine
      Kopfleiste. Und ein offenes Blatt der Anmeldung darf nirgends
      stehenbleiben: es liegt fest ueber allem. */
@@ -6459,9 +6496,24 @@ function obPaint(){
   /* Nie automatisch weiterspringen, wenn man gerade zurückgegangen ist */
   clearAutos();
   const da = $('#dob-auto'); if(da) da.style.display = 'none';
-  $$('#track .slide').forEach((s,i) => {
-    s.classList.toggle('active', i === OB.step);
-    s.classList.toggle('back', i === OB.step && back);
+  $$('#track .slide').forEach((s, i) => {
+    clearTimeout(s._wegT);
+    if(i === OB.step){
+      s.classList.remove('weg');
+      s.classList.add('active');
+      s.classList.toggle('back', back);
+      return;
+    }
+    /* Wer gerade noch dran war, geht mit — die uebrigen bleiben weg. */
+    const ging = gewechselt && s.classList.contains('active');
+    s.classList.remove('active');
+    s.classList.toggle('back', ging && back);
+    if(ging){
+      s.classList.add('weg');
+      s._wegT = setTimeout(() => s.classList.remove('weg','back'), 320);
+    } else {
+      s.classList.remove('weg');
+    }
   });
   /* Ohne Konto (dann keine Erinnerung) und ohne Passkey stuende der
      Schritt leer da — also faellt er weg, in beide Richtungen. */
@@ -6878,22 +6930,39 @@ function loginScreen(){
 }
 
 /* ─── Die Blätter ───────────────────────────────────────────── */
-function blattAuf(id){
+/* richtung: nichts = von unten herauf. 'vor' oder 'rueck' = die Karte
+   bleibt stehen, nur der Inhalt blaettert. */
+function blattAuf(id, richtung){
   const el = $('#'+id); if(!el) return;
   /* Unverschoben beginnen — ein vorheriger Zug darf nicht nachhaengen. */
   const zurueck = id === 'lg-mailstep' ? window.__mailReset : window.__codeReset;
   if(zurueck) zurueck();
+  clearTimeout(el._zuT);
+  el.classList.remove('raus','weiter','rueck');
+  if(richtung){
+    el.classList.add('weiter');
+    if(richtung === 'rueck') el.classList.add('rueck');
+  }
   el.classList.add('on');
   el.setAttribute('aria-hidden','false');
-  document.body.classList.add('locked');
+  document.body.classList.add('locked','blattoffen');
 }
-function blattZu(id){
+function blattZu(id, sofort){
   const el = $('#'+id); if(!el || !el.classList.contains('on')) return;
-  el.classList.remove('on');
-  el.setAttribute('aria-hidden','true');
-  if(!$('.blatt.on')) document.body.classList.remove('locked');
+  const karte = $('.blatt-karte', el);
+  const fertig = () => {
+    el.classList.remove('on','raus','weiter','rueck');
+    el.setAttribute('aria-hidden','true');
+    if(!$('.blatt.on')) document.body.classList.remove('locked','blattoffen');
+  };
+  clearTimeout(el._zuT);
+  /* Wurde die Karte gerade mit dem Finger hinuntergeschoben, hat sie
+     ihren Weg schon hinter sich — dann nicht noch einmal animieren. */
+  if(sofort || (karte && karte.style.transform)){ fertig(); return; }
+  el.classList.add('raus');
+  el._zuT = setTimeout(fertig, 320);
 }
-function blattAllesZu(){ blattZu('lg-mailstep'); blattZu('lg-codestep'); }
+function blattAllesZu(){ blattZu('lg-mailstep', true); blattZu('lg-codestep', true); }
 $$('[data-blattzu]').forEach(b => b.addEventListener('click', () => blattZu(b.dataset.blattzu)));
 
 /* ─── Startbildschirm ───────────────────────────────────────── */
@@ -6957,8 +7026,8 @@ function weiterZumCode(){
   $('#lg-otp').value = ''; $('#f-otp').classList.remove('filled');
   $('#lg-otp-go').disabled = true;
   fehlerZeile($('#lg-otp-err'), '');
-  blattAuf('lg-codestep');
-  blattZu('lg-mailstep');
+  blattAuf('lg-codestep', 'vor');
+  blattZu('lg-mailstep', true);
   const f = $('#lg-otp');
   try{ f.focus({ preventScroll:true }); }catch(e){ try{ f.focus(); }catch(e2){} }
   sendeCode(mail, true);
@@ -6976,8 +7045,8 @@ async function sendeCode(mail, ersteRunde){
     cooldownStopp();
     const txt = 'Konnte nicht senden: ' + ((e && e.message) || 'unbekannter Fehler');
     if(ersteRunde){
-      blattZu('lg-codestep');
-      blattAuf('lg-mailstep');
+      blattAuf('lg-mailstep', 'rueck');
+      blattZu('lg-codestep', true);
       fehlerZeile($('#lg-err2'), txt);
     } else {
       fehlerZeile($('#lg-otp-err'), txt);
@@ -9252,9 +9321,9 @@ window.__pfReset    = wireSheetDrag('pf-grab', 'pfsheet', pfZu, 'pf-liste');
 window.__rReset     = wireSheetDrag('r-grab',  'rsheet',  rangZu);
 window.__vReset     = wireSheetDrag('v-grab',  'vsheet',  verlaufZu);
 /* Die zwei Blaetter der Anmeldung — gleiche Geste, anderes Gehaeuse. */
-window.__mailReset  = wireSheetDrag('mail-grab', 'lg-mailstep', () => blattZu('lg-mailstep'),
+window.__mailReset  = wireSheetDrag('mail-grab', 'lg-mailstep', () => blattZu('lg-mailstep', true),
                                     null, '.blatt-karte', '.blatt-grund');
-window.__codeReset  = wireSheetDrag('code-grab', 'lg-codestep', () => blattZu('lg-codestep'),
+window.__codeReset  = wireSheetDrag('code-grab', 'lg-codestep', () => blattZu('lg-codestep', true),
                                     null, '.blatt-karte', '.blatt-grund');
 $('#sh-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
@@ -10766,15 +10835,37 @@ const FASSUNG_NEU = (function(){
 })();
 
 /* Kein Vorspann nach einem Fassungswechsel. Die App blendet kurz auf,
-   das war es — es soll sich wie ein Umschalten anfuehlen. */
+   das war es — es soll sich wie ein Umschalten anfuehlen.
+
+   Der Deckel aus der Seite davor wird dabei fortgesetzt: er liegt in
+   der neuen Farbe da, bis die erste Ansicht steht. Ohne ihn sah man in
+   der Luecke die Kopfleiste ueber einer leeren Seite — die
+   Anmeldeseite braucht sie nicht, sie stand nur da, weil go() noch
+   nicht gelaufen war. Wie lang die Luecke ist, haengt am Netz: das
+   Laden der Cloud-Bibliothek liegt dazwischen. Darum kam es oft, aber
+   nicht immer.                                                        */
 function vorspannUeberspringen(){
   const sp = $('#splash');
   if(sp) sp.style.display = 'none';
   window.__introLaeuft = false;
   document.body.classList.remove('locked');
   document.body.classList.add('fassung-neu');
+  const deckel = document.createElement('div');
+  deckel.className = 'fassungsdeckel da';
+  deckel.id = 'fassungsdeckel';
+  document.body.appendChild(deckel);
   $('#app').classList.add('on');
   setTimeout(() => document.body.classList.remove('fassung-neu'), 700);
+  /* Notbremse: bleibt eine Ansicht aus, darf der Deckel nicht liegen bleiben. */
+  fassungsdeckelWeg._t = setTimeout(fassungsdeckelWeg, 4000);
+}
+/* Nimmt der Deckel weg — die erste Ansicht ruft das ueber go(). */
+function fassungsdeckelWeg(){
+  clearTimeout(fassungsdeckelWeg._t);
+  const d = document.getElementById('fassungsdeckel');
+  if(!d) return;
+  d.classList.remove('da');
+  setTimeout(() => { if(d.parentNode) d.parentNode.removeChild(d); }, 340);
 }
 
 wireDob('ob'); wireDob('lg');

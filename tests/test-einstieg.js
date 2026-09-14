@@ -78,9 +78,16 @@ CLOUD_ON = true; loginScreen();
 blattAuf('lg-mailstep');
 ok('Blatt Adresse offen',   el('lg-mailstep').classList.contains('on'));
 ok('Seite ist gesperrt',    document.body.classList.contains('locked'));
+ok('Der Einstieg tritt zurueck', document.body.classList.contains('blattoffen'));
+/* Zugehen laeuft ueber eine Bewegung — direkt danach steht es noch da
+   und traegt den Vermerk dafuer. */
 blattZu('lg-mailstep');
+ok('Es geht nicht ruckartig zu', el('lg-mailstep').classList.contains('raus')
+   && el('lg-mailstep').classList.contains('on'));
+blattZu('lg-mailstep', true);
 ok('Blatt Adresse zu',      !el('lg-mailstep').classList.contains('on'));
 ok('Sperre wieder weg',     !document.body.classList.contains('locked'));
+ok('Und der Einstieg steht wieder', !document.body.classList.contains('blattoffen'));
 
 /* ── 5 · Adresse pruefen, bevor irgendetwas rausgeht ── */
 let gesendet = 0, letzteAdresse = '';
@@ -102,6 +109,9 @@ ok('Weiter wird frei',       el('lg-send').disabled === false);
 weiterZumCode();
 ok('Blatt Code offen',       el('lg-codestep').classList.contains('on'));
 ok('Blatt Adresse zu',       !el('lg-mailstep').classList.contains('on'));
+/* Die Karte wird nicht neu aufgezogen — nur der Inhalt blaettert weiter. */
+ok('Es blaettert, statt neu aufzuziehen', el('lg-codestep').classList.contains('weiter'));
+ok('Und zwar nach vorn',     !el('lg-codestep').classList.contains('rueck'));
 ok('Adresse steht im Text',  el('lg-sent-t').textContent === 'anna@example.org', el('lg-sent-t').textContent);
 ok('Code-Feld hat den Fokus', document.activeElement === el('lg-otp'),
    document.activeElement && document.activeElement.id);

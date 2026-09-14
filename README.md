@@ -119,7 +119,20 @@ davon nur das Ergebnis. Geht es schief, steht der Grund über den Knöpfen.
 **Anmelden oder registrieren** legt ein Blatt über den Einstieg: das Männchen, Überschrift,
 E-Mail-Feld, *Weiter*. Oben liegt ein Griff — **beide Blätter lassen sich nach unten
 wegschieben**, mit derselben Mechanik wie alle Blätter der App (`wireSheetDrag()`, das dafür
-jetzt auch andere Klassennamen als `.sheet-card` annimmt). Das Schließkreuz bleibt daneben. Keine zweite Option, keine Trennlinie mit „oder" — beide Wege schickten
+jetzt auch andere Klassennamen als `.sheet-card` annimmt). Das Schließkreuz bleibt daneben.
+
+**Wie es sich bewegt** (überarbeitet am 14. September 2026):
+
+| | |
+|---|---|
+| aufziehen | die Karte kommt **ganz von unten** herauf (`translateY(100%)`, 0,46 s), nicht mehr mit einem Sprung um 52 px |
+| dahinter | der Einstieg **tritt zurück**: `body.blattoffen` schrumpft ihn auf 93 % und nimmt Deckkraft — dieselbe Tiefe wie bei einer Karte über einer anderen |
+| Adresse → Code | die Karte **bleibt stehen**, nur der Inhalt blättert weiter (`.weiter`). Beide Karten sind gleich gebaut, man sieht also nur den Wechsel darin — kein zweites Aufziehen |
+| zurück bei einem Fehler | dasselbe in die andere Richtung (`.rueck`) |
+| zugehen | **geht auch wieder** (`.raus`, 0,32 s). Vorher verschwand das Blatt einfach |
+
+Wurde die Karte mit dem Finger hinuntergeschoben, hat sie ihren Weg schon hinter sich — dann
+läuft die Schließbewegung nicht noch einmal (`blattZu(id, sofort)`). Keine zweite Option, keine Trennlinie mit „oder" — beide Wege schickten
 ohnehin dieselbe Mail, und Supabase legt beim ersten Mal selbst ein Konto an.
 
 Ein Tipp auf *Weiter* schaltet **sofort** auf das zweite Blatt, noch bevor die Mail raus ist.
@@ -154,6 +167,11 @@ Oben steht *Schritt n von 4* und ein Balken in der Markenfarbe.
 | 2 | Geburtsdatum | von selbst, sobald es vollständig ist |
 | 3 | Zwei Schalter: **Monatserinnerung per Mail** und **Face ID aktivieren** | von selbst, wenn beide stehen — sonst über den Knopf |
 | 4 | **Dienstplan gleich anlegen?** *Ja, jetzt* / *Später* | *Ja* öffnet die Dienstzeiten im selben Schritt, *Später* ist fertig |
+
+Zwischen den Schritten **geht der alte mit, statt zu verschwinden**: er legt sich für 0,3 s aus
+dem Fluss (`position:absolute`) und zieht zur Seite ab, während der neue hereinkommt. Vorher war
+er von einem Bild aufs andere weg. Dasselbe innerhalb von Schritt 4, zwischen Frage und
+Dienstzeiten.
 
 Der Schalter für Face ID öffnet die Abfrage des Geräts (`registerPasskey()`), der für die
 Erinnerung schreibt `mailOk` und `mailGefragt` sofort ins Profil. Was das Gerät oder das Konto
@@ -488,6 +506,14 @@ absurd. `FASSUNG_NEU` liest ihn beim Start einmal und löscht ihn sofort.
 Vor dem Neuladen wird noch **hochgeladen**, falls etwas offen ist: die Sammelroutine sendet
 verzögert, sonst fände ein zweites Gerät die alte Fassung vor. Hängt die Verbindung, geht es
 nach 1,4 s trotzdem weiter — die Wahl liegt ja schon im Gerätespeicher und im Profil.
+
+**Nach dem Neuladen deckt ein Deckel die Lücke.** Bis `go()` die erste Ansicht setzt, vergeht
+Zeit — dazwischen liegt das Laden der Cloud-Bibliothek, also das Netz. In dieser Lücke stand die
+**Kopfleiste über einer leeren Seite**: die Anmeldeseite braucht sie nicht, sie war nur da, weil
+`go()` noch nicht gelaufen war. Am Handy las sich das, als blitze kurz der Kalender auf — und
+zwar *oft, aber nicht immer*, je nach Verbindung. `vorspannUeberspringen()` legt deshalb den
+Deckel des Wechsels gleich wieder an, in der **neuen** Farbe; `go()` nimmt ihn weg, sobald etwas
+dasteht. Eine Notbremse nach vier Sekunden sorgt dafür, dass er nie liegen bleibt.
 
 **Wer vor der Anmeldung umlegt, dessen Wahl wandert mit.** Am Einstieg ist noch kein Profil da,
 die Wahl liegt also nur im Gerät. `erscheinungUmschalten()` legt sie in diesem Fall zusätzlich
@@ -1436,6 +1462,14 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Der Blitzer beim Fassungswechsel und rundere Übergänge** (14. September 2026): Beim
+  Umschalten auf der Anmeldeseite blitzte oft kurz die Kopfleiste über einer leeren Seite auf —
+  die Lücke zwischen `vorspannUeberspringen()` und dem ersten `go()`, deren Länge am Netz hängt.
+  Nachgestellt und bestätigt, dann mit einem fortgesetzten Deckel geschlossen. Dazu weichere
+  Übergänge: das Blatt kommt ganz von unten, der Einstieg tritt dahinter zurück, Adresse → Code
+  blättert in der stehenden Karte weiter, Zugehen ist jetzt auch eine Bewegung, und im Funnel
+  zieht der alte Schritt ab, statt zu verschwinden. 118 Prüfungen in der Einstiegs-Reihe, alle
+  neun zusammen 451
 - **Vorspann: nur noch das freigestellte Männchen** (14. September 2026, zweiter Durchgang):
   Der Ladebalken ist ganz entfallen, und statt des App-Symbols mit Kachel steht dort jetzt das
   freigestellte Männchen. Der Glanz bleibt — er wird über eine CSS-Maske auf die Silhouette
