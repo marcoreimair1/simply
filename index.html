@@ -649,7 +649,13 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 #splash.done{animation:splashOut 1.1s var(--ease-blend) forwards}
 @keyframes splashOut{to{opacity:0;transform:scale(1.03);filter:blur(7px);visibility:hidden}}
 .sp-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0}
-.mark-wrap{position:relative;display:grid;place-items:center}
+/* Die Huelle behaelt ihren Platz, das Zeichen darin kommt spaeter —
+   so rueckt beim Erscheinen nichts. Sichtbar wird es erst, wenn es
+   wirklich dekodiert ist, siehe playIntro(). */
+.mark-wrap{position:relative;display:grid;place-items:center;
+  opacity:0;transform:scale(.82);
+  transition:opacity .55s var(--ease-out),transform .75s var(--ease-out)}
+.mark-wrap.da{opacity:1;transform:none}
 /* Das App-Symbol: tiefes Blau wie die App selbst, weiße Schrift darauf.
    Kein Gold hier — das Warme bleibt dem Slogan und dem Flimmern. */
 .mark-logo{position:relative;z-index:2;display:grid;place-items:center;
@@ -658,8 +664,7 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
   border:1px solid rgba(var(--c-zeit-rgb),.15);
   box-shadow:0 30px 70px rgba(var(--s-schatten),.66),0 0 52px rgba(var(--s-hoch),.2),
              inset 0 1px 0 rgba(var(--c-zeit-rgb),.1);
-  isolation:isolate;transform:translateZ(0);
-  animation:markIn .85s .1s var(--ease-out) both}
+  isolation:isolate;transform:translateZ(0)}
 
 /* Zwei blaue Lichtflecken. Wandern und Atmen laufen absichtlich auf
    verschiedenen Takten (17 s und 11 s) — dadurch wiederholt sich das Bild
@@ -706,11 +711,6 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
    gleich viel Fläche in der Kachel hat, ist die Breite von 64 % auf 68 % erhöht. */
 .mark-img{position:relative;z-index:3;width:68%;height:auto;display:block;
   animation:shimmer 4.6s 1.4s ease-in-out infinite}
-@keyframes markIn{
-  0%{opacity:0;transform:scale(.82)}
-  55%{opacity:1}
-  100%{opacity:1;transform:scale(1)}
-}
 @keyframes shimmer{0%,100%{filter:brightness(1)}50%{filter:brightness(1.14)}}
 @keyframes draw{to{stroke-dashoffset:0}}
 .wordmark{display:flex;margin-top:22px;font-family:var(--font-dis);font-weight:500;letter-spacing:.015em;
@@ -3399,17 +3399,37 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
     rgba(255,255,255,0) 100%);
   filter:blur(2.5px);
   transform:rotate(45deg) translateX(-300%);
-  animation:kartenGlanz 3.4s 1.2s var(--ease) infinite;
+}
+/* Einmal, wenn das Zeichen erscheint — nicht in Schleife. Der Vorspann
+   ist ein Moment, keine Dauerschleife. */
+.mark-wrap.da .mark-glanz::after{
+  animation:kartenGlanz 1.9s .3s var(--ease) 1 both;
 }
 @keyframes kartenGlanz{
   0%,10%  { transform:rotate(45deg) translateX(-300%) }
   58%,100%{ transform:rotate(45deg) translateX(300%) }
 }
-/* Der Ladebalken ist am 14. September 2026 entfallen. Er zeigte den
-   echten Start statt einer Uhr — das war richtig gedacht, machte aus
-   dem Vorspann aber wieder eine kleine Seite mit zwei Dingen darauf.
-   Uebrig bleibt das Maennchen mit seinem Glanz; wie lange der Vorspann
-   steht, entscheidet weiterhin introSchliessen(). */
+/* ─── Der leise Ladebalken ───────────────────────────────────────
+   Er kuendigt nichts an und will nicht auffallen. Er ist da, damit
+   niemand meint, die App haenge. Darum duenn, schmal und in der
+   Textfarbe der Fassung: im Hellen ein Grau, im Dunkeln ein leises
+   Weiss — beides kommt aus --tx-rgb, also ohne eigene Farbe.
+
+   Er zeigt den echten Start, keine Uhr: bis zur Haelfte laeuft er von
+   selbst (dort erscheint das Zeichen), dann bis 86 %, und die letzten
+   Prozent erst, wenn eine Ansicht wirklich steht. */
+.sp-lade{
+  width:min(38vw,132px); height:2px; margin-top:30px;
+  border-radius:99px; overflow:hidden;
+  background:rgba(var(--tx-rgb),.12);
+  opacity:0; transition:opacity .5s var(--ease-out);
+}
+.sp-lade.da{ opacity:1 }
+.sp-lade i{
+  display:block; width:0; height:100%; border-radius:inherit;
+  background:rgba(var(--tx-rgb),.45);
+  transition:width 1s cubic-bezier(.24,.68,.32,1);
+}
 @media (prefers-reduced-motion:reduce){
   .mark-glanz{ display:none!important }
 }
@@ -3436,6 +3456,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
    sie so lange wie das Symbol, laegen sie eine halbe Sekunde lang ueber
    "Hallo <Name>" — nur 13 px daneben, das wird Matsch. */
 #splash[data-uebergabe] .mark-wrap{ animation:uebergabeRaus .62s var(--ease-blend) forwards }
+#splash[data-uebergabe] .sp-lade{ animation:uebergabeRaus .3s var(--ease-blend) forwards }
 @keyframes uebergabeRaus{ to{ opacity:0 } }
 
 /* Die Begruessung liegt seit dem Umbranden auf der deckenden Farbflaeche
@@ -3728,7 +3749,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
        der App, siehe .aurahg — damit traegt der Vorspann dieselbe
        Handschrift wie alles andere und folgt Hell und Dunkel. -->
   <div class="sp-inner">
-    <div class="mark-wrap">
+    <div class="mark-wrap" id="mark-wrap">
       <!-- Nur das Maennchen, freigestellt — ohne die eckige Kachel des
            App-Symbols. Wortmarke, Slogan und Ladebalken standen frueher
            darunter; beim Starten liest und zaehlt das niemand.
@@ -3741,6 +3762,9 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         <i class="mark-glanz" id="mark-glanz" aria-hidden="true"></i>
       </span>
     </div>
+    <!-- Ein sehr leiser Balken. Er ist nicht da, um etwas anzukuendigen,
+         sondern damit niemand meint, die App haenge. Siehe .sp-lade. -->
+    <div class="sp-lade" id="sp-lade" aria-hidden="true"><i id="sp-bar"></i></div>
   </div>
 </div>
 
@@ -4817,7 +4841,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-1420';
+const APP_STAND = '2026-09-14-1515';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5820,6 +5844,10 @@ const INTRO_LANG = 5400;   /* nicht angemeldet — es folgt nichts mehr   */
 const INTRO_MAX  = 9000;   /* Notbremse: haengt der Start, geht es weiter */
 const INTRO_WEG  = 1100;   /* Ausblenden, wenn kein Gruss folgt          */
 const UEBERGABE  = 700;    /* ... folgt einer: so lange blendet er auf   */
+const BALKEN_AB  = 380;    /* erst der Hintergrund, dann der Balken      */
+const LOGO_AB    = 1450;   /* bei etwa der Haelfte kommt das Zeichen     */
+const BALKEN_VOR = 320;    /* voll, kurz bevor geblendet wird            */
+const BALKEN_MIN = 420;    /* so lange braucht der letzte Zug mindestens */
 
 let _appSteht   = false;   /* die App hat einen Bildschirm */
 let _angemeldet = false;   /* ... und jemanden darin       */
@@ -5874,6 +5902,24 @@ function introSchliessen(){
   clearTimeout(playIntro._a);
   playIntro._a = setTimeout(endIntro, rest);
   window.__introEnde = Date.now() + rest;
+  balkenZug(3, Math.max(BALKEN_MIN, rest - BALKEN_VOR), '100%');
+}
+
+/* ─── Der Balken ───────────────────────────────────────────────────
+   Vier Stufen, und keine nimmt eine spaetere zurueck. Das ist noetig,
+   weil der echte Start jederzeit dazwischenfunken darf: meldet sich
+   eine Ansicht schon nach einer halben Sekunde, laeuft der letzte Zug
+   sofort — der Zug auf 86 %, der per Uhr noch aussteht, darf ihn
+   danach nicht wieder zurueckholen.                                  */
+let _balkenZug = 0;
+function balkenZug(stufe, ms, auf){
+  if(stufe <= _balkenZug) return;
+  _balkenZug = stufe;
+  const b = $('#sp-bar');
+  if(!b) return;
+  b.style.transitionDuration = ms + 'ms';
+  void b.offsetWidth;      /* sonst fasst der Browser beide Zuege zusammen */
+  b.style.width = auf;
 }
 
 /* ═══ Bausteine fuer den PDF-Export ═════════════════════════════════
@@ -5931,24 +5977,51 @@ const INTRO_HTML = $('#splash').innerHTML;
 function playIntro(){
   const sp = $('#splash');
   clearTimeout(playIntro._a); clearTimeout(playIntro._b);
+  clearTimeout(playIntro._c); clearTimeout(playIntro._d); clearTimeout(playIntro._e);
   sp.classList.remove('done');
   delete sp.dataset.uebergabe;
   sp.style.display = 'grid'; sp.style.visibility = '';
   sp.innerHTML = INTRO_HTML;            // setzt alle CSS-Animationen zurück
   document.body.classList.add('locked');
   $('#app').classList.remove('on');
-  /* Aus dem Quelltext — nichts muss erst geladen werden. Dasselbe Bild
-     dient dem Glanz als Maske, damit er der Silhouette folgt statt
-     einem Rechteck. */
-  $('#mark-img').src = LOGO_MOJI;
+  /* Aus dem Quelltext — geladen wird nichts. Dasselbe Bild dient dem
+     Glanz als Maske, damit er der Silhouette folgt statt einem Rechteck. */
+  const bild = $('#mark-img');
+  bild.src = LOGO_MOJI;
   const glanz = $('#mark-glanz');
   if(glanz) glanz.style.setProperty('--moji-maske', 'url("' + LOGO_MOJI + '")');
-  /* Frueher wurde hier das Wolkenvideo angeworfen. Die Farbwolken
-     brauchen nichts dergleichen — sie laufen als CSS. */
   window.__introLaeuft = true;
   window.__introStart = Date.now();
   _appSteht = false; _angemeldet = false; _nachIntro = [];
   window.__introEnde = 0;
+
+  /* Der Ablauf: erst steht nur der Hintergrund. Dann kommt der Balken
+     und laeuft bis zur Haelfte. Dort erscheint das Zeichen und der
+     Glanz wandert einmal darueber. Den Rest bestimmt der echte Start. */
+  _balkenZug = 0;
+  const lade = $('#sp-lade');
+  playIntro._c = setTimeout(() => {
+    if(lade) lade.classList.add('da');
+    balkenZug(1, LOGO_AB - BALKEN_AB, '50%');
+    playIntro._d = setTimeout(() => balkenZug(2, 1600, '86%'), LOGO_AB - BALKEN_AB);
+  }, BALKEN_AB);
+
+  /* Das Zeichen erscheint erst, wenn es wirklich dekodiert ist. Es
+     liegt als Datenzeile im Quelltext, geladen wird also nichts —
+     dekodiert aber schon, und beim ersten Besuch dauert das einen
+     Moment. Frueher blendete die Huelle nach fester Uhr auf und war
+     dabei kurz leer. Jetzt zaehlt, was spaeter kommt: die halbe
+     Strecke oder das fertige Bild. */
+  const steht = (bild.decode ? bild.decode() : Promise.resolve())
+                  .catch(() => {});          /* auch ohne decode weiter */
+  playIntro._e = setTimeout(() => {
+    steht.then(() => {
+      if(!introLaeuft()) return;
+      const w = $('#mark-wrap');
+      if(w) w.classList.add('da');
+    });
+  }, LOGO_AB);
+
   /* Nur die Notbremse. Im Normalfall setzt introSchliessen() die Zeit. */
   playIntro._a = setTimeout(endIntro, INTRO_MAX);
 }

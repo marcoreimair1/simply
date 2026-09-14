@@ -301,9 +301,23 @@ die Wortmarke steht darunter.
 
 ### Der Vorspann
 
-Auf dem Schirm steht **eine einzige Sache: das freigestellte Männchen.** Wortmarke, Slogan und
-zuletzt auch der Ladebalken sind am 14. September 2026 gegangen — beim Starten liest und zählt
-das niemand, und zusammen machten sie aus einem Zeichen eine kleine Seite.
+Auf dem Schirm stehen **das freigestellte Männchen und ein sehr leiser Balken.** Wortmarke und
+Slogan sind am 14. September 2026 gegangen — beim Starten liest das niemand, und zusammen
+machten sie aus einem Zeichen eine kleine Seite.
+
+**Der Ablauf, in vier Bildern:**
+
+1. **Nur der Hintergrund.** 0,38 s lang steht da nichts als die Farbwolken.
+2. **Der Balken kommt** und läuft bis zur Hälfte (`BALKEN_AB` → `LOGO_AB`).
+3. **Bei der Hälfte erscheint das Männchen**, und der Glanz wandert **einmal** darüber.
+4. Der Balken läuft weiter auf 86 %, die letzten Prozent erst, wenn eine Ansicht wirklich steht.
+   Dann der Übergang in die App.
+
+**Das Männchen erscheint erst, wenn es wirklich dekodiert ist.** Es liegt als Datenzeile im
+Quelltext, *geladen* wird also nichts — *dekodiert* aber schon, und beim ersten Besuch dauert
+das einen Moment. Vorher blendete die Hülle nach fester Uhr auf und war dabei kurz leer. Jetzt
+zählt, was später kommt: die halbe Strecke **oder** das fertige Bild (`img.decode()`). Die Hülle
+behält dabei ihren Platz, damit beim Erscheinen nichts rückt.
 
 **Und der Vorspann hat keinen eigenen Hintergrund mehr.** Er ist durchsichtig und lässt die
 Farbwolken der App durch — also genau die Fläche, auf der gleich die Anmeldeseite steht. Vorher
@@ -345,13 +359,24 @@ Maske kommt als `--moji-maske` aus `playIntro()`, weil das Bild als Datenzeile i
 und nicht als Datei. Kennt ein Browser keine Masken, bleibt das Band ganz weg (`@supports`) —
 als Rechteck über dem leeren Platz daneben wäre es schlimmer als gar keins.
 
-> **Der Ladebalken ist weg.** Er zeigte den echten Start statt einer Uhr: `introBalken()` schickte
-> ihn erst auf 86 % und dehnte die letzten Prozent über die verbleibende Standzeit, sobald `go()`
-> den Start meldete. Richtig gedacht — aber es blieb ein zweites Ding auf dem Schirm. Die
-> **Zeiten sind unberührt**, sie hingen nie am Balken: `introSchliessen()` entscheidet weiter, und
-> merkt sich den Endzeitpunkt jetzt in `window.__introEnde`, damit beim Nachsehen erkennbar ist,
-> worauf der Vorspann gerade wartet. Ohne Balken steht das Zeichen die volle Standzeit still —
-> wenn das zu lang wirkt, sind `INTRO_MIN` und `INTRO_LANG` die Stellschrauben.
+**Der Balken kündigt nichts an und will nicht auffallen.** Er ist da, damit niemand meint, die
+App hänge. Darum 2 px hoch, höchstens 132 px breit — und **ohne eigene Farbe**: Spur und Füllung
+kommen aus `--tx-rgb`, also im Hellen ein Grau und im Dunkeln ein leises Weiß.
+
+Er zeigt weiterhin den **echten Start, keine Uhr**. `balkenZug(stufe, ms, auf)` kennt vier Stufen,
+und **keine nimmt eine spätere zurück**. Das ist nötig, weil der echte Start jederzeit
+dazwischenfunken darf: meldet sich eine Ansicht schon nach einer halben Sekunde, läuft der letzte
+Zug sofort — der Zug auf 86 %, der per Uhr noch aussteht, dürfte ihn danach nicht wieder
+zurückholen. Ein unterbrochener CSS-Übergang läuft von der gerade erreichten Breite weiter, man
+sieht also keinen Sprung.
+
+`introSchliessen()` entscheidet wie gehabt, wann Schluss ist, und merkt sich den Endzeitpunkt in
+`window.__introEnde`. Die Standzeiten sind unverändert.
+
+> **Zwischenstand vom selben Tag:** Der Balken war zwischendurch ganz entfernt — ein Zeichen
+> allein auf dem Schirm war ruhiger. Ohne ihn stand es aber 4,4 bis 5,4 Sekunden still da, und
+> genau das liest sich wie ein Hänger. Er ist deshalb zurück, nur leiser als vorher: dünner,
+> schmaler und ohne Markenfarbe.
 
 Wie lange der Vorspann steht, hängt daran, wer da ist:Wie lange der Vorspann steht, hängt daran, wer da ist:
 
@@ -1482,6 +1507,13 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Vorspann: leiser Balken, und das Zeichen wartet aufs Bild** (14. September 2026): Der Balken
+  ist zurück, aber sehr zurückgenommen — 2 px, höchstens 132 px breit, ohne eigene Farbe (im
+  Hellen Grau, im Dunkeln ein leises Weiß, beides aus `--tx-rgb`). Der Ablauf ist jetzt erzählt:
+  erst nur der Hintergrund, dann der Balken bis zur Hälfte, dort erscheint das Männchen und der
+  Glanz wandert **einmal** darüber, dann der Rest. Das Männchen erscheint dabei erst, wenn
+  `img.decode()` durch ist — beim ersten Besuch war die Hülle sonst kurz leer. `balkenZug()`
+  nimmt keinen späteren Zug zurück. 74 Prüfungen in der Vorspann-Reihe, alle neun zusammen 463
 - **Vorspann: kein Glitzer mehr, scharfes Bild** (14. September 2026): Schleier, Lichtpunkte und
   der weiße Blitz sind raus, der Vorspann ist durchsichtig und zeigt dieselben Farbwolken wie die
   Anmeldeseite dahinter. Das Männchen war auf 256 px gezogen sichtbar unscharf — die Vorlage hatte

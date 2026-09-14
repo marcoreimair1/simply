@@ -26,12 +26,16 @@ ok('INTRO_MIN 4,4 s', INTRO_MIN === 4400, INTRO_MIN);
 ok('INTRO_LANG laenger als INTRO_MIN', INTRO_LANG > INTRO_MIN, INTRO_LANG + ' > ' + INTRO_MIN);
 ok('Notbremse liegt hinter beiden', INTRO_MAX > INTRO_LANG, INTRO_MAX);
 
-/* ── 2 · Auf dem Vorspann steht nur das Maennchen ──
-   Ladebalken, Wortmarke und Slogan sind am 14.09.2026 entfallen. */
-ok('Kein Ladebalken mehr',        !document.querySelector('#splash .sp-lade'));
-ok('Und auch nicht im gesicherten Markup', INTRO_HTML.indexOf('sp-bar') < 0);
+/* ── 2 · Auf dem Vorspann stehen das Maennchen und ein leiser Balken ──
+   Wortmarke und Slogan sind am 14.09.2026 entfallen. Der Balken kam
+   zurueck, nachdem der Vorspann ohne ihn wie ein Haenger aussah. */
+ok('Der leise Balken ist da',     !!document.querySelector('#splash .sp-lade #sp-bar'));
+ok('Und steht im gesicherten Markup', INTRO_HTML.indexOf('sp-bar') > -1);
 ok('Das Bild liegt im Vorspann',  !!document.querySelector('#splash .mark-logo #mark-img'));
 ok('Der Glanz liegt darueber',    !!document.querySelector('#splash .mark-logo #mark-glanz'));
+ok('Der Balken kommt nach dem Hintergrund', BALKEN_AB > 0 && BALKEN_AB < LOGO_AB,
+   BALKEN_AB + ' < ' + LOGO_AB);
+ok('Das Zeichen kommt vor dem Ende', LOGO_AB < INTRO_MIN, LOGO_AB + ' < ' + INTRO_MIN);
 
 /* ── 3 · playIntro setzt das freigestellte Maennchen ── */
 ME = null;
@@ -42,6 +46,26 @@ ok('Freigestellt, nicht die Kachel', bild.getAttribute('src') === LOGO_MOJI);
 ok('Der Glanz traegt es als Maske',
    document.querySelector('#mark-glanz').style.getPropertyValue('--moji-maske').indexOf('data:image/webp') > -1);
 ok('Noch kein Ende gesetzt', !window.__introEnde, window.__introEnde);
+
+/* ── 3b · Das Zeichen wartet, bis es wirklich dekodiert ist ──
+   Direkt nach playIntro() steht die Huelle noch ohne Vermerk da — und
+   damit unsichtbar. Frueher blendete sie nach fester Uhr auf und war
+   beim ersten Besuch kurz leer. */
+ok('Das Zeichen ist noch verdeckt', !document.getElementById('mark-wrap').classList.contains('da'));
+ok('Und der Balken noch bei null', document.getElementById('sp-bar').style.width === '0px'
+   || document.getElementById('sp-bar').style.width === '', document.getElementById('sp-bar').style.width);
+
+/* ── 3c · Kein Zug nimmt einen spaeteren zurueck ──
+   Meldet sich eine Ansicht frueh, laeuft der letzte Zug sofort. Der
+   Zug auf 86 %, der per Uhr noch aussteht, darf ihn nicht zurueckholen. */
+balkenZug(3, 100, '100%');
+ok('Letzter Zug sitzt', document.getElementById('sp-bar').style.width === '100%');
+balkenZug(2, 100, '86%');
+ok('Ein frueherer Zug holt ihn nicht zurueck',
+   document.getElementById('sp-bar').style.width === '100%',
+   document.getElementById('sp-bar').style.width);
+playIntro();
+ok('Neuer Durchlauf faengt wieder bei null an', _balkenZug === 0, _balkenZug);
 
 /* ── 4 · Ohne Anmeldung die lange Fassung ──
    Gemessen wird der gemerkte Endzeitpunkt. Frueher lief diese Pruefung
@@ -206,13 +230,24 @@ setTimeout(() => {
    ['Das Bild steht frei — keine Flaeche, kein Schatten',
     /\.mark-logo\{[\s\S]{0,260}box-shadow:none!important/],
    ['Weniger Bewegung schaltet den Glanz ab',
-    /prefers-reduced-motion:reduce\)\{\s*\n\s*\.mark-glanz\{ display:none!important \}/]
+    /prefers-reduced-motion:reduce\)\{\s*\n\s*\.mark-glanz\{ display:none!important \}/],
+   /* Der Balken traegt keine eigene Farbe: im Hellen Grau, im Dunkeln
+      ein leises Weiss — beides aus --tx-rgb. */
+   ['Der Balken nimmt die Textfarbe der Fassung',
+    /\.sp-lade i\{[\s\S]{0,220}background:rgba\(var\(--tx-rgb\),\.45\)/],
+   ['Und bleibt duenn und schmal',
+    /\.sp-lade\{[\s\S]{0,120}width:min\(38vw,132px\); height:2px/],
+   ['Der Glanz laeuft genau einmal',
+    /\.mark-wrap\.da \.mark-glanz::after\{[\s\S]{0,120}kartenGlanz [\d.]+s [\d.]+s var\(--ease\) 1 both/],
+   ['Das Zeichen ist erst mit dem Vermerk zu sehen',
+    /\.mark-wrap\{[\s\S]{0,220}opacity:0[\s\S]{0,220}\.mark-wrap\.da\{opacity:1/],
+   ['Und es wartet auf das dekodierte Bild', /bild\.decode \? bild\.decode\(\)/]
   ].forEach(([n, re]) => E.push({ n, ok: re.test(roh), z: re.test(roh) ? '' : 'fehlt' }));
   /* Im Vorspann-Markup darf nichts davon mehr vorkommen. */
   const splash = (roh.match(/<div id="splash"[\s\S]*?\n<\/div>/) || [''])[0];
   [['Keine Unterzeile im Vorspann', splash.indexOf('subline') < 0],
    ['Keine Wortmarke im Vorspann',  splash.indexOf('mark-wort') < 0],
-   ['Kein Ladebalken im Vorspann',  splash.indexOf('sp-lade') < 0],
+   ['Der Balken steht im Vorspann', splash.indexOf('sp-lade') > -1],
    ['Bild und Glanz sind da',       splash.indexOf('mark-img') > -1 && splash.indexOf('mark-glanz') > -1]
   ].forEach(([n, gut]) => E.push({ n, ok: gut, z: gut ? '' : 'siehe #splash' }));
   let schlecht = 0;
