@@ -3461,6 +3461,26 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 .ein-err{ display:none; margin:2px 6px 4px; font-size:12.5px; line-height:1.45; color:var(--coral) }
 .ein-err.da{ display:block }
 
+/* ─── Face ID nachtraeglich einrichten ───────────────────────────
+   Wer sich mit Code angemeldet hat und noch keinen Schluessel im
+   Geraet hat, wird einmal gefragt. Gebaut wie der Einstieg: oben Luft,
+   in der Mitte die Frage, unten derselbe Kasten mit denselben zwei
+   Knoepfen — es ist ja auch dieselbe Entscheidung. */
+#v-pkask{ padding-top:0 }
+.fid{ display:flex; flex-direction:column;
+  min-height:100vh; min-height:100svh;
+  padding:calc(env(safe-area-inset-top) + 16px) 4px calc(env(safe-area-inset-bottom) + 14px);
+}
+.fid-mitte{ margin:auto 0; display:grid; justify-items:center; text-align:center; gap:15px;
+  padding:0 12px 26px; animation:einRein .66s var(--ease-out) both }
+.fid-zeichen{ display:grid; place-items:center; width:76px; height:76px; border-radius:26px;
+  color:var(--butter); background:rgba(var(--marke-rgb),.1);
+  border:1px solid rgba(var(--marke-rgb),.22) }
+.fid-zeichen svg{ width:36px; height:36px }
+.fid-h{ font-family:var(--font-dis); font-weight:400; letter-spacing:-.03em;
+  font-size:clamp(26px,7.2vw,34px); line-height:1.08; margin:0 }
+.fid-t{ margin:0; font-size:13.5px; line-height:1.5; color:var(--tx-3) }
+
 /* ─── Blatt: E-Mail und Code ─────────────────────────────────────
    Legt sich ueber den Einstieg statt ihn zu ersetzen. Man ist nicht
    woanders, man ist einen Schritt weiter. */
@@ -4136,25 +4156,23 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       </div>
     </section>
 
-    <!-- ─────────── PASSKEY GLEICH ANLEGEN ─────────── -->
-    <section class="view pt" id="v-pkask">
-      <div class="eyebrow">Ein Schritt noch</div>
-      <h1 class="dis">Nie wieder einen <i>Code</i> eintippen.</h1>
-      <p class="lede">Du bist drin. Wenn du jetzt einen Passkey anlegst, genügt beim nächsten
-        Mal Face ID oder dein Fingerabdruck — keine Mail, kein Code, kein Warten aufs Postfach.</p>
-      <div class="card mt" style="max-width:440px">
-        <div class="pkrow"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg></span>
-          <span><b>Bleibt auf diesem Gerät</b><small>Der Schlüssel liegt im Gerät bzw. in deinem
-            Schlüsselbund — MOJI sieht ihn nie.</small></span></div>
-        <div class="pkrow"><span class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg></span>
-          <span><b>Jederzeit widerrufbar</b><small>Im Menü kannst du den Passkey zurücksetzen und
-            wieder mit E-Mail arbeiten.</small></span></div>
-      </div>
-      <div class="navrow">
-        <button class="btn btn-p" id="pk-ask-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/></svg>Passkey einrichten</button>
-      </div>
-      <div style="margin-top:18px">
-        <button class="linkbtn" id="pk-ask-skip">Später, erst mal ohne</button>
+    <!-- ─────────── FACE ID GLEICH EINRICHTEN ───────────
+         Dieselbe Bauform wie der Einstieg: in der Mitte die Frage, unten
+         der Kasten mit den zwei Wegen. Bis zum 15. September 2026 stand
+         hier eine ganze Seite mit Augenbraue, Fliesstext und zwei
+         Merkzeilen — und das Wort "Passkey", das am Geraet niemand
+         liest: dort heisst es Face ID. -->
+    <section class="view" id="v-pkask">
+      <div class="fid">
+        <div class="fid-mitte">
+          <span class="fid-zeichen" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.6V6.4A2.4 2.4 0 0 1 6.4 4h2.2M15.4 4h2.2A2.4 2.4 0 0 1 20 6.4v2.2M20 15.4v2.2a2.4 2.4 0 0 1-2.4 2.4h-2.2M8.6 20H6.4A2.4 2.4 0 0 1 4 17.6v-2.2"/><path d="M9 10.2v1.6M15 10.2v1.6M12 10v3.6l-1.2.7"/><path d="M9.3 16.1a4.2 4.2 0 0 0 5.4 0"/></svg></span>
+          <h1 class="fid-h">Face ID jetzt einrichten</h1>
+          <p class="fid-t">Beim nächsten Mal ohne Code anmelden.</p>
+        </div>
+        <div class="einbox">
+          <button class="einb prim" id="pk-ask-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.6V6.4A2.4 2.4 0 0 1 6.4 4h2.2M15.4 4h2.2A2.4 2.4 0 0 1 20 6.4v2.2M20 15.4v2.2a2.4 2.4 0 0 1-2.4 2.4h-2.2M8.6 20H6.4A2.4 2.4 0 0 1 4 17.6v-2.2"/><path d="M9 10.2v1.6M15 10.2v1.6M12 10v3.6l-1.2.7"/><path d="M9.3 16.1a4.2 4.2 0 0 0 5.4 0"/></svg>Einrichten</button>
+          <button class="einb zweit" id="pk-ask-skip">Später</button>
+        </div>
       </div>
     </section>
 
@@ -5106,7 +5124,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-0125';
+const APP_STAND = '2026-09-15-0215';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6473,11 +6491,12 @@ function go(id){
   try{ introAppSteht(); }catch(e){ console.warn(e); }
   /* Steht die erste Ansicht, darf der Deckel des Fassungswechsels weg. */
   try{ if(typeof fassungsdeckelWeg === 'function') fassungsdeckelWeg(); }catch(e){}
-  /* Einstieg und Funnel gehoeren der ganzen Flaeche — dort steht keine
-     Kopfleiste. Und ein offenes Blatt der Anmeldung darf nirgends
-     stehenbleiben: es liegt fest ueber allem. */
+  /* Einstieg, Funnel und die Face-ID-Frage gehoeren der ganzen Flaeche —
+     dort steht keine Kopfleiste. Und ein offenes Blatt der Anmeldung darf
+     nirgends stehenbleiben: es liegt fest ueber allem. */
   document.body.classList.toggle('nobar',
-    id === 'v-onboard' || id === 'v-zeitassi' || (id === 'v-login' && CLOUD_ON));
+    id === 'v-onboard' || id === 'v-zeitassi' || id === 'v-pkask'
+    || (id === 'v-login' && CLOUD_ON));
   if(id !== 'v-login'){
     try{ blattAllesZu(); }catch(e){}
     try{ msStop(); }catch(e){}

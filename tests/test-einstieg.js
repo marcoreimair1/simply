@@ -432,6 +432,25 @@ ok('Beide Blaetter tragen das Bild', marken.length === 2
    && marken.every(i => (i.getAttribute('src') || '').indexOf('data:image/webp') === 0),
    marken.length);
 
+/* ── 18 · Face ID nachtraeglich einrichten ──
+   Die Frage nach dem Code-Login. Sie trug bis 15.09.2026 noch das alte
+   Seitengeruest und das Wort "Passkey". */
+const fid = el('v-pkask');
+ok('Die Frage steht im neuen Geruest', !!fid.querySelector('.fid') && !!fid.querySelector('.einbox'),
+   fid.firstElementChild && fid.firstElementChild.className);
+ok('Und heisst Face ID', fid.querySelector('.fid-h').textContent === 'Face ID jetzt einrichten',
+   fid.querySelector('.fid-h').textContent);
+ok('Das Wort Passkey kommt nicht mehr vor', fid.textContent.indexOf('Passkey') === -1,
+   fid.textContent.trim().slice(0, 60));
+ok('Zwei Knoepfe im Kasten',
+   fid.querySelector('.einbox #pk-ask-go.einb.prim') && fid.querySelector('.einbox #pk-ask-skip.einb.zweit'));
+ok('Kein Textlink mehr', !fid.querySelector('.linkbtn'));
+ok('Und keine Merkzeilen mehr', !fid.querySelector('.pkrow'));
+/* Sie gehoert der ganzen Flaeche, wie Einstieg und Funnel — sonst
+   stuende der Kasten unten halb ausserhalb des Schirms. */
+go('v-pkask');
+ok('Ohne Kopfleiste', document.body.classList.contains('nobar'), document.body.className);
+
 window.__FERTIG = true;
 `;
 

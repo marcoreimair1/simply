@@ -306,6 +306,12 @@ Die einmaligen Nachfragen `#v-pkask` und `#v-erinask` gibt es weiterhin — sie 
 **bestehenden** Profilen, die den Funnel nie gesehen haben (→ Abschnitt 15.7). Neue Profile
 beantworten beides mit den Schaltern in Schritt 3.
 
+`#v-pkask` trägt seit 15. September 2026 dieselbe Bauform wie der Einstieg: die ganze Fläche
+ohne Kopfleiste, in der Mitte Zeichen, Überschrift **Face ID jetzt einrichten** und eine Zeile,
+unten der Kasten mit *Einrichten* und *Später*. Vorher standen dort Augenbraue, Fließtext, zwei
+Merkzeilen in einer Karte und ein Textlink — und das Wort *Passkey*, das am Gerät niemand liest:
+dort heißt es Face ID. **`#v-erinask` trägt die alte Bauform noch.**
+
 **Passkey.** Im Profilmenü steht dafür **eine** Zeile: das Schlüsselsymbol in Normalgröße,
 darunter der Zustand in Farbe.
 
@@ -1617,6 +1623,12 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Face ID jetzt einrichten** (15. September 2026): Die Nachfrage nach dem Code-Login
+  (`#v-pkask`) stand noch im alten Seitengerüst und sprach von *Passkey*. Jetzt dieselbe
+  Bauform wie der Einstieg — ganze Fläche, keine Kopfleiste, unten derselbe Kasten mit
+  `.einb prim` und `.einb zweit`. Sieben neue Prüfungen, darunter eine, dass das Wort
+  *Passkey* dort nicht zurückkommt. 563 Prüfungen
 
 - **Vorspann kürzer, Assistent langsamer** (15. September 2026): Zwei Tempi in
   entgegengesetzte Richtungen. Der Vorspann stand 4,4 s (angemeldet) bzw. 5,4 s und las sich als
