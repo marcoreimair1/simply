@@ -202,6 +202,11 @@ ok('MOJI steht in der Mitte', el('za-moji').classList.contains('mitte'));
 ok('Er traegt das Maennchen', (el('za-bild').getAttribute('src')||'').indexOf('data:image/webp') === 0);
 ok('Alle Tage fangen frei an',
    WORKDAYS.every(d => !ZA.sched.weeks[0][d].vmOn && !ZA.sched.weeks[0][d].nmOn));
+/* Beim Gruss ist noch nichts geschehen — also weder Zaehlung noch Balken. */
+ok('Kopf und Balken ruhen noch', el('v-zeitassi').classList.contains('ohnekopf'));
+ok('Und die Gruppe steht mittig', el('v-zeitassi').classList.contains('mitte'));
+ok('Das weiter steht nicht in der Blase', !el('za-blase').contains(el('za-mehr')));
+ok('Ein Kreuz fuehrt jederzeit hinaus', !!el('za-zu'));
 zaDurchtippen();                       /* nur der erste Satz */
 ok('Der Name steht im Gruss', el('za-text').textContent.indexOf('Anna') > -1, el('za-text').textContent);
 ok('Und es kommt noch mehr',  !el('za-mehr').hidden);
@@ -221,6 +226,7 @@ ok('Ein Knopf fuehrt in die App', !!document.querySelector('[data-za="fertigab"]
 zaStart(); durch();
 document.querySelector('[data-za="los"]').click(); durch();
 ok('Jetzt die Wochenfrage',   ZA.schritt === 'wochen');
+ok('Jetzt zaehlt der Kopf mit', !el('v-zeitassi').classList.contains('ohnekopf'));
 ok('MOJI rueckt nach oben',   el('za-moji').classList.contains('oben'));
 ok('Vier Intervalle zur Wahl', document.querySelectorAll('[data-wc]').length === 4);
 document.querySelector('[data-wc="2"]').click();
@@ -232,6 +238,13 @@ ok('Das Rad kennt den Viertelstundentakt', ZA_ZEITEN.length === 80
    ZA_ZEITEN.length + ' ' + ZA_ZEITEN[0] + '…' + ZA_ZEITEN[79]);
 ok('Krumme Zeiten rasten ein', ZA_ZEITEN[zaNaechste('08:07')] === '08:00',
    ZA_ZEITEN[zaNaechste('08:07')]);
+
+/* ── 11c2 · Das Kreuz fragt nach, statt sofort zu gehen ── */
+el('za-zu').click();
+ok('Die Rueckfrage kommt',    el('zabar').classList.contains('on'));
+ok('Und nennt den Verlust',   /Fortschritt geht verloren/.test(el('zabar').textContent));
+document.querySelector('#zabar [data-zazu]').click();
+ok('Weitermachen laesst alles stehen', ZA.schritt === 'wochen');
 
 /* ── 11d · Einmal ganz durch, mit zwei Wochen ──
    Der Sprung nach der Wochenwahl laeuft ueber eine kurze Pause, damit

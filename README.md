@@ -193,7 +193,7 @@ steht dieselbe `sched`-Struktur wie vorher.
 
 | Bild | Was passiert |
 |---|---|
-| Gruß | MOJI in der Mitte: *Hi Anna! Ich bin MOJI.* → *Lass uns kurz deine Arbeitszeiten festlegen…* Zwei Wege: **Ja, starten wir!** / **Hab's mir anders überlegt** |
+| Gruß | MOJI in der Mitte des Schirms: *Hi Anna! Ich bin MOJI.* → *Lass uns kurz deine Arbeitszeiten festlegen…* Zwei Wege: **Ja, starten wir!** / **Hab's mir anders überlegt**. Hier gibt es weder Zählung noch Balken — es ist ja noch nichts geschehen |
 | Abbruch | *…* — dann *Ok, schade. Du kannst deine Zeiten jederzeit im Profilmenü nachtragen.* Erst ein weiterer Tipp führt in die App |
 | Wochen | MOJI rückt nach oben und bleibt dort. *Arbeitest du jede Woche gleich?* → vier Knöpfe: 1 bis 4 Wochen |
 | Tage | *An welchen Tagen arbeitest du?* → sechs Knöpfe, angetippt färben sie **grün** und springen kurz auf |
@@ -211,9 +211,14 @@ im alten Formular), als Band über der Frage und im Fortschrittsbalken. Vor jede
 fragt MOJI erneut nach den Tagen, und bei jedem Tag steht oben **Wie Woche 1** (bzw. 2, 3) zum
 Übernehmen — dort, wo es in einer früheren Woche überhaupt Zeiten gibt.
 
-**MOJI redet in Häppchen.** Ein Satz je Blase; kommt mehr, steht darunter ein kleines *weiter*.
-Wer schneller liest, tippt die Blase an: der Satz steht sofort, ein zweiter Tipp holt den
-nächsten.
+**MOJI redet in Häppchen.** Ein Satz je Blase; kommt mehr, steht **unter** der Blase ein kleines
+*weiter* — in der Blase saß es dem Satz im Weg und las sich, als gehöre es zum Text. Wer
+schneller liest, tippt die Blase an: der Satz steht sofort, ein zweiter Tipp holt den nächsten.
+
+**Aussteigen geht jederzeit** über das Kreuz oben rechts. Gefragt wird trotzdem — *Wirklich
+abbrechen? Der Fortschritt geht verloren. Den Dienstplan kannst du später im Profilmenü
+anlegen.* — in derselben Leiste, die auch beim Passkey fragt. Wer bestätigt, landet auf demselben
+Weg wie bei *Später*: Profil gespeichert, Willkommensgruß, Kalender.
 
 > **Sonntag kommt nicht vor.** Die Tage sind sechs, nicht sieben: `WORKDAYS` ist `[1…6]`, und
 > Sonntag gilt in der ganzen App als frei — in `dayPlan()`, in `qTouched()` und auf der A4-Seite.
@@ -1545,6 +1550,9 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Zeit-Assistent nachgezogen** (14. September 2026): Das *weiter* sitzt jetzt unter der Blase
+  statt darin, die Begrüßung steht mittig auf dem Schirm und kommt ohne Zählung und Balken aus,
+  und oben rechts führt ein Kreuz mit Rückfrage jederzeit hinaus
 - **Der Zeit-Assistent** (14. September 2026): Die Dienstzeiten das erste Mal eintragen läuft
   nicht mehr über ein Formular mit vierundzwanzig Feldern, sondern über MOJI: eine Frage je Bild,
   Antworten zum Antippen, Uhrzeiten an Rädern wie beim Wecker, Text Zeichen für Zeichen. Mehrere

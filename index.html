@@ -3733,7 +3733,20 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
    auf einen Blick, in welchem Intervall man steckt. */
 .za-balken i[data-w]{ background:linear-gradient(90deg,var(--zaf,var(--butter-2)),var(--butter)) }
 
-.za-buehne{ max-width:430px; width:100%; margin:0 auto; display:flex; flex-direction:column }
+#v-zeitassi{ position:relative }
+/* Aussteigen: dort, wo ein Schliesskreuz hingehoert. */
+.za-zu{ position:absolute; top:calc(env(safe-area-inset-top) + 10px); right:2px; z-index:3;
+  width:40px; height:40px; border-radius:50%; display:grid; place-items:center;
+  color:var(--tx-3); background:rgba(var(--tx-rgb),.06); transition:.2s var(--ease) }
+.za-zu:active{ transform:scale(.92) }
+.za-zu svg{ width:17px; height:17px }
+.za-buehne{ max-width:430px; width:100%; margin:0 auto; flex:1;
+  display:flex; flex-direction:column; padding-bottom:12px }
+/* Solange MOJI nur redet, steht die Gruppe in der Mitte des Schirms —
+   und Kopfzeile und Balken haben dort noch nichts zu melden. */
+#v-zeitassi.mitte .za-buehne{ justify-content:center; padding-bottom:6vh }
+#v-zeitassi.ohnekopf .za-kopf,
+#v-zeitassi.ohnekopf .za-balken{ display:none }
 
 /* ─── MOJI und seine Sprechblase ─────────────────────────────────
    In der Mitte, solange er nur redet. Sobald es etwas zu tun gibt,
@@ -3758,10 +3771,13 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   margin-left:2px; background:var(--butter); vertical-align:-.14em;
   animation:zaStrich .8s steps(2) infinite }
 @keyframes zaStrich{ 50%{ opacity:0 } }
-.za-mehr{ display:inline-flex; align-items:center; gap:4px; margin-top:9px;
+.za-mehr{ display:inline-flex; align-items:center; gap:4px; align-self:flex-start;
+  margin:11px 0 0 86px;
   font-size:12px; font-weight:650; letter-spacing:.02em; color:var(--butter);
-  padding:5px 10px 5px 11px; border-radius:99px;
+  padding:6px 12px 6px 13px; border-radius:99px;
   background:rgba(var(--marke-rgb),.1); animation:zaRein .3s var(--ease-out) both }
+/* Unter der mittigen Gruppe steht es auch mittig. */
+#v-zeitassi.mitte .za-mehr{ align-self:center; margin-left:0 }
 .za-mehr svg{ width:13px; height:13px }
 /* display aus der eigenen Regel schlaegt das [hidden] des Browsers —
    beide haben dieselbe Spezifitaet, und das Blatt der Seite gewinnt.
@@ -3769,8 +3785,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 .za-mehr[hidden]{ display:none }
 
 /* In der Mitte: gross, untereinander, mittig — fuer Gruss und Schluss. */
-.za-moji.mitte{ flex-direction:column; align-items:center; gap:18px;
-  margin:auto 0; text-align:center }
+.za-moji.mitte{ flex-direction:column; align-items:center; gap:18px; text-align:center }
 .za-moji.mitte .za-bild{ width:min(42vw,158px) }
 .za-moji.mitte .za-blase{ flex:none; width:100%; border-radius:20px;
   padding:18px 18px; font-size:16px }
@@ -3778,7 +3793,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   border:none; border-top:1px solid var(--karte-rand); border-left:1px solid var(--karte-rand);
   border-radius:4px 0 0 0 }
 #v-zeitassi.on{ display:flex; flex-direction:column }
-.za-moji.mitte ~ .za-inhalt{ margin-top:24px; margin-bottom:auto }
+#v-zeitassi.mitte .za-inhalt{ margin-top:24px }
 .za-moji.oben{ margin:22px 0 0 }
 .za-bild img.wackelt{ animation:eiWackel .9s var(--ease) 1 }
 
@@ -4222,6 +4237,9 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
          Zeichen wie in einem Spiel. Gerechnet wird danach genau wie
          vorher — das Ergebnis ist dieselbe sched-Struktur.            -->
     <section class="view" id="v-zeitassi">
+      <!-- Aussteigen geht jederzeit. Gefragt wird trotzdem: bis hierher
+           steckt Arbeit drin, und ein Fehlgriff waere aergerlich. -->
+      <button class="za-zu" id="za-zu" aria-label="Abbrechen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <div class="za-kopf">
         <button class="obzurueck hide" id="za-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
         <span class="za-schritt" id="za-schritt"></span>
@@ -4233,9 +4251,11 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
           <span class="za-bild"><img id="za-bild" alt="MOJI"></span>
           <span class="za-blase" id="za-blase">
             <span class="za-text" id="za-text"></span>
-            <button class="za-mehr" id="za-mehr" hidden>weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
           </span>
         </div>
+        <!-- Steht unter der Blase, nicht darin: in der Blase sass es dem
+             Satz im Weg und las sich, als gehoere es zum Text. -->
+        <button class="za-mehr" id="za-mehr" hidden>weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="za-inhalt" id="za-inhalt"></div>
       </div>
     </section>
@@ -4555,6 +4575,20 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 
 <!-- Kleiner Balken für den Passkey: fragt kurz nach, statt eine ganze Seite
      aufzuziehen. Beschriftung und Farbe richten sich nach dem Zustand. -->
+<!-- Rueckfrage beim Aussteigen aus dem Zeit-Assistenten. Dieselbe
+     Leiste wie beim Passkey, nur mit eigenem Text. -->
+<div class="pkbar" id="zabar" aria-hidden="true">
+  <div class="pkbar-hg" data-zazu></div>
+  <div class="pkbar-in" role="dialog" aria-modal="true" aria-labelledby="zabar-b">
+    <span class="pkbar-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.5v5"/><circle cx="12" cy="16.6" r=".8" fill="currentColor"/><circle cx="12" cy="12" r="9"/></svg></span>
+    <span class="pkbar-txt"><b id="zabar-b">Wirklich abbrechen?</b><small>Der Fortschritt geht verloren. Den Dienstplan kannst du später im Profilmenü anlegen.</small></span>
+    <span class="pkbar-btns">
+      <button class="pkbar-no" data-zazu>Weitermachen</button>
+      <button class="pkbar-ja" id="zabar-ja">Abbrechen</button>
+    </span>
+  </div>
+</div>
+
 <div class="pkbar" id="pkbar" aria-hidden="true">
   <div class="pkbar-hg" data-close="pkbar"></div>
   <div class="pkbar-in" role="dialog" aria-modal="true" aria-labelledby="pkbar-b">
@@ -5035,7 +5069,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-1650';
+const APP_STAND = '2026-09-14-1740';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7088,12 +7122,39 @@ function zaFortschritt(){
        : 'Deine Woche';
   $('#za-back').classList.toggle('hide', ZA.schritt === 'gruss' || ZA.schritt === 'fertig'
                                       || ZA.schritt === 'abbruch');
+  zaKopf();
 }
 function zaMoji(wo){
-  const m = $('#za-moji');
+  const m = $('#za-moji'), v = $('#v-zeitassi');
   m.classList.toggle('mitte', wo === 'mitte');
   m.classList.toggle('oben',  wo !== 'mitte');
+  if(v) v.classList.toggle('mitte', wo === 'mitte');
 }
+/* Gruss und Abbruch brauchen weder Zaehlung noch Balken — dort ist noch
+   nichts geschehen, was man haette zaehlen koennen. */
+function zaKopf(){
+  const v = $('#v-zeitassi'); if(!v) return;
+  v.classList.toggle('ohnekopf', ZA.schritt === 'gruss' || ZA.schritt === 'abbruch');
+}
+
+/* ─── Aussteigen ─────────────────────────────────────────────────── */
+function zaAbbrechenFragen(){
+  const el = $('#zabar'); if(!el) return;
+  el.classList.add('on');
+  el.setAttribute('aria-hidden','false');
+  requestAnimationFrame(() => el.classList.add('da'));
+}
+function zaAbbrechenZu(){
+  const el = $('#zabar'); if(!el || !el.classList.contains('on')) return;
+  el.classList.remove('da');
+  el.setAttribute('aria-hidden','true');
+  setTimeout(() => el.classList.remove('on'), 320);
+}
+$('#za-zu').addEventListener('click', zaAbbrechenFragen);
+$('#zabar').addEventListener('click', e => {
+  if(e.target.closest('[data-zazu]')) zaAbbrechenZu();
+});
+$('#zabar-ja').addEventListener('click', () => { zaAbbrechenZu(); finishOnboarding(); });
 function zaWackeln(){
   const b = $('#za-bild');
   if(!b) return;
@@ -7110,6 +7171,7 @@ function zaStart(){
     WORKDAYS.forEach(d => { ZA.sched.weeks[w][d].vmOn = false; ZA.sched.weeks[w][d].nmOn = false; });
   const b = $('#za-bild');
   if(b && !b.getAttribute('src')) b.src = LOGO_MOJI;
+  zaAbbrechenZu();
   go('v-zeitassi');
   zaGruss();
 }
