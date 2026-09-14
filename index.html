@@ -3705,6 +3705,35 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 .za-moji.oben{ margin:22px 0 0 }
 .za-bild img.wackelt{ animation:eiWackel .9s var(--ease) 1 }
 
+/* ─── MOJI bewegt sich, waehrend er redet ────────────────────────
+   Die Bewegung sitzt auf der Huelle, nicht auf dem Bild — so kommt
+   sie dem Wackeln aus eiWackel nicht in die Quere, das beim Gruss
+   und am Schluss auf dem Bild selbst laeuft. */
+.za-bild{ transform-origin:50% 86% }
+.za-bild.spricht{ animation:zaWippen 1.15s var(--ease) infinite }
+@keyframes zaWippen{
+  0%,100%{ transform:translateY(0) rotate(0deg) }
+  30%    { transform:translateY(-2.5px) rotate(-1.6deg) }
+  62%    { transform:translateY(.5px) rotate(1.2deg) }
+}
+/* Und nicht bei jedem Satz, sondern bei jedem dritten, ein groesserer
+   Akzent — abwechselnd ein Nicken und ein Huepfer. Immer waere eine
+   Marotte, nie waere ein Bild. */
+.za-bild.nickt { animation:zaNicken .62s var(--ease-out) 1 }
+.za-bild.huepft{ animation:zaHuepfen .74s var(--ease-out) 1 }
+@keyframes zaNicken{
+  0%,100%{ transform:rotate(0deg) }
+  28%{ transform:rotate(-9deg) scale(1.04) }
+  60%{ transform:rotate(5deg) }
+  82%{ transform:rotate(-2deg) }
+}
+@keyframes zaHuepfen{
+  0%,100%{ transform:translateY(0) scale(1,1) }
+  18%{ transform:translateY(0) scale(1.06,.9) }
+  48%{ transform:translateY(-8px) scale(.96,1.06) }
+  76%{ transform:translateY(0) scale(1.04,.94) }
+}
+
 .za-inhalt{ margin-top:26px }
 .za-inhalt > *{ animation:zaRein .42s var(--ease-out) both }
 @keyframes zaRein{ from{ opacity:0; transform:translateY(10px) } }
@@ -3816,6 +3845,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 @media(prefers-reduced-motion:reduce){
   .za-text.tippt::after{ animation:none }
   .za-inhalt > *{ animation:none }
+  .za-bild.spricht, .za-bild.nickt, .za-bild.huepft{ animation:none }
 }
 
 
@@ -5048,7 +5078,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-2210';
+const APP_STAND = '2026-09-14-2320';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6895,13 +6925,41 @@ function zaTeilZeigen(){
   const el = $('#za-text'), mehr = $('#za-mehr');
   mehr.hidden = true;
   el.classList.add('tippt');
+  zaSpricht(true); zaGeste();
   zaTippen(el, txt, () => {
     el.classList.remove('tippt');
+    zaSpricht(false);
     if(_zaTeile.length){ mehr.hidden = false; return; }
     const cb = _zaDanach; _zaDanach = null;
     if(cb) cb();
   });
 }
+/* Solange getippt wird, wippt MOJI leise mit. Das kostet nichts und
+   macht aus einem Bild jemanden, der gerade redet. Beim Gruss und am
+   Schluss laeuft auf dem Bild selbst das Wackeln — deshalb sitzt das
+   Wippen eine Ebene darueber, auf .za-bild. */
+let _zaGesteN = 0, _zaGesteT = null;
+function zaSpricht(an){
+  const h = $('#v-zeitassi .za-bild'); if(!h) return;
+  h.classList.toggle('spricht', !!an && !zaRuhig());
+}
+/* Der groessere Akzent: jeder dritte Satz, abwechselnd Nicken und
+   Huepfer. Gezaehlt statt gewuerfelt — sonst kaeme er zweimal
+   hintereinander oder minutenlang gar nicht. */
+function zaGeste(){
+  const h = $('#v-zeitassi .za-bild'); if(!h || zaRuhig()) return;
+  /* Jeder neue Satz raeumt den alten Akzent weg — sonst haengt das
+     Nicken noch in der Blase, waehrend schon das Naechste dasteht. */
+  clearTimeout(_zaGesteT);
+  h.classList.remove('nickt','huepft');
+  const n = _zaGesteN++;
+  if(n % 3) return;
+  const art = (n / 3) % 2 ? 'huepft' : 'nickt';
+  void h.offsetWidth;
+  h.classList.add(art);
+  _zaGesteT = setTimeout(() => h.classList.remove('nickt','huepft'), 820);
+}
+
 /* Der Name, den MOJI benutzt. Waehrend des Funnels steht er noch im
    Feld, danach im Profil. Nicht ueber esc() — geschrieben wird mit
    textContent, da wuerde ein & zu &amp;. */
@@ -6989,16 +7047,32 @@ function radBau(wert, aendert){
   /* Erst wenn der Kasten im Dokument haengt, laesst sich scrollen — und
      das Einrasten von scroll-snap kann sich danach noch einmal melden.
      Darum zweimal setzen und erst dann zuhoeren. */
-  requestAnimationFrame(() => {
+  const richten = () => {
+    bereit = false;
+    /* Gleich einmal, ohne auf ein Bild zu warten: haengt der Kasten
+       schon im Dokument — beim Einschalten eines Abschnitts etwa —
+       sitzt das Rad damit sofort richtig. Und liegt die Seite im
+       Hintergrund, kommt requestAnimationFrame gar nicht; dann ist
+       dieser Griff der einzige. */
     stelle();
     requestAnimationFrame(() => {
       stelle();
-      setTimeout(() => {
-        if(Math.round(roll.scrollTop / RAD_H) !== stand) stelle();
-        bereit = true;
-      }, 140);
+      requestAnimationFrame(() => {
+        stelle();
+        setTimeout(() => {
+          if(Math.round(roll.scrollTop / RAD_H) !== stand) stelle();
+          bereit = true;
+        }, 140);
+      });
     });
-  });
+  };
+  /* Ein ausgeblendeter Abschnitt hat keinen Kasten, und was keinen
+     Kasten hat, laesst sich nicht scrollen: scrollTop bleibt 0, und 0
+     ist 04:00. Genau das stand da, wenn man den Nachmittag am naechsten
+     Tag wieder einschaltete. Darum richtet der Abschnitt seine Raeder
+     neu, sobald er sichtbar wird. */
+  el._neu = t => { if(t) stand = zaNaechste(t); richten(); };
+  richten();
   return el;
 }
 
@@ -7065,7 +7139,7 @@ function zaWackeln(){
 /* ─── Los ─────────────────────────────────────────────────────────── */
 function zaStart(){
   ZA.wc = 1; ZA.wi = 0; ZA.idx = 0;
-  ZA.tage = [[],[],[],[]]; ZA.gesetzt = {};
+  ZA.tage = [[],[],[],[]]; ZA.gesetzt = {}; _zaGesteN = 0;
   ZA.sched = defaultSched();
   /* Alle Tage erst einmal frei — was gearbeitet wird, setzt der Weg. */
   for(let w = 0; w < 4; w++)
@@ -7216,17 +7290,30 @@ function zaSegment(name, cfg, art, aendert){
     + '<b>' + name + '</b><span class="swr"><i></i></span>'
     + '<small class="za-seg-std" data-std="' + art + '"></small></button>'
     + '<div class="za-seg-raeder"></div>';
+  const raeder = $('.za-seg-raeder', el);
+  const von = radBau(cfg[art + 'From'], t => { cfg[art + 'From'] = t; if(aendert) aendert(); });
+  const bis = radBau(cfg[art + 'To'],   t => { cfg[art + 'To']   = t; if(aendert) aendert(); });
+  raeder.appendChild(von);
+  raeder.insertAdjacentHTML('beforeend', '<span class="za-bis">bis</span>');
+  raeder.appendChild(bis);
   $('.za-seg-kopf', el).addEventListener('click', () => {
-    cfg[art + 'On'] = !cfg[art + 'On'];
-    el.classList.toggle('aus', !cfg[art + 'On']);
-    el.setAttribute('aria-pressed', String(!!cfg[art + 'On']));
+    const an2 = !cfg[art + 'On'];
+    cfg[art + 'On'] = an2;
+    el.classList.toggle('aus', !an2);
+    el.setAttribute('aria-pressed', String(an2));
+    if(an2){
+      /* Ein Abschnitt, der nie an war, hat vielleicht gar keine Zeiten —
+         dann die Vorgabe, nicht den ersten Radeintrag. Erst beim
+         Einschalten, nicht schon beim Anzeigen: sonst zaehlte das
+         Ansehen im Profilmenue schon als Aenderung. */
+      if(!cfg[art + 'From']) cfg[art + 'From'] = ZA_STD[art + 'From'];
+      if(!cfg[art + 'To'])   cfg[art + 'To']   = ZA_STD[art + 'To'];
+      von._neu(cfg[art + 'From']);
+      bis._neu(cfg[art + 'To']);
+    }
     zaKlopf();
     if(aendert) aendert();
   });
-  const raeder = $('.za-seg-raeder', el);
-  raeder.appendChild(radBau(cfg[art + 'From'], t => { cfg[art + 'From'] = t; if(aendert) aendert(); }));
-  raeder.insertAdjacentHTML('beforeend', '<span class="za-bis">bis</span>');
-  raeder.appendChild(radBau(cfg[art + 'To'], t => { cfg[art + 'To'] = t; if(aendert) aendert(); }));
   return el;
 }
 

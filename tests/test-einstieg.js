@@ -207,7 +207,16 @@ ok('Kopf und Balken ruhen noch', el('v-zeitassi').classList.contains('ohnekopf')
 ok('Und die Gruppe steht mittig', el('v-zeitassi').classList.contains('mitte'));
 ok('Das weiter steht nicht in der Blase', !el('za-blase').contains(el('za-mehr')));
 ok('Ein Kreuz fuehrt jederzeit hinaus', !!el('za-zu'));
+/* Solange getippt wird, wippt MOJI mit — und der erste Satz bekommt
+   gleich einen Akzent dazu. */
+const huelle = () => document.querySelector('#v-zeitassi .za-bild');
+ok('MOJI wippt, waehrend er redet', huelle().classList.contains('spricht'),
+   huelle().className);
+ok('Der erste Satz bekommt einen Akzent', huelle().classList.contains('nickt'),
+   huelle().className);
 zaDurchtippen();                       /* nur der erste Satz */
+ok('Ist der Satz fertig, hoert das Wippen auf', !huelle().classList.contains('spricht'),
+   huelle().className);
 ok('Der Name steht im Gruss', el('za-text').textContent.indexOf('Anna') > -1, el('za-text').textContent);
 ok('Und es kommt noch mehr',  !el('za-mehr').hidden);
 /* Punkte am Ende zeigen, dass der Satz weitergeht. */
@@ -216,6 +225,11 @@ ok('Der Satz endet auf Punkte', /…$/.test(el('za-text').textContent.trim()),
 zaDurchtippen();
 ok('Und der naechste faengt damit an', /^…/.test(el('za-text').textContent.trim()),
    el('za-text').textContent);
+/* Der Akzent kommt nicht bei jedem Satz — sonst waere er eine Marotte. */
+ok('Der zweite Satz bleibt ruhig',
+   !huelle().classList.contains('nickt') && !huelle().classList.contains('huepft'),
+   huelle().className);
+ok('Gewippt wird aber wieder', huelle().classList.contains('spricht'), huelle().className);
 durch();
 ok('Zwei Wege stehen bereit', !!document.querySelector('[data-za="los"]')
                            && !!document.querySelector('[data-za="spaeter"]'));
@@ -253,6 +267,31 @@ ok('Das Rad kennt den Viertelstundentakt', ZA_ZEITEN.length === 80
    ZA_ZEITEN.length + ' ' + ZA_ZEITEN[0] + '…' + ZA_ZEITEN[79]);
 ok('Krumme Zeiten rasten ein', ZA_ZEITEN[zaNaechste('08:07')] === '08:00',
    ZA_ZEITEN[zaNaechste('08:07')]);
+
+/* ── 11c1 · Ein ausgeschalteter Abschnitt und seine Zeiten ──
+   Das Rad in einem ausgeblendeten Abschnitt hat keinen Kasten und steht
+   damit auf Null — und Null ist 04:00. Wer den Nachmittag am naechsten
+   Tag wieder einschaltete, sah genau das. */
+const probe = { vmOn:true, vmFrom:'08:00', vmTo:'12:00', nmOn:false, nmFrom:'13:00', nmTo:'17:00' };
+const kasten = zeitBlock(probe, () => {});
+document.body.appendChild(kasten);
+ok('Das Rad laesst sich neu richten', typeof kasten.querySelector('.rad')._neu === 'function');
+kasten.querySelector('.za-seg[data-seg="nm"] .za-seg-kopf').click();
+ok('Einschalten holt die alte Zeit zurueck',
+   probe.nmFrom === '13:00' && probe.nmTo === '17:00', probe.nmFrom + '–' + probe.nmTo);
+ok('Und nicht den ersten Radeintrag', probe.nmFrom !== ZA_ZEITEN[0], probe.nmFrom);
+kasten.remove();
+
+const leer = { vmOn:true, vmFrom:'08:00', vmTo:'12:00', nmOn:false, nmFrom:'', nmTo:'' };
+const kasten2 = zeitBlock(leer, () => {});
+document.body.appendChild(kasten2);
+/* Blosses Ansehen darf nichts schreiben — sonst gaelte im Profilmenue
+   schon das Aufklappen als Aenderung. */
+ok('Ansehen allein schreibt nichts', leer.nmFrom === '', leer.nmFrom);
+kasten2.querySelector('.za-seg[data-seg="nm"] .za-seg-kopf').click();
+ok('Erst das Einschalten setzt die Vorgabe',
+   leer.nmFrom === '13:00' && leer.nmTo === '17:00', leer.nmFrom + '–' + leer.nmTo);
+kasten2.remove();
 
 /* ── 11c2 · Das Kreuz fragt nach, statt sofort zu gehen ── */
 el('za-zu').click();

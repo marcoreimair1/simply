@@ -197,7 +197,7 @@ steht dieselbe `sched`-Struktur wie vorher.
 | Abbruch | *…* — dann *Ok, schade. Du kannst deine Zeiten jederzeit im Profilmenü nachtragen.* Erst ein weiterer Tipp führt in die App |
 | Wochen | MOJI rückt nach oben und bleibt dort. *Arbeitest du jede Woche gleich?* → darunter die Aufforderung *Wähle aus, in welchem Wochen-Intervall du arbeitest:* und vier Knöpfe: 1 bis 4 Wochen |
 | Tage | *Heute ist Montag in der KW 38. An welchen Tagen arbeitest du diese Woche?* → sechs Knöpfe, angetippt bekommen sie einen **grünen Rand** im Grün aus der Kugel des Männchens (`--moji-gruen`, aus dem Bild gemessen) |
-| Tag für Tag | Vormittag und Nachmittag je mit Schalter, den Stunden bündig rechts an der Kachel und **zwei Rädern**. Darunter *8,00 h Arbeitszeit · 1,00 h Pause* |
+| Tag für Tag | Vormittag und Nachmittag je mit Schalter, den Stunden bündig rechts an der Kachel und **zwei Rädern**. Darunter *8,00 h Arbeitszeit · 1,00 h Pause*. Ein abgeschalteter Abschnitt behält seine Zeiten und richtet seine Räder neu, sobald er wieder eingeschaltet wird |
 | Schluss | MOJI wieder mittig: *Super, Anna! …* → **Abschließen** → Willkommensgruß → Kalender |
 
 **Die Räder statt einer Tastatur.** Eine Uhrzeit tippt niemand gern, und die Tastatur schiebt am
@@ -1612,6 +1612,20 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **04:00 im wieder eingeschalteten Abschnitt** (14. September 2026): Wer den Nachmittag an einem
+  Tag abschaltete, fand ihn am nächsten Tag beim Einschalten auf *04:00* — dem ersten Radeintrag.
+  Ein ausgeblendeter Abschnitt hat keinen Kasten, und was keinen Kasten hat, lässt sich nicht
+  scrollen: `scrollTop` blieb 0. Das Rad kennt jetzt `_neu()` und richtet sich beim Einblenden
+  neu — einmal sofort, dann noch einmal über `requestAnimationFrame`, denn im Hintergrund kommt
+  das gar nicht. Wer einen Abschnitt einschaltet, der nie Zeiten hatte, bekommt die Vorgabe;
+  bloßes Ansehen schreibt weiterhin nichts. 544 Prüfungen
+
+- **MOJI bewegt sich beim Reden** (14. September 2026): Während getippt wird, wippt er leise mit
+  (`.spricht`), und jeder dritte Satz bekommt einen größeren Akzent — abwechselnd ein Nicken und
+  ein Hüpfer. Gezählt statt gewürfelt, sonst käme beides zweimal hintereinander oder minutenlang
+  gar nicht. Die Bewegung sitzt auf der Hülle `.za-bild`, damit sie dem Wackeln aus `eiWackel`
+  nicht in die Quere kommt
 
 - **Eine Zeile über den Wochenknöpfen** (14. September 2026): Die Frage *Arbeitest du jede Woche
   gleich?* sagte nicht, dass die vier Knöpfe darunter eine Antwort sind. Jetzt steht dazwischen
