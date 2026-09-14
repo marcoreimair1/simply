@@ -210,6 +210,12 @@ ok('Ein Kreuz fuehrt jederzeit hinaus', !!el('za-zu'));
 zaDurchtippen();                       /* nur der erste Satz */
 ok('Der Name steht im Gruss', el('za-text').textContent.indexOf('Anna') > -1, el('za-text').textContent);
 ok('Und es kommt noch mehr',  !el('za-mehr').hidden);
+/* Punkte am Ende zeigen, dass der Satz weitergeht. */
+ok('Der Satz endet auf Punkte', /…$/.test(el('za-text').textContent.trim()),
+   el('za-text').textContent);
+zaDurchtippen();
+ok('Und der naechste faengt damit an', /^…/.test(el('za-text').textContent.trim()),
+   el('za-text').textContent);
 durch();
 ok('Zwei Wege stehen bereit', !!document.querySelector('[data-za="los"]')
                            && !!document.querySelector('[data-za="spaeter"]'));
@@ -227,6 +233,9 @@ zaStart(); durch();
 document.querySelector('[data-za="los"]').click(); durch();
 ok('Jetzt die Wochenfrage',   ZA.schritt === 'wochen');
 ok('Jetzt zaehlt der Kopf mit', !el('v-zeitassi').classList.contains('ohnekopf'));
+ok('Oben steht nur Zurueck',   el('za-back').textContent.trim() === 'Zurück',
+   el('za-back').textContent.trim());
+ok('Und sonst nichts',         !document.getElementById('za-schritt'));
 ok('MOJI rueckt nach oben',   el('za-moji').classList.contains('oben'));
 ok('Vier Intervalle zur Wahl', document.querySelectorAll('[data-wc]').length === 4);
 document.querySelector('[data-wc="2"]').click();
@@ -290,6 +299,7 @@ ok('Am Schluss steht MOJI mittig', ZA.schritt === 'fertig'
    && el('za-moji').classList.contains('mitte'), ZA.schritt);
 ok('Der Balken ist voll',     el('za-bar').style.width === '100%', el('za-bar').style.width);
 ok('Kein Zurueck mehr',       el('za-back').classList.contains('hide'));
+ok('Und am Ende steht oben nichts', el('v-zeitassi').classList.contains('ohnekopf'));
 
 /* ── 11e · Was am Ende im Plan steht ── */
 ok('Das Intervall steht',     OB.sched.weekCount === 2, OB.sched.weekCount);

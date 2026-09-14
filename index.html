@@ -3726,8 +3726,13 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 #v-zeitassi{ padding-top:calc(env(safe-area-inset-top) + 18px);
   padding-bottom:calc(env(safe-area-inset-bottom) + 20px) }
 .za-kopf{ display:flex; align-items:center; gap:10px; max-width:430px; margin:0 auto; width:100% }
-.za-schritt{ font-size:11px; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--tx-3); font-variant-numeric:tabular-nums }
+/* Oben steht nur noch, wo es zurueckgeht. "Woche 1 von 2" und
+   "Deine Woche" standen dort vorher und verwirrten mehr, als sie
+   halfen — in welcher Woche man steckt, sagt das Band ueber der
+   Frage ohnehin. */
+.za-kopf .obzurueck{ width:auto; height:auto; margin-left:-6px; padding:6px 10px 6px 4px;
+  gap:5px; font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--tx-3) }
 .za-balken{ max-width:430px; width:100%; margin:13px auto 0; height:4px;
   border-radius:99px; background:rgba(var(--tx-rgb),.10); overflow:hidden }
 .za-balken i{ display:block; height:100%; width:0; border-radius:99px;
@@ -4259,8 +4264,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
            steckt Arbeit drin, und ein Fehlgriff waere aergerlich. -->
       <button class="za-zu" id="za-zu" aria-label="Abbrechen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <div class="za-kopf">
-        <button class="obzurueck hide" id="za-back" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
-        <span class="za-schritt" id="za-schritt"></span>
+        <button class="obzurueck hide" id="za-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Zurück</button>
       </div>
       <div class="za-balken" aria-hidden="true"><i id="za-bar"></i></div>
 
@@ -5087,7 +5091,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-1910';
+const APP_STAND = '2026-09-14-2000';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7020,16 +7024,26 @@ function zaKlopf(){
    Ein Satz je Blase. Kommt mehr, steht darunter ein kleines "weiter" —
    niemand liest drei Saetze, die auf einmal erscheinen. Mit * markierte
    Stellen werden fett. */
-let _zaTeile = [], _zaTippT = null, _zaDanach = null;
+let _zaTeile = [], _zaTippT = null, _zaDanach = null, _zaGesagt = 0;
 function mojiSagt(teile, danach){
   clearTimeout(_zaTippT);
   _zaTeile = (Array.isArray(teile) ? teile : [teile]).slice();
   _zaDanach = danach || null;
+  _zaGesagt = 0;
   $('#za-inhalt').innerHTML = '';
   zaTeilZeigen();
 }
 function zaTeilZeigen(){
-  const txt = _zaTeile.shift();
+  let txt = _zaTeile.shift();
+  /* Ein Satz, der weitergeht, endet auf Punkte — und der naechste faengt
+     damit an. So sieht man, dass da noch etwas kommt, ohne es zu lesen.
+     Ein Teil, der ohnehin nur aus Punkten besteht, bleibt wie er ist. */
+  const nurPunkte = /^[.…\s]+$/.test(txt);
+  if(!nurPunkte){
+    if(_zaGesagt > 0)     txt = '… ' + txt;
+    if(_zaTeile.length)   txt = txt + ' …';
+  }
+  _zaGesagt++;
   const el = $('#za-text'), mehr = $('#za-mehr');
   mehr.hidden = true;
   el.classList.add('tippt');
@@ -7062,15 +7076,16 @@ function zaTippen(el, roh, fertig){
   };
   if(zaRuhig()){ alles(); return; }
   _zaTippEnde = alles;
+  /* Ein Zeichen alle 22 ms, also rund 45 in der Sekunde. Vorher waren
+     es zwei je Schritt und damit fast doppelt so schnell — das las sich
+     wie ein Ausdruck, nicht wie jemand, der spricht. */
   let i = 0;
   const tick = () => {
-    for(let k = 0; k < 2; k++){
-      while(i < stuecke.length && stuecke[i].n >= stuecke[i].t.length) i++;
-      if(i >= stuecke.length){ _zaTippEnde = null; fertig(); return; }
-      stuecke[i].n++;
-      stuecke[i].k.textContent = stuecke[i].t.slice(0, stuecke[i].n);
-    }
-    _zaTippT = setTimeout(tick, 24);
+    while(i < stuecke.length && stuecke[i].n >= stuecke[i].t.length) i++;
+    if(i >= stuecke.length){ _zaTippEnde = null; fertig(); return; }
+    stuecke[i].n++;
+    stuecke[i].k.textContent = stuecke[i].t.slice(0, stuecke[i].n);
+    _zaTippT = setTimeout(tick, 22);
   };
   tick();
 }
@@ -7157,11 +7172,6 @@ function zaFortschritt(){
   if(ZA.schritt === 'tag') durch += 1 + ZA.idx;
   if(ZA.schritt === 'fertig') durch = ganz;
   $('#za-bar').style.width = clamp(Math.round(durch / Math.max(1, ganz) * 100), 0, 100) + '%';
-  const k = $('#za-schritt');
-  if(k) k.textContent = ZA.schritt === 'fertig' ? 'Fertig'
-       : (ZA.schritt === 'gruss' || ZA.schritt === 'abbruch') ? 'Dienstzeiten'
-       : ZA.wc > 1 ? 'Woche ' + (ZA.wi + 1) + ' von ' + ZA.wc
-       : 'Deine Woche';
   $('#za-back').classList.toggle('hide', ZA.schritt === 'gruss' || ZA.schritt === 'fertig'
                                       || ZA.schritt === 'abbruch');
   zaKopf();
@@ -7176,7 +7186,8 @@ function zaMoji(wo){
    nichts geschehen, was man haette zaehlen koennen. */
 function zaKopf(){
   const v = $('#v-zeitassi'); if(!v) return;
-  v.classList.toggle('ohnekopf', ZA.schritt === 'gruss' || ZA.schritt === 'abbruch');
+  v.classList.toggle('ohnekopf', ZA.schritt === 'gruss' || ZA.schritt === 'abbruch'
+                              || ZA.schritt === 'fertig');
 }
 
 /* ─── Aussteigen ─────────────────────────────────────────────────── */
