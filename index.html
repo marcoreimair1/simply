@@ -1640,6 +1640,38 @@ body.nobar .topbar{display:none}
   line-height:1;white-space:nowrap;margin:0}
 .exh i{font-style:normal;color:var(--butter)}
 
+/* ─── Unterschreiben ──────────────────────────────────────────────
+   Beim Erstellen wird die ganze Kachel zum Blatt Papier: weiss, eine
+   hellgraue Linie, sonst nichts. Weiss in beiden Fassungen — es ist
+   Papier, und Papier bleibt Papier, auch im Dunkeln. */
+body.sigmodus .exhead{height:auto;min-height:52px}
+body.sigmodus .exh{white-space:normal;font-size:21px;line-height:1.15}
+body.sigmodus .exhbtn{display:none}
+.sigpad{position:absolute;inset:0;z-index:4;display:none;border-radius:inherit;
+  overflow:hidden;background:#fff;
+  box-shadow:inset 0 0 0 1px rgba(20,16,34,.06)}
+.sigpad.da{display:block;animation:sigRein .34s var(--ease-out) both}
+@keyframes sigRein{from{opacity:0;transform:scale(.985)}}
+.sigpad canvas{position:absolute;inset:0;width:100%;height:100%;
+  touch-action:none;z-index:2;display:block}
+/* Die Linie, auf der unterschrieben wird — sehr leicht, sie soll
+   fuehren und nicht mitreden. */
+.sig-linie{position:absolute;left:26px;right:26px;bottom:31%;height:1px;
+  background:rgba(20,16,34,.16);z-index:1}
+.sig-wort{position:absolute;left:0;right:0;bottom:calc(31% + 10px);z-index:1;
+  text-align:center;font-size:12px;letter-spacing:.06em;color:rgba(20,16,34,.3);
+  transition:opacity .25s var(--ease);pointer-events:none}
+.sigpad.hatstrich .sig-wort{opacity:0}
+/* Zwei kleine Knoepfe in den Ecken: neu ansetzen und abbrechen. */
+.sig-neu,.sig-zu{position:absolute;z-index:3;border-radius:11px;
+  color:rgba(20,16,34,.42);background:rgba(20,16,34,.05);
+  border:1px solid rgba(20,16,34,.08);transition:.18s var(--ease)}
+.sig-neu{left:12px;bottom:12px;padding:7px 13px;font-size:12px;font-weight:650}
+.sig-zu{right:12px;top:12px;width:32px;height:32px;display:grid;place-items:center}
+.sig-zu svg{width:15px;height:15px}
+.sig-neu:active,.sig-zu:active{transform:scale(.93)}
+.sig-neu[hidden]{display:none}
+
 /* ─── Zeitraum: Kachel, Feld und Leiste ───────────────────────────────
    Die Kachel oben ist ruhig grau, nur das Plus ist golden. Ein Tipp klappt
    die drei Arten aus; ist eine gewählt, fällt die Kachel zusammen und der
@@ -1857,6 +1889,12 @@ body.zrmodus .cell.zr-edge .num{font-weight:700}
 .fb-z{display:none}
 body.zrmodus .fb-n{display:none}
 body.zrmodus .fb-z{display:inline-flex}
+/* Unterschreiben: ein Knopf statt zweier, und zwar ueber die ganze
+   Breite — er ist gerade das Einzige, was zu tun ist. */
+.fb-s{display:none}
+body.sigmodus .fb-n,body.sigmodus .fb-z{display:none}
+body.sigmodus .fb-s{display:inline-flex}
+.fabbar .fb-s{max-width:430px}
 .qdone{position:absolute;inset:0;z-index:6;display:grid;place-items:center;border-radius:inherit;
   background:rgba(var(--s-tief),.9);backdrop-filter:blur(12px);animation:qdoneIn .28s var(--ease-out)}
 @keyframes qdoneIn{from{opacity:0}}
@@ -4446,6 +4484,15 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       </div>
 
       <div class="card" id="ex-card">
+        <!-- Liegt ueber der ganzen Kachel, sobald unterschrieben wird:
+             weisses Papier, eine hellgraue Linie, sonst nichts. -->
+        <div class="sigpad" id="sigpad" aria-hidden="true">
+          <canvas id="sig-canvas"></canvas>
+          <span class="sig-linie" aria-hidden="true"></span>
+          <span class="sig-wort" id="sig-wort">Hier unterschreiben</span>
+          <button class="sig-neu" id="sig-neu" hidden>Neu</button>
+          <button class="sig-zu" id="sig-zu" aria-label="Abbrechen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
         <div class="yearnav">
           <button class="rnd" data-exyr="-1" aria-label="Jahr zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
           <b id="ex-year"></b>
@@ -4526,6 +4573,8 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
     <!-- Während eines Zeitraums stehen hier die beiden Entscheidungen. -->
     <button class="btn btn-p fb-z" id="zr-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>Eintragen</button>
     <button class="btn btn-g fb-z" id="zr-weg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Eintrag verwerfen</button>
+    <!-- Beim Unterschreiben steht hier ein einziger, breiter Knopf. -->
+    <button class="btn btn-p fb-s" id="sig-ok" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5c3-1 4.5-9 6.5-9s1 5.5 3 5.5 3-3 6.5-3"/></svg>Signieren</button>
   </nav>
 </div>
 
@@ -5205,7 +5254,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-0450';
+const APP_STAND = '2026-09-15-0610';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6582,6 +6631,8 @@ function go(id){
     try{ blattAllesZu(); }catch(e){}
     try{ msStop(); }catch(e){}
   }
+  /* Das Unterschriftenfeld gehoert zur Exportseite und geht mit ihr. */
+  if(id !== 'v-export'){ try{ sigZu(); }catch(e){} }
   $$('.view').forEach(v => v.classList.toggle('on', v.id === id));
   const inApp = (id === 'v-cal' || id === 'v-export');
   $('#fabbar').style.display = inApp ? 'flex' : 'none';
@@ -10673,7 +10724,147 @@ $$('[data-exyr]').forEach(b => b.addEventListener('click', () => {
   if(z < START.y) return;
   EX.year = z; exYear();
 }));
-$('#ex-go').addEventListener('click', () => buildPdf(exList()));
+/* ═══ Unterschreiben ═══════════════════════════════════════════════
+   Vor jedem Export. Die Unterschrift wird nicht gespeichert: sie gilt
+   fuer genau diesen Export und fuer alle Monate darin — wer drei Monate
+   auf einmal abgibt, unterschreibt einmal und es steht auf allen drei
+   Seiten. Danach ist sie wieder fort, und beim naechsten Mal wird neu
+   gefragt. So bleibt es eine Unterschrift und wird kein Stempel. */
+let SIG_BILD = null, SIG_VERH = 3.4;
+const SIG = { ctx:null, px:1, letzte:null, leer:true };
+function sigPad(){ return $('#sigpad'); }
+function sigOffen(){ const e = sigPad(); return !!(e && e.classList.contains('da')); }
+/* Die Leinwand auf ihre wirkliche Groesse bringen. Erst wenn das Feld
+   steht — vorher ist sie 0 breit und der Strich landete daneben. */
+function sigMass(){
+  const c = $('#sig-canvas'), e = sigPad(); if(!c || !e) return;
+  const b = e.getBoundingClientRect();
+  SIG.px = Math.min(3, window.devicePixelRatio || 1);
+  c.width  = Math.max(1, Math.round(b.width  * SIG.px));
+  c.height = Math.max(1, Math.round(b.height * SIG.px));
+  const g = c.getContext && c.getContext('2d');
+  if(!g){ SIG.ctx = null; return; }        /* kein Zeichenkontext, kein Strich */
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  g.strokeStyle = '#1b1226';
+  g.lineWidth = 2.4 * SIG.px;
+  SIG.ctx = g;
+}
+function sigLeeren(){
+  const c = $('#sig-canvas'); if(!c || !SIG.ctx) return;
+  SIG.ctx.clearRect(0, 0, c.width, c.height);
+  SIG.leer = true; SIG.letzte = null;
+  sigPad().classList.remove('hatstrich');
+  $('#sig-neu').hidden = true;
+  $('#sig-ok').disabled = true;
+}
+function sigAuf(){
+  if(_busy || !exList().length) return;
+  const e = sigPad(); if(!e) return;
+  e.classList.add('da');
+  e.setAttribute('aria-hidden','false');
+  document.body.classList.add('sigmodus');
+  $('#v-export .exh').textContent = 'Bestätige jetzt mit deiner Unterschrift.';
+  /* Gleich messen — das Feld steht mit dem Klassenwechsel schon im
+     Aufbau. Und danach noch einmal: liegt die Seite im Hintergrund,
+     kommt requestAnimationFrame gar nicht, dann war der erste Griff
+     der einzige. */
+  sigMass(); sigLeeren();
+  requestAnimationFrame(() => { sigMass(); sigLeeren(); });
+}
+function sigZu(){
+  const e = sigPad(); if(!e) return;
+  e.classList.remove('da');
+  e.setAttribute('aria-hidden','true');
+  document.body.classList.remove('sigmodus');
+  $('#v-export .exh').innerHTML = 'Export <i>als PDF</i>';
+}
+/* Der Strich. Kein eigenes Glaetten mit Kurven — ein Zug mit dem Finger
+   liefert genug Punkte, und jede Glaettung macht aus einer Unterschrift
+   die Zeichnung einer Unterschrift. */
+(function(){
+  const c = $('#sig-canvas'); if(!c) return;
+  const ort = e => {
+    const b = c.getBoundingClientRect();
+    return { x:(e.clientX - b.left) * SIG.px, y:(e.clientY - b.top) * SIG.px };
+  };
+  c.addEventListener('pointerdown', e => {
+    if(!SIG.ctx) sigMass();
+    if(!SIG.ctx) return;
+    try{ c.setPointerCapture(e.pointerId); }catch(_e){}
+    SIG.letzte = ort(e);
+    /* Ein Tipp ohne Bewegung ist auch ein Zeichen — ein Punkt. */
+    SIG.ctx.beginPath();
+    SIG.ctx.arc(SIG.letzte.x, SIG.letzte.y, SIG.ctx.lineWidth / 2, 0, Math.PI * 2);
+    SIG.ctx.fillStyle = SIG.ctx.strokeStyle; SIG.ctx.fill();
+    sigStrich();
+    e.preventDefault();
+  });
+  c.addEventListener('pointermove', e => {
+    if(!SIG.letzte || !SIG.ctx) return;
+    const p = ort(e);
+    SIG.ctx.beginPath();
+    SIG.ctx.moveTo(SIG.letzte.x, SIG.letzte.y);
+    SIG.ctx.lineTo(p.x, p.y);
+    SIG.ctx.stroke();
+    SIG.letzte = p;
+    e.preventDefault();
+  });
+  const los = () => { SIG.letzte = null; };
+  c.addEventListener('pointerup', los);
+  c.addEventListener('pointercancel', los);
+  c.addEventListener('pointerleave', los);
+})();
+function sigStrich(){
+  if(!SIG.leer) return;
+  SIG.leer = false;
+  sigPad().classList.add('hatstrich');
+  $('#sig-neu').hidden = false;
+  $('#sig-ok').disabled = false;
+}
+/* Nur den beschriebenen Teil herausschneiden — sonst haengt die
+   Unterschrift im PDF irgendwo in einem grossen leeren Rechteck. */
+function sigBild(){
+  const c = $('#sig-canvas'); if(!c || !SIG.ctx || SIG.leer) return null;
+  let d;
+  try{ d = SIG.ctx.getImageData(0, 0, c.width, c.height).data; }catch(e){ return c.toDataURL('image/png'); }
+  let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
+  for(let y = 0; y < c.height; y++){
+    for(let x = 0; x < c.width; x++){
+      if(d[(y * c.width + x) * 4 + 3] > 8){
+        if(x < x0) x0 = x;
+        if(x > x1) x1 = x;
+        if(y < y0) y0 = y;
+        if(y > y1) y1 = y;
+      }
+    }
+  }
+  if(x1 < 0) return null;
+  const rand = Math.round(8 * SIG.px);
+  x0 = Math.max(0, x0 - rand); y0 = Math.max(0, y0 - rand);
+  x1 = Math.min(c.width - 1, x1 + rand); y1 = Math.min(c.height - 1, y1 + rand);
+  const w = x1 - x0 + 1, h = y1 - y0 + 1;
+  const aus = document.createElement('canvas');
+  aus.width = w; aus.height = h;
+  aus.getContext('2d').drawImage(c, x0, y0, w, h, 0, 0, w, h);
+  SIG_VERH = w / h;
+  return aus.toDataURL('image/png');
+}
+$('#sig-neu').addEventListener('click', sigLeeren);
+$('#sig-zu').addEventListener('click', sigZu);
+$('#sig-ok').addEventListener('click', () => {
+  const bild = sigBild();
+  if(!bild){ toast('Bitte zuerst unterschreiben'); return; }
+  SIG_BILD = bild;
+  sigZu();
+  buildPdf(exList());
+});
+window.addEventListener('resize', () => {
+  /* Dreht jemand mitten im Unterschreiben das Geraet, ist der Strich
+     ohnehin verloren — dann lieber ein sauberes Blatt als ein
+     verzerrtes. */
+  if(sigOffen()){ sigMass(); sigLeeren(); }
+});
+$('#ex-go').addEventListener('click', sigAuf);
 
 /* ═══════════════════════════════════════════════════════════
    PDF
@@ -10954,15 +11145,36 @@ function drawPage(doc, p, y, m){
      jedem Geraet, statt der Zufallsschrift, die das Betriebssystem
      frueher fuer "cursive" gerade zur Hand hatte. */
   const sy = 274, sw = 86;
-  doc.setFont(hand ? 'MojiHand' : 'helvetica', hand ? 'normal' : 'italic');
-  doc.setFontSize(hand ? 19 : 14);
-  setT([40, 30, 58]);
-  doc.text(name, L + 3.5, sy - 1.2);
+  /* Seit 15.09.2026 steht hier die wirklich gezeichnete Unterschrift.
+     Fehlt sie — etwa in einem alten Ablauf —, bleibt es beim Namen in
+     der Blockhandschrift; ohne irgendeine Unterschrift ist die
+     Aufzeichnung nichts wert. */
+  if(SIG_BILD){
+    /* In das Feld einpassen, ohne sie zu verzerren: erst auf die Breite,
+       und wird sie dabei zu hoch, auf die Hoehe. Eine gestauchte
+       Unterschrift ist nicht mehr die Unterschrift. */
+    /* 11 mm hoch, mehr nicht: die letzte Erklaerzeile darueber hat ihre
+       Grundlinie bei 261,6 — gemessen, nicht geschaetzt. */
+    const maxB = sw - 7, maxH = 11;
+    let bre = maxB, hoch = bre / (SIG_VERH || 3.4);
+    if(hoch > maxH){ hoch = maxH; bre = hoch * (SIG_VERH || 3.4); }
+    try{ doc.addImage(SIG_BILD, 'PNG', L + 3.5, sy + 1 - hoch, bre, hoch, undefined, 'FAST'); }
+    catch(e){ console.warn('[MOJI] Unterschrift nicht eingebettet', e); }
+  } else {
+    doc.setFont(hand ? 'MojiHand' : 'helvetica', hand ? 'normal' : 'italic');
+    doc.setFontSize(hand ? 19 : 14);
+    setT([40, 30, 58]);
+    doc.text(name, L + 3.5, sy - 1.2);
+  }
   setD([188,180,200]); doc.setLineWidth(0.3);
   doc.line(L, sy + 2, L + sw, sy + 2);
   doc.setFont('helvetica','normal'); doc.setFontSize(6);
   setT(PAP.grau);
   doc.text('UNTERSCHRIFT DIENSTNEHMER/IN   ·   ' + name, L, sy + 6);
+  if(SIG_BILD){
+    doc.setFontSize(5.6); setT(PAP.leise);
+    doc.text('Elektronisch unterschrieben in der MOJI App', R, sy + 6, { align:'right' });
+  }
 
   /* ─── Fuss ─── */
   setD([238,233,246]); doc.setLineWidth(0.25);
@@ -11113,6 +11325,8 @@ async function buildPdf(list){
     if(ov){ ov.stop(); if(ov.el) ov.el.remove(); }
     toast('Export fehlgeschlagen');
   }
+  /* Und wieder fort: beim naechsten Export wird neu unterschrieben. */
+  SIG_BILD = null;
   _busy = false; exYear();
 }
 function safe(s){

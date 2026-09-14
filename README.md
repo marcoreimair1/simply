@@ -905,7 +905,7 @@ Deshalb bleibt jede Pflichtangabe, wo sie war, und die Gestaltung passiert daneb
 | **Vier Karten** (42–57) | Dienstnehmer/in, Geburtsdatum, Dienstgeber, Zeitraum — je mit einem Streifen in einem der fünf Wolkentöne |
 | **Tabelle** (ab 61,6) | Kein Kasten um alles. Eine Kopfpille in Lavendel, darunter Zeilen mit haarfeinen Trennern. Zeilen mit Eintrag im Pastellton ihrer Kategorie, die volle Farbe trägt ein Streifen an der Kante |
 | **Summen** | Karten mit farbigem Streifen oben; *Gesamt* in Violett |
-| **Unterschrift** (274) | Der Name in Blockhandschrift |
+| **Unterschrift** (274) | Die auf dem Telefon **gezeichnete** Unterschrift, höchstens 11 mm hoch und seitenverhältnisgetreu eingepasst. Rechts daneben der Vermerk *Elektronisch unterschrieben in der MOJI App* |
 
 **Farbflächen nur in schmalen Bändern, nie ganzseitig.** Das Blatt wird gedruckt, und Toner
 kostet. Den Verlauf im Kopfband zeichnet `verlauf()` aus achtzig schmalen Streifen mit einer
@@ -931,12 +931,40 @@ liegen Grund und Kachel zu nah beieinander.
 Vorher stammten sie aus der Zeit vor dem Umbranden (Gold, Orange, Blauviolett), und wer die App
 neben den Ausdruck legte, sah zwei verschiedene Urlaubsfarben.
 
+### Unterschreiben
+
+Seit 15. September 2026 wird **vor jedem Export unterschrieben**. *PDF erstellen* legt ein
+weißes Blatt über die ganze Kachel — eine hellgraue Linie, sonst nichts —, die Überschrift
+darüber wird zu *Bestätige jetzt mit deiner Unterschrift.*, und unten, wo sonst **Kalender**
+und **Export** stehen, steht ein einziger breiter Knopf: **Signieren**. Er bleibt stumpf, bis
+ein Strich auf dem Blatt liegt.
+
+Das Blatt ist in **beiden Fassungen weiß**. Es ist Papier, und Papier bleibt Papier, auch im
+Dunkeln.
+
+**Eine Unterschrift, alle Monate.** Wer drei Monate auf einmal abgibt, unterschreibt einmal;
+derselbe Strich steht auf allen drei Seiten. Danach ist er wieder fort (`SIG_BILD = null`) —
+gespeichert wird nichts, auch nicht im Profil. Beim nächsten Export wird neu gefragt. So bleibt
+es eine Unterschrift und wird kein Stempel.
+
+**Kein Glätten.** Ein Zug mit dem Finger liefert genug Punkte; jede Kurvenglättung macht aus
+einer Unterschrift die Zeichnung einer Unterschrift.
+
+**Zugeschnitten wird auf den beschriebenen Teil.** `sigBild()` liest die Alphawerte der
+Leinwand, sucht die Randpunkte und schneidet mit 8 px Rand aus — sonst hinge die Unterschrift
+im PDF irgendwo in einem großen leeren Rechteck. Das Seitenverhältnis wandert als `SIG_VERH`
+mit und bestimmt, wie sie ins Feld gesetzt wird: erst auf die Breite, und wird sie dabei höher
+als 11 mm, auf die Höhe. **Gestaucht wird nie** — die letzte Erklärzeile darüber hat ihre
+Grundlinie bei 261,6 mm, gemessen, nicht geschätzt.
+
 ### Die Handschrift
 
 `HAND_TTF` ist **Architects Daughter**, auf Latin-1 und Latin Extended-A zusammengestrichen —
 309 Glyphen, 24 KB, als base64 in `index.html`. Eine echte Blockhandschrift: gedruckte
 Buchstaben mit leicht unruhiger Grundlinie. `handAn(doc)` meldet sie einmal je Dokument an;
-schlägt das fehl, fällt die Unterschrift auf Kursiv zurück.
+schlägt das fehl, fällt der Name auf Kursiv zurück. Sie trägt seit 15. September 2026 nur noch
+den **Rückfall**: liegt keine gezeichnete Unterschrift vor, steht dort der Name — ohne
+irgendeine Unterschrift ist die Aufzeichnung nichts wert.
 
 Vorher wurde die Unterschrift auf eine Leinwand gemalt, in *Dancing Script* mit `cursive` als
 Ausweichschrift. Die Schrift liegt aber nirgends im Projekt — am iPhone kam Snell Roundhand
@@ -1651,6 +1679,13 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Unterschreiben vor dem Export** (15. September 2026): *PDF erstellen* macht die ganze Kachel
+  zum weißen Blatt mit einer hellgrauen Linie; unten wird aus *Kalender* und *Export* ein
+  breiter Knopf **Signieren**. Der Strich wandert als zugeschnittenes PNG ins PDF — auf alle
+  Seiten eines Exports, seitenverhältnisgetreu, mit dem Vermerk *Elektronisch unterschrieben in
+  der MOJI App* daneben. Gespeichert wird er nicht: beim nächsten Export wird neu gefragt.
+  617 Prüfungen
 
 - **Räder für die Stände, neue Oberfläche für den Anspruch** (15. September 2026):
   Zeitausgleich und Urlaubstage werden am Rad gestellt statt mit +/− — Viertelstunden und

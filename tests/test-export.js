@@ -176,6 +176,39 @@ ok('Die PDF-Farben sind die der App',
    TYPES.urlaub.pdf.join(',') === '225,160,29' && TYPES.feier.pdf.join(',') === '0,167,203',
    TYPES.urlaub.pdf.join(',') + ' / ' + TYPES.feier.pdf.join(','));
 
+/* ── Unterschreiben vor dem Export ──
+   jsdom malt nichts, aber der ganze Ablauf drumherum laesst sich pruefen. */
+const pad = document.getElementById('sigpad');
+ok('Das Feld liegt in der Kachel', !!pad && pad.parentElement.id === 'ex-card');
+ok('Mit einer Leinwand',           !!document.getElementById('sig-canvas'));
+ok('Und einer Linie',              !!pad.querySelector('.sig-linie'));
+ok('Der grosse Knopf heisst Signieren',
+   document.getElementById('sig-ok').textContent.trim() === 'Signieren',
+   document.getElementById('sig-ok').textContent.trim());
+ok('Er steht bei Kalender und Export',
+   document.getElementById('sig-ok').parentElement.id === 'fabbar');
+
+const kopfVor = document.querySelector('#v-export .exh').textContent;
+EX.year = new Date().getFullYear(); EX.set = new Set([EX.year + '-0']);
+sigAuf();
+ok('Das Feld geht auf',            pad.classList.contains('da'));
+ok('Die App merkt es sich',        document.body.classList.contains('sigmodus'));
+ok('Und der Kopf fragt danach',
+   document.querySelector('#v-export .exh').textContent === 'Bestätige jetzt mit deiner Unterschrift.',
+   document.querySelector('#v-export .exh').textContent);
+ok('Signieren geht erst mit Strich', document.getElementById('sig-ok').disabled);
+sigZu();
+ok('Zumachen raeumt auf',          !pad.classList.contains('da')
+   && !document.body.classList.contains('sigmodus'));
+ok('Und der Kopf heisst wieder wie vorher',
+   document.querySelector('#v-export .exh').textContent === kopfVor,
+   document.querySelector('#v-export .exh').textContent);
+/* Ohne Strich gibt es kein Bild — und damit keinen stillen Export. */
+ok('Ohne Strich kein Bild',        sigBild() === null);
+/* Ein Wechsel der Ansicht beendet das Unterschreiben. */
+sigAuf(); go('v-cal');
+ok('Die Ansicht zu wechseln beendet es', !document.body.classList.contains('sigmodus'));
+
 ME = null;
 window.__FERTIG = true;
 `;
@@ -193,10 +226,20 @@ setTimeout(() => {
    ['Verlaufszeile steht untereinander', /\.exh-t b\{display:block/],
    /* Nur echter Code zaehlt — der Kommentar, der den alten Stand
       erklaert, enthaelt den Ausdruck absichtlich. */
-   ['Die Unterschrift kommt nicht mehr von der Leinwand', !/function sigImage/.test(roh)],
+   /* Gemeint ist die ALTE sigImage()-Leinwand, die den getippten Namen
+      in einer Zufallsschrift des Geraets abmalte. Seit 15.09.2026 wird
+      wieder auf einer Leinwand unterschrieben — aber von Hand. */
+   ['Kein abgemalter Name mehr', !/function sigImage/.test(roh)],
    ['Und die Wortmarke nicht mehr aus logoBlack', !/function logoBlack/.test(roh)],
    ['Kein UTC-Datum mehr fuer Ortszeit-Anzeigen',
-    !/(?<!Hier stand )new Date\([^)]*\)\.toISOString\(\)\.slice\(0,10\)/.test(roh)]
+    !/(?<!Hier stand )new Date\([^)]*\)\.toISOString\(\)\.slice\(0,10\)/.test(roh)],
+   /* Seit 15.09.2026 wird vor jedem Export unterschrieben. */
+   ['Der Knopf fuehrt zum Unterschreiben', /\$\('#ex-go'\)\.addEventListener\('click', sigAuf\)/.test(roh)],
+   ['Die Unterschrift steht im PDF', /doc\.addImage\(SIG_BILD, 'PNG'/.test(roh)],
+   ['Mit dem Vermerk darunter',
+    /doc\.text\('Elektronisch unterschrieben in der MOJI App'/.test(roh)],
+   ['Sie wird nicht aufgehoben', /\n  SIG_BILD = null;\n  _busy = false/.test(roh)],
+   ['Und nicht verzerrt', /if\(hoch > maxH\)\{ hoch = maxH; bre = hoch \* \(SIG_VERH \|\| 3\.4\); \}/.test(roh)]
   ].forEach(([n, re]) => {
     const gut = (typeof re === 'boolean') ? re : re.test(roh);
     E.push({ n, ok: gut, z: gut ? '' : 'Regel fehlt' });
