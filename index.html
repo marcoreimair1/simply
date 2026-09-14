@@ -3730,9 +3730,13 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
    "Deine Woche" standen dort vorher und verwirrten mehr, als sie
    halfen — in welcher Woche man steckt, sagt das Band ueber der
    Frage ohnehin. */
-.za-kopf .obzurueck{ width:auto; height:auto; margin-left:-6px; padding:6px 10px 6px 4px;
+/* display:grid kommt aus .obzurueck und machte aus Pfeil und Wort zwei
+   Zeilen — im Grid ist der Text ein eigenes Feld. Hier nebeneinander. */
+.za-kopf .obzurueck{ display:inline-flex; align-items:center; justify-content:flex-start;
+  width:auto; height:auto; margin-left:-6px; padding:6px 10px 6px 4px;
   gap:5px; font-size:11px; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--tx-3) }
+  white-space:nowrap; color:var(--tx-3) }
+.za-kopf .obzurueck svg{ width:15px; height:15px; flex:none }
 .za-balken{ max-width:430px; width:100%; margin:13px auto 0; height:4px;
   border-radius:99px; background:rgba(var(--tx-rgb),.10); overflow:hidden }
 .za-balken i{ display:block; height:100%; width:0; border-radius:99px;
@@ -5091,7 +5095,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-2000';
+const APP_STAND = '2026-09-14-2030';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
