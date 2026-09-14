@@ -283,6 +283,10 @@ die Wortmarke steht darunter.
 
 ### Der Vorspann
 
+Auf dem Schirm stehen **nur zwei Dinge: das App-Symbol und der Ladebalken.** Wortmarke und
+Slogan standen bis 14. September 2026 darunter — beim Starten liest das niemand, und sie
+machten aus einem Zeichen eine Seite. Sie sind weg.
+
 Er läuft **der Reihe nach**, nicht übereinander: erst Symbol und Ladebalken, dann erst der
 Gruß mit dem Profilbild. Vorher lagen beide übereinander und endeten gemeinsam — vom Symbol
 blieb dabei oft nur das Profilbild darüber zu sehen.
@@ -290,6 +294,12 @@ blieb dabei oft nur das Profilbild darüber zu sehen.
 Das App-Symbol steht als `LOGO_ICON` fest in `index.html` (256 px, base64). Als Datei geladen
 kam es regelmäßig zu spät: `icon-512.png` wiegt 250 KB, und der Vorspann ist vorbei, bevor das
 Netz antwortet.
+
+**Über das Symbol wandert ein Glanz wie über eine Metallkarte**, von links oben nach rechts
+unten. Gebaut ist er als senkrechter Streifen in `.mark-tile::after`, um 45 Grad gedreht;
+`translateX` läuft danach in der **gedrehten** Achse, also nach rechts unten. Die Kachel hat
+`overflow:hidden`, das Band ist deshalb nur auf dem Symbol zu sehen. Schmaler Kern, weiche
+Flanken — eine breite Aufhellung der halben Kachel liest sich nicht als Streiflicht.
 
 **Der Ladebalken zeigt den echten Start, keine Uhr.** `introBalken(ms, auf)` setzt die Breite
 als Inline-Wert, die Bewegung macht ein CSS-Übergang. Zwei Züge:
@@ -302,6 +312,14 @@ als Inline-Wert, die Bewegung macht ein CSS-Übergang. Zwei Züge:
 Ein unterbrochener CSS-Übergang läuft von der gerade erreichten Breite weiter — deshalb sieht
 man keinen Sprung, egal wann der Start durch ist. Der Glanzstreifen im Balken wandert auch
 dann weiter, wenn die Breite steht; ohne ihn sieht ein wartender Balken aus wie ein hängender.
+
+**Am 14. September 2026 überarbeitet, ohne an den Zeiten zu drehen:** voller Markenverlauf statt
+eines Ausblendens ins Blasse (der Balken sah am Anfang aus, als wäre er selbst noch halb da),
+ein weiches Licht an der Spitze, das mit der Breite mitwandert (die Kante allein war eine
+Abbruchkante), und der Glanzstreifen läuft jetzt im **selben Takt wie der Glanz auf der
+Kachel** — 3,4 s mit 1,2 s Vorlauf. Vorher lief er auf eigenen 1,6 s und kreuzte den oberen in
+immer neuen Abständen: zwei Bewegungen, die nichts miteinander zu tun hatten. Standzeiten,
+Züge und Kurven sind unverändert.
 
 Wie lange der Vorspann steht, hängt daran, wer da ist:
 
@@ -1424,6 +1442,12 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Vorspann: nur noch Symbol und Balken** (14. September 2026): Wortmarke und Slogan sind
+  raus, über das Symbol wandert ein Glanz wie über eine Metallkarte (von links oben nach rechts
+  unten, als gedrehter Streifen in `.mark-tile::after`). Der Ladebalken ist überarbeitet —
+  voller Markenverlauf, Licht an der Spitze, Glanz im selben Takt wie oben —, **die Zeiten
+  bleiben unverändert**: `INTRO_MIN` 4,4 s, die zwei Züge 86 % / Rest, alle Kurven wie gehabt.
+  Die Prüfungen der Vorspann-Reihe liefen unverändert durch, genau dafür sind sie da; acht neue kamen für Glanz und Balken dazu (60 statt 52, alle neun Reihen 444)
 - **Willkommen zeigt das Profilbild** (14. September 2026): Der Schluss des Funnels deckte das
   frisch zugeteilte Profilbild mit einem gezeichneten Haken zu — man sah es nie. Jetzt bleibt
   das Bild stehen, wird rund, der Reif zieht sich darum und der Haken springt an die Ecke.

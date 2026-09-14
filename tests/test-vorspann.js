@@ -194,8 +194,22 @@ setTimeout(() => {
   const roh = fs.readFileSync(DATEI, 'utf8');
   [['Abmelden wartet, bis der Gruss deckt', /const gedeckt = wait\(GRUSS_REIN\);/],
    ['Und wechselt die Seite erst danach', /await gedeckt;[\s\S]{0,400}loginScreen\(\);/],
-   ['GRUSS_REIN passt zu halloRein', /\.hallo\.on\{display:grid;animation:halloRein \.62s/]
+   ['GRUSS_REIN passt zu halloRein', /\.hallo\.on\{display:grid;animation:halloRein \.62s/],
+   /* Seit 14.09.2026 stehen auf dem Vorspann nur Symbol und Balken. */
+   ['Der Glanz liegt auf der Kachel', /\.mark-tile::after\{[\s\S]{0,600}kartenGlanz/],
+   ['Er wandert in der gedrehten Achse', /@keyframes kartenGlanz\{[\s\S]{0,200}rotate\(45deg\) translateX/],
+   ['Balken und Kachel im selben Takt',
+    /animation:ladeGlanz 3\.4s 1\.2s var\(--ease\) infinite/],
+   ['Der Balken hat ein Licht an der Spitze', /\.sp-lade i::before\{/],
+   ['Weniger Bewegung schaltet beides ab',
+    /prefers-reduced-motion:reduce\)\{\s*\n\s*\.sp-lade i::after, \.mark-tile::after\{ animation:none \}/]
   ].forEach(([n, re]) => E.push({ n, ok: re.test(roh), z: re.test(roh) ? '' : 'fehlt' }));
+  /* Die Wortmarke darf im Vorspann-Markup nicht mehr vorkommen. */
+  const splash = (roh.match(/<div id="splash"[\s\S]*?\n<\/div>/) || [''])[0];
+  [['Keine Unterzeile im Vorspann', splash.indexOf('subline') < 0],
+   ['Keine Wortmarke im Vorspann',  splash.indexOf('mark-wort') < 0],
+   ['Symbol und Balken sind da',    splash.indexOf('mark-img') > -1 && splash.indexOf('sp-bar') > -1]
+  ].forEach(([n, gut]) => E.push({ n, ok: gut, z: gut ? '' : 'siehe #splash' }));
   let schlecht = 0;
   console.log('');
   E.forEach(e => {
