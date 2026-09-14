@@ -269,7 +269,7 @@ ok('Zug am Codeblatt verdrahtet',   typeof window.__codeReset === 'function');
 CLOUD_ON = true; loginScreen();
 const marken = Array.from(document.querySelectorAll('.blatt-mark img'));
 ok('Beide Blaetter tragen das Bild', marken.length === 2
-   && marken.every(i => (i.getAttribute('src') || '').indexOf('data:image/png') === 0),
+   && marken.every(i => (i.getAttribute('src') || '').indexOf('data:image/webp') === 0),
    marken.length);
 
 window.__FERTIG = true;

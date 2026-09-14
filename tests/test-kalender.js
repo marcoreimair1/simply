@@ -140,12 +140,14 @@ setTimeout(() => {
     /#v-cal\.frisch #cal-grid\{animation:calFrisch \.55s var\(--ease-blend\)\}/],
    ['Wer weniger Bewegung will, bekommt keine',
     /@media \(prefers-reduced-motion:reduce\)\{\s*\n\s*#v-cal\.frisch #cal-grid/],
+   /* Seit 14.09.2026 als WebP und in voller Aufloesung — 385 x 315
+      statt 120 x 98, und dabei kleiner als das PNG davor. */
    ['Das Maskottchen liegt freigestellt in der Datei',
-    /const LOGO_MOJI = 'data:image\/png;base64,/],
+    /const LOGO_MOJI = 'data:image\/webp;base64,/],
    ['Der Schriftzug macht Platz', /@keyframes eiWort\{/],
    ['Das Maennchen kommt und geht', /@keyframes eiRein\{/],
    ['Und wackelt dazwischen', /@keyframes eiWackel\{/],
-   ['Die Huelle hat Hoehe, bevor das Bild da ist', /\.bmoji\{[\s\S]{0,200}aspect-ratio:120\/98/],
+   ['Die Huelle hat Hoehe, bevor das Bild da ist', /\.bmoji\{[\s\S]{0,200}aspect-ratio:385\/315/],
    ['Auch das Osterei achtet auf weniger Bewegung',
     /prefers-reduced-motion:reduce\)\{\s*\n\s*\.brand\.eier \.bmoji/]
   ].forEach(([n, re]) => E.push({ n, ok: re.test(roh), z: re.test(roh) ? '' : 'fehlt' }));

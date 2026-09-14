@@ -305,6 +305,13 @@ Auf dem Schirm steht **eine einzige Sache: das freigestellte Männchen.** Wortma
 zuletzt auch der Ladebalken sind am 14. September 2026 gegangen — beim Starten liest und zählt
 das niemand, und zusammen machten sie aus einem Zeichen eine kleine Seite.
 
+**Und der Vorspann hat keinen eigenen Hintergrund mehr.** Er ist durchsichtig und lässt die
+Farbwolken der App durch — also genau die Fläche, auf der gleich die Anmeldeseite steht. Vorher
+lagen dort ein dunkler Schleier, eine eigene Farbfläche (`.aurahg`), schwebende Lichtpunkte auf
+einem Canvas (`startParticles()`, rund 70 Zeilen) und ein weißer Blitz (`.bloom`). Zusammen war
+das ein anderer Ort als der, auf den es gleich weitergeht — und der Übergang dorthin ein
+Wechsel statt einer Fortsetzung. Alles vier ist ersatzlos entfallen.
+
 Er läuft **der Reihe nach**, nicht übereinander: erst das Zeichen, dann erst der Gruß mit dem
 Profilbild. Vorher lagen beide übereinander und endeten gemeinsam — vom Zeichen blieb dabei oft
 nur das Profilbild darüber zu sehen.
@@ -313,6 +320,19 @@ Gezeigt wird `LOGO_MOJI`, dasselbe freigestellte Bild wie beim Osterei am Schrif
 Gesicht, grüner Punkt, weißer Umriss — weder Kachel noch Hintergrund. Das App-Symbol mit Kachel
 (`LOGO_ICON`) steht weiterhin in der Datei, aber nur noch fürs PDF. Beide sind base64 im
 Quelltext: als Datei geladen kämen sie regelmäßig zu spät, `icon-512.png` allein wiegt 250 KB.
+
+**In voller Auflösung seit 14. September 2026: 385 × 315 statt 120 × 98.** Das alte Bild war für
+26 px im Menüband gemacht; im Vorspann auf 240 px gezogen war es matschig. Dieselbe Rechnung
+noch einmal auf `icon-512.png`: den Verlauf der Kachel aus vier randnahen Streifen als
+quadratische Fläche schätzen, abziehen, und was weit genug abweicht, ist das Männchen. Der
+Schlagschatten fällt heraus, weil er **dunkler und nicht gesättigter** ist; Augen und Mund sehen
+genauso aus, liegen aber mitten im Körper und kommen beim Löcherfüllen zurück. An der weichen
+Kante wird die Kachelfarbe herausgerechnet, sonst hätte der weiße Umriss einen lavendelfarbenen
+Saum.
+
+Als **WebP** statt PNG: 10,5 KB gegen 118 KB — bei dreifacher Kantenlänge also *kleiner* als das
+alte Bild. Safari kann WebP seit Version 14. Das Bild wird an vier Stellen gebraucht (Vorspann,
+beide Blätter der Anmeldung, Schriftzug-Schleife, Osterei), es gibt es deshalb nur einmal.
 
 **Über das Männchen wandert ein Glanz wie über eine Metallkarte**, von links oben nach rechts
 unten. Gebaut ist er als senkrechter Streifen, um 45 Grad gedreht; `translateX` läuft danach in
@@ -1462,6 +1482,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Vorspann: kein Glitzer mehr, scharfes Bild** (14. September 2026): Schleier, Lichtpunkte und
+  der weiße Blitz sind raus, der Vorspann ist durchsichtig und zeigt dieselben Farbwolken wie die
+  Anmeldeseite dahinter. Das Männchen war auf 256 px gezogen sichtbar unscharf — die Vorlage hatte
+  nur 120 px. Neu aus `icon-512.png` freigestellt (385 × 315) und als WebP eingebettet: schärfer,
+  kleiner als vorher, und auf 184 px zurückgenommen. `startParticles()` samt Canvas ist entfallen
 - **Der Blitzer beim Fassungswechsel und rundere Übergänge** (14. September 2026): Beim
   Umschalten auf der Anmeldeseite blitzte oft kurz die Kopfleiste über einer leeren Seite auf —
   die Lücke zwischen `vorspannUeberspringen()` und dem ersten `go()`, deren Länge am Netz hängt.

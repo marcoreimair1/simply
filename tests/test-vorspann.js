@@ -40,7 +40,7 @@ var bild = document.querySelector('#mark-img');
 ok('Vorspann laeuft', window.__introLaeuft === true);
 ok('Freigestellt, nicht die Kachel', bild.getAttribute('src') === LOGO_MOJI);
 ok('Der Glanz traegt es als Maske',
-   document.querySelector('#mark-glanz').style.getPropertyValue('--moji-maske').indexOf('data:image/png') > -1);
+   document.querySelector('#mark-glanz').style.getPropertyValue('--moji-maske').indexOf('data:image/webp') > -1);
 ok('Noch kein Ende gesetzt', !window.__introEnde, window.__introEnde);
 
 /* ── 4 · Ohne Anmeldung die lange Fassung ──
