@@ -216,6 +216,28 @@ ok('Ohne Strich kein Bild',        sigBild() === null);
 sigAuf(); go('v-cal');
 ok('Die Ansicht zu wechseln beendet es', !document.body.classList.contains('sigmodus'));
 
+/* ── Das Warten beim Export ── */
+const ov = exOverlay();
+const ring = document.querySelector('.exring');
+ok('Es gibt einen Ladekreis',      !!ring && ring.querySelectorAll('circle').length === 2);
+ok('Mit MOJI darin',
+   (document.querySelector('.exmoji img').getAttribute('src') || '').indexOf('data:image/webp') === 0);
+ok('Und einem Glanz darueber',     !!document.querySelector('.exglanz2'));
+ok('Der Text sagt, was passiert',
+   document.getElementById('ex-ov-t').textContent === 'Deine Arbeitszeit wird geschrieben …',
+   document.getElementById('ex-ov-t').textContent);
+ok('Darunter steht die Zahl',      document.getElementById('ex-ov-s').textContent === '0 %',
+   document.getElementById('ex-ov-s').textContent);
+ok('Der Kreis faengt leer an',
+   Math.abs(parseFloat(document.querySelector('.exring-an').style.strokeDashoffset)
+            - parseFloat(document.querySelector('.exring-an').style.strokeDasharray)) < 0.01,
+   document.querySelector('.exring-an').style.strokeDashoffset);
+ov.finish('PDF erstellt · 1 Seite', 'datei.pdf');
+ok('Fertig schliesst den Kreis',   document.querySelector('.qdone').classList.contains('fertig'));
+ok('Und nennt die Datei',          document.getElementById('ex-ov-s').textContent === 'datei.pdf');
+ok('Ohne Ziffernsperrung',         !document.getElementById('ex-ov-s').classList.contains('expro'));
+ov.stop(); ov.el.remove();
+
 ME = null;
 window.__FERTIG = true;
 `;
@@ -264,7 +286,16 @@ setTimeout(() => {
    ['Das Blatt blendet im Dunkeln nicht',
     /:root\[data-theme="dark"\] \.sigpad\{background:#ded9e6/.test(roh)],
    ['Das Wort darueber traegt die Markenfarbe',
-    /\.sig-titel\{[^}]*color:var\(--butter\)/.test(roh)]
+    /\.sig-titel\{[^}]*color:var\(--butter\)/.test(roh)],
+   /* Das Bierglas ist am 15.09.2026 gegangen — es hatte mit Arbeitszeit
+      nichts zu tun. */
+   ['Kein Glas mehr beim Export',       !/\.exglas\{/.test(roh)],
+   ['Keine Wellen, keine Blasen',       !/@keyframes exwave/.test(roh) && !/@keyframes exbub/.test(roh)],
+   ['Und kein Prost',                   !/Prost!/.test(roh)],
+   ['Der Kreis laeuft ueber den Umfang',
+    /strokeDashoffset = \(EX_U \* \(1 - stand \/ 100\)\)/.test(roh)],
+   ['Der Glanz nimmt das Maennchen als Maske',
+    /\.exglanz2\{[\s\S]{0,200}mask-image:var\(--moji-maske\)/.test(roh)]
   ].forEach(([n, re]) => {
     const gut = (typeof re === 'boolean') ? re : re.test(roh);
     E.push({ n, ok: gut, z: gut ? '' : 'Regel fehlt' });

@@ -951,6 +951,25 @@ es eine Unterschrift und wird kein Stempel.
 **Kein Glätten.** Ein Zug mit dem Finger liefert genug Punkte; jede Kurvenglättung macht aus
 einer Unterschrift die Zeichnung einer Unterschrift.
 
+### Das Warten danach
+
+Nach *Signieren* legt sich `exOverlay()` über die Kachel: das freigestellte Männchen, ein
+Lichtband, das darüber wandert, und ein **Ring, der sich um es schließt**. Darunter *Deine
+Arbeitszeit wird geschrieben …* und die Zahl.
+
+Der Ring ist ein SVG-Kreis (r 54) mit `stroke-dasharray` über den Umfang; der Stand läuft dem
+Ziel weich hinterher, statt zu springen. Der Farbverlauf steckt in einem `linearGradient` —
+`stop-color` muss dabei **über CSS** kommen, ein Attribut mit `var(--butter)` löst sich nicht
+auf. Das Lichtband benutzt dieselbe Machart wie der Vorspann: das Bild ist die Maske, das Band
+liegt darin (`--moji-maske`), hier aber in Schleife — es ist ein Warten, kein Moment.
+
+Der Ring läuft nach der Uhr bis 96 % (3,6 s) und wartet dort, falls das Setzen länger braucht.
+Auf 100 % geht er erst, wenn das Dokument fertig ist; **gespeichert wird 1,25 s danach**, wenn
+der Ring wirklich geschlossen ist und das Männchen einmal gehüpft hat.
+
+Davor füllte sich hier ein Glas mit goldener Flüssigkeit, mit Wellen, Blasen und einem *Prost!*
+zum Schluss — hübsch gebaut, und mit Arbeitszeit hatte es nichts zu tun.
+
 **Zugeschnitten wird auf den beschriebenen Teil.** `sigBild()` liest die Alphawerte der
 Leinwand, sucht die Randpunkte und schneidet mit 8 px Rand aus — sonst hinge die Unterschrift
 im PDF irgendwo in einem großen leeren Rechteck. Das Seitenverhältnis wandert als `SIG_VERH`
@@ -1697,6 +1716,12 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Neues Warten nach dem Signieren** (15. September 2026): Statt des Glases, das sich mit Bier
+  füllte, steht jetzt das freigestellte Männchen in einem Ring, der sich um es schließt, mit
+  einem Lichtband darüber und dem Satz *Deine Arbeitszeit wird geschrieben …*. Gleiche Dauer
+  wie vorher; gespeichert wird erst, wenn der Ring geschlossen ist. Glas, Wellen, Blasen und
+  das *Prost!* sind ersatzlos entfallen. 641 Prüfungen
 
 - **Hohe Unterschriften kamen winzig heraus** (15. September 2026): Bei kleinem Seitenverhältnis
   hängt die Breite an der Höhe — mit einer festen Höhe von 8 mm wurde eine schmale, hohe
