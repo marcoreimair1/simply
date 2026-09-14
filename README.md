@@ -73,8 +73,34 @@ Nach dem Vorspann steht ein Bildschirm mit **einer Zeile und zwei Knöpfen**:
 | Wo | Was |
 |---|---|
 | oben rechts | **Sonne oder Mond** — die Fassung, die gerade läuft. Ein Tipp legt sie um |
-| Mitte | *Los geht's* mit dem freigestellten MOJI-Zeichen |
+| Mitte | der Schriftzug, der sich selbst schreibt (siehe unten) |
 | unten, in einer Schale | **Mit Face ID anmelden** (nur wenn das Gerät Passkeys kann) und **Anmelden oder registrieren** |
+
+#### Der Schriftzug, der sich selbst schreibt
+
+In der Mitte steht zuerst **nur das Männchen** — dasselbe freigestellte Bild, das beim Osterei
+am Schriftzug vorbeischaut (`LOGO_MOJI`, → *Das Osterei*). Dann schieben sich die Buchstaben
+einer nach dem anderen darunter hervor und das Männchen nach rechts; es wackelt, schiebt sich
+wieder darüber, kurze Pause — und beim nächsten Durchgang steht dort dasselbe Wort auf
+Japanisch: **文字**, gelesen *moji*, heißt Schriftzeichen. Die Schleife endet nie.
+
+Technisch wachsen die Buchstaben aus `width:0` heraus; weil die Zeile zentriert ist, rückt das
+Männchen dabei mit. Eine Überblendung von `width:0` auf `width:auto` kennt CSS nicht, also misst
+`msBau()` jede Breite einmal in JS — und zwar erst nach `document.fonts.ready`, sonst stünden
+dort die Maße der Ersatzschrift.
+
+**Ein Klopfer je Buchstabe**, wie in großen Apps. Zwei Einschränkungen, beide unvermeidlich:
+
+- **Am iPhone bleibt es still.** Safari kennt `navigator.vibrate` nicht, in keiner Version. Die
+  ChatGPT-App kann das, weil sie eine native App ist — eine Webseite auf iOS kann es nicht.
+  Am Android-Telefon klopft es
+- **Chrome verwirft den Aufruf**, solange die Seite nicht wenigstens einmal berührt wurde.
+  Beim allerersten Bildschirm ist es also still, danach nicht mehr
+
+Geklopft wird nur in den **ersten beiden Durchgängen** (`MS_KLOPF_RUNDEN`). Die Bewegung läuft
+weiter, das Klopfen nicht: ein Telefon, das auf einem offenen Bildschirm endlos weiterbrummt,
+wäre keine Spielerei mehr. Im Hintergrund (`visibilitychange`) ruht die Schleife ganz, und wer
+*prefers-reduced-motion* gesetzt hat, bekommt den Schriftzug einmal fertig hingestellt.
 
 Der Fassungsschalter sitzt dort, wo in gängigen Anmeldefenstern das Schließkreuz sitzt. Er
 läuft über dieselbe Routine wie der Schalter im Profilmenü und **lädt die Seite neu**
@@ -90,8 +116,10 @@ davon nur das Ergebnis. Geht es schief, steht der Grund über den Knöpfen.
 
 ### Die zwei Blätter
 
-**Anmelden oder registrieren** legt ein Blatt über den Einstieg: MOJI-Zeichen, Überschrift,
-E-Mail-Feld, *Weiter*. Keine zweite Option, keine Trennlinie mit „oder" — beide Wege schickten
+**Anmelden oder registrieren** legt ein Blatt über den Einstieg: das Männchen, Überschrift,
+E-Mail-Feld, *Weiter*. Oben liegt ein Griff — **beide Blätter lassen sich nach unten
+wegschieben**, mit derselben Mechanik wie alle Blätter der App (`wireSheetDrag()`, das dafür
+jetzt auch andere Klassennamen als `.sheet-card` annimmt). Das Schließkreuz bleibt daneben. Keine zweite Option, keine Trennlinie mit „oder" — beide Wege schickten
 ohnehin dieselbe Mail, und Supabase legt beim ersten Mal selbst ein Konto an.
 
 Ein Tipp auf *Weiter* schaltet **sofort** auf das zweite Blatt, noch bevor die Mail raus ist.
@@ -1389,6 +1417,15 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
 
 ### 19.4 Woran gerade gearbeitet wurde
 
+- **Der Schriftzug schreibt sich selbst** (14. September 2026): Aus *Los geht's* wurde eine
+  Schleife — erst nur das Männchen aus dem Osterei, dann schieben sich MOJI und beim nächsten
+  Durchgang 文字 darunter hervor, das Männchen wackelt und schiebt sich wieder darüber. Je
+  Buchstabe ein Klopfer, aber nur zwei Runden lang und nur, wo der Browser eine Vibration kennt
+  — am iPhone also gar nicht. Dasselbe Männchen steht nun auch über beiden Blättern der
+  Anmeldung, und die lassen sich nach unten wegschieben. Dabei kam eine Lücke in der Testreihe
+  heraus: ein Lauf, der unterwegs abbricht, sah in der Übersicht wie ein Haken aus — jetzt
+  verlangt auch `test-einstieg.js` den Vermerk `__FERTIG`, so wie die acht anderen Reihen.
+  Geprüft mit 108 jsdom-Testfällen (alle neun Reihen 431) und im Browser in beiden Fassungen
 - **Einstieg und Funnel neu** (14. September 2026): Der Weg von der ersten Sekunde bis zum
   Kalender ist ersetzt. Statt der Werbeseite mit fünf Musterbildern ein Anmeldefenster mit
   einer Zeile und zwei Knöpfen, Fassungsschalter oben rechts; Adresse und Code liegen in zwei

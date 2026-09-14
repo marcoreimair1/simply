@@ -219,6 +219,42 @@ ok('Seite ist dunkel',       document.documentElement.dataset.theme === 'dark',
    document.documentElement.dataset.theme);
 erscheinungAusProfil();
 ok('Ohne Vermerk bleibt das Profil massgeblich', ME.erscheinung === 'dark');
+
+/* ── 15 · Der Schriftzug, der sich selbst schreibt ── */
+ok('Logo liegt in der Zeile',   !!document.querySelector('#ein-h #ms-logo img'));
+/* In der Zeile steht nur noch, was die Schleife hineinschreibt. */
+/* Nicht gegen document.body pruefen: dort steht dieses Skript selbst mit drin. */
+ok('Kein fester Text mehr', el('v-login').innerHTML.indexOf('Los ' + 'geht') < 0);
+ok('Die Zeile traegt einen Namen fuer Vorleseprogramme',
+   document.getElementById('ein-h').getAttribute('aria-label') === 'MOJI');
+ok('Zwei Woerter in der Schleife', MS_WOERTER.length === 2 && MS_WOERTER[0] === 'MOJI'
+   && MS_WOERTER[1] === '文字', MS_WOERTER.join(' '));
+const kinder = msBau('MOJI');
+ok('Vier Buchstaben gebaut',    kinder.length === 4, kinder.length);
+ok('Sie fangen geschlossen an', kinder.every(i => i.style.width === '0px'));
+ok('Und tragen ihre Breite',    kinder.every(i => i.dataset.w !== undefined));
+const jp = msBau('文字');
+ok('Japanisch bekommt die Ersatzschrift', jp.every(i => i.className.indexOf('cjk') > -1),
+   jp.map(i => i.className).join('|'));
+ok('Klopfen bricht nichts',     (msKlopf(), true));
+ok('Geklopft wird nur am Anfang', MS_KLOPF_RUNDEN === 2, MS_KLOPF_RUNDEN);
+ok('Das Maennchen wackelt',     (msWackeln(), document.getElementById('ms-logo').classList.contains('wackelt')));
+ok('Ohne Einstieg keine Schleife', (msStop(), _msAus === true));
+
+/* ── 16 · Hinunterschieben zum Schliessen ── */
+ok('Griff im Adressblatt', !!document.querySelector('#lg-mailstep .sheet-grab .grip'));
+ok('Griff im Codeblatt',   !!document.querySelector('#lg-codestep .sheet-grab .grip'));
+ok('Zug am Adressblatt verdrahtet', typeof window.__mailReset === 'function');
+ok('Zug am Codeblatt verdrahtet',   typeof window.__codeReset === 'function');
+
+/* ── 17 · Das Maennchen steht auch ueber den Blaettern ── */
+CLOUD_ON = true; loginScreen();
+const marken = Array.from(document.querySelectorAll('.blatt-mark img'));
+ok('Beide Blaetter tragen das Bild', marken.length === 2
+   && marken.every(i => (i.getAttribute('src') || '').indexOf('data:image/png') === 0),
+   marken.length);
+
+window.__FERTIG = true;
 `;
 
 const s = dom.window.document.createElement('script');
@@ -234,4 +270,8 @@ E.forEach(e => {
 });
 console.log('');
 console.log(E.length + ' Prüfungen, ' + (E.length - schlecht) + ' bestanden, ' + schlecht + ' gescheitert');
-process.exit(schlecht ? 1 : 0);
+/* Ohne diesen Vermerk ist der Lauf unterwegs abgebrochen — dann sagen die
+   bestandenen Prüfungen nichts aus. Genau das ist hier einmal passiert und
+   sah in der Übersicht wie ein Haken aus. */
+if (!dom.window.__FERTIG) console.log('  FEHL  Der Testlauf ist vorzeitig abgebrochen.');
+process.exit(schlecht || !dom.window.__FERTIG ? 1 : 0);

@@ -3470,17 +3470,38 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 :root[data-theme="dark"] .fa-sonne{ opacity:0; transform:rotate(85deg) scale(.35) }
 :root[data-theme="dark"] .fa-mond{ opacity:1; transform:none }
 
-/* Die Zeile in der Mitte. Das Zeichen daneben ist dieselbe Form wie im
-   App-Symbol, freigestellt und in der Markenfarbe — so wie der
-   Schriftzug oben in der App. */
+/* ─── Die Zeile in der Mitte: der Schriftzug schreibt sich selbst ──
+   Zu sehen ist zuerst nur das Maennchen — dasselbe freigestellte Bild
+   wie im Osterei am Schriftzug. Dann schieben sich die Buchstaben
+   einer nach dem anderen darunter hervor und das Maennchen nach
+   rechts; es wackelt, schiebt sich wieder darueber, kurze Pause, und
+   beim naechsten Mal steht dort dasselbe Wort auf Japanisch.
+
+   Die Buchstaben wachsen aus null Breite heraus, darum rueckt das
+   Maennchen mit. Gemessen wird jede Breite einmal in JS — eine
+   Ueberblendung von width:0 auf width:auto kennt CSS nicht. */
 .ein-h{
-  margin:auto 0; display:flex; align-items:center; justify-content:center; gap:.14em;
-  font-family:var(--font-dis); font-weight:400; letter-spacing:-.035em;
-  font-size:clamp(36px,10.5vw,58px); line-height:1;
+  margin:auto 0; display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-dis); font-weight:400; letter-spacing:-.03em;
+  font-size:clamp(40px,12vw,64px); line-height:1; min-height:1.1em;
   animation:einRein .7s .06s var(--ease-out) both;
 }
-.ein-mark{ display:block; width:.62em; color:var(--butter) }
-.ein-mark svg{ display:block; width:100%; height:auto }
+.ms-wort{ display:flex; align-items:center; white-space:pre }
+.ms-wort i{
+  display:inline-block; overflow:hidden; font-style:normal;
+  width:0; opacity:0; transform:translateX(.34em);
+  transition:width .3s var(--ease-out), opacity .2s linear, transform .34s var(--ease-out);
+}
+.ms-wort i.da{ opacity:1; transform:none }
+/* Waehrend gemessen wird, darf nichts laufen. */
+.ms-wort.messen i{ transition:none }
+/* Japanisch bringt die Anzeigeschrift nicht mit — die Ersatzliste schon. */
+.ms-wort i.cjk{ font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',
+  'Yu Gothic','Meiryo',sans-serif; letter-spacing:0 }
+.ms-logo{ flex:none; display:block; width:1.18em; aspect-ratio:120/98; margin-left:.05em }
+.ms-logo img{ width:100%; height:100%; object-fit:contain; display:block;
+  transform-origin:50% 86% }
+.ms-logo.wackelt img{ animation:eiWackel .9s var(--ease) 1 }
 @keyframes einRein{ from{ opacity:0; transform:translateY(12px) } }
 
 /* Die Schale unten */
@@ -3523,6 +3544,13 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   animation:blattRein .44s var(--ease-out) both;
 }
 @keyframes blattRein{ from{ transform:translateY(52px); opacity:0 } }
+/* Hinunterschieben zum Schliessen — dieselbe Mechanik wie bei allen
+   Blaettern der App, siehe wireSheetDrag(). */
+.blatt-karte.zieht{ animation:none; transition:none }
+.blatt-karte.zurueck{ transition:transform .34s var(--ease-out) }
+.blatt-karte.weg{ transition:transform .26s ease-out }
+.blatt-karte .sheet-grab{ position:relative; z-index:2; margin:0 0 -6px; padding:10px 0 14px }
+.blatt-karte.zieht .grip{ background:var(--butter); width:56px }
 .blatt-zu{
   position:absolute; top:14px; right:14px; width:40px; height:40px; border-radius:50%;
   display:grid; place-items:center; color:var(--tx-2); z-index:2;
@@ -3530,8 +3558,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 }
 .blatt-zu svg{ width:17px; height:17px }
 .blatt-in{ max-width:430px; margin:0 auto; padding-top:46px; text-align:center }
-.blatt-mark{ display:block; width:42px; margin:0 auto 20px; color:var(--tx) }
-.blatt-mark svg{ display:block; width:100%; height:auto }
+.blatt-mark{ display:block; width:62px; margin:0 auto 16px }
+.blatt-mark img{ display:block; width:100%; height:auto;
+  animation:blattMark .52s .05s var(--ease-out) both }
+@keyframes blattMark{ from{ opacity:0; transform:translateY(-10px) scale(.72) } }
 .blatt-h{ font-family:var(--font-dis); font-weight:400; letter-spacing:-.025em;
   font-size:clamp(23px,6.4vw,29px); line-height:1.14; margin:0 }
 .blatt-s{ color:var(--tx-2); font-size:13.5px; line-height:1.5; margin:9px 0 0 }
@@ -3728,7 +3758,10 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
           <span class="fa-mond" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.3 14.1A8.6 8.6 0 0 1 9.9 3.7a8.6 8.6 0 1 0 10.4 10.4Z"/></svg></span>
         </button>
 
-        <h1 class="ein-h">Los geht&rsquo;s<span class="ein-mark"><svg viewBox="0 0 115 100" aria-hidden="true"><path d="M2 100A2 2 0 0 1 0 98L0 23A23 23 0 0 1 23 0L92 0A23 23 0 0 1 115 23L115 98A2 2 0 0 1 113 100L96 100A2 2 0 0 1 94 98L94 23A2 2 0 0 0 92 21L70 21A2 2 0 0 0 68 23L68 98A2 2 0 0 1 66 100L49 100A2 2 0 0 1 47 98L47 23A2 2 0 0 0 45 21L23 21A2 2 0 0 0 21 23L21 98A2 2 0 0 1 19 100Z" fill="currentColor" fill-rule="evenodd"/></svg></span></h1>
+        <h1 class="ein-h" id="ein-h" aria-label="MOJI">
+          <span class="ms-wort" id="ms-wort" aria-hidden="true"></span>
+          <span class="ms-logo" id="ms-logo" aria-hidden="true"><img alt=""></span>
+        </h1>
 
         <div class="einbox">
           <p class="ein-err" id="ein-err"></p>
@@ -3744,9 +3777,10 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <div class="blatt" id="lg-mailstep" aria-hidden="true">
         <div class="blatt-grund" data-blattzu="lg-mailstep"></div>
         <div class="blatt-karte">
+          <div class="sheet-grab" id="mail-grab" aria-label="Zum Schliessen nach unten schieben"><div class="grip"></div></div>
           <button class="blatt-zu" data-blattzu="lg-mailstep" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
           <div class="blatt-in">
-            <span class="blatt-mark" aria-hidden="true"><svg viewBox="0 0 115 100" aria-hidden="true"><path d="M2 100A2 2 0 0 1 0 98L0 23A23 23 0 0 1 23 0L92 0A23 23 0 0 1 115 23L115 98A2 2 0 0 1 113 100L96 100A2 2 0 0 1 94 98L94 23A2 2 0 0 0 92 21L70 21A2 2 0 0 0 68 23L68 98A2 2 0 0 1 66 100L49 100A2 2 0 0 1 47 98L47 23A2 2 0 0 0 45 21L23 21A2 2 0 0 0 21 23L21 98A2 2 0 0 1 19 100Z" fill="currentColor" fill-rule="evenodd"/></svg></span>
+            <span class="blatt-mark" aria-hidden="true"><img alt=""></span>
             <h2 class="blatt-h">Anmelden oder registrieren</h2>
             <div class="field" id="f-mail">
               <input id="lg-mail" type="email" inputmode="email" autocomplete="email" enterkeyhint="go" placeholder=" ">
@@ -3764,9 +3798,10 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <div class="blatt" id="lg-codestep" aria-hidden="true">
         <div class="blatt-grund" data-blattzu="lg-codestep"></div>
         <div class="blatt-karte">
+          <div class="sheet-grab" id="code-grab" aria-label="Zum Schliessen nach unten schieben"><div class="grip"></div></div>
           <button class="blatt-zu" data-blattzu="lg-codestep" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
           <div class="blatt-in">
-            <span class="blatt-mark" aria-hidden="true"><svg viewBox="0 0 115 100" aria-hidden="true"><path d="M2 100A2 2 0 0 1 0 98L0 23A23 23 0 0 1 23 0L92 0A23 23 0 0 1 115 23L115 98A2 2 0 0 1 113 100L96 100A2 2 0 0 1 94 98L94 23A2 2 0 0 0 92 21L70 21A2 2 0 0 0 68 23L68 98A2 2 0 0 1 66 100L49 100A2 2 0 0 1 47 98L47 23A2 2 0 0 0 45 21L23 21A2 2 0 0 0 21 23L21 98A2 2 0 0 1 19 100Z" fill="currentColor" fill-rule="evenodd"/></svg></span>
+            <span class="blatt-mark" aria-hidden="true"><img alt=""></span>
             <h2 class="blatt-h">Prüfe deinen Posteingang</h2>
             <p class="blatt-s">Gib den Code ein, den wir an <b id="lg-sent-t"></b> gesendet haben.</p>
             <div class="field" id="f-otp">
@@ -4748,7 +4783,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-0930';
+const APP_STAND = '2026-09-14-1015';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6246,7 +6281,10 @@ function go(id){
      stehenbleiben: es liegt fest ueber allem. */
   document.body.classList.toggle('nobar',
     id === 'v-onboard' || (id === 'v-login' && CLOUD_ON));
-  if(id !== 'v-login') try{ blattAllesZu(); }catch(e){}
+  if(id !== 'v-login'){
+    try{ blattAllesZu(); }catch(e){}
+    try{ msStop(); }catch(e){}
+  }
   $$('.view').forEach(v => v.classList.toggle('on', v.id === id));
   const inApp = (id === 'v-cal' || id === 'v-export');
   $('#fabbar').style.display = inApp ? 'flex' : 'none';
@@ -6670,6 +6708,128 @@ function fehlerZeile(el, text){
   el.classList.toggle('da', !!text);
 }
 
+/* ─── Der Schriftzug, der sich selbst schreibt ────────────────────
+   Zu sehen ist zuerst nur das Maennchen — dasselbe freigestellte Bild,
+   das beim Osterei am Schriftzug vorbeischaut. Dann schieben sich die
+   Buchstaben einer nach dem anderen darunter hervor und das Maennchen
+   nach rechts; es wackelt, schiebt sich wieder darueber, kurze Pause,
+   und beim naechsten Durchgang steht dasselbe Wort auf Japanisch:
+   文字 heisst Schriftzeichen und wird "moji" gelesen.
+
+   Die Schleife endet nie — ausser die Seite liegt im Hintergrund oder
+   jemand hat Bewegung abbestellt.                                     */
+const MS_WOERTER = ['MOJI', '文字'];
+const MS_TAKT = { vorlauf:820, buchstabe:165, halten:620, wackeln:900, zurueck:130, pause:760 };
+let _msLaeuft = false, _msAus = true, _msRunde = 0;
+const msWarte = ms => new Promise(r => setTimeout(r, ms));
+/* Geklopft wird nur in den ersten beiden Durchgaengen. Die Schleife
+   selbst hoert nie auf — ein Telefon, das auf einem offenen Schirm
+   endlos weiterbrummt, waere aber keine Spielerei mehr, sondern ein
+   Fehler. Wer den Bildschirm ansieht, hat es nach zwei Runden
+   gespuert. */
+const MS_KLOPF_RUNDEN = 2;
+
+/* Ein kurzer Klopfer je Buchstabe. Das geht nur, wo der Browser eine
+   Vibration kennt — Safari am iPhone kennt keine, dort bleibt es still.
+   Und Chrome verwirft den Aufruf, solange die Seite nicht wenigstens
+   einmal beruehrt wurde; danach klopft es. */
+function msKlopf(){
+  try{
+    if(_msRunde > MS_KLOPF_RUNDEN) return;
+    if(!navigator.vibrate) return;
+    const ua = navigator.userActivation;
+    if(ua && !ua.hasBeenActive) return;
+    navigator.vibrate(8);
+  }catch(e){}
+}
+
+/* Die Buchstaben bauen und jede Breite einmal messen — eine
+   Ueberblendung von width:0 auf width:auto kennt CSS nicht. */
+function msBau(wort){
+  const box = $('#ms-wort'); if(!box) return [];
+  box.classList.add('messen');
+  box.innerHTML = '';
+  const kinder = Array.from(wort).map(z => {
+    const i = document.createElement('i');
+    i.textContent = z;
+    if(z.charCodeAt(0) > 0x2E80) i.className = 'cjk';   /* japanisch */
+    i.style.width = 'auto';
+    i.classList.add('da');
+    box.appendChild(i);
+    return i;
+  });
+  kinder.forEach(i => { i.dataset.w = String(Math.ceil(i.getBoundingClientRect().width)); });
+  kinder.forEach(i => { i.style.width = '0px'; i.classList.remove('da'); });
+  void box.offsetWidth;
+  box.classList.remove('messen');
+  return kinder;
+}
+function msWackeln(){
+  const l = $('#ms-logo'); if(!l) return;
+  l.classList.remove('wackelt'); void l.offsetWidth; l.classList.add('wackelt');
+}
+async function msLauf(){
+  let n = 0;
+  while(!_msAus){
+    const kinder = msBau(MS_WOERTER[n % MS_WOERTER.length]);
+    _msRunde = ++n;
+    await msWarte(MS_TAKT.vorlauf);
+    for(const i of kinder){
+      if(_msAus) break;
+      i.style.width = i.dataset.w + 'px';
+      i.classList.add('da');
+      msKlopf();
+      await msWarte(MS_TAKT.buchstabe);
+    }
+    if(_msAus) break;
+    await msWarte(MS_TAKT.halten);
+    msWackeln();
+    await msWarte(MS_TAKT.wackeln);
+    for(let k = kinder.length - 1; k >= 0; k--){
+      if(_msAus) break;
+      kinder[k].style.width = '0px';
+      kinder[k].classList.remove('da');
+      await msWarte(MS_TAKT.zurueck);
+    }
+    if(_msAus) break;
+    await msWarte(MS_TAKT.pause);
+  }
+  _msLaeuft = false;
+}
+/* matchMedia fehlt in manchen Umgebungen — jsdom kennt es nicht. Ohne
+   Auskunft laeuft die Bewegung, so wie ueberall sonst in der App. */
+function msRuhig(){
+  try{ return matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  catch(e){ return false; }
+}
+function msStart(){
+  const l = $('#ms-logo'), bild = l && l.querySelector('img');
+  if(!bild) return;
+  if(!bild.getAttribute('src')) bild.src = LOGO_MOJI;
+  /* Erst messen, wenn die Anzeigeschrift steht — sonst stehen die
+     Breiten der Ersatzschrift in den Feldern und das Wort ruckelt beim
+     ersten Durchgang. */
+  const los = () => {
+    if(!$('#lg-start').classList.contains('on')) return;
+    if(msRuhig()){
+      msBau(MS_WOERTER[0]).forEach(i => { i.style.width = i.dataset.w + 'px'; i.classList.add('da'); });
+      return;
+    }
+    if(_msLaeuft) return;
+    _msAus = false; _msLaeuft = true; _msRunde = 0;
+    msLauf();
+  };
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(los, los);
+  else los();
+}
+function msStop(){ _msAus = true; }
+/* Im Hintergrund laeuft nichts — das spart Strom und verhindert, dass
+   das Telefon in der Tasche klopft. */
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden) msStop();
+  else if($('#lg-start').classList.contains('on')) msStart();
+});
+
 function loginScreen(){
   $('#lg-err').style.display = 'none';
   blattAllesZu();
@@ -6682,6 +6842,8 @@ function loginScreen(){
     $('#sync').style.display = 'none';
     $('#ein-pk').style.display = PASSKEY ? 'flex' : 'none';
     $('#ein-pk-t').textContent = 'Mit ' + pkWort() + ' anmelden';
+    /* Dasselbe Maennchen steht auch ueber den beiden Blaettern. */
+    $$('.blatt-mark img').forEach(i => { if(!i.getAttribute('src')) i.src = LOGO_MOJI; });
   } else {
     const list = DB.profiles;
     $('#lg-start').classList.remove('on');
@@ -6691,11 +6853,17 @@ function loginScreen(){
       '<button class="chip" data-pid="'+p.id+'">'+esc(p.vorname)+' '+esc(p.nachname.charAt(0))+'.</button>').join('');
   }
   go('v-login');
+  /* Erst nach go(): vorher steht die Ansicht auf display:none und jede
+     gemessene Buchstabenbreite waere null. */
+  if(CLOUD_ON) msStart();
 }
 
 /* ─── Die Blätter ───────────────────────────────────────────── */
 function blattAuf(id){
   const el = $('#'+id); if(!el) return;
+  /* Unverschoben beginnen — ein vorheriger Zug darf nicht nachhaengen. */
+  const zurueck = id === 'lg-mailstep' ? window.__mailReset : window.__codeReset;
+  if(zurueck) zurueck();
   el.classList.add('on');
   el.setAttribute('aria-hidden','false');
   document.body.classList.add('locked');
@@ -8948,17 +9116,20 @@ function closeSheet(){ $('#sheet').classList.remove('on'); document.body.classLi
    unten geht. Rollt man nach unten oder ist mitten im Inhalt, bleibt
    es normales Rollen. Knöpfe und Eingaben sind ausgenommen, sonst
    ließe sich nichts mehr antippen.                                     */
-function wireSheetDrag(griffId, blattId, zu, rollId){
+/* karteWahl und grundWahl nur fuer Blaetter, die nicht nach dem
+   Muster .sheet-card / .sheet-bd gebaut sind — die beiden der
+   Anmeldung heissen .blatt-karte und .blatt-grund. */
+function wireSheetDrag(griffId, blattId, zu, rollId, karteWahl, grundWahl){
   const blatt = document.getElementById(blattId);
   const griff = document.getElementById(griffId);
-  const karte = blatt && blatt.querySelector('.sheet-card');
+  const karte = blatt && blatt.querySelector(karteWahl || '.sheet-card');
   /* Beim Postfach rollt nicht die Karte, sondern die Liste darin. Ohne
      das hier würde ein Wisch nach unten mitten im Lesen das Blatt zuziehen. */
   const rollStand = () => {
     const r = rollId && document.getElementById(rollId);
     return r ? r.scrollTop : (karte ? karte.scrollTop : 0);
   };
-  const grund = blatt && blatt.querySelector('.sheet-bd');
+  const grund = blatt && blatt.querySelector(grundWahl || '.sheet-bd');
   if(!karte) return () => {};
   let start = 0, weg = 0, zeit = 0, zieht = false, offen = false, vomGriff = false;
 
@@ -9061,6 +9232,11 @@ window.__mReset     = wireSheetDrag('m-grab',  'msheet', msZu);
 window.__pfReset    = wireSheetDrag('pf-grab', 'pfsheet', pfZu, 'pf-liste');
 window.__rReset     = wireSheetDrag('r-grab',  'rsheet',  rangZu);
 window.__vReset     = wireSheetDrag('v-grab',  'vsheet',  verlaufZu);
+/* Die zwei Blaetter der Anmeldung — gleiche Geste, anderes Gehaeuse. */
+window.__mailReset  = wireSheetDrag('mail-grab', 'lg-mailstep', () => blattZu('lg-mailstep'),
+                                    null, '.blatt-karte', '.blatt-grund');
+window.__codeReset  = wireSheetDrag('code-grab', 'lg-codestep', () => blattZu('lg-codestep'),
+                                    null, '.blatt-karte', '.blatt-grund');
 $('#sh-opts').addEventListener('click', e => {
   const b = e.target.closest('[data-t]'); if(!b) return;
   /* Nochmal auf die gewählte Art tippen holt die anderen drei zurück. */
