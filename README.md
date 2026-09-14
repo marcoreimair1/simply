@@ -257,6 +257,32 @@ abbrechen? Der Fortschritt geht verloren. Den Dienstplan kannst du später im Pr
 anlegen.* — in derselben Leiste, die auch beim Passkey fragt. Wer bestätigt, landet auf demselben
 Weg wie bei *Später*: Profil gespeichert, Willkommensgruß, Kalender.
 
+### Dienstzeiten später bearbeiten
+
+Im Profilmenü unter **Dienstzeiten** — und seit 14. September 2026 mit denselben Bausteinen wie
+der Assistent. Vorher stand dort das alte Formular: sechs Tageszeilen mit je vier Uhrzeitfeldern
+gleichzeitig offen, dazu zwei Schlösser, die man erst antippen musste, um überhaupt etwas ändern
+zu dürfen.
+
+Jetzt eine **Liste**: je Tag eine Zeile mit den Zeiten und den Stunden, angetippt klappt sie auf
+und zeigt Vormittag und Nachmittag mit den **Rädern aus dem Funnel**. Nur eine Zeile ist offen;
+beim Ändern zieht die Zeile darüber mit, ohne dass die Liste neu gebaut wird — sonst spränge das
+Rad unter dem Finger weg. Auf schmalen Geräten (< 380 px) stehen die Tage als *Mo, Di, …*, damit
+die Zeiten nicht abgeschnitten werden.
+
+Die **Schlösser sind weg.** Sie saßen da, weil ein Fingerwisch das Wochenintervall verstellen
+konnte; vier große Knöpfe lassen sich nicht im Vorbeigehen treffen. Verloren geht dabei nichts —
+die Wochen bleiben gespeichert, auch wenn gerade weniger angezeigt werden.
+
+**Hinauswischen** geht wie im Profilmenü: nach rechts ziehen führt zurück (`wireWischRaus()`).
+Wer dabei etwas geändert hat, wird gefragt — *Änderungen verwerfen?* mit *Behalten* und
+*Verwerfen* —, denn ein Wisch darf keine Arbeit wegwerfen. Die Räder sind von der Geste
+ausgenommen, die ziehen selbst.
+
+Was der gemeinsame Baustein ist: `zeitBlock(cfg, aendert)` baut einen ganzen Tag (zwei
+Abschnitte plus Summe) und hängt an nichts außer dem übergebenen `cfg`. Funnel und Profilmenü
+benutzen ihn beide; `renderSched()`, `openTime()` und das Zeit-Popover sind ersatzlos entfallen.
+
 > **Sonntag kommt nicht vor.** Die Tage sind sechs, nicht sieben: `WORKDAYS` ist `[1…6]`, und
 > Sonntag gilt in der ganzen App als frei — in `dayPlan()`, in `qTouched()` und auf der A4-Seite.
 > Sonntagsarbeit wäre ein eigener Umbau quer durch die Rechnung, nicht eine Taste mehr.
@@ -1586,6 +1612,13 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Dienstzeiten bearbeiten, neu** (14. September 2026): Das Profilmenü zeigt jetzt eine
+  kompakte Tagesliste statt des alten Formulars; angetippt klappt ein Tag auf und trägt dieselben
+  Abschnitte und Räder wie der Assistent. Die zwei Schlösser sind weg, hinauswischen geht wie im
+  Menü und fragt bei Änderungen nach. `renderSched()`, `openTime()`, `schlossHtml()` und das
+  Zeit-Popover sind ersatzlos entfallen — rund 300 Zeilen. 80 Prüfungen in der Menü-Reihe, alle
+  neun zusammen 532
 
 - **Zeit-Assistent: Punkte, Tempo, leere Kopfzeile** (14. September 2026): Ein Satz, der
   weitergeht, endet auf Punkte und der nächste fängt damit an; geschrieben wird ein Zeichen alle

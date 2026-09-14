@@ -170,6 +170,53 @@ menuZu();
 window.__WEITER = function(){
   ok('Nach dem Schliessen ist "sofort" weg', !m.classList.contains('sofort'));
   ME = null;
+  /* ── Dienstzeiten bearbeiten: kompakte Liste statt Formular ──
+     Weiter oben wurde abgemeldet, ME ist also leer — hier wieder eins. */
+  ME = normalize({ id:'tz', vorname:'Marco', nachname:'Reimair', dob:'1990-05-04',
+                   sched:defaultSched() });
+  DRAFT = JSON.parse(JSON.stringify(ME.sched)); DRAFT.tab = 0; _hrOffen = null;
+  var host = document.getElementById('sched-edit');
+  renderZeiten(host, DRAFT, null);
+  ok('Das Wochenintervall steht oben', host.querySelectorAll('[data-wc]').length === 4);
+  ok('Sechs Tage, je eine Zeile',      host.querySelectorAll('.hz-tag').length === 6,
+     host.querySelectorAll('.hz-tag').length);
+  ok('Zugeklappt stehen keine Raeder da', host.querySelectorAll('.rad').length === 0);
+  ok('Die Zeile nennt die Zeiten',
+     /08:00–12:00/.test(host.querySelector('.hz-zeit').textContent),
+     host.querySelector('.hz-zeit').textContent);
+
+  host.querySelector('[data-tag="1"]').click();
+  ok('Antippen klappt auf',           !!host.querySelector('.hz-tag.auf'));
+  ok('Und zeigt vier Raeder',         host.querySelectorAll('.hz-tag.auf .rad').length === 4,
+     host.querySelectorAll('.hz-tag.auf .rad').length);
+  ok('Mit denselben Abschnitten wie im Funnel',
+     host.querySelectorAll('.hz-tag.auf .za-seg').length === 2);
+  ok('Nur einer auf einmal',          host.querySelectorAll('.hz-tag.auf').length === 1);
+
+  /* Der Schalter im Abschnitt regelt sich selbst und zieht die Zeile nach. */
+  host.querySelector('.hz-tag.auf .za-seg[data-seg="nm"] .za-seg-kopf').click();
+  ok('Nachmittag aus',                DRAFT.weeks[0][1].nmOn === false);
+  ok('Die Zeile zieht mit',           host.querySelector('.hz-zeit').textContent === '08:00–12:00',
+     host.querySelector('.hz-zeit').textContent);
+  ok('Und die Stunden auch',          host.querySelector('.hz-std').textContent === '4,00 h',
+     host.querySelector('.hz-std').textContent);
+  host.querySelector('[data-tag="1"]').click();
+  ok('Nochmal antippen klappt zu',    !host.querySelector('.hz-tag.auf'));
+
+  /* Mehr Wochen: Reiter, Uebernahme, laufende Woche */
+  host.querySelector('[data-wc="2"]').click();
+  ok('Zwei Wochen gemerkt',           DRAFT.weekCount === 2, DRAFT.weekCount);
+  ok('Es gibt Wochenreiter',          host.querySelectorAll('[data-tab]').length === 2);
+  ok('Und die Frage nach der laufenden Woche', host.querySelectorAll('[data-rot]').length === 2);
+  ok('Ganze Woche uebernehmen geht',  host.querySelectorAll('[data-copy]').length === 1);
+
+  /* Hinauswischen fragt nur, wenn sich etwas geaendert hat. */
+  ok('Geaendert heisst fragen',       !schedGleich(ME.sched, DRAFT));
+  hoursRaus();
+  ok('Die Rueckfrage kommt',          document.getElementById('hrbar').classList.contains('on'));
+  ok('Und nennt das Verwerfen',       /verwerfen/i.test(document.getElementById('hrbar').textContent));
+  document.querySelector('#hrbar [data-hrzu]').click();
+
   window.__FERTIG = true;
 };
 setTimeout(window.__WEITER, 400);
@@ -201,7 +248,14 @@ setTimeout(() => {
     roh.indexOf("localStorage.getItem('moji.erscheinung')") < roh.indexOf('<style')],
    ['Der Deckel traegt die Farbe der neuen Fassung',
     /\.fassungsdeckel\{[\s\S]{0,120}background:var\(--ink\)/],
-   ['Nach dem Wechsel kommt kein Gruss', /afterLogin\(session, !FASSUNG_NEU\)/]
+   ['Nach dem Wechsel kommt kein Gruss', /afterLogin\(session, !FASSUNG_NEU\)/],
+   /* Das alte Formular ist am 14.09.2026 entfallen — mitsamt Schloessern
+      und Zeit-Popover. Es darf nicht zurueckkommen. */
+   ['Kein altes Dienstplan-Formular mehr', !/function renderSched\(/.test(roh)],
+   ['Kein Zeit-Popover mehr',              !/function openTime\(/.test(roh)],
+   ['Keine Schloesser mehr',               !/function schlossHtml\(/.test(roh)],
+   ['Hinauswischen ist verdrahtet',        /wireWischRaus\('v-hours', hoursRaus\)/],
+   ['Die Raeder ziehen nur senkrecht',     /\.rad-roll\{[\s\S]{0,200}touch-action:pan-y/]
   ];
   /* Manche Pruefungen sind ein Muster, manche schon ein Ja/Nein. */
   css.forEach(([n, re]) => {

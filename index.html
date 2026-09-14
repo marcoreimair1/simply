@@ -1225,48 +1225,7 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .seg button.on{background:var(--butter);color:var(--on-primary);font-weight:600}
 /* Über die ganze Breite und gleichmäßig geteilt — vier Knöpfe, vier gleiche
    Felder. Die Einheit steht klein unter der Zahl. */
-.seg.breit{display:flex;width:100%;gap:4px}
-.seg.breit button{flex:1;min-width:0;padding:8px 4px;display:flex;flex-direction:column;
-  align-items:center;gap:1px;font-size:15px;font-weight:600;line-height:1.1}
-.seg.breit button i{font-style:normal;font-size:9.5px;font-weight:500;letter-spacing:.04em;opacity:.72}
-/* Gesperrt: die Auswahl wird grau und nimmt keine Tipper an. */
-.seg.gesperrt{opacity:.5}
-.seg.gesperrt button{color:var(--tx-3);cursor:default}
-.seg.gesperrt button.on{background:rgba(var(--s-auf),.14);color:var(--tx-2)}
 
-/* Abschnitte innerhalb der Karte, damit die drei Fragen auseinandergehen. */
-.wsec{margin-top:17px;padding-top:15px;border-top:1px solid var(--line-2)}
-.wsec > u{display:block;text-decoration:none;font-size:9px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--tx-3);margin-bottom:7px}
-
-/* Das Schloss ist eine ganze Zeile unter der Auswahl: Sinnbild und Text
-   gehören zusammen, und die Fläche zum Antippen ist so groß wie die Auswahl
-   darüber. Der Bügel hebt sich und kippt zur Seite, wenn es aufgeht. */
-.wlock{display:flex;align-items:center;gap:10px;width:100%;margin-top:8px;
-  padding:8px 12px;border-radius:12px;text-align:left;
-  border:1px solid var(--line-2);color:var(--tx-3);transition:.24s var(--ease)}
-.wlockico{flex:none;width:26px;height:26px;display:grid;place-items:center}
-.wlock svg{width:19px;height:19px;overflow:visible}
-.wlockhint{min-width:0;display:flex;flex-direction:column;gap:1px}
-.wlockhint b{font-size:11.5px;font-weight:600;letter-spacing:.02em}
-.wlockhint{font-size:10.5px;color:var(--tx-3);line-height:1.3}
-.wlock .buegel{transform-origin:8.2px 10.5px;transition:transform .44s var(--ease-out)}
-/* Zu ist unauffällig, offen leuchtet — dann darf man ja etwas ändern. */
-.wlock.zu{color:var(--tx-3)}
-.wlock.auf{color:var(--butter);border-color:var(--butter-dim);background:rgba(var(--marke-rgb),.1);
-  box-shadow:0 0 18px -8px rgba(var(--marke-rgb),.5)}
-.wlock.auf .wlockhint b{color:var(--butter)}
-.wlock.auf .wlockhint{color:var(--tx-2)}
-.wlock.auf .buegel{transform:translate(1px,-2.6px) rotate(-32deg)}
-.wlock:active{transform:scale(.93)}
-/* Kurzer Ruck beim Zuschnappen. */
-.wlock.klack{animation:lockKlack .46s var(--ease-out)}
-@keyframes lockKlack{
-  0%{transform:scale(1)}
-  28%{transform:scale(.9) rotate(-4deg)}
-  58%{transform:scale(1.06) rotate(2deg)}
-  100%{transform:none}
-}
 
 
 /* ============================================================
@@ -1370,75 +1329,10 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .rnd:hover{border-color:var(--butter-dim);color:var(--butter);background:rgba(var(--marke-rgb),.07)}
 .rnd svg{width:16px;height:16px}
 
-/* ============================================================
-   DIENSTZEITEN
-   ============================================================ */
-/* Wochenreiter: jede Woche mit eigener Farbe, eigener Kante und den
-   Stunden darunter. Die gerade laufende Woche ist mit „jetzt" vermerkt. */
-.wtabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-top:10px;scrollbar-width:none}
-.wtabs::-webkit-scrollbar{display:none}
-.wtab{position:relative;flex:1 0 auto;min-width:104px;display:flex;flex-direction:column;
-  align-items:flex-start;gap:2px;padding:10px 13px 10px 16px;border-radius:12px;overflow:hidden;
-  border:1px solid var(--line-2);white-space:nowrap;transition:.2s;text-align:left}
-.wtab::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--wf,var(--butter))}
-.wtab b{font-size:13px;font-weight:600;color:var(--tx-2)}
-.wtab small{font-size:10.5px;color:var(--tx-3);letter-spacing:0}
-.wtab.on{border-color:var(--wf,var(--butter));background:var(--wfa,rgba(var(--marke-rgb),.14))}
-.wtab.on b{color:var(--wf,var(--butter))}
-.wtab.on small{color:var(--tx-2)}
-
-/* Hinweis, wenn mehrere Wochen dieselben Zeiten tragen. */
-.wnote{margin-top:12px;padding:10px 12px;border-radius:12px;border:1px dashed var(--line-2);
-  font-size:11.5px;line-height:1.55;color:var(--tx-2)}
-
-/* Die Karte der Woche trägt ihre Farbe oben und im Schild. */
-.wcard{border-top:3px solid var(--wf,var(--butter))}
-.wkopf{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.wchip{flex:none;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  padding:5px 10px;border-radius:8px;background:var(--wf,var(--butter));color:var(--f-2)}
-.wlauf{font-size:11.5px;color:var(--tx-3)}
-.wkopie{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:11px;
-  font-size:11.5px;color:var(--tx-3)}
-.dayrow{display:grid;grid-template-columns:112px 1fr auto;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line-2)}
-.dayrow:last-child{border-bottom:none}
-.dayrow .dn{font-size:13.5px;font-weight:600}
-.dayrow .dn small{display:block;font-weight:400;color:var(--tx-3);font-size:11px;margin-top:2px}
-.segs{display:flex;flex-direction:column;gap:8px;min-width:0}
-.segline{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.segline .tag{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx-3);width:26px;flex:none}
-.tfield{padding:11px 14px;border-radius:11px;border:1px solid var(--line-2);background:rgba(var(--s-tief),.6);
-  font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;transition:.2s;min-width:76px}
-.tfield:hover{border-color:var(--butter-dim);color:var(--butter)}
-.tfield.act{border-color:var(--butter);background:rgba(var(--marke-rgb),.12);color:var(--butter)}
-.dash{color:var(--tx-3);font-size:13px}
 .toggle{width:42px;height:24px;border-radius:999px;background:rgba(var(--tx-rgb),.14);position:relative;transition:.26s var(--ease);flex:none}
 .toggle::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--tx-3);transition:.26s var(--ease)}
 .toggle.on{background:rgba(var(--marke-rgb),.3)}
 .toggle.on::after{left:21px;background:var(--butter)}
-.hbadge{font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--butter);
-  padding:7px 11px;border-radius:10px;background:rgba(var(--marke-rgb),.1);border:1px solid var(--butter-dim);white-space:nowrap}
-.hbadge.zero{color:var(--tx-3);background:rgba(var(--tx-rgb),.05);border-color:var(--line-2)}
-.wsum{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:15px;border-top:1px dashed var(--line)}
-.wsum span{font-size:12px;color:var(--tx-3);letter-spacing:.1em;text-transform:uppercase}
-.wsum b{font-family:var(--font-dis);font-size:26px;font-weight:400;color:var(--butter);font-variant-numeric:tabular-nums}
-@media(max-width:640px){
-  .dayrow{grid-template-columns:1fr auto;gap:8px 10px}
-  .dayrow .dn{grid-column:1}
-  .dayrow .hbadge{grid-column:2;grid-row:1}
-  .segs{grid-column:1/-1}
-}
-
-/* Zeit-Popover */
-.tpop{position:fixed;z-index:70;width:206px;background:rgba(var(--s-hoch),.99);border:1px solid var(--line);
-  border-radius:var(--r-m);box-shadow:var(--shadow);padding:12px;display:none;animation:pop .22s var(--ease-out)}
-.tpop.on{display:block}
-.tpop .tp-h{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-3);margin:0 0 8px}
-.tp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;max-height:158px;overflow-y:auto;scrollbar-width:thin}
-.tp-grid button{padding:8px 0;border-radius:9px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;
-  color:var(--tx-2);transition:.15s}
-.tp-grid button:hover{background:rgba(var(--marke-rgb),.14);color:var(--butter)}
-.tp-grid button.on{background:var(--butter);color:var(--on-primary)}
-.tp-sep{height:1px;background:var(--line-2);margin:10px 0}
 
 /* Einstieg und Funnel gehoeren der ganzen Flaeche — dort steht keine Kopfleiste. */
 body.nobar .topbar{display:none}
@@ -3921,6 +3815,57 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   .za-inhalt > *{ animation:none }
 }
 
+
+/* ═══ DIENSTZEITEN BEARBEITEN ═══════════════════════════════════════
+   Dieselben Bausteine wie im Zeit-Assistenten, nur als Liste: je Tag
+   eine Zeile, angetippt klappt sie auf. =========================== */
+.hz-karte{ padding:16px 16px 14px }
+.hz-karte h3{ margin:0 0 3px }
+.hz-karte .hint{ margin-bottom:12px }
+.hz-wahl button{ padding:13px 4px 10px; font-size:17px }
+.hz-wahl button small{ font-size:9px }
+
+/* Welche Woche gerade bearbeitet wird. */
+.hz-reiter{ display:flex; gap:7px; margin:14px 0 12px }
+.hz-reiter button{ flex:1; min-width:0; padding:10px 4px; border-radius:14px;
+  border:1px solid var(--karte-rand); background:var(--karte); box-shadow:var(--karte-schatten);
+  transition:.22s var(--ease) }
+.hz-reiter button b{ display:block; font-size:12.5px; font-weight:650 }
+.hz-reiter button small{ display:block; margin-top:2px; font-size:10.5px; color:var(--tx-3);
+  font-variant-numeric:tabular-nums }
+.hz-reiter button.on{ border-color:var(--wf); background:color-mix(in srgb, var(--wf) 14%, var(--karte)) }
+.hz-reiter button.on b{ color:var(--wf) }
+
+/* Die Tagesliste */
+.hz-liste{ padding:4px 6px }
+.hz-tag + .hz-tag{ border-top:1px solid var(--line-2) }
+.hz-kopf{ display:flex; align-items:center; gap:8px; width:100%; text-align:left;
+  padding:14px 8px; transition:.18s var(--ease) }
+.hz-kopf b{ flex:none; width:76px; font-size:14px; font-weight:650 }
+.hz-zeit{ flex:1; min-width:0; font-size:12px; color:var(--tx-3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  font-variant-numeric:tabular-nums }
+/* Auf schmalen Geraeten reicht der Platz fuer den ganzen Tagesnamen
+   nicht — dann die Kurzform, bevor die Zeiten abgeschnitten werden. */
+.hz-kurz{ display:none }
+@media(max-width:379px){
+  .hz-lang{ display:none }
+  .hz-kurz{ display:inline }
+  .hz-kopf b{ width:30px }
+}
+.hz-std{ flex:none; text-decoration:none; font-size:12.5px; font-weight:650;
+  font-variant-numeric:tabular-nums; color:var(--tx-2) }
+.hz-pfeil{ flex:none; width:15px; height:15px; color:var(--tx-3);
+  transition:transform .26s var(--ease) }
+.hz-tag.auf .hz-kopf b{ color:var(--zaf,var(--butter)) }
+.hz-tag.auf .hz-pfeil{ transform:rotate(90deg) }
+.hz-tag .zblock{ padding:2px 6px 14px; animation:zaRein .32s var(--ease-out) both }
+/* Im Aufklapper sitzen die Abschnitte schon in einer Karte — dann
+   brauchen sie keine zweite darum. */
+.hz-tag .za-seg{ background:rgba(var(--tx-rgb),.04); box-shadow:none;
+  border-color:var(--line-2) }
+.hz-kopie{ margin:14px 2px 0 }
+
 </style>
 </head>
 <body>
@@ -4601,6 +4546,19 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 
 <!-- Kleiner Balken für den Passkey: fragt kurz nach, statt eine ganze Seite
      aufzuziehen. Beschriftung und Farbe richten sich nach dem Zustand. -->
+<!-- Rueckfrage beim Hinauswischen aus den Dienstzeiten. -->
+<div class="pkbar" id="hrbar" aria-hidden="true">
+  <div class="pkbar-hg" data-hrzu></div>
+  <div class="pkbar-in" role="dialog" aria-modal="true" aria-labelledby="hrbar-b">
+    <span class="pkbar-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.5v5"/><circle cx="12" cy="16.6" r=".8" fill="currentColor"/><circle cx="12" cy="12" r="9"/></svg></span>
+    <span class="pkbar-txt"><b id="hrbar-b">Änderungen verwerfen?</b><small>Zum Behalten weiter oben auf Speichern tippen.</small></span>
+    <span class="pkbar-btns">
+      <button class="pkbar-no" data-hrzu>Behalten</button>
+      <button class="pkbar-ja" id="hrbar-ja">Verwerfen</button>
+    </span>
+  </div>
+</div>
+
 <!-- Rueckfrage beim Aussteigen aus dem Zeit-Assistenten. Dieselbe
      Leiste wie beim Passkey, nur mit eigenem Text. -->
 <div class="pkbar" id="zabar" aria-hidden="true">
@@ -4944,14 +4902,6 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   </div>
 </div>
 
-<!-- Zeit-Popover -->
-<div class="tpop" id="tpop">
-  <p class="tp-h">Stunde</p>
-  <div class="tp-grid" id="tp-h"></div>
-  <div class="tp-sep"></div>
-  <p class="tp-h">Minute</p>
-  <div class="tp-grid" id="tp-m"></div>
-</div>
 
 <div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span id="toast-t"></span></div>
 
@@ -5095,7 +5045,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-2030';
+const APP_STAND = '2026-09-14-2145';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -5298,38 +5248,6 @@ function wocheSchluessel(sched, i){
     const c = w[d] || {};
     return [c.vmOn ? 1 : 0, c.vmFrom, c.vmTo, c.nmOn ? 1 : 0, c.nmFrom, c.nmTo].join('|');
   }).join(';');
-}
-/* Welche Wochen sind untereinander gleich? Gibt Gruppen zurück. */
-function gleicheWochen(sched, wc){
-  const gruppen = {};
-  for(let i = 0; i < wc; i++){
-    const k = wocheSchluessel(sched, i);
-    (gruppen[k] = gruppen[k] || []).push(i + 1);
-  }
-  return Object.keys(gruppen).map(k => gruppen[k]).filter(g => g.length > 1);
-}
-/* In wie vielen Wochen ist diese Woche dran? 0 heißt: jetzt. */
-function wocheDran(i, cur, wc){ return (((i - cur) % wc) + wc) % wc; }
-function kwPlus(n){
-  const d = new Date(); d.setDate(d.getDate() + n * 7);
-  return isoWeek(d);
-}
-
-/* Das Schloss gibt es zweimal: am Wochenintervall und an der Frage, nach
-   welcher Woche gerade gearbeitet wird. Beide sehen gleich aus und
-   verhalten sich gleich, also kommt das Markup aus einer Hand. */
-function schlossHtml(art, zu, klack){
-  return '<button class="wlock '+(zu?'zu':'auf')+(klack?' klack':'')+'" data-lock="'+art+'"'
-    + ' aria-pressed="'+(zu?'true':'false')+'"'
-    + ' aria-label="'+(zu?'Zum Ändern entsperren':'Wieder sperren')+'">'
-    + '<span class="wlockico">'
-    + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-    + '<g class="buegel"><path d="M8.2 10.5V7.6a3.8 3.8 0 017.6 0v2.9"/></g>'
-    + '<rect x="4.6" y="10.5" width="14.8" height="9.9" rx="2.6"/>'
-    + '<path d="M12 14.2v2.6"/></svg></span>'
-    + '<span class="wlockhint"><b>'+(zu ? 'Gesperrt' : 'Offen')+'</b>'
-    + (zu ? 'Tippen zum Entsperren' : 'Tippen zum Sperren')+'</span>'
-    + '</button>';
 }
 
 function weekTotal(sched, wi){
@@ -6321,238 +6239,161 @@ function endIntro(){
   }, INTRO_WEG + 50);
 }
 
-/* ─── Zeit-Popover (15-Minuten-Raster) ─────────────────────── */
-let _tcb = null, _tval = '08:00';
-function openTime(btn, val, cb){
-  _tcb = cb; _tval = val || '08:00';
-  const pop = $('#tpop');
-  const [hh, mm] = _tval.split(':');
-  $('#tp-h').innerHTML = Array.from({length:20}, (_,i) => i+4)
-    .map(h => '<button data-h="'+p2(h)+'"'+(p2(h)===hh?' class="on"':'')+'>'+p2(h)+'</button>').join('');
-  $('#tp-m').innerHTML = ['00','15','30','45']
-    .map(m => '<button data-m="'+m+'"'+(m===mm?' class="on"':'')+'>'+m+'</button>').join('');
-  pop.classList.add('on');
-  const r = btn.getBoundingClientRect(), pw = 206, ph = pop.offsetHeight || 300;
-  let left = clamp(r.left, 10, Math.max(10, innerWidth - pw - 10));
-  let top = r.bottom + 8;
-  if(top + ph > innerHeight - 10) top = Math.max(10, r.top - ph - 8);
-  pop.style.left = left + 'px'; pop.style.top = top + 'px';
-  $$('.tfield.act').forEach(e => e.classList.remove('act'));
-  btn.classList.add('act');
-}
-function closeTime(){
-  $('#tpop').classList.remove('on');
-  $$('.tfield.act').forEach(e => e.classList.remove('act'));
-  _tcb = null;
-}
-$('#tpop').addEventListener('click', e => {
-  const b = e.target.closest('button'); if(!b) return;
-  const [hh, mm] = _tval.split(':');
-  if(b.dataset.h){ _tval = b.dataset.h + ':' + mm; $$('#tp-h button').forEach(x => x.classList.toggle('on', x === b)); }
-  if(b.dataset.m){ _tval = hh + ':' + b.dataset.m; $$('#tp-m button').forEach(x => x.classList.toggle('on', x === b)); }
-  if(_tcb) _tcb(_tval);
-  if(b.dataset.m) closeTime();
-});
-document.addEventListener('click', e => {
-  if($('#tpop').classList.contains('on') && !e.target.closest('#tpop') && !e.target.closest('.tfield')) closeTime();
-});
-window.addEventListener('resize', closeTime);
 
-/* ─── Dienstplan-Editor ────────────────────────────────────── */
-function renderSched(host, sched, onChange){
-  const wc = clamp(sched.weekCount||1, 1, 4);
-  sched.tab = clamp(sched.tab||0, 0, wc-1);
+/* ─── Dienstzeiten bearbeiten ─────────────────────────────────────
+   Eine kompakte Liste statt eines Formulars: je Tag eine Zeile, und
+   angetippt klappt sie auf und zeigt dieselben Abschnitte mit Raedern
+   wie der Zeit-Assistent im Funnel. Vorher standen hier sechs Zeilen
+   mit je vier Uhrzeitfeldern gleichzeitig offen — vierundzwanzig
+   Felder auf einem Schirm, dazu zwei Schloesser, die man erst oeffnen
+   musste.
+
+   Die Schloesser sind weg. Sie sassen da, weil ein Fingerwisch das
+   Intervall verstellen konnte; die vier grossen Knoepfe lassen sich
+   nicht im Vorbeigehen treffen, und verloren geht dabei nichts — die
+   Wochen bleiben gespeichert, auch wenn gerade weniger angezeigt
+   werden.                                                            */
+let _hrOffen = null;                 /* 'tab-tag' der offenen Zeile */
+
+/* Was in der Zeile steht, wenn sie zu ist. */
+function hrZeitText(cfg){
+  const t = [];
+  if(cfg.vmOn) t.push(cfg.vmFrom + '–' + cfg.vmTo);
+  if(cfg.nmOn) t.push(cfg.nmFrom + '–' + cfg.nmTo);
+  return t.length ? t.join(' · ') : 'frei';
+}
+function hrTagH(cfg){
+  return segH(cfg.vmOn, cfg.vmFrom, cfg.vmTo) + segH(cfg.nmOn, cfg.nmFrom, cfg.nmTo);
+}
+
+function renderZeiten(host, sched, onChange){
+  const wc = clamp(sched.weekCount || 1, 1, 4);
+  sched.tab = clamp(sched.tab || 0, 0, wc - 1);
   const tab = sched.tab;
-  const w = sched.weeks[tab];
+  host.innerHTML = '';
+  host.style.setProperty('--zaf', WOCHENFARBE[tab]);
+  const neu = (melden) => {
+    renderZeiten(host, sched, onChange);
+    if(melden !== false && onChange) onChange();
+  };
 
-  let html = '<div class="card"><h3>Wochenintervall</h3><p class="hint">Wiederholt sich dein Dienstplan jede Woche gleich? Dann eine Woche. Sonst bis zu vier.</p>';
-  /* Ist das Intervall einmal gesetzt, wird es verschlossen. Sonst verstellt
-     es sich beim Blättern zu leicht — und wer vier Wochen arbeitet, hat
-     plötzlich eine. Das Schloss lässt sich antippen. */
-  const zu = sched.wcLock !== false;
-  html += '<div class="seg breit'+(zu?' gesperrt':'')+'" id="wc-seg" style="margin-top:13px">';
-  [1,2,3,4].forEach(n => html += '<button data-wc="'+n+'"'+(n===wc?' class="on"':'')
-    + (zu?' disabled':'')+'>'+n+'<i>'+(n===1?'Woche':'Wochen')+'</i></button>');
-  html += '</div>';
-  html += schlossHtml('wc', zu, sched._klackWc);
-  sched._klackWc = false;
+  /* ── Wochenintervall ── */
+  const iv = document.createElement('div');
+  iv.className = 'card hz-karte';
+  iv.innerHTML = '<h3>Wochenintervall</h3>'
+    + '<p class="hint">Wiederholt sich dein Plan jede Woche gleich? Dann eine Woche.</p>'
+    + '<div class="za-wahl hz-wahl">'
+    + [1,2,3,4].map(n => '<button data-wc="' + n + '"' + (n === wc ? ' class="on"' : '')
+        + '>' + n + '<small>' + (n === 1 ? 'Woche' : 'Wochen') + '</small></button>').join('')
+    + '</div>';
+  host.appendChild(iv);
+
+  /* ── Welche Woche laeuft gerade ── */
   if(wc > 1){
-    /* Angezeigt wird die echte Kalenderwoche, gerechnet wird mit der
-       fortlaufenden — siehe wochenNr(). */
-    const kw = isoWeek(new Date());
     const cur = rhythmusWoche(sched, new Date());
-    const rotZu = sched.rotLock !== false;
-    html += '<div class="wsec"><u>Diese Woche</u>';
-    html += '<p class="hint" style="margin-bottom:11px">Gerade läuft Kalenderwoche '+kw+'. '
-         +  'Nach welcher deiner Wochen arbeitest du gerade?</p>';
-    html += '<div class="seg breit'+(rotZu?' gesperrt':'')+'" id="rot-seg">';
-    for(let i = 0; i < wc; i++) html += '<button data-rot="'+i+'"'+(i===cur?' class="on"':'')
-      + (rotZu?' disabled':'')+'><i>Woche</i>'+(i+1)+'</button>';
-    html += '</div>';
-    html += schlossHtml('rot', rotZu, sched._klackRot);
-    html += '</div>';
-    sched._klackRot = false;
+    const rw = document.createElement('div');
+    rw.className = 'card hz-karte';
+    rw.innerHTML = '<h3>Diese Woche</h3>'
+      + '<p class="hint">Gerade läuft Kalenderwoche ' + isoWeek(new Date())
+      + '. Nach welcher deiner Wochen arbeitest du?</p>'
+      + '<div class="za-wahl hz-wahl">'
+      + Array.from({length:wc}, (_, i) => '<button data-rot="' + i + '"'
+          + (i === cur ? ' class="on"' : '') + '>' + (i+1) + '<small>Woche</small></button>').join('')
+      + '</div>';
+    host.appendChild(rw);
   }
-  if(wc > 1){
-    const cur2 = rhythmusWoche(sched, new Date());
-    html += '<div class="wsec"><u>Bearbeiten</u>';
-    html += '<p class="hint" style="margin-bottom:0">Welche Woche möchtest du eintragen?</p>';
-    html += '<div class="wtabs">';
-    for(let i = 0; i < wc; i++){
-      const dran = wocheDran(i, cur2, wc);
-      html += '<button class="wtab'+(i===tab?' on':'')+'" data-tab="'+i+'"'
-           +  ' style="--wf:'+WOCHENFARBE[i]+';--wfa:'+rgba(WOCHENFARBE[i], .14)+'">'
-           +  '<b>Woche '+(i+1)+'</b>'
-           +  '<small>'+fmtH(weekTotal(sched,i))+' h'+(dran === 0 ? ' · jetzt' : '')+'</small>'
-           +  '</button>';
-    }
-    html += '</div>';
-    /* Der eigentliche Stolperstein: alle Wochen tragen dieselben Zeiten. */
-    const paare = gleicheWochen(sched, wc);
-    if(paare.length === 1 && paare[0].length === wc){
-      html += '<div class="wnote">Alle ' + wc + ' Wochen haben derzeit dieselben Zeiten. '
-           +  'Wähle oben eine Woche und trage ihre eigenen Zeiten ein.</div>';
-    } else if(paare.length){
-      /* „Woche 1, 2 und 4“ statt „Woche 1 und 2 und 4“. */
-      const txt = paare.map(g => 'Woche ' + (g.length > 2
-        ? g.slice(0, -1).join(', ') + ' und ' + g[g.length-1]
-        : g.join(' und '))).join('; ');
-      html += '<div class="wnote">Gleiche Zeiten: ' + txt + '. Falls das nicht stimmt, '
-           +  'wähle die Woche oben aus und ändere sie.</div>';
-    }
-    html += '</div>';                                   /* Abschnitt Bearbeiten */
-  }
-  html += '</div>';
 
+  /* ── Welche Woche wird gerade bearbeitet ── */
   if(wc > 1){
-    const kw3 = isoWeek(new Date());
-    const cur3 = rhythmusWoche(sched, new Date());
-    const dran = wocheDran(tab, cur3, wc);
-    const lauf = dran === 0 ? 'Läuft gerade — Kalenderwoche ' + kw3
-               : dran === 1 ? 'Ab nächster Woche — Kalenderwoche ' + kwPlus(1)
-               : 'In ' + dran + ' Wochen — Kalenderwoche ' + kwPlus(dran);
-    html += '<div class="card wcard" style="--wf:'+WOCHENFARBE[tab]+';--wfa:'+rgba(WOCHENFARBE[tab], .14)+'">';
-    html += '<div class="wkopf"><span class="wchip">Woche '+(tab+1)+' von '+wc+'</span>'
-         +  '<span class="wlauf">'+lauf+'</span></div>';
-    /* Zum bewussten Gleichmachen — statt es versehentlich zu tun. */
+    const rt = document.createElement('div');
+    rt.className = 'hz-reiter';
+    rt.innerHTML = Array.from({length:wc}, (_, i) => '<button data-tab="' + i + '"'
+      + (i === tab ? ' class="on"' : '') + ' style="--wf:' + WOCHENFARBE[i] + '">'
+      + '<b>Woche ' + (i+1) + '</b><small>' + fmtH(weekTotal(sched, i)) + ' h</small></button>').join('');
+    host.appendChild(rt);
+  }
+
+  /* ── Die sechs Tage ── */
+  const liste = document.createElement('div');
+  liste.className = 'card hz-liste';
+  WORKDAYS.forEach(d => {
+    const cfg = sched.weeks[tab][d];
+    const auf = _hrOffen === tab + '-' + d;
+    const zeile = document.createElement('div');
+    zeile.className = 'hz-tag' + (auf ? ' auf' : '');
+    zeile.innerHTML = '<button class="hz-kopf" data-tag="' + d + '">'
+      + '<b><span class="hz-lang">' + DOWFULL[d] + '</span>'
+      + '<span class="hz-kurz">' + DOWSHORT[d] + '</span></b>'
+      + '<span class="hz-zeit">' + hrZeitText(cfg) + '</span>'
+      + '<u class="hz-std">' + (hrTagH(cfg) > 0 ? fmtH(hrTagH(cfg)) + ' h' : '—') + '</u>'
+      + '<svg class="hz-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+      + 'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>'
+      + '</button>';
+    if(auf){
+      /* Beim Aendern nur die Zeile nachziehen, nicht alles neu bauen —
+         sonst spraengen die Raeder unter dem Finger weg. */
+      zeile.appendChild(zeitBlock(cfg, () => {
+        $('.hz-zeit', zeile).textContent = hrZeitText(cfg);
+        $('.hz-std', zeile).textContent = hrTagH(cfg) > 0 ? fmtH(hrTagH(cfg)) + ' h' : '—';
+        const reiter = $('.hz-reiter button.on small', host);
+        if(reiter) reiter.textContent = fmtH(weekTotal(sched, tab)) + ' h';
+        if(onChange) onChange();
+      }));
+    }
+    liste.appendChild(zeile);
+  });
+  host.appendChild(liste);
+
+  /* ── Eine ganze Woche uebernehmen ── */
+  if(wc > 1){
     const andere = [];
     for(let i = 0; i < wc; i++) if(i !== tab) andere.push(i);
-    html += '<div class="wkopie"><span>Zeiten übernehmen von</span>'
-         +  andere.map(i => '<button class="linkbtn" data-copy="'+i+'">Woche '+(i+1)+'</button>').join('')
-         +  '</div>';
-    html += '<p class="hint" style="margin-top:12px">Vormittag und Nachmittag lassen sich einzeln abschalten.</p><div style="margin-top:8px">';
-  } else {
-    html += '<div class="card"><h3>Deine Woche</h3><p class="hint">Vormittag und Nachmittag lassen sich einzeln abschalten.</p><div style="margin-top:8px">';
+    const kp = document.createElement('div');
+    kp.className = 'za-kopie hz-kopie';
+    kp.innerHTML = '<span>Ganze Woche übernehmen von</span>'
+      + andere.map(i => '<button data-copy="' + i + '">Woche ' + (i+1) + '</button>').join('');
+    host.appendChild(kp);
   }
-  WORKDAYS.forEach(d => {
-    const c = w[d];
-    const vm = segH(c.vmOn,c.vmFrom,c.vmTo), nm = segH(c.nmOn,c.nmFrom,c.nmTo);
-    const tot = vm + nm;
-    let pause = 0;
-    if(c.vmOn && c.nmOn && vm > 0 && nm > 0){ const p = (t2m(c.nmFrom)-t2m(c.vmTo))/60; pause = p > 0 ? r25(p) : 0; }
-    html += '<div class="dayrow">';
-    html += '<div class="dn">'+DOWFULL[d]+'<small>'+(tot>0 ? (pause>0 ? 'Pause '+fmtH(pause)+' h' : 'ohne Pause') : 'dienstfrei')+'</small></div>';
-    html += '<div class="segs">';
-    ['vm','nm'].forEach(seg => {
-      const on = seg==='vm' ? c.vmOn : c.nmOn;
-      const f  = seg==='vm' ? c.vmFrom : c.nmFrom;
-      const t  = seg==='vm' ? c.vmTo : c.nmTo;
-      html += '<div class="segline" style="opacity:'+(on?1:.42)+'">';
-      html += '<span class="tag">'+(seg==='vm'?'VM':'NM')+'</span>';
-      html += '<button class="toggle'+(on?' on':'')+'" data-tg="'+seg+'" data-d="'+d+'" aria-label="'+(seg==='vm'?'Vormittag':'Nachmittag')+' ein/aus"></button>';
-      if(on){
-        html += '<button class="tfield" data-time data-d="'+d+'" data-seg="'+seg+'" data-side="from">'+f+'</button>';
-        html += '<span class="dash">–</span>';
-        html += '<button class="tfield" data-time data-d="'+d+'" data-seg="'+seg+'" data-side="to">'+t+'</button>';
-      } else {
-        html += '<span style="font-size:12.5px;color:var(--tx-3)">frei</span>';
-      }
-      html += '</div>';
-    });
-    html += '</div>';
-    html += '<span class="hbadge'+(tot>0?'':' zero')+'">'+fmtH(tot)+' h</span>';
-    html += '</div>';
-  });
-  html += '</div><div class="wsum"><span>'+(wc>1 ? 'Woche '+(tab+1)+' · Wochenstunden' : 'Wochenstunden')+'</span>'
-       +  '<b>'+fmtH(weekTotal(sched,tab))+' h</b></div></div>';
 
-  host.innerHTML = html;
+  host.onclick = e => {
+    const b = e.target.closest('button');
+    if(!b || !host.contains(b)) return;
+    if(b.closest('.za-seg')) return;              /* die Abschnitte regeln sich selbst */
 
-  host.onclick = (e) => {
-    const t = e.target;
-    const lk = t.closest('[data-lock]');
-    if(lk){
-      if(lk.dataset.lock === 'rot'){
-        sched.rotLock = !(sched.rotLock !== false);
-        if(sched.rotLock) sched._klackRot = true;
-      } else {
-        sched.wcLock = !(sched.wcLock !== false);
-        if(sched.wcLock) sched._klackWc = true;
-      }
-      renderSched(host, sched, onChange);
-      return;                                        /* das Schloss allein ist keine Änderung */
+    if(b.dataset.wc !== undefined){
+      sched.weekCount = clamp(+b.dataset.wc, 1, 4);
+      sched.tab = 0; _hrOffen = null;
+      neu(); return;
     }
-    const wcb = t.closest('[data-wc]');
-    if(wcb){
-      if(sched.wcLock !== false){ toast('Erst das Schloss öffnen'); return; }
-      sched.weekCount = +wcb.dataset.wc; sched.tab = 0;
-      sched.wcLock = true; sched._klackWc = true;    /* gesetzt heißt wieder zu */
-      /* Wer das Intervall ändert, muss gleich darunter sagen, nach welcher
-         Woche er diese Woche arbeitet. Also bleibt das zweite Schloss offen,
-         bis er gewählt hat. */
-      sched.rotLock = false; sched._klackRot = false;
-      renderSched(host, sched, onChange); onChange && onChange(); return;
-    }
-    const rot = t.closest('[data-rot]');
-    if(rot){
-      if(sched.rotLock !== false){ toast('Erst das Schloss öffnen'); return; }
-      /* Der Versatz zählt jetzt gegen die fortlaufende Wochennummer, nicht
-         mehr gegen die Kalenderwoche. Beides zu mischen hieße: eine Woche
-         hier einstellen und im Kalender eine andere sehen. */
-      const want = +rot.dataset.rot;
-      sched.offset = (((want - wochenNr(new Date())) % wc) + wc) % wc;
+    if(b.dataset.rot !== undefined){
+      /* Der Versatz zaehlt gegen die fortlaufende Wochennummer, nicht
+         gegen die Kalenderwoche — beides zu mischen hiesse: hier eine
+         Woche einstellen und im Kalender eine andere sehen. */
+      const will = +b.dataset.rot;
+      sched.offset = (((will - wochenNr(new Date())) % wc) + wc) % wc;
       sched.basis = 'lauf';
-      sched.rotLock = true; sched._klackRot = true;
-      renderSched(host, sched, onChange); onChange && onChange(); return;
+      neu(); return;
     }
-    const tb = t.closest('[data-tab]');
-    if(tb){ sched.tab = +tb.dataset.tab; renderSched(host, sched, onChange); return; }
-    const cp = t.closest('[data-copy]');
-    if(cp){
-      const von = +cp.dataset.copy;
-      sched.weeks[sched.tab] = JSON.parse(JSON.stringify(sched.weeks[von]));
-      renderSched(host, sched, onChange); onChange && onChange();
+    if(b.dataset.tab !== undefined){
+      sched.tab = +b.dataset.tab; _hrOffen = null;
+      neu(false); return;
+    }
+    if(b.dataset.copy !== undefined){
+      const von = +b.dataset.copy;
+      sched.weeks[tab] = JSON.parse(JSON.stringify(sched.weeks[von]));
+      _hrOffen = null; neu();
       toast('Zeiten von Woche ' + (von + 1) + ' übernommen');
       return;
     }
-    const tg = t.closest('[data-tg]');
-    if(tg){
-      const d = +tg.dataset.d, seg = tg.dataset.tg;
-      const cfg = sched.weeks[sched.tab][d];
-      if(seg === 'vm') cfg.vmOn = !cfg.vmOn; else cfg.nmOn = !cfg.nmOn;
-      renderSched(host, sched, onChange); onChange && onChange(); return;
-    }
-    const tf = t.closest('[data-time]');
-    if(tf){
-      e.stopPropagation();
-      const d = +tf.dataset.d, seg = tf.dataset.seg, side = tf.dataset.side;
-      const prop = seg + (side === 'from' ? 'From' : 'To');
-      openTime(tf, sched.weeks[sched.tab][d][prop], (v) => {
-        sched.weeks[sched.tab][d][prop] = v;
-        tf.textContent = v;
-        const dr = tf.closest('.dayrow');
-        const cfg = sched.weeks[sched.tab][d];
-        const vm = segH(cfg.vmOn,cfg.vmFrom,cfg.vmTo), nm = segH(cfg.nmOn,cfg.nmFrom,cfg.nmTo);
-        let pause = 0;
-        if(cfg.vmOn && cfg.nmOn && vm > 0 && nm > 0){ const p = (t2m(cfg.nmFrom)-t2m(cfg.vmTo))/60; pause = p > 0 ? r25(p) : 0; }
-        $('.hbadge', dr).textContent = fmtH(vm+nm)+' h';
-        $('.hbadge', dr).classList.toggle('zero', (vm+nm) === 0);
-        $('.dn small', dr).textContent = (vm+nm) > 0 ? (pause > 0 ? 'Pause '+fmtH(pause)+' h' : 'ohne Pause') : 'dienstfrei';
-        const ws = $('.wsum b', host); if(ws) ws.textContent = fmtH(weekTotal(sched, sched.tab))+' h';
-        const tb = $('.wtab[data-tab="'+sched.tab+'"]', host);
-        if(tb) tb.textContent = 'Woche '+(sched.tab+1)+' · '+fmtH(weekTotal(sched, sched.tab))+' h';
-        onChange && onChange();
-      });
+    if(b.dataset.tag !== undefined){
+      const merk = tab + '-' + b.dataset.tag;
+      _hrOffen = _hrOffen === merk ? null : merk;
+      neu(false);
+      /* Die aufgeklappte Zeile ins Bild holen, sonst steht sie unten. */
+      const auf = $('.hz-tag.auf', host);
+      if(auf) setTimeout(() => {
+        try{ auf.scrollIntoView({ behavior:'smooth', block:'nearest' }); }catch(_e){}
+      }, 60);
       return;
     }
   };
@@ -7336,18 +7177,17 @@ function zaTagBild(){
 
   const host = document.createElement('div');
   host.innerHTML = zaWochenband() + zaKopieBand(d);
-  host.appendChild(zaSegment('Vormittag', cfg, 'vm'));
-  host.appendChild(zaSegment('Nachmittag', cfg, 'nm'));
-  const summe = document.createElement('p');
-  summe.className = 'za-summe'; summe.id = 'za-summe';
-  host.appendChild(summe);
   const nav = document.createElement('div');
   nav.className = 'navrow';
   nav.innerHTML = '<button class="einb prim" data-za="tagok">'
     + (ZA.idx === ZA.tage[wi].length - 1 && ZA.wi === ZA.wc - 1 ? 'Fertig' : 'Weiter') + '</button>';
+  host.appendChild(zeitBlock(cfg, std => {
+    const ok = $('[data-za="tagok"]', host);
+    if(ok) ok.disabled = std <= 0;
+  }));
+  $('.za-summe', host).id = 'za-summe';
   host.appendChild(nav);
   zaInhalt(host);
-  zaSummeMalen();
 }
 /* Zeiten aus einer frueheren Woche holen — nur, wenn es dort welche gibt. */
 function zaKopieBand(d){
@@ -7359,47 +7199,66 @@ function zaKopieBand(d){
   }
   return h ? '<div class="za-kopie"><span>Übernehmen:</span>' + h + '</div>' : '';
 }
-function zaSegment(name, cfg, art){
+/* Ein Abschnitt: Schalter, Stunden buendig rechts, zwei Raeder. Er
+   regelt sich selbst und meldet jede Aenderung nach oben — so laesst er
+   sich im Funnel und im Profilmenue gleichermassen verwenden. */
+function zaSegment(name, cfg, art, aendert){
   const an = cfg[art + 'On'];
   const el = document.createElement('div');
   el.className = 'za-seg' + (an ? '' : ' aus');
   el.setAttribute('aria-pressed', String(!!an));
   el.dataset.seg = art;
-  el.innerHTML = '<button class="za-seg-kopf" data-segan="' + art + '">'
+  el.innerHTML = '<button class="za-seg-kopf">'
     + '<b>' + name + '</b><span class="swr"><i></i></span>'
     + '<small class="za-seg-std" data-std="' + art + '"></small></button>'
     + '<div class="za-seg-raeder"></div>';
+  $('.za-seg-kopf', el).addEventListener('click', () => {
+    cfg[art + 'On'] = !cfg[art + 'On'];
+    el.classList.toggle('aus', !cfg[art + 'On']);
+    el.setAttribute('aria-pressed', String(!!cfg[art + 'On']));
+    zaKlopf();
+    if(aendert) aendert();
+  });
   const raeder = $('.za-seg-raeder', el);
-  const von = radBau(cfg[art + 'From'], t => { cfg[art + 'From'] = t; zaSummeMalen(); });
-  const bis = radBau(cfg[art + 'To'],   t => { cfg[art + 'To']   = t; zaSummeMalen(); });
-  raeder.appendChild(von);
+  raeder.appendChild(radBau(cfg[art + 'From'], t => { cfg[art + 'From'] = t; if(aendert) aendert(); }));
   raeder.insertAdjacentHTML('beforeend', '<span class="za-bis">bis</span>');
-  raeder.appendChild(bis);
+  raeder.appendChild(radBau(cfg[art + 'To'], t => { cfg[art + 'To'] = t; if(aendert) aendert(); }));
   return el;
 }
-function zaSummeMalen(){
-  const el = $('#za-summe'); if(!el) return;
-  const cfg = ZA.sched.weeks[ZA.wi][ZA.tage[ZA.wi][ZA.idx]];
-  const vm = segH(cfg.vmOn, cfg.vmFrom, cfg.vmTo);
-  const nm = segH(cfg.nmOn, cfg.nmFrom, cfg.nmTo);
-  let pause = 0;
-  if(cfg.vmOn && cfg.nmOn && vm > 0 && nm > 0){
-    const p = (t2m(cfg.nmFrom) - t2m(cfg.vmTo)) / 60;
-    pause = p > 0 ? r25(p) : 0;
-  }
-  /* Die Stunden stehen auch an der Kachel selbst, buendig rechts. */
-  const sv = $('[data-std="vm"]'), sn = $('[data-std="nm"]');
-  if(sv) sv.textContent = cfg.vmOn && vm > 0 ? fmtH(vm) + ' h' : '';
-  if(sn) sn.textContent = cfg.nmOn && nm > 0 ? fmtH(nm) + ' h' : '';
-  const std = vm + nm;
-  /* Ohne Emoji: die waren am Geraet ein Fremdkoerper. Und ohne "davon" —
-     die Pause zaehlt nicht zur Arbeitszeit, sie liegt dazwischen. */
-  el.innerHTML = std > 0
-    ? '<b>' + fmtH(std) + ' h</b> Arbeitszeit'
-      + (pause > 0 ? '<u></u><b>' + fmtH(pause) + ' h</b> Pause' : '')
-    : 'An dem Tag ist frei.';
-  const ok = $('[data-za="tagok"]');
-  if(ok) ok.disabled = std <= 0;
+
+/* Ein ganzer Tag zum Einstellen: Vormittag, Nachmittag, darunter die
+   Summe. Haengt an nichts ausser dem uebergebenen cfg — deshalb koennen
+   Funnel und Profilmenue denselben Baustein benutzen. */
+function zeitBlock(cfg, aendert){
+  const box = document.createElement('div');
+  box.className = 'zblock';
+  const summe = document.createElement('p');
+  summe.className = 'za-summe';
+  const mal = () => {
+    const vm = segH(cfg.vmOn, cfg.vmFrom, cfg.vmTo);
+    const nm = segH(cfg.nmOn, cfg.nmFrom, cfg.nmTo);
+    let pause = 0;
+    if(cfg.vmOn && cfg.nmOn && vm > 0 && nm > 0){
+      const p = (t2m(cfg.nmFrom) - t2m(cfg.vmTo)) / 60;
+      pause = p > 0 ? r25(p) : 0;
+    }
+    const sv = $('[data-std="vm"]', box), sn = $('[data-std="nm"]', box);
+    if(sv) sv.textContent = cfg.vmOn && vm > 0 ? fmtH(vm) + ' h' : '';
+    if(sn) sn.textContent = cfg.nmOn && nm > 0 ? fmtH(nm) + ' h' : '';
+    const std = vm + nm;
+    /* Ohne Emoji, und ohne "davon" — die Pause zaehlt nicht zur
+       Arbeitszeit, sie liegt dazwischen. */
+    summe.innerHTML = std > 0
+      ? '<b>' + fmtH(std) + ' h</b> Arbeitszeit'
+        + (pause > 0 ? '<u></u><b>' + fmtH(pause) + ' h</b> Pause' : '')
+      : 'An dem Tag ist frei.';
+    if(aendert) aendert(std);
+  };
+  box.appendChild(zaSegment('Vormittag',  cfg, 'vm', mal));
+  box.appendChild(zaSegment('Nachmittag', cfg, 'nm', mal));
+  box.appendChild(summe);
+  mal();
+  return box;
 }
 
 /* ─── Schluss ────────────────────────────────────────────────────── */
@@ -7464,15 +7323,6 @@ $('#za-inhalt').addEventListener('click', e => {
     ['vmOn','vmFrom','vmTo','nmOn','nmFrom','nmTo'].forEach(k => { z[k] = q[k]; });
     zaTagBild();
     toast('Zeiten aus Woche ' + (w+1) + ' übernommen');
-    return;
-  }
-  if(b.dataset.segan){
-    const art = b.dataset.segan, seg = b.closest('.za-seg');
-    const cfg = ZA.sched.weeks[ZA.wi][ZA.tage[ZA.wi][ZA.idx]];
-    cfg[art + 'On'] = !cfg[art + 'On'];
-    seg.classList.toggle('aus', !cfg[art + 'On']);
-    seg.setAttribute('aria-pressed', String(!!cfg[art + 'On']));
-    zaSummeMalen(); zaKlopf();
     return;
   }
 
@@ -11069,7 +10919,8 @@ $('#menu').addEventListener('click', e => {
     /* Zum Bearbeiten immer verschlossen beginnen — das Intervall soll man
        bewusst ändern, nicht im Vorbeiwischen. */
     DRAFT.wcLock = true; DRAFT.rotLock = true;
-    renderSched($('#sched-edit'), DRAFT, null);
+    _hrOffen = null;
+    renderZeiten($('#sched-edit'), DRAFT, null);
     malSchedHist();
     go('v-hours');
   }
@@ -11315,6 +11166,89 @@ $('#hr-save').addEventListener('click', () => {
 });
 $('#hr-cancel').addEventListener('click', () => { DRAFT = null; go('v-cal'); zurueckInsMenu(); });
 
+/* ─── Aus den Dienstzeiten hinauswischen ─────────────────────────
+   Wie im Profilmenue: nach rechts ziehen fuehrt zurueck. Wer dabei
+   etwas geaendert hat, wird gefragt — ein Wisch darf keine Arbeit
+   verwerfen. Die Raeder sind ausgenommen, die ziehen selbst.        */
+function wireWischRaus(viewId, raus){
+  const el = document.getElementById(viewId);
+  if(!el) return;
+  let x0 = 0, y0 = 0, dx = 0, an = false, quer = false, t0 = 0;
+  const tabu = t => !!(t && t.closest && t.closest('.rad, input, textarea, [role="slider"]'));
+  const ab = (x, y, ziel) => {
+    if(!el.classList.contains('on') || tabu(ziel)) return;
+    x0 = x; y0 = y; dx = 0; an = true; quer = false; t0 = performance.now();
+  };
+  const zug = (x, y, halt) => {
+    if(!an) return;
+    const ax = x - x0, ay = y - y0;
+    if(!quer){
+      if(Math.abs(ay) > Math.abs(ax) && Math.abs(ay) > 9){ an = false; return; }
+      if(Math.abs(ax) < 9) return;
+      quer = true; el.style.transition = 'none';
+    }
+    dx = ax;
+    if(halt) halt();
+    /* Nach links gibt es nichts zu holen — dort zieht es zaeh. */
+    el.style.transform = 'translateX(' + (dx > 0 ? dx : dx * .14) + 'px)';
+  };
+  const los = () => {
+    if(!an) return;
+    an = false;
+    if(!quer) return;
+    quer = false;
+    const breite = el.clientWidth || innerWidth || 320;
+    const schnell = dx / Math.max(1, performance.now() - t0) > .45;
+    el.style.transition = 'transform .24s var(--ease-out)';
+    if(dx > breite * .25 || (schnell && dx > 45)){
+      el.style.transform = 'translateX(100%)';
+      setTimeout(() => { el.style.transition = ''; el.style.transform = ''; raus(); }, 210);
+    } else {
+      el.style.transform = '';
+      setTimeout(() => { el.style.transition = ''; }, 260);
+    }
+  };
+  el.addEventListener('touchstart', e => {
+    if(e.touches.length === 1) ab(e.touches[0].clientX, e.touches[0].clientY, e.target);
+  }, { passive:true });
+  el.addEventListener('touchmove', e => {
+    if(!an || e.touches.length !== 1) return;
+    zug(e.touches[0].clientX, e.touches[0].clientY,
+        () => { if(e.cancelable && quer) e.preventDefault(); });
+  }, { passive:false });
+  el.addEventListener('touchend', los);
+  el.addEventListener('touchcancel', los);
+  el.addEventListener('pointerdown', e => {
+    if(e.pointerType === 'mouse' && e.button === 0) ab(e.clientX, e.clientY, e.target);
+  });
+  el.addEventListener('pointermove', e => { if(e.pointerType === 'mouse') zug(e.clientX, e.clientY, null); });
+  el.addEventListener('pointerup', () => los());
+  el.addEventListener('pointercancel', () => los());
+}
+function hoursRaus(){
+  if(!DRAFT || schedGleich(ME.sched, DRAFT)){
+    DRAFT = null; go('v-cal'); zurueckInsMenu(); return;
+  }
+  hrBarAuf();
+}
+function hrBarAuf(){
+  const el = $('#hrbar'); if(!el) return;
+  el.classList.add('on');
+  el.setAttribute('aria-hidden','false');
+  requestAnimationFrame(() => el.classList.add('da'));
+}
+function hrBarZu(){
+  const el = $('#hrbar'); if(!el || !el.classList.contains('on')) return;
+  el.classList.remove('da');
+  el.setAttribute('aria-hidden','true');
+  setTimeout(() => el.classList.remove('on'), 320);
+}
+$('#hrbar').addEventListener('click', e => { if(e.target.closest('[data-hrzu]')) hrBarZu(); });
+$('#hrbar-ja').addEventListener('click', () => {
+  hrBarZu(); DRAFT = null; go('v-cal'); zurueckInsMenu();
+});
+wireWischRaus('v-hours', hoursRaus);
+
 /* ─── Die Leiste mit der Frage ───────────────────────────────── */
 const SAB_UHR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
   + 'stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/>'
@@ -11420,7 +11354,7 @@ $('#fabbar').addEventListener('click', e => {
 });
 $('#sheet').addEventListener('click', e => { if(e.target.dataset.close === 'sheet') closeSheet(); });
 document.addEventListener('keydown', e => {
-  if(e.key === 'Escape'){ closeSheet(); msZu(); pfZu(); dlZu(); firmaZu(); closeTime(); menuZu(); if(zrModus()) zrAus(); }
+  if(e.key === 'Escape'){ closeSheet(); msZu(); pfZu(); dlZu(); firmaZu(); menuZu(); if(zrModus()) zrAus(); }
 });
 /* Überall antippen beendet das Intro — nicht nur die Pille */
 /* Kein Überspringen: die vier Sekunden gehören der Marke. */
