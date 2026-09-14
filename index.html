@@ -3946,6 +3946,42 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 .hz-tag .za-seg{ background:rgba(var(--tx-rgb),.04); box-shadow:none;
   border-color:var(--line-2) }
 .hz-kopie{ margin:14px 2px 0 }
+/* Die beiden Knoepfe wie ueberall sonst in der neuen Fassung — zwei
+   gleiche Haelften, oben die Marke, daneben das Stille. */
+#hr-nav{ max-width:470px; margin-left:auto; margin-right:auto }
+#hr-nav .einb{ flex:1 }
+
+/* ─── Kopfzeile und Schloss ──────────────────────────────────────
+   Die Seite faengt verschlossen an: lesen ja, aendern erst nach einem
+   bewussten Tipp. Das Schloss traegt dieselbe Zeile wie die Schalter
+   im Funnel — es ist ja auch ein Schalter. */
+#v-hours{ padding-top:calc(env(safe-area-inset-top) + 6px) }
+#v-hours > .za-kopf, .hr-h, .hr-schloss, .hr-sperre{
+  max-width:430px; width:100%; margin-left:auto; margin-right:auto }
+.hr-h{ margin:14px auto 18px; font-size:clamp(26px,7.2vw,34px) }
+.hr-si{ position:relative }
+.hr-si > span{ grid-area:1/1; display:grid; place-items:center;
+  transition:opacity .3s var(--ease), transform .42s var(--ease) }
+.hr-si svg{ width:20px; height:20px }
+.hrs-auf{ opacity:0; transform:scale(.55) rotate(-28deg) }
+.hr-schloss[aria-pressed="true"] .hrs-zu{ opacity:0; transform:scale(.55) rotate(28deg) }
+.hr-schloss[aria-pressed="true"] .hrs-auf{ opacity:1; transform:none }
+/* Verschlossen heisst blass und taub — aber lesbar: wer nachsieht, was
+   eingetragen ist, soll es auch erkennen koennen. */
+.hr-sperre{ transition:opacity .38s var(--ease) }
+.hr-sperre.zu{ opacity:.46 }
+.hr-sperre.zu > *{ pointer-events:none }
+/* Ein Tipp ins Gesperrte laeuft nicht ins Leere, er zeigt aufs Schloss. */
+.hr-schloss.stups{ animation:hrStups .52s var(--ease) }
+@keyframes hrStups{
+  18%{ transform:translateX(-6px) } 38%{ transform:translateX(5px) }
+  58%{ transform:translateX(-3px) } 78%{ transform:translateX(2px) }
+  100%{ transform:none }
+}
+@media(prefers-reduced-motion:reduce){
+  .hr-si > span, .hr-sperre{ transition:none }
+  .hr-schloss.stups{ animation:none }
+}
 
 </style>
 </head>
@@ -4424,16 +4460,33 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
     </section>
 
     <!-- ─────────── DIENSTZEITEN BEARBEITEN ─────────── -->
-    <section class="view pt" id="v-hours">
-      <div class="eyebrow">Einstellungen</div>
-      <h1 class="dis">Dienstzeiten <i>anpassen</i>.</h1>
-      <p class="lede">Beim Speichern fragt MOJI, ob die neuen Zeiten schon immer galten oder erst
-        ab einem Tag. So bleiben alte Monate so gerechnet, wie du sie abgegeben hast.</p>
-      <div id="sched-edit" class="mt"></div>
-      <div id="sched-hist"></div>
-      <div class="navrow sticky solid" id="hr-nav">
-        <button class="btn btn-p" id="hr-save">Speichern</button>
-        <button class="btn btn-g" id="hr-cancel">Verwerfen</button>
+    <!-- ─────────── DIENSTZEITEN BEARBEITEN ───────────
+         Dieselbe Kopfzeile wie im Assistenten, und darunter ein Schloss:
+         die Seite faengt verschlossen an. Ein Dienstplan ist muehsam
+         angelegt, und ein Fehlgriff beim Durchsehen aendert ihn — darum
+         erst aufmachen, dann aendern. -->
+    <section class="view" id="v-hours">
+      <div class="za-kopf">
+        <button class="obzurueck" id="hr-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Zurück</button>
+      </div>
+      <h1 class="obh hr-h">Dienstzeiten</h1>
+
+      <button class="swz hr-schloss" id="hr-lock" aria-pressed="false">
+        <span class="swi hr-si">
+          <span class="hrs-zu" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10.5" rx="3"/><path d="M8.2 10.5V7.4a3.8 3.8 0 0 1 7.6 0v3.1"/></svg></span>
+          <span class="hrs-auf" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10.5" rx="3"/><path d="M8.2 10.5V7.4a3.8 3.8 0 0 1 7.3-1.2"/></svg></span>
+        </span>
+        <span class="swt">Bearbeiten<small id="hr-lock-s">Zum Ändern aufsperren</small></span>
+        <span class="swr"><i></i></span>
+      </button>
+
+      <div class="hr-sperre zu" id="hr-sperre">
+        <div id="sched-edit"></div>
+        <div id="sched-hist"></div>
+      </div>
+      <div class="navrow sticky solid hide" id="hr-nav">
+        <button class="einb prim" id="hr-save">Speichern</button>
+        <button class="einb zweit" id="hr-cancel">Verwerfen</button>
       </div>
     </section>
 
@@ -5124,7 +5177,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-0215';
+const APP_STAND = '2026-09-15-0320';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6491,11 +6544,11 @@ function go(id){
   try{ introAppSteht(); }catch(e){ console.warn(e); }
   /* Steht die erste Ansicht, darf der Deckel des Fassungswechsels weg. */
   try{ if(typeof fassungsdeckelWeg === 'function') fassungsdeckelWeg(); }catch(e){}
-  /* Einstieg, Funnel und die Face-ID-Frage gehoeren der ganzen Flaeche —
-     dort steht keine Kopfleiste. Und ein offenes Blatt der Anmeldung darf
+  /* Einstieg, Funnel, Face-ID-Frage und die Dienstzeiten gehoeren der
+     ganzen Flaeche — sie bringen ihre eigene Kopfzeile mit. Und ein offenes Blatt der Anmeldung darf
      nirgends stehenbleiben: es liegt fest ueber allem. */
   document.body.classList.toggle('nobar',
-    id === 'v-onboard' || id === 'v-zeitassi' || id === 'v-pkask'
+    id === 'v-onboard' || id === 'v-zeitassi' || id === 'v-pkask' || id === 'v-hours'
     || (id === 'v-login' && CLOUD_ON));
   if(id !== 'v-login'){
     try{ blattAllesZu(); }catch(e){}
@@ -11109,9 +11162,9 @@ $('#menu').addEventListener('click', e => {
   if(a === 'hours'){
     _vonMenu = true;
     DRAFT = JSON.parse(JSON.stringify(ME.sched)); DRAFT.tab = 0;
-    /* Zum Bearbeiten immer verschlossen beginnen — das Intervall soll man
-       bewusst ändern, nicht im Vorbeiwischen. */
-    DRAFT.wcLock = true; DRAFT.rotLock = true;
+    /* Immer verschlossen beginnen — geaendert wird erst nach einem
+       bewussten Tipp aufs Schloss. */
+    hrSchloss(false);
     _hrOffen = null;
     renderZeiten($('#sched-edit'), DRAFT, null);
     malSchedHist();
@@ -11418,6 +11471,32 @@ function wireWischRaus(viewId, raus){
   el.addEventListener('pointerup', () => los());
   el.addEventListener('pointercancel', () => los());
 }
+/* ─── Das Schloss auf der Dienstzeiten-Seite ──────────────────────
+   Verschlossen: alles zu sehen, nichts zu treffen, und die Leiste mit
+   Speichern bleibt weg. Aufgesperrt: wie gewohnt. */
+let _hrAuf = false;
+function hrSchloss(auf){
+  _hrAuf = !!auf;
+  const b = $('#hr-lock'); if(!b) return;
+  b.setAttribute('aria-pressed', String(_hrAuf));
+  $('#hr-lock-s').textContent = _hrAuf ? 'Offen — Änderungen sind möglich' : 'Zum Ändern aufsperren';
+  $('#hr-sperre').classList.toggle('zu', !_hrAuf);
+  $('#hr-nav').classList.toggle('hide', !_hrAuf);
+}
+$('#hr-lock').addEventListener('click', () => {
+  hrSchloss(!_hrAuf);
+  const b = $('#hr-lock');
+  b.classList.remove('klack'); void b.offsetWidth; b.classList.add('klack');
+});
+/* Wer ins Gesperrte tippt, bekommt keine Meldung, sondern einen Wink
+   aufs Schloss — dorthin muss er ja. */
+$('#hr-sperre').addEventListener('click', () => {
+  if(_hrAuf) return;
+  const b = $('#hr-lock');
+  b.classList.remove('stups'); void b.offsetWidth; b.classList.add('stups');
+});
+$('#hr-back').addEventListener('click', () => hoursRaus());
+
 function hoursRaus(){
   if(!DRAFT || schedGleich(ME.sched, DRAFT)){
     DRAFT = null; go('v-cal'); zurueckInsMenu(); return;

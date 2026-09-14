@@ -217,6 +217,34 @@ window.__WEITER = function(){
   ok('Und nennt das Verwerfen',       /verwerfen/i.test(document.getElementById('hrbar').textContent));
   document.querySelector('#hrbar [data-hrzu]').click();
 
+  /* ── Das Schloss ──
+     Die Seite faengt verschlossen an; erst ein Tipp gibt sie frei. */
+  var sperre = document.getElementById('hr-sperre');
+  var nav = document.getElementById('hr-nav');
+  var schloss = document.getElementById('hr-lock');
+  ok('Es gibt einen Zurueck-Knopf', !!document.getElementById('hr-back'));
+  ok('Und er traegt das Wort',
+     /Zurück/.test(document.getElementById('hr-back').textContent),
+     document.getElementById('hr-back').textContent.trim());
+  ok('Die alte Augenbraue ist weg', !document.querySelector('#v-hours .eyebrow'));
+  ok('Und die alte Ueberschrift auch', !document.querySelector('#v-hours h1.dis')
+     && !!document.querySelector('#v-hours h1.obh'));
+  hrSchloss(false);
+  ok('Verschlossen beginnt es',       sperre.classList.contains('zu'));
+  ok('Ohne Leiste zum Speichern',     nav.classList.contains('hide'));
+  ok('Das Schloss ist zu',            schloss.getAttribute('aria-pressed') === 'false');
+  schloss.click();
+  ok('Ein Tipp sperrt auf',           !sperre.classList.contains('zu'));
+  ok('Jetzt kommt die Leiste',        !nav.classList.contains('hide'));
+  ok('Und das Schloss steht offen',   schloss.getAttribute('aria-pressed') === 'true');
+  schloss.click();
+  ok('Nochmal tippen sperrt wieder zu', sperre.classList.contains('zu')
+     && nav.classList.contains('hide'));
+  /* Ein Tipp ins Gesperrte weist aufs Schloss, statt nichts zu tun. */
+  sperre.click();
+  ok('Der Tipp ins Gesperrte stupst das Schloss', schloss.classList.contains('stups'),
+     schloss.className);
+
   window.__FERTIG = true;
 };
 setTimeout(window.__WEITER, 400);
@@ -253,9 +281,16 @@ setTimeout(() => {
       und Zeit-Popover. Es darf nicht zurueckkommen. */
    ['Kein altes Dienstplan-Formular mehr', !/function renderSched\(/.test(roh)],
    ['Kein Zeit-Popover mehr',              !/function openTime\(/.test(roh)],
-   ['Keine Schloesser mehr',               !/function schlossHtml\(/.test(roh)],
+   /* Das meint die zwei Schloesser im alten Formular, nicht das eine,
+      das seit 15.09.2026 die ganze Seite sperrt. */
+   ['Kein schlossHtml aus dem alten Formular', !/function schlossHtml\(/.test(roh)],
    ['Hinauswischen ist verdrahtet',        /wireWischRaus\('v-hours', hoursRaus\)/],
-   ['Die Raeder ziehen nur senkrecht',     /\.rad-roll\{[\s\S]{0,200}touch-action:pan-y/]
+   ['Die Raeder ziehen nur senkrecht',     /\.rad-roll\{[\s\S]{0,200}touch-action:pan-y/],
+   /* Die Seite bringt ihre eigene Kopfzeile mit — dann darf die der App
+      dort nicht auch noch stehen. */
+   ['Dienstzeiten ohne Kopfleiste',        /id === 'v-hours'/.test(roh)],
+   ['Das Gesperrte ist taub',              /\.hr-sperre\.zu > \*\{ pointer-events:none \}/.test(roh)],
+   ['Und bleibt lesbar',                   /\.hr-sperre\.zu\{ opacity:\.46 \}/.test(roh)]
   ];
   /* Manche Pruefungen sind ein Muster, manche schon ein Ja/Nein. */
   css.forEach(([n, re]) => {

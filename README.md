@@ -270,9 +270,19 @@ beim Ändern zieht die Zeile darüber mit, ohne dass die Liste neu gebaut wird �
 Rad unter dem Finger weg. Auf schmalen Geräten (< 380 px) stehen die Tage als *Mo, Di, …*, damit
 die Zeiten nicht abgeschnitten werden.
 
-Die **Schlösser sind weg.** Sie saßen da, weil ein Fingerwisch das Wochenintervall verstellen
-konnte; vier große Knöpfe lassen sich nicht im Vorbeigehen treffen. Verloren geht dabei nichts —
-die Wochen bleiben gespeichert, auch wenn gerade weniger angezeigt werden.
+Die Seite trägt seit 15. September 2026 dieselbe Kopfzeile wie der Assistent — **Zurück** links
+oben, darunter die Überschrift *Dienstzeiten*, keine Kopfleiste der App darüber. Augenbraue,
+Displayüberschrift und Fließtext sind entfallen.
+
+**Und sie fängt verschlossen an.** Ganz oben steht ein Schalter *Bearbeiten* mit einem Schloss —
+dieselbe Zeile wie die Schalter im Funnel, denn es ist ja auch ein Schalter. Solange er zu ist,
+liegt alles darunter auf 46 % Deckkraft und nimmt keine Tipps an (`.hr-sperre.zu`); die Leiste
+mit *Speichern* und *Verwerfen* ist gar nicht da. Lesen geht, ändern nicht. Ein Tipp ins
+Gesperrte läuft nicht ins Leere — das Schloss wackelt kurz und zeigt so, wo es weitergeht.
+
+Die zwei **alten** Schlösser (`schlossHtml()`, je eines für Wochenintervall und laufende Woche)
+sind damit nicht zurück: sie saßen an einzelnen Feldern und verwechselten eine Sperre mit einer
+Feinjustierung. Das neue ist eines für die ganze Seite.
 
 **Hinauswischen** geht wie im Profilmenü: nach rechts ziehen führt zurück (`wireWischRaus()`).
 Wer dabei etwas geändert hat, wird gefragt — *Änderungen verwerfen?* mit *Behalten* und
@@ -1623,6 +1633,13 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Dienstzeiten: Zurück-Knopf und ein Schloss** (15. September 2026): Die Seite hatte keinen
+  sichtbaren Weg zurück — nur die Wischgeste — und ließ sich sofort verstellen. Jetzt dieselbe
+  Kopfzeile wie im Assistenten und ein Schalter *Bearbeiten*, der die Seite verschlossen hält:
+  lesbar, aber taub, und ohne Leiste zum Speichern. Ein Tipp ins Gesperrte wackelt am Schloss,
+  statt nichts zu tun. Augenbraue, Displayüberschrift und Fließtext sind entfallen, die zwei
+  Knöpfe unten tragen `.einb prim` / `.einb zweit` wie die neuen Bildschirme. 578 Prüfungen
 
 - **Face ID jetzt einrichten** (15. September 2026): Die Nachfrage nach dem Code-Login
   (`#v-pkask`) stand noch im alten Seitengerüst und sprach von *Passkey*. Jetzt dieselbe
