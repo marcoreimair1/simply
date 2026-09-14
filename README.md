@@ -711,6 +711,17 @@ Ein Tipp auf den **MOJI-Schriftzug** oben: der macht Platz nach rechts, das Mask
 von links heraus, wackelt kurz und verschwindet wieder. Kein Hinweis darauf, keine Beschriftung
 — es soll gefunden werden, nicht angeboten. 2,5 Sekunden, danach steht alles wie vorher.
 
+**Es kommt auch von selbst vorbei.** Seit 14. September 2026: das erste Mal nach **1 bis 2½
+Minuten**, danach irgendwann zwischen **4 und 9 Minuten**, jedes Mal neu gewürfelt. Ein fester
+Takt wäre ein Uhrwerk, und ein Uhrwerk überrascht niemanden. Die meisten Besuche sind kurz —
+darum kommt das erste früh, damit es überhaupt jemand zu sehen bekommt.
+
+Von selbst aber nur, wenn der Schriftzug wirklich dasteht (`eiFrei()`): nicht während des
+Vorspanns oder des Grußes, nicht auf den Seiten ohne Kopfleiste (Einstieg, Funnel, Assistent,
+Dienstzeiten), nicht hinter einem offenen Blatt oder Menü, nicht im Zeitraum-Modus, nicht bei
+ruhender Seite und nicht, wenn jemand weniger Bewegung eingestellt hat. Eine Überraschung
+hinter einem Blatt ist keine — sie ist nur verbraucht.
+
 Drei Dinge, die dabei zählen:
 
 - **Der Untertitel blendet weg.** Nachgerechnet: auf einem 375er-Schirm bleiben neben
@@ -719,7 +730,7 @@ Drei Dinge, die dabei zählen:
 - **Zwei Ebenen, zwei Animationen.** Die Hülle (`.bmoji`) kommt und geht, das Bild darin
   wackelt. Beides in eine Animation zu legen hieße, Verschieben und Drehen in jedem
   Zwischenschritt von Hand zu mischen.
-- **Das Bild kommt erst beim ersten Tipp** und die Bewegung wartet auf `img.decode()`. Sonst
+- **Das Bild kommt erst beim ersten Mal** und die Bewegung wartet auf `img.decode()`. Sonst
   schleppt jeder Start 16 KB mit, die niemand sieht — und die Hülle startet mit 0 px Höhe, das
   Männchen erschiene mittendrin. `aspect-ratio:120/98` hält die Höhe zusätzlich stabil.
 
@@ -1742,6 +1753,10 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Das Osterei kommt auch von selbst** (14. September 2026): Das erste Mal nach 1 bis 2½
+  Minuten, danach zwischen 4 und 9, jedes Mal neu gewürfelt — und nur, wenn der Schriftzug
+  wirklich zu sehen ist (`eiFrei()`). 673 Prüfungen
 
 - **Postfach als Liste, und MOJI stellt sich vor** (14. September 2026): Jede Nachricht stand
   bisher sofort in voller Länge da, und ob eine gelesen war, sah man kaum. Jetzt eine Zeile je
