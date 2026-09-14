@@ -241,6 +241,17 @@ fragt MOJI erneut nach den Tagen, und bei jedem Tag steht oben **Wie Woche 1** (
 Markenfarbe sah es nach Etikett aus statt nach Knopf. Wer
 schneller liest, tippt die Blase an: der Satz steht sofort, ein zweiter Tipp holt den nächsten.
 
+Ein Satz, der weitergeht, **endet auf Punkte** — und der nächste fängt damit an. So sieht man,
+dass noch etwas kommt, ohne es lesen zu müssen. Ein Teil, der ohnehin nur aus Punkten besteht —
+das *…* beim Abbruch —, bleibt wie er ist. Geschrieben wird mit **einem Zeichen alle 22 ms**,
+also rund 45 in der Sekunde: vorher waren es zwei je Schritt, das las sich wie ein Ausdruck statt
+wie jemand, der spricht.
+
+**Oben steht nur, wo es zurückgeht.** *Woche 1 von 2*, *Deine Woche* und *Fertig* standen dort
+einmal und stifteten mehr Verwirrung, als sie halfen — in welcher Woche man steckt, sagt das Band
+über der Frage ohnehin. Am Anfang (Gruß, Abbruch) und am Ende steht oben **gar nichts**: weder
+Zeile noch Balken.
+
 **Aussteigen geht jederzeit** über das Kreuz oben rechts. Gefragt wird trotzdem — *Wirklich
 abbrechen? Der Fortschritt geht verloren. Den Dienstplan kannst du später im Profilmenü
 anlegen.* — in derselben Leiste, die auch beim Passkey fragt. Wer bestätigt, landet auf demselben
@@ -1575,6 +1586,10 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Zeit-Assistent: Punkte, Tempo, leere Kopfzeile** (14. September 2026): Ein Satz, der
+  weitergeht, endet auf Punkte und der nächste fängt damit an; geschrieben wird ein Zeichen alle
+  22 ms statt zwei; und oben steht nur noch *Zurück* — am Anfang und am Ende gar nichts
 
 - **Zeit-Assistent: sechs Korrekturen vom Gerät** (14. September 2026): Die Tagesfrage nennt jetzt
   die Kalenderwoche und meint damit eine Woche; gewählte Tage bekommen einen grünen Rand im Grün
