@@ -903,6 +903,15 @@ Urlaub und Krankenstände, und die gehen Kolleginnen nichts an. `mitglieder` tr�
 voneinander sehen darf: Vorname, Anfangsbuchstabe, Bild, Filiale, MOJI-Stufe, zuletzt online.
 Lesen darf, wer in derselben Firma ist (→ `supabase/migrations/`).
 
+> **Eine Leseregel darf sich nicht selbst abfragen.** Die erste Fassung lautete
+> `using (firma = (select firma from mitglieder where user_id = auth.uid()))` — die Unterabfrage
+> liest wieder aus `mitglieder` und wird dabei von genau dieser Regel geprüft. Postgres dreht
+> sich im Kreis, und es kam gar nichts zurück, nicht einmal die eigene Zeile. Jetzt holt eine
+> Funktion mit `security definer` die eigene Firma an der Regel vorbei, und die eigene Zeile
+> darf man ohnehin immer sehen. Aufgefallen ist es erst am echten Konto — und viel zu spät,
+> weil die App den Fehler als *„Noch niemand sonst da"* ausgegeben hat. Ein Fehler darf nie
+> wie ein leeres Ergebnis aussehen; die Ansicht sagt jetzt, was schiefging.
+
 **Die Mitgliedskarte** hat zwei Zeilen: oben wer — Bild, *Anna M.*, klein und grau Filiale und
 MOJI-Stufe, darunter *kürzlich gesehen* mit farbigem Punkt, rechts die eckige Box mit dem
 geteilten Level. Unten das gemeinsame Getränk, der Weg zur nächsten Stufe und **Senden**.
@@ -1807,6 +1816,12 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Die Leseregel fragte sich selbst ab** (15. September 2026): `mitglieder` blieb leer, auch
+  die eigene Zeile — die Policy las in ihrer eigenen Bedingung aus derselben Tabelle. Jetzt
+  über `meine_firma()` mit `security definer`, und sich selbst sieht man immer. Dazu: die
+  Ansicht zeigt Ladefehler als Fehler an, statt sie als leere Liste auszugeben — genau das
+  hatte den Fehler verdeckt. 728 Prüfungen
 
 - **Meine Firma wird zum Team** (15. September 2026): Vorschaukachel zum Aufklappen, darunter
   alle Mitglieder alphabetisch mit Bild, Filiale, MOJI-Stufe und dem geteilten Bubble-Tea-Level.

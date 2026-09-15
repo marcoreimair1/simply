@@ -9,6 +9,18 @@ const { JSDOM, VirtualConsole } = require('jsdom');
 
 const DATEI = process.argv[2] || path.join(__dirname, '..', 'index.html');
 const roh = fs.readFileSync(DATEI, 'utf8');
+/* Die Regeln der Datenbank stehen nicht in index.html — geprueft wird
+   gegen die Migration, die sie zuletzt gesetzt hat. */
+const policy = (function(){
+  try{
+    const d = path.join(__dirname, '..', 'supabase', 'migrations');
+    return fs.readdirSync(d).filter(f => /team_policy/.test(f))
+             .map(f => fs.readFileSync(path.join(d, f), 'utf8')).join('\n')
+             /* Kommentare heraus: dort steht die alte, falsche Regel als
+                Erklaerung — die soll die Pruefung nicht finden. */
+             .split('\n').filter(z => !/^\s*--/.test(z)).join('\n');
+  }catch(e){ return ''; }
+})();
 const vc = new VirtualConsole();
 ['jsdomError','error','warn'].forEach(e => vc.on(e, () => {}));
 
@@ -360,6 +372,18 @@ window.__WEITER = function(){
   ok('Heute schon geschickt heisst gesperrt', !!a.querySelector('.mk-send[disabled]')
      && a.querySelector('.mk-send').textContent.indexOf('Heute') > -1,
      a.querySelector('.mk-send').textContent.trim());
+  /* Ein Fehler darf nicht wie eine leere Liste aussehen — genau das hat
+     die falsche Leseregel verdeckt. */
+  TEAM = []; TEAM_FEHLER = 'keine Rechte';
+  malTeam();
+  ok('Ein Fehler wird benannt',
+     document.getElementById('fi-team').textContent.indexOf('nicht laden') > -1
+     && document.getElementById('fi-team').textContent.indexOf('keine Rechte') > -1,
+     document.getElementById('fi-team').textContent.trim().slice(0, 70));
+  TEAM_FEHLER = ''; malTeam();
+  ok('Ohne Fehler steht die leere Liste da',
+     document.getElementById('fi-team').textContent.indexOf('Noch niemand') > -1);
+
   TEAM = null; TEE_PAARE = {}; UID = null;
 
   window.__FERTIG = true;
@@ -422,7 +446,14 @@ setTimeout(() => {
     /from\('mitglieder'\)/.test(roh) && !/from\('records'\)[\s\S]{0,200}mitglieder/.test(roh)],
    ['Senden laeuft ueber die Datenbank', /sb\.rpc\('tee_senden'/.test(roh)],
    ['Zuletzt online wird gemeldet',      /sb\.rpc\('moji_gesehen'\)/.test(roh)],
-   ['Hinauswischen ist verdrahtet',      /wireWischRaus\('v-firma', firmaZu\)/.test(roh)]
+   ['Hinauswischen ist verdrahtet',      /wireWischRaus\('v-firma', firmaZu\)/.test(roh)],
+   /* Die Leseregel darf sich nicht selbst abfragen. */
+   ['Die Leseregel fragt nicht sich selbst',
+    !/using \(\s*\n?\s*firma = \(select m\.firma from public\.mitglieder/.test(policy)],
+   ['Sich selbst sieht man immer',  /user_id = auth\.uid\(\)\s*--/.test(policy)],
+   ['Die Firma kommt aus einer eigenen Funktion',
+    /create or replace function public\.meine_firma\(\)/.test(policy)
+    && /security definer/.test(policy)]
   ];
   /* Manche Pruefungen sind ein Muster, manche schon ein Ja/Nein. */
   css.forEach(([n, re]) => {

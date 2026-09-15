@@ -2242,6 +2242,7 @@ body.sigmodus .fb-s{display:inline-flex}
   60%{ transform:translateY(0) rotate(4deg) scale(.97) } 100%{ transform:none }
 }
 .fileer{ text-align:center; color:var(--tx-3); font-size:13px; line-height:1.6; padding:26px 10px }
+.fileer b{ color:var(--tx-2) }
 @media(prefers-reduced-motion:reduce){ .mk-tee .becher.weg{ animation:none } }
 
 /* ─── Tagesblatt ──────────────────────────────────────────────────────
@@ -5422,7 +5423,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1200';
+const APP_STAND = '2026-09-15-1240';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -8667,7 +8668,7 @@ function zuletztArt(iso){
   return new Date(iso) >= h ? 'heute' : '';
 }
 
-let TEAM = null, TEE_PAARE = {};
+let TEAM = null, TEE_PAARE = {}, TEAM_FEHLER = '';
 /* Die eigene Zeile: nur das, was Kollegen voneinander sehen duerfen. */
 async function teamIchSchreiben(){
   if(!CLOUD_ON || !UID || !ME) return;
@@ -8682,7 +8683,15 @@ async function teamIchSchreiben(){
       zuletzt: new Date().toISOString()
     });
     if(r.error) throw r.error;
-  }catch(e){ console.warn('[MOJI] Mitgliedszeile', e); }
+  }catch(e){
+    console.warn('[MOJI] Mitgliedszeile', e);
+    TEAM_FEHLER = 'Deine Zeile liess sich nicht anlegen: ' + fehlerKurz(e);
+  }
+}
+/* Aus einem Supabase-Fehler wird ein Satz, den man weitergeben kann. */
+function fehlerKurz(e){
+  if(!e) return 'unbekannt';
+  return String(e.message || e.msg || e.code || e).slice(0, 120);
 }
 /* Nur den Zeitstempel — beim Start, damit „zuletzt online" stimmt. */
 async function teamGesehen(){
@@ -8719,6 +8728,15 @@ function malTeam(){
   const host = $('#fi-team'); if(!host) return;
   if(TEAM === null){
     host.innerHTML = '<p class="fileer">Team wird geladen …</p>';
+    $('#fi-anzahl').textContent = '';
+    return;
+  }
+  /* Ein Fehler darf nicht wie eine leere Liste aussehen. Genau das hat
+     am 15.09.2026 eine falsche Leseregel verdeckt: „Noch niemand sonst
+     da" stand da, waehrend die Datenbank in Wahrheit abgelehnt hat. */
+  if(TEAM_FEHLER){
+    host.innerHTML = '<p class="fileer"><b>Das Team liess sich nicht laden.</b><br>'
+      + esc(TEAM_FEHLER) + '</p>';
     $('#fi-anzahl').textContent = '';
     return;
   }
@@ -8868,14 +8886,21 @@ function firmaAuf(){
   go('v-firma');
   /* Erst zeigen, dann nachladen — die eigene Zeile schreiben wir dabei
      gleich mit, sonst fehlt man selbst in der eigenen Liste. */
+  TEAM_FEHLER = '';
   (async () => {
     try{
       await teamIchSchreiben();
       await teamLaden();
+      /* Man selbst muss dabei sein — sonst stimmt etwas mit den Rechten
+         nicht, und das soll man sehen statt es zu raten. */
+      if(TEAM && !TEAM.some(m => m.user_id === UID) && !TEAM_FEHLER){
+        TEAM_FEHLER = 'Deine eigene Zeile fehlt in der Liste.';
+      }
       if($('#v-firma').classList.contains('on')){ malTeam(); malFirma(); }
     }catch(e){
       console.warn('[MOJI] Team laden', e);
       TEAM = [];
+      if(!TEAM_FEHLER) TEAM_FEHLER = fehlerKurz(e);
       if($('#v-firma').classList.contains('on')) malTeam();
     }
   })();
