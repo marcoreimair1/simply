@@ -892,6 +892,35 @@ Gespeichert werden nur die beiden **Grundwerte** in `konten`. Der gerechnete Sta
 nachgezogen — er liegt damit auch in der Cloud-Zeile und ändert sich automatisch, sobald im
 Kalender Urlaub oder Zeitausgleich eingetragen wird. Rechenzeit rund 2 ms.
 
+### Meine Firma und das Team
+
+Seit 15. September 2026 eine **Vorschaukachel zum Aufklappen** und darunter das Team. Vorher
+stand hier eine Seite mit Augenbraue, Fließtext und fünf gleich schweren Zeilen — die Firma
+steht fest, die liest man einmal und nie wieder; das Team ist der Grund, herzukommen.
+
+**Die Daten liegen in zwei eigenen Tabellen, nicht in `records`.** Dort stehen Dienstzeiten,
+Urlaub und Krankenstände, und die gehen Kolleginnen nichts an. `mitglieder` trägt nur, was man
+voneinander sehen darf: Vorname, Anfangsbuchstabe, Bild, Filiale, MOJI-Stufe, zuletzt online.
+Lesen darf, wer in derselben Firma ist (→ `supabase/migrations/`).
+
+**Die Mitgliedskarte** hat zwei Zeilen: oben wer — Bild, *Anna M.*, klein und grau Filiale und
+MOJI-Stufe, darunter *kürzlich gesehen* mit farbigem Punkt, rechts die eckige Box mit dem
+geteilten Level. Unten das gemeinsame Getränk, der Weg zur nächsten Stufe und **Senden**.
+Die eigene Karte steht zuerst und hat keine untere Zeile — sich selbst schickt man nichts.
+
+**Das geteilte Level.** Jeder Bubble Tea ist ein Punkt im gemeinsamen Topf, beide zahlen ein,
+also höchstens zwei am Tag. Der erste bringt Stufe 1 (*Ube Pop*), danach je zehn eine weitere
+bis Stufe 10 (*Ruby Royale*) bei 91. `teeLevel()` rechnet im Browser genau wie `tee_level()` in
+der Datenbank — beide Fassungen sind gegen dieselbe Tabelle geprüft.
+
+**Die Regel „einmal am Tag" hält der Server.** `tee_senden(an)` sperrt die Zeile, prüft dieselbe
+Firma, schaut nach dem letzten Tag je Richtung (Wiener Zeit, sonst wechselte der Tag um zwei
+Uhr früh) und zählt nur dann. Im Browser wäre das in zehn Sekunden ausgehebelt.
+
+**Zuletzt online** ist eine Leiter, keine Uhrzeit: *kürzlich gesehen* (bis 4 h), *heute zuletzt
+online*, *gestern*, *vor n Tagen* bis 40, danach *es ist schon ewig her*. Niemand rechnet aus,
+wie lange 14:32 her ist.
+
 ### Das Postfach
 
 Ankündigungen, erreichbar über die Kachel im Profilmenü. Gelesen wird **pro Nachricht** in
@@ -1778,6 +1807,12 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Meine Firma wird zum Team** (15. September 2026): Vorschaukachel zum Aufklappen, darunter
+  alle Mitglieder alphabetisch mit Bild, Filiale, MOJI-Stufe und dem geteilten Bubble-Tea-Level.
+  Zwei neue Tabellen (`mitglieder`, `tee`) und drei Funktionen in Supabase, die Tagesregel hält
+  der Server. Die zehn Becher sind aus der Vorlage freigestellt. 723 Prüfungen — **die Runde
+  zur Datenbank ist dabei nicht geprüft**, dafür bräuchte es ein angemeldetes Konto.
 
 - **Das Profilbild im Willkommensgruß bleibt eckig** (15. September 2026): Am Funnelende wurde
   es rund und war damit das einzige runde Profilbild der App — im Gruß, am Geburtstag und im

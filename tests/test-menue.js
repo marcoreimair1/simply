@@ -295,6 +295,73 @@ window.__WEITER = function(){
   ok('Aufgesperrt', document.getElementById('uabox').classList.contains('frei'));
   ok('Und dort steht kein Rad', document.querySelectorAll('#uabox .rad').length === 0);
 
+  /* ── Meine Firma und das Team ── */
+  ok('Die Firmenkachel faengt zugeklappt an', document.getElementById('fi-zeilen').hidden);
+  ok('Es gibt einen Zurueck-Knopf', !!document.getElementById('fi-back'));
+  ok('Die alte Augenbraue ist weg', !document.querySelector('#v-firma .eyebrow'));
+
+  /* Die Stufenrechnung muss dieselbe sein wie tee_level() in der Datenbank. */
+  var stufen = [[0,0],[1,1],[2,1],[10,1],[11,2],[21,3],[31,4],[41,5],[51,6],
+                [61,7],[71,8],[81,9],[90,9],[91,10],[500,10]];
+  ok('Die Stufenrechnung stimmt mit der Datenbank ueberein',
+     stufen.every(function(x){ return teeLevel(x[0]) === x[1]; }),
+     stufen.map(function(x){ return x[0] + '→' + teeLevel(x[0]); }).join(' '));
+  ok('Zehn Getraenke, zehn Namen', TEE.length === 10 && TEE[0].n === 'Ube Pop'
+     && TEE[9].n === 'Ruby Royale');
+  ok('Bei zehn ist Schluss', teeRest(91) === null && teeRest(500) === null);
+  ok('Der erste Tee reicht fuer Stufe 1', teeRest(0).braucht === 1 && teeRest(0).bis === 1);
+  ok('Danach sind es zehn', teeRest(1).braucht === 10 && teeRest(1).bis === 10,
+     JSON.stringify(teeRest(1)));
+  ok('Und die Naechste heisst richtig', teeRest(1).name === 'Blue Breeze', teeRest(1).name);
+
+  /* „Zuletzt online" — die Leiter. */
+  var vor = function(h){ return new Date(Date.now() - h * 3600e3).toISOString(); };
+  ok('Bis vier Stunden: kuerzlich',   zuletztText(vor(1)) === 'kürzlich gesehen',
+     zuletztText(vor(1)));
+  ok('Spaeter am selben Tag: heute',  zuletztText(vor(5)).indexOf('heute') === 0
+     || zuletztText(vor(5)) === 'gestern', zuletztText(vor(5)));
+  ok('Ein Tag: gestern',              zuletztText(vor(24 * 1 + 12)) === 'gestern'
+     || zuletztText(vor(24 * 1 + 12)) === 'vor 2 Tagen', zuletztText(vor(36)));
+  /* Ohne regulaeren Ausdruck: der Pruefteil steckt in einer Vorlage,
+     dort waere \\d nur ein d. */
+  ok('Mehrere Tage werden gezaehlt',  zuletztText(vor(24 * 12)) === 'vor 12 Tagen',
+     zuletztText(vor(24 * 12)));
+  ok('Ab 41 Tagen wird es vage',      zuletztText(vor(24 * 60)) === 'es ist schon ewig her',
+     zuletztText(vor(24 * 60)));
+  ok('Ohne Zeitstempel steht nichts', zuletztText(null) === '');
+
+  /* Die Liste selbst. */
+  UID = 'u-ich';
+  TEAM = [{user_id:'u-ich',vorname:'Marco',kuerzel:'R',avatar:5,filiale:'Linz',stufe:7,zuletzt:vor(0)},
+          {user_id:'u-a',vorname:'Anna',kuerzel:'M',avatar:3,filiale:'Linz',stufe:7,zuletzt:vor(1)},
+          {user_id:'u-c',vorname:'Clara',kuerzel:'W',avatar:9,filiale:'Linz',stufe:2,zuletzt:vor(74)}];
+  TEE_PAARE = {'u-a':{punkte:25,heuteSchon:false},'u-c':{punkte:0,heuteSchon:false}};
+  malTeam();
+  var karten = document.querySelectorAll('#fi-team .mk');
+  ok('Je Mitglied eine Karte',      karten.length === 3, karten.length);
+  ok('Ich stehe zuerst',            karten[0].classList.contains('ich'));
+  ok('Und ohne Sende-Knopf',        !karten[0].querySelector('[data-tee]'));
+  ok('Name mit Anfangsbuchstaben',  karten[1].querySelector('.mk-t b').textContent === 'Anna M.',
+     karten[1].querySelector('.mk-t b').textContent);
+  ok('Filiale und MOJI-Stufe',      karten[1].querySelector('.wo').textContent === 'Linz · Stufe 7 Uhrwerk',
+     karten[1].querySelector('.wo').textContent);
+  ok('Das geteilte Level steht rechts',
+     karten[1].querySelector('.mk-lvl b').textContent === '3',
+     karten[1].querySelector('.mk-lvl b').textContent);
+  ok('Bei null bleibt die Box grau', karten[2].querySelector('.mk-lvl b').textContent === '0'
+     && !karten[2].querySelector('.mk-lvl').classList.contains('an'));
+  ok('Und der Becher ist blass',     !!karten[2].querySelector('.becher.leer'));
+  ok('Der Becher passt zur Stufe',
+     karten[1].querySelector('.becher').getAttribute('src') === 'tee-3.webp',
+     karten[1].querySelector('.becher').getAttribute('src'));
+  /* Wer heute schon geschickt hat, kann nicht noch einmal. */
+  TEE_PAARE['u-a'].heuteSchon = true; malTeam();
+  var a = document.querySelectorAll('#fi-team .mk')[1];
+  ok('Heute schon geschickt heisst gesperrt', !!a.querySelector('.mk-send[disabled]')
+     && a.querySelector('.mk-send').textContent.indexOf('Heute') > -1,
+     a.querySelector('.mk-send').textContent.trim());
+  TEAM = null; TEE_PAARE = {}; UID = null;
+
   window.__FERTIG = true;
 };
 setTimeout(window.__WEITER, 400);
@@ -349,7 +416,13 @@ setTimeout(() => {
    /* Das Blatt der Anmeldung kommt im Takt der Tastatur, nicht langsamer. */
    ['Das Blatt hat eine eigene Kurve',      /--ease-blatt:cubic-bezier/.test(roh)],
    ['Und faehrt in einer Drittelsekunde',   /animation:blattRein \.34s var\(--ease-blatt\)/.test(roh)],
-   ['Der Inhalt kommt einen Hauch spaeter', /@keyframes blattInhalt/.test(roh)]
+   ['Der Inhalt kommt einen Hauch spaeter', /@keyframes blattInhalt/.test(roh)],
+   /* Das Team steht in eigenen Tabellen — records bleibt privat. */
+   ['Das Team kommt nicht aus records',
+    /from\('mitglieder'\)/.test(roh) && !/from\('records'\)[\s\S]{0,200}mitglieder/.test(roh)],
+   ['Senden laeuft ueber die Datenbank', /sb\.rpc\('tee_senden'/.test(roh)],
+   ['Zuletzt online wird gemeldet',      /sb\.rpc\('moji_gesehen'\)/.test(roh)],
+   ['Hinauswischen ist verdrahtet',      /wireWischRaus\('v-firma', firmaZu\)/.test(roh)]
   ];
   /* Manche Pruefungen sind ein Muster, manche schon ein Ja/Nein. */
   css.forEach(([n, re]) => {

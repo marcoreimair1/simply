@@ -2150,27 +2150,99 @@ body.sigmodus .fb-s{display:inline-flex}
 #dlcard .grip{width:52px;height:5px;background:var(--tx-3)}
 #dl-grab:hover .grip{background:var(--butter)}
 
-/* Meine Firma */
-.fikopf{display:flex;flex-direction:column;align-items:center;text-align:center;
-  padding:6px 0 18px;border-bottom:1px solid var(--line-2);margin-bottom:4px}
-.fi-logo{width:92px;height:92px;border-radius:30%;overflow:hidden;background:var(--f-1);
-  border:1px solid rgba(var(--s-auf),.16);
-  box-shadow:0 18px 40px -20px rgba(var(--s-schatten),.8),0 0 0 6px rgba(var(--marke-rgb),.05)}
-.fi-logo img{width:100%;height:100%;object-fit:cover;display:block}
-.fikopf b{display:block;margin-top:15px;font-family:var(--font-dis);font-weight:400;
-  font-size:22px;letter-spacing:-.01em}
-.fikopf small{display:block;margin-top:5px;font-size:9.5px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--tx-3)}
-.fizeilen{margin:0}
-.fiz{display:flex;align-items:baseline;gap:12px;padding:11px 0;
-  border-bottom:1px solid var(--line-2)}
-.fiz:last-child{border-bottom:none}
-.fiz u{flex:none;width:104px;text-decoration:none;font-size:9.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--tx-3);padding-top:2px}
-.fiz b{flex:1;min-width:0;font-size:13.5px;font-weight:600;color:var(--tx)}
-.fiz b small{display:block;margin-top:2px;font-size:11.5px;font-weight:400;
-  color:var(--tx-3);line-height:1.45}
-.fihint{margin:14px 0 0;font-size:11.5px;line-height:1.5;color:var(--tx-3)}
+/* ─── Meine Firma ─────────────────────────────────────────────────
+   Eine Vorschaukachel zum Aufklappen, darunter das Team. Vorher stand
+   hier eine Seite mit Augenbraue, Fliesstext und fuenf gleich schweren
+   Zeilen — die Firma steht fest, die liest man einmal und nie wieder. */
+#v-firma{ padding-top:calc(env(safe-area-inset-top) + 6px) }
+#v-firma > .za-kopf, .fi-h, #fi-karte, .fi-sek, #fi-team{
+  max-width:430px; width:100%; margin-left:auto; margin-right:auto }
+.fi-h{ margin:14px auto 16px; font-size:clamp(26px,7.2vw,34px) }
+.fk{ border:1px solid var(--karte-rand); border-radius:22px; background:var(--karte);
+  box-shadow:var(--karte-schatten); overflow:hidden }
+.fk-kopf{ display:flex; align-items:center; gap:13px; width:100%; padding:15px 15px;
+  text-align:left }
+.fk-logo{ flex:none; width:52px; height:52px; border-radius:16px; display:grid;
+  place-items:center; background:#fff; border:1px solid var(--karte-rand); overflow:hidden }
+.fk-logo img{ width:78%; height:78%; object-fit:contain }
+.fk-t{ flex:1; min-width:0 }
+.fk-t b{ display:block; font-size:16px; font-weight:700; letter-spacing:-.01em }
+.fk-t small{ display:block; margin-top:2px; font-size:11.5px; color:var(--tx-3) }
+.fk-pfeil{ flex:none; width:16px; height:16px; color:var(--tx-3);
+  transition:transform .26s var(--ease) }
+.fk.auf .fk-pfeil{ transform:rotate(90deg) }
+.fk-de{ padding:0 15px 14px; animation:zaRein .34s var(--ease-out) both }
+.fk-de[hidden]{ display:none }
+.fiz{ display:flex; gap:12px; padding:11px 0; border-top:1px solid var(--line-2) }
+.fiz u{ flex:none; width:96px; text-decoration:none; font-size:10.5px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--tx-3); padding-top:2px }
+.fiz b{ flex:1; min-width:0; font-size:13.5px; font-weight:600; line-height:1.35 }
+.fiz b small{ display:block; margin-top:3px; font-size:11px; font-weight:400; line-height:1.45;
+  color:var(--tx-3) }
+.fihint{ display:flex; gap:9px; align-items:flex-start; margin:12px 0 0; padding:10px 12px;
+  border-radius:13px; background:rgba(var(--marke-rgb),.07); font-size:11.5px; line-height:1.5;
+  color:var(--tx-2) }
+.fihint svg{ flex:none; width:15px; height:15px; color:var(--butter); margin-top:1px }
+.fi-sek{ margin:26px auto 10px }
+.fi-sek span{ color:var(--tx-3); font-weight:500 }
+
+/* ─── Eine Mitgliedskarte ─────────────────────────────────────────
+   Oben wer, unten was ihr euch zusammen aufgebaut habt. */
+.mk{ border:1px solid var(--karte-rand); border-radius:20px; background:var(--karte);
+  box-shadow:var(--karte-schatten); padding:12px 13px 11px; margin-bottom:10px }
+.mk.ich{ border-color:rgba(var(--marke-rgb),.28);
+  background:linear-gradient(170deg,rgba(var(--marke-rgb),.07),var(--karte) 62%) }
+.mk-oben{ display:flex; align-items:center; gap:12px }
+.mk-bild{ flex:none; width:52px; height:52px; border-radius:17px; overflow:hidden;
+  background:#fff; border:1px solid var(--karte-rand) }
+.mk-bild img{ width:100%; height:100%; object-fit:cover; object-position:center 86%; display:block }
+.mk-t{ flex:1; min-width:0 }
+.mk-t b{ display:block; font-size:15px; font-weight:650; letter-spacing:-.01em }
+.mk-t .wo{ display:block; margin-top:2px; font-size:11.5px; color:var(--tx-3);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.mk-t .seit{ display:flex; align-items:center; gap:5px; margin-top:4px; font-size:11px;
+  color:var(--tx-3) }
+.mk-t .seit i{ width:6px; height:6px; border-radius:50%; background:var(--tx-3); flex:none }
+.mk-t .seit.frisch i{ background:var(--c-eigen) }
+.mk-t .seit.heute i{ background:var(--c-urlaub) }
+/* Das geteilte Level: eckige Box, grau bei null, sonst in der Farbe des
+   Getraenks, das ihr gerade habt. */
+.mk-lvl{ flex:none; width:52px; border-radius:15px; padding:7px 4px 6px; text-align:center;
+  background:rgba(var(--tx-rgb),.055); border:1px solid var(--line-2) }
+.mk-lvl b{ display:block; font-family:var(--font-dis); font-weight:400; font-size:21px;
+  line-height:1; color:var(--tx-2) }
+.mk-lvl u{ display:block; margin-top:3px; text-decoration:none; font-size:8.5px; font-weight:700;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--tx-3) }
+.mk-lvl.an{ background:color-mix(in srgb, var(--tee) 16%, transparent);
+  border-color:color-mix(in srgb, var(--tee) 40%, transparent) }
+.mk-lvl.an b{ color:var(--tee) }
+.mk-tee{ display:flex; align-items:center; gap:10px; margin-top:11px; padding-top:10px;
+  border-top:1px solid var(--line-2) }
+.mk-tee .becher{ flex:none; width:24px; height:auto; display:block }
+.mk-tee .becher.leer{ opacity:.3; filter:grayscale(1) }
+.mk-tee .txt{ flex:1; min-width:0 }
+.mk-tee .txt b{ display:block; font-size:12.5px; font-weight:650; color:var(--tx-2) }
+.mk-tee .txt small{ display:block; margin-top:3px; font-size:10.5px; color:var(--tx-3) }
+.mk-balken{ display:block; height:4px; border-radius:99px; background:rgba(var(--tx-rgb),.09);
+  margin-top:5px; overflow:hidden }
+.mk-balken i{ display:block; height:100%; border-radius:99px; background:var(--tee);
+  transition:width .5s var(--ease-out) }
+.mk-send{ flex:none; display:inline-flex; align-items:center; gap:6px; padding:9px 13px;
+  border-radius:13px; font-size:12px; font-weight:650; color:var(--on-primary);
+  background:linear-gradient(120deg,var(--butter-2),var(--butter));
+  box-shadow:0 8px 20px -10px var(--knopf-schatten); transition:transform .18s var(--ease) }
+.mk-send svg{ width:14px; height:14px }
+.mk-send:active{ transform:scale(.95) }
+.mk-send:disabled, .mk-send.aus{ background:rgba(var(--tx-rgb),.05); color:var(--tx-3);
+  box-shadow:none; border:1px solid var(--line-2) }
+/* Der Becher huepft, wenn er weggeschickt ist. */
+.mk-tee .becher.weg{ animation:teeWeg .7s var(--ease-out) }
+@keyframes teeWeg{
+  0%{ transform:none } 30%{ transform:translateY(-9px) rotate(-8deg) scale(1.1) }
+  60%{ transform:translateY(0) rotate(4deg) scale(.97) } 100%{ transform:none }
+}
+.fileer{ text-align:center; color:var(--tx-3); font-size:13px; line-height:1.6; padding:26px 10px }
+@media(prefers-reduced-motion:reduce){ .mk-tee .becher.weg{ animation:none } }
 
 /* ─── Tagesblatt ──────────────────────────────────────────────────────
    Kompakter als vorher, und sobald eine Art gewählt ist, treten die
@@ -4607,29 +4679,27 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       </div>
     </section>
 
-    <!-- ─────────── MEINE FIRMA ─────────── -->
-    <section class="view pt" id="v-firma">
-      <div class="eyebrow">Arbeitgeber</div>
-      <h1 class="dis">Meine <i>Firma</i>.</h1>
-      <p class="lede">Dein Dienstgeber, wie er in MOJI hinterlegt ist.</p>
-
-      <div class="fikopf mt">
-        <span class="fi-logo"><img src="firma-miller.png?v=1" alt="" aria-hidden="true"></span>
-        <b id="fi-name">—</b>
-        <small>Arbeitsort · fix hinterlegt</small>
+    <!-- ─────────── MEINE FIRMA ───────────
+         Eine Vorschaukachel zum Aufklappen, darunter das Team. Vorher
+         stand hier eine Seite mit Augenbraue, Fliesstext und fuenf
+         Zeilen, die alle gleich schwer wogen. -->
+    <section class="view" id="v-firma">
+      <div class="za-kopf">
+        <button class="obzurueck" id="fi-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Zurück</button>
       </div>
+      <h1 class="obh fi-h">Meine Firma</h1>
 
-      <div class="fizeilen" id="fi-zeilen"></div>
-
-      <p class="fihint">Der Dienstgeber ist für alle MOJI-Konten fest eingestellt
-        und lässt sich in der App nicht ändern.</p>
-
-      <div class="navrow sticky" id="fi-nav">
-        <button class="btn btn-g" id="fi-back">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
-          Zurück
+      <div class="fk" id="fi-karte">
+        <button class="fk-kopf" id="fi-auf" aria-expanded="false">
+          <span class="fk-logo"><img src="firma-miller.png?v=1" alt="" aria-hidden="true"></span>
+          <span class="fk-t"><b id="fi-name">—</b><small id="fi-sub">—</small></span>
+          <svg class="fk-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
         </button>
+        <div class="fk-de" id="fi-zeilen" hidden></div>
       </div>
+
+      <div class="msek fi-sek">Team <span id="fi-anzahl"></span></div>
+      <div id="fi-team"></div>
     </section>
 
     <!-- ─────────── DIENSTZEITEN BEARBEITEN ─────────── -->
@@ -5352,7 +5422,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-0105';
+const APP_STAND = '2026-09-15-1200';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6728,7 +6798,7 @@ function go(id){
      nirgends stehenbleiben: es liegt fest ueber allem. */
   document.body.classList.toggle('nobar',
     id === 'v-onboard' || id === 'v-zeitassi' || id === 'v-pkask' || id === 'v-hours'
-    || (id === 'v-login' && CLOUD_ON));
+    || id === 'v-firma' || (id === 'v-login' && CLOUD_ON));
   if(id !== 'v-login'){
     try{ blattAllesZu(); }catch(e){}
     try{ msStop(); }catch(e){}
@@ -8547,6 +8617,201 @@ function erinUmschalten(){
    Bewusst nur Angaben, die die App tatsächlich hat. Eine Adresse oder
    Firmenbuchnummer steht nirgends hinterlegt — die würde ich hier sonst
    erfinden müssen. */
+/* ═══ Team ═════════════════════════════════════════════════════════
+   Die Mitglieder derselben Firma, das geteilte Bubble-Tea-Level und
+   wer wann zuletzt da war. Die Daten stehen in zwei eigenen Tabellen,
+   nicht in records: dort liegen Dienstzeiten und Krankenstaende, und
+   die gehen Kollegen nichts an. Siehe supabase/migrations/. */
+const TEE = [
+  { n:'Ube Pop',         f:'#B85CE8' },
+  { n:'Blue Breeze',     f:'#3B9EF5' },
+  { n:'Matcha Melt',     f:'#6FC77F' },
+  { n:'Mango Glow',      f:'#E8B32A' },
+  { n:'Peach Bliss',     f:'#F08A3C' },
+  { n:'Strawberry Kiss', f:'#F2697E' },
+  { n:'Pink Paradise',   f:'#F0509B' },
+  { n:'Galaxy Grape',    f:'#9B4DE0' },
+  { n:'Crystal Lagoon',  f:'#39C6DA' },
+  { n:'Ruby Royale',     f:'#E8353D' }
+];
+/* Dieselbe Rechnung wie tee_level() in der Datenbank: der erste Tee
+   bringt Stufe 1, danach je zehn eine weitere, bei zehn ist Schluss. */
+function teeLevel(p){ return p <= 0 ? 0 : Math.min(10, 1 + Math.floor((p - 1) / 10)); }
+/* Wie viele Getraenke fehlen bis zur naechsten Stufe. */
+function teeRest(p){
+  const l = teeLevel(p);
+  if(l >= 10) return null;
+  const naechste = l === 0 ? 1 : l * 10 + 1;
+  return { hat:p - (l === 0 ? 0 : (l - 1) * 10 + 1), braucht:l === 0 ? 1 : 10,
+           bis:naechste - p, name:TEE[l].n };
+}
+/* „kuerzlich gesehen" statt einer Uhrzeit: niemand rechnet aus, wie
+   lange 14:32 her ist. */
+function zuletztText(iso){
+  if(!iso) return '';
+  const d = new Date(iso); if(isNaN(d)) return '';
+  const jetzt = Date.now(), weg = jetzt - d.getTime();
+  if(weg < 4 * 3600e3) return 'kürzlich gesehen';
+  const h = new Date(); h.setHours(0,0,0,0);
+  const tage = Math.floor((h - new Date(d).setHours(0,0,0,0)) / 86400e3);
+  if(tage <= 0) return 'heute zuletzt online';
+  if(tage === 1) return 'gestern';
+  if(tage <= 40) return 'vor ' + tage + ' Tagen';
+  return 'es ist schon ewig her';
+}
+function zuletztArt(iso){
+  if(!iso) return '';
+  const weg = Date.now() - new Date(iso).getTime();
+  if(weg < 4 * 3600e3) return 'frisch';
+  const h = new Date(); h.setHours(0,0,0,0);
+  return new Date(iso) >= h ? 'heute' : '';
+}
+
+let TEAM = null, TEE_PAARE = {};
+/* Die eigene Zeile: nur das, was Kollegen voneinander sehen duerfen. */
+async function teamIchSchreiben(){
+  if(!CLOUD_ON || !UID || !ME) return;
+  try{
+    const r = await sb.from('mitglieder').upsert({
+      user_id: UID,
+      vorname: (ME.vorname || '').trim(),
+      kuerzel: ((ME.nachname || '').trim()[0] || '').toUpperCase(),
+      avatar:  avNummer(),
+      filiale: (ME.filiale || '').trim(),
+      stufe:   stufe(),
+      zuletzt: new Date().toISOString()
+    });
+    if(r.error) throw r.error;
+  }catch(e){ console.warn('[MOJI] Mitgliedszeile', e); }
+}
+/* Nur den Zeitstempel — beim Start, damit „zuletzt online" stimmt. */
+async function teamGesehen(){
+  if(!CLOUD_ON || !UID) return;
+  try{ await sb.rpc('moji_gesehen'); }catch(e){}
+}
+async function teamLaden(){
+  if(!CLOUD_ON || !UID) return null;
+  const r = await sb.from('mitglieder')
+    .select('user_id,vorname,kuerzel,avatar,filiale,stufe,zuletzt');
+  if(r.error) throw r.error;
+  const t = await sb.from('tee').select('a,b,punkte,letzt_a,letzt_b');
+  TEE_PAARE = {};
+  const heute = heuteIso();
+  ((t.error ? [] : t.data) || []).forEach(z => {
+    const anderer = z.a === UID ? z.b : z.a;
+    const meins = z.a === UID ? z.letzt_a : z.letzt_b;
+    TEE_PAARE[anderer] = { punkte:z.punkte || 0, heuteSchon: !!meins && meins >= heute };
+  });
+  /* Alphabetisch nach Vorname, ich selbst zuerst — die eigene Zeile ist
+     der Massstab fuer alles darunter. */
+  TEAM = (r.data || []).sort((x, y) => {
+    if(x.user_id === UID) return -1;
+    if(y.user_id === UID) return 1;
+    return (x.vorname || '').localeCompare(y.vorname || '', 'de');
+  });
+  return TEAM;
+}
+function mitgliedName(m){
+  const v = (m.vorname || '').trim() || 'Jemand';
+  return v + (m.kuerzel ? ' ' + m.kuerzel + '.' : '');
+}
+function malTeam(){
+  const host = $('#fi-team'); if(!host) return;
+  if(TEAM === null){
+    host.innerHTML = '<p class="fileer">Team wird geladen …</p>';
+    $('#fi-anzahl').textContent = '';
+    return;
+  }
+  if(!TEAM.length){
+    host.innerHTML = '<p class="fileer">Noch niemand sonst da.<br>'
+      + 'Sobald Kolleginnen und Kollegen MOJI benutzen, stehen sie hier.</p>';
+    $('#fi-anzahl').textContent = '';
+    return;
+  }
+  $('#fi-anzahl').textContent = TEAM.length + (TEAM.length === 1 ? ' Mitglied' : ' Mitglieder');
+  host.innerHTML = TEAM.map(m => {
+    const ich = m.user_id === UID;
+    const paar = TEE_PAARE[m.user_id] || { punkte:0, heuteSchon:false };
+    const lvl = teeLevel(paar.punkte);
+    const tee = lvl > 0 ? TEE[lvl - 1] : TEE[0];
+    const rest = teeRest(paar.punkte);
+    const art = zuletztArt(m.zuletzt);
+    /* Ohne das Wort „Filiale": neben einem Ortsnamen sagt es nichts, und
+       auf einem 375er Schirm schnitt es den Rangnamen ab. */
+    const wo = [m.filiale ? esc(m.filiale) : '', 'Stufe ' + (m.stufe || 1)
+                + ' ' + esc((RAENGE[(m.stufe || 1) - 1] || RAENGE[0]).n)]
+               .filter(Boolean).join(' · ');
+    let unten;
+    if(ich){
+      unten = '';
+    } else if(lvl === 0){
+      unten = '<div class="mk-tee">'
+        + '<img class="becher leer" src="tee-1.webp" alt="" loading="lazy">'
+        + '<span class="txt"><b style="color:var(--tx-3)">Noch kein Bubble Tea</b>'
+        + '<small>Der erste bringt euch sofort auf Level 1</small></span>'
+        + teeKnopf(m, paar) + '</div>';
+    } else {
+      unten = '<div class="mk-tee">'
+        + '<img class="becher" src="tee-' + lvl + '.webp" alt="" loading="lazy">'
+        + '<span class="txt"><b>' + esc(tee.n) + '</b>'
+        + '<small>' + (rest
+            ? rest.hat + ' von ' + rest.braucht + ' bis ' + esc(rest.name)
+            : 'Die höchste Stufe — mehr geht nicht.') + '</small>'
+        + (rest ? '<span class="mk-balken"><i style="width:'
+            + Math.round(rest.hat / rest.braucht * 100) + '%"></i></span>' : '')
+        + '</span>' + teeKnopf(m, paar) + '</div>';
+    }
+    return '<article class="mk' + (ich ? ' ich' : '') + '" data-mit="' + esc(m.user_id) + '"'
+      + ' style="--tee:' + tee.f + '">'
+      + '<div class="mk-oben">'
+      +   '<span class="mk-bild"><img src="' + avDatei(m.avatar || 1) + '" alt="" loading="lazy"></span>'
+      +   '<span class="mk-t"><b>' + esc(mitgliedName(m)) + (ich ? ' · du' : '') + '</b>'
+      +     '<span class="wo">' + wo + '</span>'
+      +     (ich ? '' : '<span class="seit ' + art + '"><i></i>' + esc(zuletztText(m.zuletzt)) + '</span>')
+      +   '</span>'
+      +   (ich ? '' : '<span class="mk-lvl' + (lvl ? ' an' : '') + '"><b>' + lvl + '</b><u>Level</u></span>')
+      + '</div>' + unten + '</article>';
+  }).join('');
+}
+function teeKnopf(m, paar){
+  if(paar.heuteSchon){
+    return '<button class="mk-send aus" disabled>'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>Heute</button>';
+  }
+  return '<button class="mk-send" data-tee="' + esc(m.user_id) + '">'
+    + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h13M12 6l6 6-6 6"/></svg>Senden</button>';
+}
+/* Einen Becher schicken. Die Regel „einmal am Tag" haelt der Server —
+   hier wird nur gezeigt, was dabei herauskam. */
+$('#fi-team').addEventListener('click', async e => {
+  const b = e.target.closest('[data-tee]'); if(!b) return;
+  const an = b.dataset.tee;
+  b.disabled = true;
+  /* Der Stand VOR dem Schicken — nur daran laesst sich erkennen, ob eine
+     Stufe dazugekommen ist. */
+  const vorher = teeLevel((TEE_PAARE[an] || {}).punkte || 0);
+  try{
+    const r = await sb.rpc('tee_senden', { an: an });
+    if(r.error) throw r.error;
+    const z = Array.isArray(r.data) ? r.data[0] : r.data;
+    TEE_PAARE[an] = { punkte:(z && z.punkte) || 0, heuteSchon:true };
+    malTeam();
+    const karte = $('[data-mit="' + an + '"]');
+    const becher = karte && $('.becher', karte);
+    if(becher){ becher.classList.remove('weg'); void becher.offsetWidth; becher.classList.add('weg'); }
+    const jetzt = teeLevel(TEE_PAARE[an].punkte);
+    /* schon_heute heisst: der Server hat nichts gezaehlt. Dann hat sich
+       auch nichts freigeschaltet, egal was die Zahl sagt. */
+    if(z && z.schon_heute) toast('Heute hast du schon einen geschickt');
+    else if(jetzt > vorher) toast('Level ' + jetzt + ' · ' + TEE[jetzt - 1].n + ' freigeschaltet');
+    else toast('Bubble Tea unterwegs');
+  }catch(err){
+    console.warn('[MOJI] Tee senden', err);
+    b.disabled = false;
+    toast('Hat nicht geklappt — noch einmal versuchen');
+  }
+});
+
 function malFirma(){
   if(!$('#v-firma') || !ME) return;
   $('#fi-name').textContent = EMPLOYER;
@@ -8571,17 +8836,49 @@ function malFirma(){
     '<div class="fiz"><u>' + label + '</u><b>' + esc(wert)
     + (hinweis ? '<small>' + esc(hinweis) + '</small>' : '') + '</b></div>';
 
+  $('#fi-sub').textContent = 'Dein Dienstgeber'
+    + (TEAM && TEAM.length ? ' · ' + TEAM.length
+        + (TEAM.length === 1 ? ' Mitglied' : ' Mitglieder') : '');
   $('#fi-zeilen').innerHTML =
-      zeile('Dienstgeber', EMPLOYER, 'Steht so auf jedem Monats-PDF in der Zeile „Dienstgeber / Arbeitsort".')
+      zeile('Arbeitsort', EMPLOYER, 'Steht so auf jedem Monats-PDF in der Zeile „Dienstgeber / Arbeitsort".')
     + zeile('Dein Dienstplan', rhythmus, 'Ändern über „Dienstzeiten bearbeiten".')
     + zeile('Dabei seit', seitText())
-    + zeile('Feiertage', 'Österreich', 'Werden inklusive Ostertermin selbst berechnet.');
+    + zeile('Feiertage', 'Österreich', 'Werden inklusive Ostertermin selbst berechnet.')
+    + '<p class="fihint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.01"/></svg>'
+    + 'Der Dienstgeber ist fest eingestellt und lässt sich in der App nicht ändern.</p>';
+  malTeam();
 }
+/* Die Kachel faengt zugeklappt an: die Firma steht fest, die liest man
+   einmal und nie wieder. Das Team darunter ist der Grund, herzukommen. */
+$('#fi-auf').addEventListener('click', () => {
+  const k = $('#fi-karte'), d = $('#fi-zeilen');
+  const auf = d.hidden;
+  d.hidden = !auf;
+  k.classList.toggle('auf', auf);
+  $('#fi-auf').setAttribute('aria-expanded', String(auf));
+});
 /* Ganze Seite statt Blatt — wie die Dienstzeiten. Der Zurück-Knopf unten
    führt in das Menü zurück, das dabei wieder aufgeht. */
 function firmaAuf(){
+  TEAM = null;
+  $('#fi-karte').classList.remove('auf');
+  $('#fi-zeilen').hidden = true;
+  $('#fi-auf').setAttribute('aria-expanded','false');
   malFirma();
   go('v-firma');
+  /* Erst zeigen, dann nachladen — die eigene Zeile schreiben wir dabei
+     gleich mit, sonst fehlt man selbst in der eigenen Liste. */
+  (async () => {
+    try{
+      await teamIchSchreiben();
+      await teamLaden();
+      if($('#v-firma').classList.contains('on')){ malTeam(); malFirma(); }
+    }catch(e){
+      console.warn('[MOJI] Team laden', e);
+      TEAM = [];
+      if($('#v-firma').classList.contains('on')) malTeam();
+    }
+  })();
 }
 function firmaZu(){
   if(!$('#v-firma').classList.contains('on')) return;
@@ -8589,6 +8886,7 @@ function firmaZu(){
   zurueckInsMenu();
 }
 $('#fi-back').addEventListener('click', firmaZu);
+wireWischRaus('v-firma', firmaZu);
 
 function malRang(){
   const zeile = $('#mrang'); if(!zeile) return;
@@ -12441,6 +12739,8 @@ async function afterLogin(session, frisch){
   /* Passkey-Stand holen, sonst bleiben die Menüeinträge auf display:none
      stehen — paintPasskey lief vorher nur im Funnel und beim Abmelden. */
   pkRefresh().catch(e => console.warn('[MOJI] Passkey-Stand offen:', e));
+  /* „Zuletzt online" nachziehen — im Hintergrund, es haelt nichts auf. */
+  teamGesehen();
   /* Adresszeile aufräumen, damit der Anmeldelink nicht sichtbar bleibt */
   try{ history.replaceState({}, '', location.pathname); }catch(e){}
 
