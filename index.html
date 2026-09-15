@@ -2223,10 +2223,12 @@ body.sigmodus .fb-s{display:inline-flex}
    Breite ihres laengsten Wortes — „Strawberry Kiss" schob die fuenfte
    Spalte aus der Karte. */
 .teekunde{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:7px; margin:10px 0 2px }
-.teek{ display:block; text-align:center; padding:8px 2px 7px; border-radius:13px;
+.teek{ display:block; width:100%; text-align:center; padding:8px 2px 7px; border-radius:13px;
   background:color-mix(in srgb, var(--tee) 9%, transparent);
   border:1px solid color-mix(in srgb, var(--tee) 26%, transparent) }
-.teek img{ display:block; width:60%; max-width:34px; height:auto; margin:0 auto 4px }
+/* Die Huelle traegt die Funken; der Becher selbst fuellt sie aus. */
+.teekb{ position:relative; display:block; width:60%; max-width:34px; margin:0 auto 4px }
+.teek img{ display:block; width:100%; height:auto }
 /* Zwei Zeilen statt Puenktchen: „Strawberry Kiss" abgeschnitten sagt
    weniger als derselbe Name umgebrochen. */
 .teek b{ display:block; font-size:8.5px; font-weight:650; line-height:1.18; color:var(--tx-2);
@@ -2303,26 +2305,40 @@ body.sigmodus .fb-s{display:inline-flex}
 .tm-lvl.an b{ color:var(--tee) }
 .tm-tee{ display:flex; align-items:center; gap:10px; margin-top:11px; padding-top:10px;
   border-top:1px solid var(--line-2) }
-/* Der Becher laesst sich andruecken: er wackelt und es funkelt kurz.
-   Das schickt nichts ab — Schicken bleibt beim Knopf daneben. Die
-   Huelle traegt die Funken, damit sie ueber den Rand hinausblitzen
-   koennen, ohne den Becher selbst zu vergroessern. */
-.tm-becher{ flex:none; position:relative; display:block; width:24px; line-height:0;
-  background:none; border:0; padding:0; cursor:pointer;
-  -webkit-tap-highlight-color:transparent }
-.tm-tee .becher{ flex:none; width:24px; height:auto; display:block;
-  transform-origin:50% 88% }
+/* ─── Becher zum Andruecken ──────────────────────────────────────
+   Zwei Orte, dieselbe Bewegung: in der Mitgliedskarte der eine Becher,
+   den ihr euch aufgebaut habt, und in der Getraenkekunde alle zehn.
+   Andruecken laesst ihn wackeln und drei Funken aufblitzen — in der
+   Farbe des jeweiligen Getraenks, die als --tee an der Kachel haengt.
+
+   Das schickt nichts ab: Schicken bleibt beim Knopf daneben. Ein
+   Becher, der bei jeder Beruehrung einen Tee loesst, waere eine Falle.
+
+   Die Funken liegen in einer eigenen Huelle um den Becher, damit sie
+   ueber seinen Rand hinausblitzen koennen, ohne ihn zu vergroessern. */
+.tm-becher{ flex:none; position:relative; display:block; width:24px; line-height:0 }
+.tm-tee .becher{ flex:none; width:24px; height:auto; display:block }
 .tm-tee .becher.leer{ opacity:.3; filter:grayscale(1) }
-.tm-becher i{ position:absolute; width:7px; height:7px; opacity:0; pointer-events:none;
-  background:var(--tee, var(--butter));
+/* Drehpunkt am Fuss: um die Mitte gedreht saehe es aus wie ein
+   Propeller, am Boden gekippt wie ein Becher, den jemand anstoesst. */
+.tm-becher .becher, .teekb img{ transform-origin:50% 88% }
+.tm-becher i, .teekb i{ position:absolute; opacity:0; pointer-events:none;
+  width:7px; height:7px; background:var(--tee, var(--butter));
   clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%) }
 .tm-becher i:nth-of-type(1){ left:-8px;  top:16% }
 .tm-becher i:nth-of-type(2){ right:-9px; top:2%; width:9px; height:9px }
 .tm-becher i:nth-of-type(3){ left:34%;   top:-10px; width:6px; height:6px }
-.tm-becher.glitzer .becher{ animation:teeWackel .62s var(--ease-out) }
-.tm-becher.glitzer i{ animation:teeFunke .62s var(--ease-out) }
-.tm-becher.glitzer i:nth-of-type(2){ animation-delay:.06s }
-.tm-becher.glitzer i:nth-of-type(3){ animation-delay:.12s }
+.teekb i:nth-of-type(1){ left:-7px;  top:18% }
+.teekb i:nth-of-type(2){ right:-8px; top:3%; width:9px; height:9px }
+.teekb i:nth-of-type(3){ left:40%;   top:-9px; width:6px; height:6px }
+.tm-becher.glitzer .becher, .teek.glitzer .teekb img{
+  animation:teeWackel .62s var(--ease-out) }
+.tm-becher.glitzer i, .teek.glitzer .teekb i{
+  animation:teeFunke .62s var(--ease-out) }
+.tm-becher.glitzer i:nth-of-type(2), .teek.glitzer .teekb i:nth-of-type(2){
+  animation-delay:.06s }
+.tm-becher.glitzer i:nth-of-type(3), .teek.glitzer .teekb i:nth-of-type(3){
+  animation-delay:.12s }
 @keyframes teeWackel{
   0%{ transform:none }
   18%{ transform:rotate(-11deg) scale(1.09) }
@@ -2362,7 +2378,8 @@ body.sigmodus .fb-s{display:inline-flex}
 @media(prefers-reduced-motion:reduce){
   .mk-tee .becher.weg{ animation:none }
   .tm.offen .tm-bild{ animation:none }
-  .tm-becher.glitzer .becher, .tm-becher.glitzer i{ animation:none }
+  .tm-becher.glitzer .becher, .tm-becher.glitzer i,
+  .teek.glitzer .teekb img, .teek.glitzer .teekb i{ animation:none }
 }
 
 /* ─── Tagesblatt ──────────────────────────────────────────────────────
@@ -5563,7 +5580,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-2140';
+const APP_STAND = '2026-09-15-2215';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9009,10 +9026,14 @@ function teeKundeHtml(){
     + 'im gemeinsamen Topf — ihr zahlt beide ein, also höchstens zwei am Tag. Ab dann braucht '
     + 'jede weitere Stufe zehn Getränke.</small></b></div>'
     + '<div class="teekunde">'
-    + TEE.map((t, i) => '<span class="teek" style="--tee:' + t.f + '">'
-        + '<img src="tee-' + (i + 1) + '.webp" alt="" loading="lazy">'
+    /* Auch hier laesst sich jeder Becher andruecken — und funkelt in
+       seiner eigenen Farbe, die als --tee an der Kachel haengt. */
+    + TEE.map((t, i) => '<button type="button" class="teek" style="--tee:' + t.f + '"'
+        + ' aria-label="' + esc(t.n) + ' antippen">'
+        + '<span class="teekb"><img src="tee-' + (i + 1) + '.webp" alt="" loading="lazy">'
+        + '<i></i><i></i><i></i></span>'
         + '<b>' + esc(t.n) + '</b><u>' + (i === 0 ? 'ab 1' : 'ab ' + (i * 10 + 1)) + '</u>'
-        + '</span>').join('')
+        + '</button>').join('')
     + '</div>';
 }
 /* Der Becher in der Karte. Er sitzt in einer eigenen Huelle, weil die
@@ -9032,14 +9053,19 @@ function teeKnopf(m, paar){
   return '<button class="tm-send" data-tee="' + esc(m.user_id) + '">'
     + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h13M12 6l6 6-6 6"/></svg>Senden</button>';
 }
-/* Ein Tipp auf den Becher ist reines Spiel: er wackelt, es funkelt,
+/* Ein Tipp auf einen Becher ist reines Spiel: er wackelt, es funkelt,
    und sonst passiert nichts. pointerdown statt click, damit es unter
-   dem Finger sofort losgeht. */
-$('#fi-team').addEventListener('pointerdown', e => {
-  const b = e.target.closest('.tm-becher'); if(!b) return;
+   dem Finger sofort losgeht.
+
+   Zwei Orte, ein Weg: die Mitgliedskarten in #fi-team und die
+   Getraenkekunde in #fi-zeilen. Darum haengt der Horcher an der
+   Firmenansicht selbst und nicht an einer der beiden Listen. */
+function becherTipp(e){
+  const b = e.target.closest('.tm-becher, .teek'); if(!b) return;
   b.classList.remove('glitzer'); void b.offsetWidth; b.classList.add('glitzer');
   zaKlopf();
-});
+}
+$('#v-firma').addEventListener('pointerdown', becherTipp);
 /* Einen Becher schicken. Die Regel „einmal am Tag" haelt der Server —
    hier wird nur gezeigt, was dabei herauskam. */
 $('#fi-team').addEventListener('click', e => {

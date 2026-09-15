@@ -333,6 +333,20 @@ window.__WEITER = function(){
   ok('Und einer Erklaerung davor',
      document.querySelector('#fi-zeilen .fiz-tee b').textContent
        .indexOf('Zehn Stufen zum Freischalten') === 0);
+  /* Auch hier laesst sich jeder Becher andruecken — und funkelt in
+     seiner eigenen Farbe. */
+  var kunde = document.querySelectorAll('#fi-zeilen .teek');
+  ok('Jedes Getraenk ist ein Knopf',
+     [].every.call(kunde, function(k){ return k.tagName === 'BUTTON'; }));
+  ok('Mit drei Funken darin',
+     [].every.call(kunde, function(k){ return k.querySelectorAll('.teekb i').length === 3; }));
+  ok('Jedes traegt seine eigene Farbe',
+     kunde[0].getAttribute('style').indexOf('--tee:' + TEE[0].f) > -1
+     && kunde[9].getAttribute('style').indexOf('--tee:' + TEE[9].f) > -1,
+     kunde[9].getAttribute('style'));
+  kunde[4].dispatchEvent(new window.MouseEvent('pointerdown', { bubbles:true }));
+  ok('Ein Tipp laesst genau den einen glitzern',
+     kunde[4].classList.contains('glitzer') && !kunde[3].classList.contains('glitzer'));
   /* Der Hinweis zum Dienstgeber sass als eigener Kasten zwischen den
      Angaben und den Getraenken — dort trennte er, statt zu erklaeren. */
   ok('Kein eigener Kasten mehr',   document.querySelectorAll('#fi-zeilen .fihint').length === 0);
@@ -637,15 +651,23 @@ setTimeout(() => {
     /\.tm\.offen \.tm-bild\{ animation:mkWippe 3\.4s ease-in-out infinite alternate \}/.test(roh)],
    ['Und zwar genauso wie auf der Mitgliedschaftskarte',
     /\.mk-bild\{[\s\S]{0,260}animation:mkWippe 3\.4s ease-in-out infinite alternate/.test(roh)],
+   /* Beide Orte teilen sich dieselben Regeln: der eine Becher in der
+      Mitgliedskarte und alle zehn in der Getraenkekunde. */
    ['Der Becher wackelt beim Andruecken',
-    /\.tm-becher\.glitzer \.becher\{ animation:teeWackel/.test(roh)
+    /\.tm-becher\.glitzer \.becher, \.teek\.glitzer \.teekb img\{\s*\n\s*animation:teeWackel/.test(roh)
     && /@keyframes teeWackel\{/.test(roh)],
    ['Und es funkelt dazu',
-    /\.tm-becher\.glitzer i\{ animation:teeFunke/.test(roh) && /@keyframes teeFunke\{/.test(roh)],
+    /\.tm-becher\.glitzer i, \.teek\.glitzer \.teekb i\{\s*\n\s*animation:teeFunke/.test(roh)
+    && /@keyframes teeFunke\{/.test(roh)],
    ['Die Funken sind Sterne in der Farbe des Getraenks',
-    /\.tm-becher i\{[\s\S]{0,200}background:var\(--tee, var\(--butter\)\);[\s\S]{0,120}clip-path:polygon/.test(roh)],
+    /\.tm-becher i, \.teekb i\{[\s\S]{0,220}background:var\(--tee, var\(--butter\)\);[\s\S]{0,120}clip-path:polygon/.test(roh)],
+   ['Der Becher kippt am Fuss, nicht um die Mitte',
+    /\.tm-becher \.becher, \.teekb img\{ transform-origin:50% 88% \}/.test(roh)],
+   ['Ein Weg fuer beide Orte',
+    /\$\('#v-firma'\)\.addEventListener\('pointerdown', becherTipp\);/.test(roh)
+    && /e\.target\.closest\('\.tm-becher, \.teek'\)/.test(roh)],
    ['Weniger Bewegung laesst beides weg',
-    /prefers-reduced-motion:reduce\)\{[\s\S]{0,260}\.tm\.offen \.tm-bild\{ animation:none \}[\s\S]{0,160}\.tm-becher\.glitzer \.becher, \.tm-becher\.glitzer i\{ animation:none \}/.test(roh)],
+    /prefers-reduced-motion:reduce\)\{[\s\S]{0,300}\.tm\.offen \.tm-bild\{ animation:none \}[\s\S]{0,240}\.teek\.glitzer \.teekb img, \.teek\.glitzer \.teekb i\{ animation:none \}/.test(roh)],
    ['Der Vermerk bricht nicht um',
     /\.tm-neu\{[\s\S]{0,260}white-space:nowrap/.test(roh)],
    ['Bis 90 Tage wird gezaehlt', /if\(tage < 90\) return 'vor ' \+ tage \+ ' Tagen';/.test(roh)],

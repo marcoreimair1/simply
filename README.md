@@ -982,6 +982,14 @@ rotieren) und die Funken nacheinander aufblitzen (`teeFunke`, versetzt um 60 und
 Berührung einen Tee abschickt, wäre eine Falle. Die Funken liegen absolut in der Hülle und dürfen
 über ihren Rand hinausblitzen, ohne den Becher zu vergrößern.
 
+**Dasselbe gilt für die Getränkekunde** in den Details der Firmenkachel: auch dort ist jeder der
+zehn Becher ein Knopf, und **jeder funkelt in seiner eigenen Farbe** — die steckt ohnehin schon
+als `--tee` in der Kachel, die Funken greifen sie nur ab. Beide Orte teilen sich dieselben
+Regeln und **einen einzigen Horcher**, der an `#v-firma` hängt statt an einer der beiden Listen:
+`becherTipp()` sucht mit `closest('.tm-becher, .teek')`. Nachgemessen: Matcha Melt funkelt grün
+(`rgb(111,199,127)`), Ruby Royale rot (`rgb(232,53,61)`), und es glitzert immer nur der, den man
+gerade drückt.
+
 **Das geteilte Level.** Jeder Bubble Tea ist ein Punkt im gemeinsamen Topf, beide zahlen ein,
 also höchstens zwei am Tag. Der erste bringt Stufe 1 (*Ube Pop*), danach je zehn eine weitere
 bis Stufe 10 (*Ruby Royale*) bei 91. `teeLevel()` rechnet im Browser genau wie `tee_level()` in
