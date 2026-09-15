@@ -990,6 +990,21 @@ Regeln und **einen einzigen Horcher**, der an `#v-firma` hängt statt an einer d
 (`rgb(111,199,127)`), Ruby Royale rot (`rgb(232,53,61)`), und es glitzert immer nur der, den man
 gerade drückt.
 
+**Rechts oben das Level, darunter das Herz.** Das geteilte Level sitzt seit 15. September 2026
+in der oberen rechten Ecke, als **Pille in derselben Form wie auf der Mitgliedschaftskarte** —
+`LVL` und Zahl in einer Zeile, versal, gesperrt. Vorher war es eine eckige Box mit der Ziffer
+über dem Wörtchen: zwei Zeilen für zwei Zeichen. Die **Farben sind geblieben**: grau bei null,
+sonst die Farbe des Getränks, das ihr gerade habt.
+
+Das Herz hängt darunter, rechtsbündig mit der Pille und **mittig zwischen ihr und der Linie**
+über dem Getränk. Damit das ohne Rechnen stimmt, trägt `.tm-kopf` die rechte Spalte **absolut**
+und lässt sie 11 px über seine Unterkante hinausreichen — genau so weit liegt die Linie
+(`margin-top` von `.tm-tee`) darunter. Das Herz steckt in einem `flex:1`-Platz und ist damit von
+selbst zentriert, egal ob der Vermerk *Hat dir einen Bubble Tea geschickt* dazwischenliegt oder
+nicht. Nachgemessen: 24 px Luft oben wie unten mit Vermerk, 8 px oben wie unten ohne. Den Platz
+für die Spalte (74 px) reserviert `padding-right` — auf der **eigenen** Karte steht rechts
+nichts, dort ist es null.
+
 **Das geteilte Level.** Jeder Bubble Tea ist ein Punkt im gemeinsamen Topf, beide zahlen ein,
 also höchstens zwei am Tag. Der erste bringt Stufe 1 (*Ube Pop*), danach je zehn eine weitere
 bis Stufe 10 (*Ruby Royale*) bei 91. `teeLevel()` rechnet im Browser genau wie `tee_level()` in

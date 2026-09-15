@@ -2264,18 +2264,27 @@ body.sigmodus .fb-s{display:inline-flex}
 .tm-t .seit i{ width:6px; height:6px; border-radius:50%; background:var(--tx-3); flex:none }
 .tm-t .seit.frisch i{ background:var(--c-eigen) }
 .tm-t .seit.heute i{ background:var(--c-urlaub) }
-/* Das geteilte Level: eckige Box, grau bei null, sonst in der Farbe des
-   Getraenks, das ihr gerade habt. */
-/* Rechts zwei kleine Dinge nebeneinander: das geteilte Level und das
-   Herz. Das Level ist schmaler als frueher — es ist eine Ziffer, keine
-   Kachel. */
-.tm-rechts{ flex:none; display:flex; align-items:center; gap:7px }
-.tm-lvl{ flex:none; min-width:34px; border-radius:11px; padding:5px 6px 4px; text-align:center;
+/* ─── Rechte Spalte: Level oben, Herz darunter ───────────────────
+   Das Level sitzt in der oberen rechten Ecke, in derselben Form wie auf
+   der Mitgliedschaftskarte: eine Pille, LVL und Zahl in einer Zeile.
+   Vorher war es eine eckige Box mit der Ziffer ueber dem Woertchen —
+   zwei Zeilen fuer zwei Zeichen.
+
+   Das Herz haengt darunter, rechtsbuendig und mittig zwischen Pille und
+   der Linie ueber dem Getraenk. Darum reicht die Spalte 11 px ueber den
+   Kopf hinaus: genau so weit liegt die Linie (margin-top von .tm-tee)
+   unter seiner Unterkante. */
+.tm-kopf{ position:relative; padding-right:74px }
+/* Auf der eigenen Karte steht rechts nichts — dann braucht der Name den
+   Platz auch nicht herzugeben. */
+.tm.ich .tm-kopf{ padding-right:0 }
+.tm-rechts{ position:absolute; top:0; right:0; bottom:-11px;
+  display:flex; flex-direction:column; align-items:flex-end }
+.tm-herzplatz{ flex:1; display:flex; align-items:center }
+.tm-lvl{ flex:none; padding:5px 11px; border-radius:99px; white-space:nowrap;
+  font-size:10px; font-weight:800; letter-spacing:.1em; line-height:1.25;
+  text-transform:uppercase; color:var(--tx-3);
   background:rgba(var(--tx-rgb),.055); border:1px solid var(--line-2) }
-.tm-lvl b{ display:block; font-family:var(--font-dis); font-weight:400; font-size:16px;
-  line-height:1.05; color:var(--tx-2) }
-.tm-lvl u{ display:block; margin-top:1px; text-decoration:none; font-size:7.5px; font-weight:700;
-  letter-spacing:.1em; text-transform:uppercase; color:var(--tx-3) }
 /* Das Herz markiert Lieblingsleute; die stehen weiter oben. */
 .tm-herz{ flex:none; width:32px; height:32px; border-radius:11px; display:grid; place-items:center;
   color:var(--tx-3); background:rgba(var(--tx-rgb),.045); border:1px solid var(--line-2);
@@ -2300,9 +2309,8 @@ body.sigmodus .fb-s{display:inline-flex}
 /* Wer mir einen geschickt hat, steht ganz oben — und sein Bild schwebt
    dort, genau wie auf der Mitgliedschaftskarte (mkWippe). */
 .tm.offen .tm-bild{ animation:mkWippe 3.4s ease-in-out infinite alternate }
-.tm-lvl.an{ background:color-mix(in srgb, var(--tee) 16%, transparent);
+.tm-lvl.an{ color:var(--tee); background:color-mix(in srgb, var(--tee) 16%, transparent);
   border-color:color-mix(in srgb, var(--tee) 40%, transparent) }
-.tm-lvl.an b{ color:var(--tee) }
 .tm-tee{ display:flex; align-items:center; gap:10px; margin-top:11px; padding-top:10px;
   border-top:1px solid var(--line-2) }
 /* ─── Becher zum Andruecken ──────────────────────────────────────
@@ -5580,7 +5588,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-2215';
+const APP_STAND = '2026-09-15-2255';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -8996,24 +9004,31 @@ function malTeam(){
     return '<article class="tm' + (ich ? ' ich' : '') + (offen ? ' offen' : '')
       + '" data-mit="' + esc(m.user_id) + '"'
       + ' style="--tee:' + tee.f + ';--rang:' + rang.a + '">'
-      + '<div class="tm-oben">'
-      +   '<span class="tm-bild"><img src="' + avDatei(m.avatar || 1) + '" alt="" loading="lazy"></span>'
-      +   '<span class="tm-t"><b>' + esc(mitgliedName(m)) + (ich ? ' · du' : '') + '</b>'
-      +     '<span class="wo">' + wo + '</span>'
-      +     (ich ? '' : '<span class="seit ' + art + '"><i></i>' + esc(zuletztText(m.zuletzt)) + '</span>')
-      +   '</span>'
+      /* Der Kopf traegt die rechte Spalte, und zwar absolut: nur so
+         steht das Level in der Ecke und das Herz mittig zwischen ihm
+         und der Linie darunter — egal, ob der Vermerk dazwischen liegt
+         oder nicht. */
+      + '<div class="tm-kopf">'
+      +   '<div class="tm-oben">'
+      +     '<span class="tm-bild"><img src="' + avDatei(m.avatar || 1) + '" alt="" loading="lazy"></span>'
+      +     '<span class="tm-t"><b>' + esc(mitgliedName(m)) + (ich ? ' · du' : '') + '</b>'
+      +       '<span class="wo">' + wo + '</span>'
+      +       (ich ? '' : '<span class="seit ' + art + '"><i></i>' + esc(zuletztText(m.zuletzt)) + '</span>')
+      +     '</span>'
+      +   '</div>'
+      /* Der Vermerk steht unter der Zeile und nicht neben dem Namen:
+         „Hat dir einen Bubble Tea geschickt" ist zu lang fuer die
+         schmale Spalte und braeche dort in zwei Zeilen um. */
+      +   (offen ? '<span class="tm-neu">Hat dir einen Bubble Tea geschickt</span>' : '')
       +   (ich ? '' : '<span class="tm-rechts">'
-      +     '<span class="tm-lvl' + (lvl ? ' an' : '') + '"><b>' + lvl + '</b><u>Lvl</u></span>'
+      +     '<span class="tm-lvl' + (lvl ? ' an' : '') + '">Lvl ' + lvl + '</span>'
+      +     '<span class="tm-herzplatz">'
       +     '<button class="tm-herz" data-herz="' + esc(m.user_id) + '"'
       +       ' aria-pressed="' + (herz ? 'true' : 'false') + '"'
       +       ' aria-label="' + (herz ? 'Markierung aufheben' : 'Als Liebling markieren') + '">'
       +       '<svg viewBox="0 0 24 24" fill="' + (herz ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.4 4.6 13a4.6 4.6 0 0 1 6.5-6.5l.9.9.9-.9A4.6 4.6 0 0 1 19.4 13z"/></svg>'
-      +     '</button></span>')
+      +     '</button></span></span>')
       + '</div>'
-      /* Der Vermerk steht unter der Zeile und nicht neben dem Namen:
-         „Hat dir einen Bubble Tea geschickt" ist zu lang fuer die
-         schmale Spalte und braeche dort in zwei Zeilen um. */
-      + (offen ? '<span class="tm-neu">Hat dir einen Bubble Tea geschickt</span>' : '')
       + unten + '</article>';
   }).join('');
 }

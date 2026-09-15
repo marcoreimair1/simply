@@ -423,10 +423,19 @@ window.__WEITER = function(){
      && namFarbe !== '', namFarbe || '(leer)');
   ok('Filiale und MOJI-Stufe',      karten[1].querySelector('.wo').textContent === 'Linz · Stufe 7 Uhrwerk',
      karten[1].querySelector('.wo').textContent);
+  /* Seit 15.09.2026 eine Pille mit LVL und Zahl in einer Zeile, oben
+     rechts in der Ecke — vorher eine eckige Box mit der Ziffer ueber
+     dem Woertchen. */
   ok('Das geteilte Level steht rechts',
-     karten[1].querySelector('.tm-lvl b').textContent === '3',
-     karten[1].querySelector('.tm-lvl b').textContent);
-  ok('Bei null bleibt die Box grau', karten[2].querySelector('.tm-lvl b').textContent === '0'
+     karten[1].querySelector('.tm-lvl').textContent === 'Lvl 3',
+     karten[1].querySelector('.tm-lvl').textContent);
+  ok('Und zwar in der Ecke des Kopfes',
+     karten[1].querySelector('.tm-rechts').parentNode.className === 'tm-kopf'
+     && karten[1].querySelector('.tm-rechts').firstChild.classList.contains('tm-lvl'),
+     karten[1].querySelector('.tm-rechts').parentNode.className);
+  ok('Das Herz sitzt darunter in seinem Platz',
+     !!karten[1].querySelector('.tm-rechts > .tm-herzplatz > .tm-herz'));
+  ok('Bei null bleibt die Pille grau', karten[2].querySelector('.tm-lvl').textContent === 'Lvl 0'
      && !karten[2].querySelector('.tm-lvl').classList.contains('an'));
   ok('Und der Becher ist blass',     !!karten[2].querySelector('.becher.leer'));
   ok('Der Becher passt zur Stufe',
@@ -463,9 +472,9 @@ window.__WEITER = function(){
      bernd.querySelector('.tm-neu').textContent);
   /* Der Satz ist zu lang fuer die schmale Spalte neben dem Namen und
      steht darum in einer eigenen Zeile unter dem Kopf. */
-  ok('Und steht unter dem Kopf, nicht daneben',
-     bernd.querySelector('.tm-neu').parentNode === bernd,
-     bernd.querySelector('.tm-neu').parentNode.className);
+  ok('Und steht unter der Zeile, nicht daneben',
+     bernd.querySelector('.tm-neu').previousSibling.className === 'tm-oben',
+     bernd.querySelector('.tm-neu').previousSibling.className);
   /* Der Becher ist ein Knopf: antippen laesst ihn wackeln und funkeln. */
   var bec = bernd.querySelector('.tm-becher');
   ok('Der Becher laesst sich antippen', !!bec && bec.tagName === 'BUTTON');
@@ -670,6 +679,19 @@ setTimeout(() => {
     /prefers-reduced-motion:reduce\)\{[\s\S]{0,300}\.tm\.offen \.tm-bild\{ animation:none \}[\s\S]{0,240}\.teek\.glitzer \.teekb img, \.teek\.glitzer \.teekb i\{ animation:none \}/.test(roh)],
    ['Der Vermerk bricht nicht um',
     /\.tm-neu\{[\s\S]{0,260}white-space:nowrap/.test(roh)],
+   /* ─── 15.09.2026: Level als Pille oben rechts ──────────────────── */
+   ['Das Level ist eine Pille wie auf der Mitgliedschaftskarte',
+    /\.tm-lvl\{[\s\S]{0,240}border-radius:99px;[\s\S]{0,200}text-transform:uppercase/.test(roh)],
+   ['Die rechte Spalte haengt am Kopf',
+    /\.tm-kopf\{ position:relative; padding-right:74px \}/.test(roh)
+    && /\.tm-rechts\{ position:absolute; top:0; right:0; bottom:-11px;/.test(roh)],
+   ['Die eigene Karte gibt den Platz nicht her',
+    /\.tm\.ich \.tm-kopf\{ padding-right:0 \}/.test(roh)],
+   ['Und reicht bis zur Linie, damit das Herz mittig sitzt',
+    /\.tm-herzplatz\{ flex:1; display:flex; align-items:center \}/.test(roh)
+    && /\.tm-tee\{[\s\S]{0,160}margin-top:11px/.test(roh)],
+   ['Die Farben bleiben, wie sie waren',
+    /\.tm-lvl\.an\{ color:var\(--tee\); background:color-mix\(in srgb, var\(--tee\) 16%, transparent\)/.test(roh)],
    ['Bis 90 Tage wird gezaehlt', /if\(tage < 90\) return 'vor ' \+ tage \+ ' Tagen';/.test(roh)],
    ['Halb rot, halb violett gibt es wirklich',
     /\.zaehler\.beides\{background:linear-gradient\(90deg,#FF453A 0 50%,var\(--butter\) 50% 100%\)\}/.test(roh)]
