@@ -834,10 +834,15 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
    uebrigen Kacheln. */
 /* .mi > .miico steht spaeter im Blatt und gewaenne bei gleicher
    Spezifitaet — darum hier beide Klassen. */
-.mi.mi-firma > .miico{ padding:0; background:#030B21; overflow:hidden }
-.mi.mi-firma > .miico img{ width:100%; height:100%; object-fit:cover; display:block }
+/* overflow:hidden haette das Bild sauber rundgeschnitten, dabei aber auch
+   den Zaehler an der Ecke abgeschnitten — sichtbar blieb eine violette
+   Sichel ohne Zahl. Darum rundet das Bild sich selbst, die Kachel bleibt
+   offen. */
+.mi.mi-firma > .miico{ padding:0; background:#030B21 }
+.mi.mi-firma > .miico img{ width:100%; height:100%; object-fit:cover; display:block;
+  border-radius:inherit }
 .mi .miico > .zaehler{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;
-  font-size:10.5px;animation:none}
+  font-size:10.5px;animation:none;z-index:2}
 .avatar.hatbild{background:#fff;border-color:rgba(var(--s-auf),.28)}
 
 /* Menü */
@@ -5499,7 +5504,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1650';
+const APP_STAND = '2026-09-15-1815';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;

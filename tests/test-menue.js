@@ -604,6 +604,13 @@ setTimeout(() => {
     /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/.test(roh)],
    ['Der Zaehler haengt an der Symbolkachel',
     /\.mi \.miico > \.zaehler\{position:absolute;top:-7px;right:-7px/.test(roh)],
+   /* overflow:hidden auf der Kachel schnitt den Zaehler an der Ecke ab —
+      ueber dem Firmenlogo blieb nur eine violette Sichel ohne Zahl. */
+   ['Die Firmenkachel schneidet den Zaehler nicht ab',
+    !/\.mi\.mi-firma > \.miico\{[^}]*overflow:hidden/.test(roh)
+    && /\.mi\.mi-firma > \.miico img\{[^}]*border-radius:inherit/.test(roh)],
+   ['Der Zaehler liegt ueber dem Logo',
+    /\.mi \.miico > \.zaehler\{[^}]*z-index:2\}/.test(roh)],
    ['Halb rot, halb violett gibt es wirklich',
     /\.zaehler\.beides\{background:linear-gradient\(90deg,#FF453A 0 50%,var\(--butter\) 50% 100%\)\}/.test(roh)]
   ];
