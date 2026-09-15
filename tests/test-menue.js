@@ -323,7 +323,7 @@ window.__WEITER = function(){
      document.querySelector('.mi[data-act="firma"]').innerHTML.slice(0, 80));
   /* ── Die Profilbilder ──
      Seit 15.09.2026 sind es 117 statt 12, als WebP in 288 x 384. */
-  ok('115 Motive stehen zur Wahl',  AVATARE === 115, AVATARE);
+  ok('116 Motive stehen zur Wahl',  AVATARE === 116, AVATARE);
   ok('Zu jedem ein Pastellgrund',   AV_GRUND.length === AVATARE, AV_GRUND.length);
   ok('Und alle sind Farbwerte',
      AV_GRUND.every(function(c){ return /^#[0-9A-F]{6}$/.test(c); }),
@@ -337,6 +337,18 @@ window.__WEITER = function(){
      document.querySelectorAll('#avgrid .avopt').length);
   ok('Mit dem Zurueck-Knopf davor',
      document.querySelector('#avgrid').firstElementChild.classList.contains('zurueckbtn'));
+  /* Ein Nachzuegler bekommt die naechste freie Nummer — eine mittendrin
+     einzuschieben wuerde allen darueber das Bild wechseln, in jedem
+     Profil steht ja nur die Zahl. Gezeigt wird er trotzdem mittendrin. */
+  var reihe = avReihenfolge();
+  ok('Die Reihe enthaelt jedes Motiv einmal',
+     reihe.length === AVATARE && new Set(reihe).size === AVATARE, reihe.length);
+  ok('Der Wackelpudding steht in der Mitte', reihe[56] === 116, reihe.indexOf(116) + 1);
+  ok('Und das Gitter zeigt ihn dort',
+     +document.querySelectorAll('#avgrid .avopt')[56].dataset.av === 116,
+     document.querySelectorAll('#avgrid .avopt')[56].dataset.av);
+  ok('Davor und danach laeuft es der Reihe nach',
+     reihe[55] === 56 && reihe[57] === 57, reihe.slice(54, 59).join(','));
   /* 117 Bilder auf einmal zu laden waere ein Schwall — sie kommen, wenn
      man zu ihnen scrollt. */
   ok('Sie laden erst beim Scrollen',

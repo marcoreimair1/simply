@@ -855,9 +855,9 @@ abgegebenes Blatt nachträglich umzurechnen hilft niemandem.
 
 ### Die Profilbilder
 
-**115 Motive**, seit 15. September 2026. Vorher waren es zwölf. Die neuen 104 kommen aus sechs
-Bögen mit je 16 oder 25 Aufklebern; 19 der 123 sind aussortiert, meist weil dasselbe Tier auf
-zwei Bögen fast gleich vorkam.
+**116 Motive**, seit 15. September 2026. Vorher waren es zwölf. 104 kommen aus sechs Bögen mit
+je 16 oder 25 Aufklebern (19 der 123 sind aussortiert, meist weil dasselbe Tier auf zwei Bögen
+fast gleich vorkam), eines — der Wackelpudding — kam einzeln nach.
 
 **Geschnitten an den echten Fugen**, nicht am gleichmäßigen Raster: die Bögen sind leicht
 ungleichmäßig (die unterste Reihe bis zu 30 px höher), und beim gleichmäßigen Teilen bekam jede
@@ -887,6 +887,13 @@ zwölf Motive gab. Als daraus 117 wurden, warf `normalize()` beim Laden **jede W
 wieder weg** — man suchte sich eines der neuen aus, lud neu, und hatte wieder das zugeteilte
 drin, ohne dass irgendetwas auf den Grund hindeutete. Jetzt steht dort `AVATARE`, und drei
 Prüfungen halten fest, dass eine hohe Wahl das Laden übersteht.
+
+**Nachzügler bekommen die nächste freie Nummer, keine mittendrin.** In jedem Profil steht nur
+die Zahl — eine Nummer einzuschieben würde allen darüber das Bild wechseln. Wo ein Motiv im
+Gitter *steht*, ist deshalb von seiner Nummer getrennt: `AV_NACHZUG` ordnet einzelnen Nummern
+einen Platz zu (`{ 116: 57 }` — der Wackelpudding trägt die 116 und steht an 57. Stelle), und
+`avReihenfolge()` baut daraus die Reihe, die `malAvGitter()` durchläuft. Ohne Eintrag ist die
+Nummer der Platz.
 
 **Zwei Dinge am Auswahlgitter mussten nachgezogen werden**, weil aus 3 Reihen 30 wurden:
 
@@ -1848,7 +1855,7 @@ Stand 14. September 2026, gegen `git ls-files` geprüft.
 | `index.html` | die ganze App: Aufbau, Gestaltung, Logik |
 | `manifest.webmanifest` | Name und Symbol am Startbildschirm |
 | `icon-180.png`, `icon-512.png` | ebendieses Symbol, zwei Größen |
-| `av-1.webp` … `av-115.webp` | die 115 Profilbilder |
+| `av-1.webp` … `av-116.webp` | die 116 Profilbilder |
 | `firma-miller.png` | Logo Miller Optik, in der Ansicht *Meine Firma* im Profilmenü |
 | `schwein-troete.png` | Schwein mit Tröte. Erscheint im Block `#bleib`, wenn jemand das Löschen des Profils abbricht — „Schön, dass du dich nochmal umentschieden hast" |
 | `moji-bricolage*.woff2`, `moji-jakarta*.woff2`, `moji-caveat*.woff2` | die drei Schriften, selbst gehostet |

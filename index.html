@@ -5607,7 +5607,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1930';
+const APP_STAND = '2026-09-15-2140';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -10102,7 +10102,7 @@ $('#pf-alle').addEventListener('click', () => pfMerke(alleNachrichten().map(n =>
    Geburtsdatum, damit dasselbe Profil auf jedem Gerät dasselbe Bild
    zeigt, ohne dass wir dafür etwas speichern müssen.
    ═══════════════════════════════════════════════════════════ */
-const AVATARE = 115;
+const AVATARE = 116;
 /* Die Versionsangabe hängt am Namen, damit ein überarbeitetes Motiv auch
    bei Geräten ankommt, die die alte Datei schon im Zwischenspeicher haben.
    Bei jeder Änderung an den Bildern wird die Zahl erhöht. */
@@ -10136,8 +10136,26 @@ const AV_GRUND = ['#D9F2DF','#F2D9DC','#D2EAFD','#F2D9DA','#F2E4D9','#F2EED9',
                   '#DAF5E0','#D3EAFE','#FCE1E6','#F6E5D2','#D2F2D7','#D0E5FD',
                   '#FBD7DE','#FBD7DD','#FAEDD1','#E3DCFD','#D4F5DE','#D0E4FD',
                   '#F9D5DB','#FAEFD8','#E2DBFD','#E1F0D4','#C6E3FD','#FBD3DB',
-                  '#FBEFCE'];
+                  '#FBEFCE',
+                  '#CDF8D4'];
 function avDatei(n){ return 'av-' + n + '.webp?v=' + AV_STAND; }
+/* ─── Wo ein Motiv im Gitter steht ───────────────────────────────
+   Die gespeicherte Nummer IST die Reihenfolge — bis auf Nachzuegler.
+   Wer spaeter dazukommt, bekommt die naechste freie Nummer, denn eine
+   Nummer mittendrin einzuschieben wuerde allen darueber das Bild
+   wechseln: in jedem Profil steht nur die Zahl. Angezeigt wird er
+   trotzdem dort, wo er hingehoert.
+
+   Schluessel ist die Nummer, Wert der Platz im Gitter (ab 1). */
+const AV_NACHZUG = { 116: 57 };
+function avReihenfolge(){
+  const reihe = [];
+  for(let i = 1; i <= AVATARE; i++) if(!(i in AV_NACHZUG)) reihe.push(i);
+  Object.keys(AV_NACHZUG).map(Number)
+    .sort((x, y) => AV_NACHZUG[x] - AV_NACHZUG[y])
+    .forEach(n => { if(n <= AVATARE) reihe.splice(AV_NACHZUG[n] - 1, 0, n); });
+  return reihe;
+}
 function avZufall(){
   /* Aus Vorname und Geburtsdatum eine Zahl bilden — gleicher Mensch,
      gleiches Bild, ohne Zufallsgenerator und ohne Speicherzugriff. */
@@ -10168,10 +10186,11 @@ const PFEIL_ZURUECK = '<button class="zurueckbtn" data-zurueck aria-label="Zurü
 function malAvGitter(){
   const jetzt = avNummer();
   let h = PFEIL_ZURUECK;
-  for(let i = 1; i <= AVATARE; i++)
+  avReihenfolge().forEach(i => {
     h += '<button class="avopt' + (i === jetzt ? ' on' : '') + '" data-av="' + i + '" '
        + 'aria-label="Motiv ' + i + '"><img src="' + avDatei(i) + '" alt="" '
        + 'loading="lazy" decoding="async"></button>';
+  });
   $('#avgrid').innerHTML = h;
 }
 /* Ein- und ausblenden. Die Fläche liegt über dem Bereich unter dem Kopf,
