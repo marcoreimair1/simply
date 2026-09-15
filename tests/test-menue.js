@@ -384,6 +384,78 @@ window.__WEITER = function(){
      a.querySelector('.tm-send').textContent.trim());
   /* Ein Fehler darf nicht wie eine leere Liste aussehen — genau das hat
      die falsche Leseregel verdeckt. */
+  /* ── Reihenfolge, Herz und offener Tee ── */
+  ME.besties = ['u-c'];
+  TEAM = [{user_id:'u-ich',vorname:'Marco',kuerzel:'R',avatar:5,filiale:'',stufe:10,zuletzt:vor(0)},
+          {user_id:'u-a',vorname:'Anna',kuerzel:'M',avatar:3,filiale:'',stufe:7,zuletzt:vor(1)},
+          {user_id:'u-b',vorname:'Bernd',kuerzel:'K',avatar:7,filiale:'',stufe:4,zuletzt:vor(9)},
+          {user_id:'u-c',vorname:'Clara',kuerzel:'W',avatar:9,filiale:'',stufe:2,zuletzt:vor(74)}];
+  TEE_PAARE = {'u-a':{punkte:25,heuteSchon:false},'u-b':{punkte:35,heuteSchon:false},
+               'u-c':{punkte:0,heuteSchon:false}};
+  TEE_OFFEN = {'u-b':true};
+  TEAM.sort(teamReihung); malTeam();
+  var reihe = [].slice.call(document.querySelectorAll('#fi-team .tm'))
+    .map(function(c){ return c.querySelector('.tm-t b').textContent.replace(' · du',''); });
+  ok('Ich, dann der offene Tee, dann das Herz, dann der Rest',
+     reihe.join(',') === 'Marco R.,Bernd K.,Clara W.,Anna M.', reihe.join(','));
+  var bernd = document.querySelectorAll('#fi-team .tm')[1];
+  ok('Der offene Tee faerbt die Karte', bernd.classList.contains('offen'));
+  ok('Und sagt es auch',                !!bernd.querySelector('.tm-neu'));
+  ok('Das Herz ist bei der Bestie gesetzt',
+     document.querySelectorAll('#fi-team .tm')[2]
+       .querySelector('.tm-herz').getAttribute('aria-pressed') === 'true');
+  ok('Beim Rest nicht',
+     document.querySelectorAll('#fi-team .tm')[3]
+       .querySelector('.tm-herz').getAttribute('aria-pressed') === 'false');
+  ok('Der Bildrahmen traegt die Farbe der Stufe',
+     bernd.getAttribute('style').indexOf('--rang:' + RAENGE[3].a) > -1,
+     bernd.getAttribute('style'));
+  ok('Ich selbst habe kein Herz und kein Level',
+     !document.querySelectorAll('#fi-team .tm')[0].querySelector('.tm-rechts'));
+  /* Antippen merkt es im Profil — und der andere erfaehrt nichts davon. */
+  document.querySelectorAll('#fi-team .tm')[3].querySelector('.tm-herz')
+    .dispatchEvent(new window.MouseEvent('click', { bubbles:true }));
+  ok('Ein Tipp markiert',  ME.besties.indexOf('u-a') > -1, ME.besties.join(','));
+  document.querySelectorAll('#fi-team .tm')[3].querySelector('.tm-herz')
+    .dispatchEvent(new window.MouseEvent('click', { bubbles:true }));
+  ok('Nochmal hebt auf',   ME.besties.indexOf('u-a') === -1, ME.besties.join(','));
+  ok('Die Reihe bleibt beim Antippen stehen',
+     document.querySelectorAll('#fi-team .tm')[3]
+       .querySelector('.tm-t b').textContent === 'Anna M.');
+
+  /* ── Offene Tees aus den Daten der Datenbank ── */
+  UID = 'u-ich';
+  var offen = teeOffenAus([
+    { a:'u-ich', b:'u-b', letzt_a:'2026-09-10', letzt_b:'2026-09-14' },  /* er zuletzt */
+    { a:'u-ich', b:'u-a', letzt_a:'2026-09-14', letzt_b:'2026-09-10' },  /* ich zuletzt */
+    { a:'u-c',   b:'u-ich', letzt_a:'2026-09-14', letzt_b:null },        /* nur er */
+    { a:'u-ich', b:'u-d', letzt_a:'2026-09-14', letzt_b:'2026-09-14' }   /* gleich */
+  ]);
+  ok('Offen ist nur, wer zuletzt geschickt hat',
+     Object.keys(offen).sort().join(',') === 'u-b,u-c', Object.keys(offen).sort().join(','));
+
+  /* ── Der Zaehler: rot, violett, halb und halb ── */
+  var z = document.getElementById('av-zaehler');
+  _zaehlerFrei = true;
+  ME.gelesen = alleNachrichten().map(function(n){ return n.id; });
+  TEE_OFFEN = {}; malZaehler();
+  ok('Ohne alles kein Punkt', z.hidden);
+  TEE_OFFEN = {'u-b':true}; malZaehler();
+  ok('Nur Tee: violett und eins', !z.hidden && z.textContent === '1'
+     && z.classList.contains('tee') && !z.classList.contains('beides'), z.className);
+  ok('Und im Menue steht es auch',
+     document.getElementById('fi-zaehler').textContent === '1'
+     && !document.getElementById('fi-zaehler').hidden);
+  ME.gelesen = []; malZaehler();
+  var summe = pfNeu().length + aufOffen() + 1;
+  ok('Beides: halb und halb, Zahl zusammengezaehlt',
+     z.classList.contains('beides') && z.textContent === String(summe),
+     z.className + ' ' + z.textContent);
+  TEE_OFFEN = {}; malZaehler();
+  ok('Nur Nachrichten: wieder rot',
+     !z.classList.contains('tee') && !z.classList.contains('beides'), z.className);
+  ME.besties = []; TEE_OFFEN = {};
+
   TEAM = []; TEAM_FEHLER = 'keine Rechte';
   malTeam();
   ok('Ein Fehler wird benannt',
@@ -478,7 +550,13 @@ setTimeout(() => {
     /create or replace function public\.moji_stufe/.test(policy)
     && /\/ 4\s*\n?\s*\) \+ 1/.test(policy)],
    ['Ohne Namen kein Eintrag', /if vn = '' then/.test(policy)],
-   ['Der Nachzug prueft sich selbst', /Nachzug unvollstaendig/.test(policy)]
+   ['Der Nachzug prueft sich selbst', /Nachzug unvollstaendig/.test(policy)],
+   /* Die Zeile aus dem Menue brachte margin:26px 20px mit und machte die
+      Seite breiter als den Schirm. */
+   ['Die Firmenansicht laeuft nicht ueber', /#v-firma\{ overflow-x:hidden \}/.test(roh)
+    && /#v-firma \.fi-sek\{ margin-top:26px/.test(roh)],
+   ['Halb rot, halb violett gibt es wirklich',
+    /\.zaehler\.beides\{background:linear-gradient\(90deg,#FF453A 0 50%,var\(--butter\) 50% 100%\)\}/.test(roh)]
   ];
   /* Manche Pruefungen sind ein Muster, manche schon ein Ja/Nein. */
   css.forEach(([n, re]) => {

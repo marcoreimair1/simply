@@ -819,6 +819,14 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
   animation:zaehlerRein .42s var(--ease-out) both}
 @keyframes zaehlerRein{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
 .zaehler[hidden]{display:none}
+/* Rot sind Nachrichten, Violett ist ein Bubble Tea. Kommt beides
+   zusammen, wird der Kreis halb und halb — und die Zahl ist die Summe.
+   Zwei Punkte nebeneinander waeren an einem 20-px-Kreis nicht mehr zu
+   unterscheiden. */
+.zaehler.tee{background:var(--butter)}
+.zaehler.beides{background:linear-gradient(90deg,#FF453A 0 50%,var(--butter) 50% 100%)}
+/* Im Menue sitzt er am rechten Ende der Zeile, nicht an der Ecke. */
+.mi > .zaehler{position:static;margin-left:auto;animation:none}
 .avatar.hatbild{background:#fff;border-color:rgba(var(--s-auf),.28)}
 
 /* Menü */
@@ -2155,8 +2163,15 @@ body.sigmodus .fb-s{display:inline-flex}
    hier eine Seite mit Augenbraue, Fliesstext und fuenf gleich schweren
    Zeilen — die Firma steht fest, die liest man einmal und nie wieder. */
 #v-firma{ padding-top:calc(env(safe-area-inset-top) + 6px) }
-#v-firma > .za-kopf, .fi-h, #fi-karte, .fi-sek, #fi-team{
+/* Alles ueber #v-firma: .msek bringt aus dem Menue margin:26px 20px mit
+   und gewann als spaetere Regel — die Zeile stand damit 40 px breiter
+   als der Rest, und die Seite liess sich nach rechts ziehen. */
+#v-firma > .za-kopf, #v-firma .fi-h, #v-firma #fi-karte,
+#v-firma .fi-sek, #v-firma #fi-team{
   max-width:430px; width:100%; margin-left:auto; margin-right:auto }
+#v-firma .fi-sek{ margin-top:26px; margin-bottom:10px }
+/* Und nichts darf seitlich hinausragen. */
+#v-firma{ overflow-x:hidden }
 .fi-h{ margin:14px auto 16px; font-size:clamp(26px,7.2vw,34px) }
 .fk{ border:1px solid var(--karte-rand); border-radius:22px; background:var(--karte);
   box-shadow:var(--karte-schatten); overflow:hidden }
@@ -2183,7 +2198,6 @@ body.sigmodus .fb-s{display:inline-flex}
   border-radius:13px; background:rgba(var(--marke-rgb),.07); font-size:11.5px; line-height:1.5;
   color:var(--tx-2) }
 .fihint svg{ flex:none; width:15px; height:15px; color:var(--butter); margin-top:1px }
-.fi-sek{ margin:26px auto 10px }
 .fi-sek span{ color:var(--tx-3); font-weight:500 }
 
 /* ─── Eine Mitgliedskarte ─────────────────────────────────────────
@@ -2198,8 +2212,11 @@ body.sigmodus .fb-s{display:inline-flex}
 .tm.ich{ border-color:rgba(var(--marke-rgb),.28);
   background:linear-gradient(170deg,rgba(var(--marke-rgb),.07),var(--karte) 62%) }
 .tm-oben{ display:flex; align-items:center; gap:12px }
+/* Der Rahmen traegt die Farbe der MOJI-Stufe — man erkennt am Bild,
+   wie lange jemand schon dabei ist. */
 .tm-bild{ flex:none; width:52px; height:52px; border-radius:17px; overflow:hidden;
-  background:#fff; border:1px solid var(--karte-rand) }
+  background:#fff; border:2px solid var(--rang, var(--karte-rand));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--rang, transparent) 16%, transparent) }
 .tm-bild img{ width:100%; height:100%; object-fit:cover; object-position:center 86%; display:block }
 .tm-t{ flex:1; min-width:0 }
 .tm-t b{ display:block; font-size:15px; font-weight:650; letter-spacing:-.01em }
@@ -2212,12 +2229,33 @@ body.sigmodus .fb-s{display:inline-flex}
 .tm-t .seit.heute i{ background:var(--c-urlaub) }
 /* Das geteilte Level: eckige Box, grau bei null, sonst in der Farbe des
    Getraenks, das ihr gerade habt. */
-.tm-lvl{ flex:none; width:52px; border-radius:15px; padding:7px 4px 6px; text-align:center;
+/* Rechts zwei kleine Dinge nebeneinander: das geteilte Level und das
+   Herz. Das Level ist schmaler als frueher — es ist eine Ziffer, keine
+   Kachel. */
+.tm-rechts{ flex:none; display:flex; align-items:center; gap:7px }
+.tm-lvl{ flex:none; min-width:34px; border-radius:11px; padding:5px 6px 4px; text-align:center;
   background:rgba(var(--tx-rgb),.055); border:1px solid var(--line-2) }
-.tm-lvl b{ display:block; font-family:var(--font-dis); font-weight:400; font-size:21px;
-  line-height:1; color:var(--tx-2) }
-.tm-lvl u{ display:block; margin-top:3px; text-decoration:none; font-size:8.5px; font-weight:700;
-  letter-spacing:.12em; text-transform:uppercase; color:var(--tx-3) }
+.tm-lvl b{ display:block; font-family:var(--font-dis); font-weight:400; font-size:16px;
+  line-height:1.05; color:var(--tx-2) }
+.tm-lvl u{ display:block; margin-top:1px; text-decoration:none; font-size:7.5px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--tx-3) }
+/* Das Herz markiert Lieblingsleute; die stehen weiter oben. */
+.tm-herz{ flex:none; width:32px; height:32px; border-radius:11px; display:grid; place-items:center;
+  color:var(--tx-3); background:rgba(var(--tx-rgb),.045); border:1px solid var(--line-2);
+  transition:.2s var(--ease) }
+.tm-herz svg{ width:16px; height:16px }
+.tm-herz:active{ transform:scale(.9) }
+.tm-herz[aria-pressed="true"]{ color:#F0509B; background:rgba(240,80,155,.12);
+  border-color:rgba(240,80,155,.34) }
+.tm-herz.klack{ animation:herzKlack .5s var(--ease-out) }
+@keyframes herzKlack{ 35%{ transform:scale(1.28) } 65%{ transform:scale(.94) } 100%{ transform:none } }
+/* Wer mir einen geschickt hat, den ich noch nicht zurueckgegeben habe:
+   derselbe violette Ton wie meine eigene Karte, und ganz oben. */
+.tm.offen{ border-color:rgba(var(--marke-rgb),.34);
+  background:linear-gradient(170deg,rgba(var(--marke-rgb),.10),var(--karte) 62%) }
+.tm-neu{ display:inline-flex; align-items:center; gap:5px; margin-top:4px; padding:3px 8px;
+  border-radius:99px; font-size:10px; font-weight:700; letter-spacing:.06em;
+  color:var(--on-primary); background:linear-gradient(120deg,var(--butter-2),var(--butter)) }
 .tm-lvl.an{ background:color-mix(in srgb, var(--tee) 16%, transparent);
   border-color:color-mix(in srgb, var(--tee) 40%, transparent) }
 .tm-lvl.an b{ color:var(--tee) }
@@ -4893,6 +4931,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
     <button class="mi" data-act="firma">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V6.5l7-3.5 7 3.5V21"/><path d="M9.5 21v-5h5v5M9 10h1.5M13.5 10H15"/></svg>
       Meine Firma
+      <span class="zaehler tee" id="fi-zaehler" hidden></span>
     </button>
     <button class="mi" data-act="karte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.6"/><path d="M3 10h18M7 14.5h4"/></svg>Mitgliedschaftskarte</button>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
@@ -5428,7 +5467,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1400';
+const APP_STAND = '2026-09-15-1500';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -8673,7 +8712,45 @@ function zuletztArt(iso){
   return new Date(iso) >= h ? 'heute' : '';
 }
 
-let TEAM = null, TEE_PAARE = {}, TEAM_FEHLER = '';
+let TEAM = null, TEE_PAARE = {}, TEAM_FEHLER = '', TEE_OFFEN = {};
+/* Wer mir zuletzt einen geschickt hat, ohne dass ich zurueckgegeben
+   habe. Am Datum je Richtung abzulesen: liegt seins nach meinem, ist
+   der Ball bei mir. */
+function teeOffenAus(zeilen){
+  const offen = {};
+  (zeilen || []).forEach(z => {
+    const ich = z.a === UID;
+    const anderer = ich ? z.b : z.a;
+    const meins = ich ? z.letzt_a : z.letzt_b;
+    const seins = ich ? z.letzt_b : z.letzt_a;
+    if(seins && (!meins || seins > meins)) offen[anderer] = true;
+  });
+  return offen;
+}
+/* Beim Start einmal nachsehen, damit der Punkt am Profilbild stimmt,
+   ohne dass jemand die Firmenansicht aufmachen muss. */
+async function teeOffenLaden(){
+  if(!CLOUD_ON || !UID) return;
+  try{
+    const r = await sb.from('tee').select('a,b,letzt_a,letzt_b');
+    if(r.error) throw r.error;
+    TEE_OFFEN = teeOffenAus(r.data);
+    malZaehler();
+  }catch(e){ console.warn('[MOJI] offene Tees', e); }
+}
+function teeOffenAnzahl(){ return Object.keys(TEE_OFFEN).length; }
+/* Lieblingsleute. Die Markierung ist meine eigene, sie steht im Profil
+   und wandert mit in die Cloud — der andere sieht davon nichts. */
+function besties(){ return (ME && Array.isArray(ME.besties)) ? ME.besties : []; }
+function istBestie(id){ return besties().indexOf(id) > -1; }
+function bestieUm(id){
+  if(!ME) return;
+  const b = besties().slice();
+  const i = b.indexOf(id);
+  if(i > -1) b.splice(i, 1); else b.push(id);
+  ME.besties = b;
+  save();
+}
 /* Die eigene Zeile: nur das, was Kollegen voneinander sehen duerfen. */
 async function teamIchSchreiben(){
   if(!CLOUD_ON || !UID || !ME) return;
@@ -8716,14 +8793,27 @@ async function teamLaden(){
     const meins = z.a === UID ? z.letzt_a : z.letzt_b;
     TEE_PAARE[anderer] = { punkte:z.punkte || 0, heuteSchon: !!meins && meins >= heute };
   });
-  /* Alphabetisch nach Vorname, ich selbst zuerst — die eigene Zeile ist
-     der Massstab fuer alles darunter. */
-  TEAM = (r.data || []).sort((x, y) => {
-    if(x.user_id === UID) return -1;
-    if(y.user_id === UID) return 1;
-    return (x.vorname || '').localeCompare(y.vorname || '', 'de');
-  });
+  TEE_OFFEN = teeOffenAus(t.error ? [] : t.data);
+  TEAM = (r.data || []).sort(teamReihung);
   return TEAM;
+}
+/* Die Reihenfolge der Liste, von oben:
+     1 ich selbst — die eigene Zeile ist der Massstab fuer alles darunter
+     2 wer mir einen geschickt hat und auf Antwort wartet
+     3 markierte Lieblingsleute
+     4 alle uebrigen, alphabetisch
+   Sobald zurueckgeschickt ist, faellt 2 weg und die Zeile sortiert sich
+   wieder ein, wo sie hingehoert. */
+function teamRang(m){
+  if(m.user_id === UID) return 0;
+  if(TEE_OFFEN[m.user_id]) return 1;
+  if(istBestie(m.user_id)) return 2;
+  return 3;
+}
+function teamReihung(x, y){
+  const a = teamRang(x), b = teamRang(y);
+  if(a !== b) return a - b;
+  return (x.vorname || '').localeCompare(y.vorname || '', 'de');
 }
 function mitgliedName(m){
   const v = (m.vorname || '').trim() || 'Jemand';
@@ -8784,15 +8874,26 @@ function malTeam(){
             + Math.round(rest.hat / rest.braucht * 100) + '%"></i></span>' : '')
         + '</span>' + teeKnopf(m, paar) + '</div>';
     }
-    return '<article class="tm' + (ich ? ' ich' : '') + '" data-mit="' + esc(m.user_id) + '"'
-      + ' style="--tee:' + tee.f + '">'
+    const offen = !ich && !!TEE_OFFEN[m.user_id];
+    const rang = RAENGE[(m.stufe || 1) - 1] || RAENGE[0];
+    const herz = istBestie(m.user_id);
+    return '<article class="tm' + (ich ? ' ich' : '') + (offen ? ' offen' : '')
+      + '" data-mit="' + esc(m.user_id) + '"'
+      + ' style="--tee:' + tee.f + ';--rang:' + rang.a + '">'
       + '<div class="tm-oben">'
       +   '<span class="tm-bild"><img src="' + avDatei(m.avatar || 1) + '" alt="" loading="lazy"></span>'
       +   '<span class="tm-t"><b>' + esc(mitgliedName(m)) + (ich ? ' · du' : '') + '</b>'
       +     '<span class="wo">' + wo + '</span>'
       +     (ich ? '' : '<span class="seit ' + art + '"><i></i>' + esc(zuletztText(m.zuletzt)) + '</span>')
+      +     (offen ? '<span class="tm-neu">Hat dir einen geschickt</span>' : '')
       +   '</span>'
-      +   (ich ? '' : '<span class="tm-lvl' + (lvl ? ' an' : '') + '"><b>' + lvl + '</b><u>Level</u></span>')
+      +   (ich ? '' : '<span class="tm-rechts">'
+      +     '<span class="tm-lvl' + (lvl ? ' an' : '') + '"><b>' + lvl + '</b><u>Lvl</u></span>'
+      +     '<button class="tm-herz" data-herz="' + esc(m.user_id) + '"'
+      +       ' aria-pressed="' + (herz ? 'true' : 'false') + '"'
+      +       ' aria-label="' + (herz ? 'Markierung aufheben' : 'Als Liebling markieren') + '">'
+      +       '<svg viewBox="0 0 24 24" fill="' + (herz ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.4 4.6 13a4.6 4.6 0 0 1 6.5-6.5l.9.9.9-.9A4.6 4.6 0 0 1 19.4 13z"/></svg>'
+      +     '</button></span>')
       + '</div>' + unten + '</article>';
   }).join('');
 }
@@ -8806,6 +8907,19 @@ function teeKnopf(m, paar){
 }
 /* Einen Becher schicken. Die Regel „einmal am Tag" haelt der Server —
    hier wird nur gezeigt, was dabei herauskam. */
+$('#fi-team').addEventListener('click', e => {
+  const h = e.target.closest('[data-herz]'); if(!h) return;
+  bestieUm(h.dataset.herz);
+  /* Nur die Karte umschalten, nicht die Liste neu bauen — sonst
+     spraenge die Zeile unter dem Finger an eine andere Stelle. Neu
+     einsortiert wird beim naechsten Oeffnen. */
+  const an = istBestie(h.dataset.herz);
+  h.setAttribute('aria-pressed', an ? 'true' : 'false');
+  h.setAttribute('aria-label', an ? 'Markierung aufheben' : 'Als Liebling markieren');
+  const weg = $('svg', h); if(weg) weg.setAttribute('fill', an ? 'currentColor' : 'none');
+  h.classList.remove('klack'); void h.offsetWidth; h.classList.add('klack');
+  zaKlopf();
+});
 $('#fi-team').addEventListener('click', async e => {
   const b = e.target.closest('[data-tee]'); if(!b) return;
   const an = b.dataset.tee;
@@ -8818,6 +8932,10 @@ $('#fi-team').addEventListener('click', async e => {
     if(r.error) throw r.error;
     const z = Array.isArray(r.data) ? r.data[0] : r.data;
     TEE_PAARE[an] = { punkte:(z && z.punkte) || 0, heuteSchon:true };
+    /* Zurueckgeschickt heisst: der Ball liegt wieder drueben. Die Karte
+       verliert den violetten Rand, sortiert sich aber erst beim naechsten
+       Oeffnen um — sonst spraenge sie unter dem Finger weg. */
+    if(TEE_OFFEN[an]){ delete TEE_OFFEN[an]; malZaehler(); }
     malTeam();
     const karte = $('[data-mit="' + an + '"]');
     const becher = karte && $('.becher', karte);
@@ -9538,17 +9656,25 @@ let _zaehlerFrei = false, _zaehlerT = null;
 function malZaehler(){
   const post = ME ? pfNeu().length : 0;
   const stufen = aufOffen();
+  const tee = ME ? teeOffenAnzahl() : 0;
   const setz = (wo, n) => {
     const el = $(wo); if(!el) return;
     if(n > 0){ el.textContent = n > 99 ? '99+' : String(n); el.hidden = false; }
     else el.hidden = true;
   };
-  /* Am Profilbild steht alles zusammen, wie am Telefon: Nachrichten und
-     Stufenaufstiege in einer Zahl. */
-  const oben = post + stufen;
+  /* Am Profilbild steht alles zusammen, wie am Telefon: Nachrichten,
+     Stufenaufstiege und wartende Bubble Teas in einer Zahl. Welche Art
+     dahintersteckt, sagt die Farbe. */
+  const rot = post + stufen, oben = rot + tee;
   setz('#av-zaehler', _zaehlerFrei ? oben : 0);
   setz('#pf-zaehler', post);
   setz('#mr-zaehler', stufen);
+  setz('#fi-zaehler', tee);
+  const z = $('#av-zaehler');
+  if(z){
+    z.classList.toggle('tee',    tee > 0 && rot === 0);
+    z.classList.toggle('beides', tee > 0 && rot > 0);
+  }
   const w = $('#avwrap');
   if(w) w.classList.toggle('meldung', _zaehlerFrei && oben > 0);
 }
@@ -12769,8 +12895,10 @@ async function afterLogin(session, frisch){
   /* Passkey-Stand holen, sonst bleiben die Menüeinträge auf display:none
      stehen — paintPasskey lief vorher nur im Funnel und beim Abmelden. */
   pkRefresh().catch(e => console.warn('[MOJI] Passkey-Stand offen:', e));
-  /* „Zuletzt online" nachziehen — im Hintergrund, es haelt nichts auf. */
+  /* „Zuletzt online" nachziehen — im Hintergrund, es haelt nichts auf.
+     Und nachsehen, ob ein Bubble Tea auf Antwort wartet. */
   teamGesehen();
+  teeOffenLaden();
   /* Adresszeile aufräumen, damit der Anmeldelink nicht sichtbar bleibt */
   try{ history.replaceState({}, '', location.pathname); }catch(e){}
 

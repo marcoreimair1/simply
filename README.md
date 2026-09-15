@@ -939,6 +939,19 @@ MOJI-Stufe, darunter *kürzlich gesehen* mit farbigem Punkt, rechts die eckige B
 geteilten Level. Unten das gemeinsame Getränk, der Weg zur nächsten Stufe und **Senden**.
 Die eigene Karte steht zuerst und hat keine untere Zeile — sich selbst schickt man nichts.
 
+**Die Reihenfolge der Liste** ist keine reine Alphabetik: zuerst man selbst, dann wer einem
+einen Bubble Tea geschickt hat und auf Antwort wartet, dann die mit einem **Herz** markierten
+Lieblingsleute, dann alle übrigen alphabetisch. Sobald zurückgeschickt ist, fällt die zweite
+Gruppe weg und die Zeile sortiert sich wieder ein, wo sie hingehört — aber **erst beim nächsten
+Öffnen**, sonst spränge sie unter dem Finger weg. Die Markierung steht in `ME.besties`, ist
+also die eigene: der andere erfährt davon nichts.
+
+**Der Bildrahmen trägt die Farbe der MOJI-Stufe** (`RAENGE[n].a`) — man erkennt am Bild, wie
+lange jemand schon dabei ist.
+
+**Wer einem einen geschickt hat**, bekommt denselben violetten Ton wie die eigene Karte und die
+Zeile *Hat dir einen geschickt*.
+
 **Das geteilte Level.** Jeder Bubble Tea ist ein Punkt im gemeinsamen Topf, beide zahlen ein,
 also höchstens zwei am Tag. Der erste bringt Stufe 1 (*Ube Pop*), danach je zehn eine weitere
 bis Stufe 10 (*Ruby Royale*) bei 91. `teeLevel()` rechnet im Browser genau wie `tee_level()` in
@@ -947,6 +960,12 @@ der Datenbank — beide Fassungen sind gegen dieselbe Tabelle geprüft.
 **Die Regel „einmal am Tag" hält der Server.** `tee_senden(an)` sperrt die Zeile, prüft dieselbe
 Firma, schaut nach dem letzten Tag je Richtung (Wiener Zeit, sonst wechselte der Tag um zwei
 Uhr früh) und zählt nur dann. Im Browser wäre das in zehn Sekunden ausgehebelt.
+
+**Der Punkt am Profilbild** zählt alles zusammen, wie am Telefon: Nachrichten, Stufenaufstiege
+und wartende Bubble Teas in einer Zahl. Welche Art dahintersteckt, sagt die **Farbe** — Rot für
+Nachrichten, Violett für einen Tee, und kommt beides zusammen, wird der Kreis halb und halb
+(`.zaehler.beides`). Zwei Punkte nebeneinander wären an einem 20-px-Kreis nicht mehr zu
+unterscheiden. Im Menü steht die Zahl der wartenden Tees zusätzlich in der Zeile *Meine Firma*.
 
 **Zuletzt online** ist eine Leiter, keine Uhrzeit: *kürzlich gesehen* (bis 4 h), *heute zuletzt
 online*, *gestern*, *vor n Tagen* bis 40, danach *es ist schon ewig her*. Niemand rechnet aus,
@@ -1838,6 +1857,14 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Herzen, Rangfarben und ein halb roter Punkt** (15. September 2026): Der Bildrahmen trägt
+  die Farbe der MOJI-Stufe, das geteilte Level ist schmaler und hat ein Herz daneben, mit dem
+  man Lieblingsleute nach oben holt. Wer einen Bubble Tea geschickt hat, steht noch weiter
+  oben und trägt den violetten Ton — bis zurückgeschickt ist. Der Punkt am Profilbild zählt
+  Nachrichten und Tees zusammen und wird halb rot, halb violett, wenn beides da ist. Dazu
+  lief die Firmenansicht 6 px über den Schirm hinaus: `.msek` brachte aus dem Menü
+  `margin:26px 20px` mit und gewann als spätere Regel. 754 Prüfungen
 
 - **Alle bestehenden Konten sind im Team** (15. September 2026): Ein Auslöser an `records`
   zieht die öffentliche Zeile bei jedem Sichern nach, und ein einmaliger Nachzug hat alles
