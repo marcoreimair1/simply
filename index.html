@@ -2187,56 +2187,61 @@ body.sigmodus .fb-s{display:inline-flex}
 .fi-sek span{ color:var(--tx-3); font-weight:500 }
 
 /* ─── Eine Mitgliedskarte ─────────────────────────────────────────
-   Oben wer, unten was ihr euch zusammen aufgebaut habt. */
-.mk{ border:1px solid var(--karte-rand); border-radius:20px; background:var(--karte);
+   Oben wer, unten was ihr euch zusammen aufgebaut habt.
+
+   Praefix tm- und nicht mk-: mk gehoert seit jeher der Mitarbeiterkarte
+   im Menue, und die setzt color:var(--f-2), also fast Weiss. Weil ihre
+   Regeln spaeter im Blatt stehen, gewannen sie — die Namen standen
+   unsichtbar auf der Karte, waehrend die graue Zeile darunter las. */
+.tm{ border:1px solid var(--karte-rand); border-radius:20px; background:var(--karte);
   box-shadow:var(--karte-schatten); padding:12px 13px 11px; margin-bottom:10px }
-.mk.ich{ border-color:rgba(var(--marke-rgb),.28);
+.tm.ich{ border-color:rgba(var(--marke-rgb),.28);
   background:linear-gradient(170deg,rgba(var(--marke-rgb),.07),var(--karte) 62%) }
-.mk-oben{ display:flex; align-items:center; gap:12px }
-.mk-bild{ flex:none; width:52px; height:52px; border-radius:17px; overflow:hidden;
+.tm-oben{ display:flex; align-items:center; gap:12px }
+.tm-bild{ flex:none; width:52px; height:52px; border-radius:17px; overflow:hidden;
   background:#fff; border:1px solid var(--karte-rand) }
-.mk-bild img{ width:100%; height:100%; object-fit:cover; object-position:center 86%; display:block }
-.mk-t{ flex:1; min-width:0 }
-.mk-t b{ display:block; font-size:15px; font-weight:650; letter-spacing:-.01em }
-.mk-t .wo{ display:block; margin-top:2px; font-size:11.5px; color:var(--tx-3);
+.tm-bild img{ width:100%; height:100%; object-fit:cover; object-position:center 86%; display:block }
+.tm-t{ flex:1; min-width:0 }
+.tm-t b{ display:block; font-size:15px; font-weight:650; letter-spacing:-.01em }
+.tm-t .wo{ display:block; margin-top:2px; font-size:11.5px; color:var(--tx-3);
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
-.mk-t .seit{ display:flex; align-items:center; gap:5px; margin-top:4px; font-size:11px;
+.tm-t .seit{ display:flex; align-items:center; gap:5px; margin-top:4px; font-size:11px;
   color:var(--tx-3) }
-.mk-t .seit i{ width:6px; height:6px; border-radius:50%; background:var(--tx-3); flex:none }
-.mk-t .seit.frisch i{ background:var(--c-eigen) }
-.mk-t .seit.heute i{ background:var(--c-urlaub) }
+.tm-t .seit i{ width:6px; height:6px; border-radius:50%; background:var(--tx-3); flex:none }
+.tm-t .seit.frisch i{ background:var(--c-eigen) }
+.tm-t .seit.heute i{ background:var(--c-urlaub) }
 /* Das geteilte Level: eckige Box, grau bei null, sonst in der Farbe des
    Getraenks, das ihr gerade habt. */
-.mk-lvl{ flex:none; width:52px; border-radius:15px; padding:7px 4px 6px; text-align:center;
+.tm-lvl{ flex:none; width:52px; border-radius:15px; padding:7px 4px 6px; text-align:center;
   background:rgba(var(--tx-rgb),.055); border:1px solid var(--line-2) }
-.mk-lvl b{ display:block; font-family:var(--font-dis); font-weight:400; font-size:21px;
+.tm-lvl b{ display:block; font-family:var(--font-dis); font-weight:400; font-size:21px;
   line-height:1; color:var(--tx-2) }
-.mk-lvl u{ display:block; margin-top:3px; text-decoration:none; font-size:8.5px; font-weight:700;
+.tm-lvl u{ display:block; margin-top:3px; text-decoration:none; font-size:8.5px; font-weight:700;
   letter-spacing:.12em; text-transform:uppercase; color:var(--tx-3) }
-.mk-lvl.an{ background:color-mix(in srgb, var(--tee) 16%, transparent);
+.tm-lvl.an{ background:color-mix(in srgb, var(--tee) 16%, transparent);
   border-color:color-mix(in srgb, var(--tee) 40%, transparent) }
-.mk-lvl.an b{ color:var(--tee) }
-.mk-tee{ display:flex; align-items:center; gap:10px; margin-top:11px; padding-top:10px;
+.tm-lvl.an b{ color:var(--tee) }
+.tm-tee{ display:flex; align-items:center; gap:10px; margin-top:11px; padding-top:10px;
   border-top:1px solid var(--line-2) }
-.mk-tee .becher{ flex:none; width:24px; height:auto; display:block }
-.mk-tee .becher.leer{ opacity:.3; filter:grayscale(1) }
-.mk-tee .txt{ flex:1; min-width:0 }
-.mk-tee .txt b{ display:block; font-size:12.5px; font-weight:650; color:var(--tx-2) }
-.mk-tee .txt small{ display:block; margin-top:3px; font-size:10.5px; color:var(--tx-3) }
-.mk-balken{ display:block; height:4px; border-radius:99px; background:rgba(var(--tx-rgb),.09);
+.tm-tee .becher{ flex:none; width:24px; height:auto; display:block }
+.tm-tee .becher.leer{ opacity:.3; filter:grayscale(1) }
+.tm-tee .txt{ flex:1; min-width:0 }
+.tm-tee .txt b{ display:block; font-size:12.5px; font-weight:650; color:var(--tx-2) }
+.tm-tee .txt small{ display:block; margin-top:3px; font-size:10.5px; color:var(--tx-3) }
+.tm-balken{ display:block; height:4px; border-radius:99px; background:rgba(var(--tx-rgb),.09);
   margin-top:5px; overflow:hidden }
-.mk-balken i{ display:block; height:100%; border-radius:99px; background:var(--tee);
+.tm-balken i{ display:block; height:100%; border-radius:99px; background:var(--tee);
   transition:width .5s var(--ease-out) }
-.mk-send{ flex:none; display:inline-flex; align-items:center; gap:6px; padding:9px 13px;
+.tm-send{ flex:none; display:inline-flex; align-items:center; gap:6px; padding:9px 13px;
   border-radius:13px; font-size:12px; font-weight:650; color:var(--on-primary);
   background:linear-gradient(120deg,var(--butter-2),var(--butter));
   box-shadow:0 8px 20px -10px var(--knopf-schatten); transition:transform .18s var(--ease) }
-.mk-send svg{ width:14px; height:14px }
-.mk-send:active{ transform:scale(.95) }
-.mk-send:disabled, .mk-send.aus{ background:rgba(var(--tx-rgb),.05); color:var(--tx-3);
+.tm-send svg{ width:14px; height:14px }
+.tm-send:active{ transform:scale(.95) }
+.tm-send:disabled, .tm-send.aus{ background:rgba(var(--tx-rgb),.05); color:var(--tx-3);
   box-shadow:none; border:1px solid var(--line-2) }
 /* Der Becher huepft, wenn er weggeschickt ist. */
-.mk-tee .becher.weg{ animation:teeWeg .7s var(--ease-out) }
+.tm-tee .becher.weg{ animation:teeWeg .7s var(--ease-out) }
 @keyframes teeWeg{
   0%{ transform:none } 30%{ transform:translateY(-9px) rotate(-8deg) scale(1.1) }
   60%{ transform:translateY(0) rotate(4deg) scale(.97) } 100%{ transform:none }
@@ -5423,7 +5428,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1240';
+const APP_STAND = '2026-09-15-1320';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -8763,40 +8768,40 @@ function malTeam(){
     if(ich){
       unten = '';
     } else if(lvl === 0){
-      unten = '<div class="mk-tee">'
+      unten = '<div class="tm-tee">'
         + '<img class="becher leer" src="tee-1.webp" alt="" loading="lazy">'
         + '<span class="txt"><b style="color:var(--tx-3)">Noch kein Bubble Tea</b>'
         + '<small>Der erste bringt euch sofort auf Level 1</small></span>'
         + teeKnopf(m, paar) + '</div>';
     } else {
-      unten = '<div class="mk-tee">'
+      unten = '<div class="tm-tee">'
         + '<img class="becher" src="tee-' + lvl + '.webp" alt="" loading="lazy">'
         + '<span class="txt"><b>' + esc(tee.n) + '</b>'
         + '<small>' + (rest
             ? rest.hat + ' von ' + rest.braucht + ' bis ' + esc(rest.name)
             : 'Die höchste Stufe — mehr geht nicht.') + '</small>'
-        + (rest ? '<span class="mk-balken"><i style="width:'
+        + (rest ? '<span class="tm-balken"><i style="width:'
             + Math.round(rest.hat / rest.braucht * 100) + '%"></i></span>' : '')
         + '</span>' + teeKnopf(m, paar) + '</div>';
     }
-    return '<article class="mk' + (ich ? ' ich' : '') + '" data-mit="' + esc(m.user_id) + '"'
+    return '<article class="tm' + (ich ? ' ich' : '') + '" data-mit="' + esc(m.user_id) + '"'
       + ' style="--tee:' + tee.f + '">'
-      + '<div class="mk-oben">'
-      +   '<span class="mk-bild"><img src="' + avDatei(m.avatar || 1) + '" alt="" loading="lazy"></span>'
-      +   '<span class="mk-t"><b>' + esc(mitgliedName(m)) + (ich ? ' · du' : '') + '</b>'
+      + '<div class="tm-oben">'
+      +   '<span class="tm-bild"><img src="' + avDatei(m.avatar || 1) + '" alt="" loading="lazy"></span>'
+      +   '<span class="tm-t"><b>' + esc(mitgliedName(m)) + (ich ? ' · du' : '') + '</b>'
       +     '<span class="wo">' + wo + '</span>'
       +     (ich ? '' : '<span class="seit ' + art + '"><i></i>' + esc(zuletztText(m.zuletzt)) + '</span>')
       +   '</span>'
-      +   (ich ? '' : '<span class="mk-lvl' + (lvl ? ' an' : '') + '"><b>' + lvl + '</b><u>Level</u></span>')
+      +   (ich ? '' : '<span class="tm-lvl' + (lvl ? ' an' : '') + '"><b>' + lvl + '</b><u>Level</u></span>')
       + '</div>' + unten + '</article>';
   }).join('');
 }
 function teeKnopf(m, paar){
   if(paar.heuteSchon){
-    return '<button class="mk-send aus" disabled>'
+    return '<button class="tm-send aus" disabled>'
       + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>Heute</button>';
   }
-  return '<button class="mk-send" data-tee="' + esc(m.user_id) + '">'
+  return '<button class="tm-send" data-tee="' + esc(m.user_id) + '">'
     + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h13M12 6l6 6-6 6"/></svg>Senden</button>';
 }
 /* Einen Becher schicken. Die Regel „einmal am Tag" haelt der Server —

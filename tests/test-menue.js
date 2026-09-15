@@ -349,29 +349,39 @@ window.__WEITER = function(){
           {user_id:'u-c',vorname:'Clara',kuerzel:'W',avatar:9,filiale:'Linz',stufe:2,zuletzt:vor(74)}];
   TEE_PAARE = {'u-a':{punkte:25,heuteSchon:false},'u-c':{punkte:0,heuteSchon:false}};
   malTeam();
-  var karten = document.querySelectorAll('#fi-team .mk');
+  var karten = document.querySelectorAll('#fi-team .tm');
   ok('Je Mitglied eine Karte',      karten.length === 3, karten.length);
   ok('Ich stehe zuerst',            karten[0].classList.contains('ich'));
   ok('Und ohne Sende-Knopf',        !karten[0].querySelector('[data-tee]'));
-  ok('Name mit Anfangsbuchstaben',  karten[1].querySelector('.mk-t b').textContent === 'Anna M.',
-     karten[1].querySelector('.mk-t b').textContent);
+  ok('Name mit Anfangsbuchstaben',  karten[1].querySelector('.tm-t b').textContent === 'Anna M.',
+     karten[1].querySelector('.tm-t b').textContent);
+  /* Der Name stand am 15.09.2026 unsichtbar auf der Karte: die Klasse
+     hiess mk, und mk gehoert der Mitarbeiterkarte, die color:var(--f-2)
+     setzt — fast Weiss. Hier wird die Farbe wirklich nachgesehen. */
+  var namFarbe = getComputedStyle(karten[1].querySelector('.tm-t b')).color;
+  /* jsdom loest keine Variablen auf — es gibt "var(--tx)" zurueck. Genau
+     das genuegt: faellt die Karte wieder in die Regeln der
+     Mitarbeiterkarte, stuende hier var(--f-2). */
+  ok('Der Name nimmt die Textfarbe der Seite',
+     namFarbe.indexOf('--f-') === -1 && namFarbe.indexOf('255, 255, 255') === -1
+     && namFarbe !== '', namFarbe || '(leer)');
   ok('Filiale und MOJI-Stufe',      karten[1].querySelector('.wo').textContent === 'Linz · Stufe 7 Uhrwerk',
      karten[1].querySelector('.wo').textContent);
   ok('Das geteilte Level steht rechts',
-     karten[1].querySelector('.mk-lvl b').textContent === '3',
-     karten[1].querySelector('.mk-lvl b').textContent);
-  ok('Bei null bleibt die Box grau', karten[2].querySelector('.mk-lvl b').textContent === '0'
-     && !karten[2].querySelector('.mk-lvl').classList.contains('an'));
+     karten[1].querySelector('.tm-lvl b').textContent === '3',
+     karten[1].querySelector('.tm-lvl b').textContent);
+  ok('Bei null bleibt die Box grau', karten[2].querySelector('.tm-lvl b').textContent === '0'
+     && !karten[2].querySelector('.tm-lvl').classList.contains('an'));
   ok('Und der Becher ist blass',     !!karten[2].querySelector('.becher.leer'));
   ok('Der Becher passt zur Stufe',
      karten[1].querySelector('.becher').getAttribute('src') === 'tee-3.webp',
      karten[1].querySelector('.becher').getAttribute('src'));
   /* Wer heute schon geschickt hat, kann nicht noch einmal. */
   TEE_PAARE['u-a'].heuteSchon = true; malTeam();
-  var a = document.querySelectorAll('#fi-team .mk')[1];
-  ok('Heute schon geschickt heisst gesperrt', !!a.querySelector('.mk-send[disabled]')
-     && a.querySelector('.mk-send').textContent.indexOf('Heute') > -1,
-     a.querySelector('.mk-send').textContent.trim());
+  var a = document.querySelectorAll('#fi-team .tm')[1];
+  ok('Heute schon geschickt heisst gesperrt', !!a.querySelector('.tm-send[disabled]')
+     && a.querySelector('.tm-send').textContent.indexOf('Heute') > -1,
+     a.querySelector('.tm-send').textContent.trim());
   /* Ein Fehler darf nicht wie eine leere Liste aussehen — genau das hat
      die falsche Leseregel verdeckt. */
   TEAM = []; TEAM_FEHLER = 'keine Rechte';
@@ -451,6 +461,11 @@ setTimeout(() => {
    ['Die Leseregel fragt nicht sich selbst',
     !/using \(\s*\n?\s*firma = \(select m\.firma from public\.mitglieder/.test(policy)],
    ['Sich selbst sieht man immer',  /user_id = auth\.uid\(\)\s*--/.test(policy)],
+   /* Die Teamkarte hat ein eigenes Praefix, damit sie nicht in die
+      Regeln der Mitarbeiterkarte faellt. */
+   ['Die Teamkarte heisst tm, nicht mk',
+    /'<article class="tm'/.test(roh) && !/class="mk-t"/.test(roh.slice(roh.indexOf('function malTeam'), roh.indexOf('function malFirma')))],
+   ['Und die Mitarbeiterkarte behaelt ihr mk', /\.mk\{position:relative;overflow:hidden/.test(roh)],
    ['Die Firma kommt aus einer eigenen Funktion',
     /create or replace function public\.meine_firma\(\)/.test(policy)
     && /security definer/.test(policy)]

@@ -912,6 +912,13 @@ Lesen darf, wer in derselben Firma ist (→ `supabase/migrations/`).
 > weil die App den Fehler als *„Noch niemand sonst da"* ausgegeben hat. Ein Fehler darf nie
 > wie ein leeres Ergebnis aussehen; die Ansicht sagt jetzt, was schiefging.
 
+> **Klassennamen sind ein gemeinsamer Raum.** Die Teamkarte hieß zuerst `.mk` — und `.mk` gehört
+> seit jeher der Mitarbeiterkarte im Menü, die `color:var(--f-2)` setzt, also fast Weiß. Weil
+> ihre Regeln später im Blatt stehen, gewannen sie: die Namen standen **unsichtbar** auf der
+> Karte, während die graue Zeile darunter zu lesen war. Dasselbe traf `.mk-t`, `.mk-lvl` und
+> `.mk-bild`. Jetzt heißt alles `tm-`. Eine Prüfung achtet darauf, dass es dabei bleibt — und
+> eine zweite sieht die berechnete Textfarbe nach, statt nur die Regel zu suchen.
+
 **Die Mitgliedskarte** hat zwei Zeilen: oben wer — Bild, *Anna M.*, klein und grau Filiale und
 MOJI-Stufe, darunter *kürzlich gesehen* mit farbigem Punkt, rechts die eckige Box mit dem
 geteilten Level. Unten das gemeinsame Getränk, der Weg zur nächsten Stufe und **Senden**.
@@ -1816,6 +1823,10 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Die Namen standen unsichtbar auf der Teamkarte** (15. September 2026): Sie hieß `.mk` wie
+  die Mitarbeiterkarte im Menü, und deren spätere Regel setzt fast weiße Schrift. Umbenannt
+  auf `tm-`, mit zwei Prüfungen dagegen. 731 Prüfungen
 
 - **Die Leseregel fragte sich selbst ab** (15. September 2026): `mitglieder` blieb leer, auch
   die eigene Zeile — die Policy las in ihrer eigenen Bedingung aus derselben Tabelle. Jetzt
