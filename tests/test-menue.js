@@ -309,6 +309,30 @@ window.__WEITER = function(){
 
   /* ── Meine Firma und das Team ── */
   ok('Die Firmenkachel faengt zugeklappt an', document.getElementById('fi-zeilen').hidden);
+  /* Die Marke des Dienstgebers statt eines gezeichneten Hauses. */
+  ok('Die Kachel zeigt die Wortmarke',
+     document.querySelector('#fi-karte .fk-logo img').getAttribute('src')
+       .indexOf('firma-miller-wort') === 0,
+     document.querySelector('#fi-karte .fk-logo img').getAttribute('src'));
+  /* Das Bild statt des Hauses. Ein svg gibt es in der Zeile weiterhin —
+     das ist der Pfeil am rechten Rand, den das Menue selbst anhaengt. */
+  ok('Und die Menuezeile die Marke selbst',
+     (document.querySelector('.mi[data-act="firma"] img') || {}).getAttribute
+       && document.querySelector('.mi[data-act="firma"] img')
+            .getAttribute('src').indexOf('firma-miller.png') === 0,
+     document.querySelector('.mi[data-act="firma"]').innerHTML.slice(0, 80));
+  /* Die Bubble Teas werden in den Details erklaert, nicht auf der Liste. */
+  malFirma();
+  ok('Alle zehn Getraenke stehen in den Details',
+     document.querySelectorAll('#fi-zeilen .teek').length === 10,
+     document.querySelectorAll('#fi-zeilen .teek').length);
+  ok('Mit Namen und Schwelle',
+     document.querySelector('#fi-zeilen .teek b').textContent === 'Ube Pop'
+     && document.querySelectorAll('#fi-zeilen .teek u')[9].textContent === 'ab 91',
+     document.querySelectorAll('#fi-zeilen .teek u')[9].textContent);
+  ok('Und einer Erklaerung davor',
+     document.querySelector('#fi-zeilen .fiz-tee b').textContent
+       .indexOf('Zehn Stufen zum Freischalten') === 0);
   ok('Es gibt einen Zurueck-Knopf', !!document.getElementById('fi-back'));
   ok('Die alte Augenbraue ist weg', !document.querySelector('#v-firma .eyebrow'));
 
@@ -560,6 +584,11 @@ setTimeout(() => {
       Seite breiter als den Schirm. */
    ['Die Firmenansicht laeuft nicht ueber', /#v-firma\{ overflow-x:hidden \}/.test(roh)
     && /#v-firma \.fi-sek\{ margin-top:26px/.test(roh)],
+   /* Die spaetere Regel .mi > .miico gewaenne bei gleicher Spezifitaet. */
+   ['Die Firmenkachel im Menue setzt sich durch',
+    /\.mi\.mi-firma > \.miico\{ padding:0; background:#030B21/.test(roh)],
+   ['Die Getraenkeleiste kann schmaler werden als ihr laengstes Wort',
+    /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/.test(roh)],
    ['Der Zaehler haengt an der Symbolkachel',
     /\.mi \.miico > \.zaehler\{position:absolute;top:-7px;right:-7px/.test(roh)],
    ['Halb rot, halb violett gibt es wirklich',

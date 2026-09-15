@@ -919,6 +919,17 @@ Lesen darf, wer in derselben Firma ist (→ `supabase/migrations/`).
 > `.mk-bild`. Jetzt heißt alles `tm-`. Eine Prüfung achtet darauf, dass es dabei bleibt — und
 > eine zweite sieht die berechnete Textfarbe nach, statt nur die Regel zu suchen.
 
+**Die Marke des Dienstgebers** steht in der Kachel und im Profilmenü — dort statt des
+gezeichneten Hauses. Für die Kachel ist die Wortmarke aus der Vorlage **herausgeschnitten**
+(`firma-miller-wort.webp`): die 512er-Datei trägt den Schriftzug mittig in viel Marineblau, und
+in ein 52-px-Quadrat gequetscht war er 24 px breit und nicht mehr zu lesen. Jetzt eine breite
+Platte in dem Blau, das die Marke selbst mitbringt. Im Menü bleibt die quadratische Fassung:
+bei 36 px ist ohnehin kein Schriftzug lesbar, dort zählt der Wiedererkennungswert der Fläche.
+
+**Was ein Bubble Tea ist**, steht in den aufgeklappten Details — mit allen zehn Getränken,
+ihren Namen und ab wie vielen Punkten sie kommen. Nicht auf der Liste: wer sie kennt, soll
+nicht jedes Mal daran vorbeilesen.
+
 **Wie die Liste voll wird.** Ein Auslöser an `records` zieht die öffentliche Zeile bei jedem
 Sichern nach — Name, Anfangsbuchstabe, Bild, Stufe, zuletzt aktiv. Vorher legte nur die App
 selbst eine Zeile an, und auch das erst, wenn jemand *Meine Firma* aufmachte: wer MOJI seit
@@ -1860,6 +1871,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Die Marke des Dienstgebers, und was ein Bubble Tea ist** (15. September 2026): Die
+  Wortmarke ist aus der Vorlage geschnitten und sitzt als breite Platte in der Kachel; im
+  Profilmenü steht sie statt des gezeichneten Hauses. In den Details der Kachel stehen jetzt
+  alle zehn Getränke mit Namen und Schwelle. 763 Prüfungen
 
 - **Herzen, Rangfarben und ein halb roter Punkt** (15. September 2026): Der Bildrahmen trägt
   die Farbe der MOJI-Stufe, das geteilte Level ist schmaler und hat ein Herz daneben, mit dem

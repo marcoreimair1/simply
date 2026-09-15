@@ -829,6 +829,13 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
    am Briefsymbol im Profilkopf. Frei in der Zeile war er ein fremder
    Punkt zwischen Bild und Text. */
 .mi > .miico{position:relative;overflow:visible}
+/* Die Firmenzeile traegt die Marke selbst, nicht ein gezeichnetes Haus:
+   randlos, in der Farbe der Vorlage, und ohne den violetten Grund der
+   uebrigen Kacheln. */
+/* .mi > .miico steht spaeter im Blatt und gewaenne bei gleicher
+   Spezifitaet — darum hier beide Klassen. */
+.mi.mi-firma > .miico{ padding:0; background:#030B21; overflow:hidden }
+.mi.mi-firma > .miico img{ width:100%; height:100%; object-fit:cover; display:block }
 .mi .miico > .zaehler{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;
   font-size:10.5px;animation:none}
 .avatar.hatbild{background:#fff;border-color:rgba(var(--s-auf),.28)}
@@ -2181,9 +2188,14 @@ body.sigmodus .fb-s{display:inline-flex}
   box-shadow:var(--karte-schatten); overflow:hidden }
 .fk-kopf{ display:flex; align-items:center; gap:13px; width:100%; padding:15px 15px;
   text-align:left }
-.fk-logo{ flex:none; width:52px; height:52px; border-radius:16px; display:grid;
-  place-items:center; background:#fff; border:1px solid var(--karte-rand); overflow:hidden }
-.fk-logo img{ width:78%; height:78%; object-fit:contain }
+/* Die Wortmarke auf dem Marineblau, das sie mitbringt — nicht die ganze
+   Vorlage in ein weisses Quadrat gequetscht. Dort war der Schriftzug bei
+   52 px noch 24 px breit und nicht mehr zu lesen. Breit statt quadratisch:
+   die Marke ist nun einmal ein Rechteck. */
+.fk-logo{ flex:none; width:94px; height:52px; border-radius:13px; display:grid;
+  place-items:center; padding:7px 9px; background:#030B21;
+  border:1px solid rgba(255,255,255,.10); overflow:hidden }
+.fk-logo img{ width:100%; height:100%; object-fit:contain; display:block }
 .fk-t{ flex:1; min-width:0 }
 .fk-t b{ display:block; font-size:16px; font-weight:700; letter-spacing:-.01em }
 .fk-t small{ display:block; margin-top:2px; font-size:11.5px; color:var(--tx-3) }
@@ -2203,6 +2215,24 @@ body.sigmodus .fb-s{display:inline-flex}
   color:var(--tx-2) }
 .fihint svg{ flex:none; width:15px; height:15px; color:var(--butter); margin-top:1px }
 .fi-sek span{ color:var(--tx-3); font-weight:500 }
+/* Die zehn Getraenke als Leiste — man sieht auf einen Blick, was noch
+   kommt, ohne dass es die Firmendaten erschlaegt. */
+.fiz-tee u{ color:var(--butter) }
+/* minmax(0,1fr) und nicht 1fr: sonst darf die Spalte nicht unter die
+   Breite ihres laengsten Wortes — „Strawberry Kiss" schob die fuenfte
+   Spalte aus der Karte. */
+.teekunde{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:7px; margin:10px 0 2px }
+.teek{ display:block; text-align:center; padding:8px 2px 7px; border-radius:13px;
+  background:color-mix(in srgb, var(--tee) 9%, transparent);
+  border:1px solid color-mix(in srgb, var(--tee) 26%, transparent) }
+.teek img{ display:block; width:60%; max-width:34px; height:auto; margin:0 auto 4px }
+/* Zwei Zeilen statt Puenktchen: „Strawberry Kiss" abgeschnitten sagt
+   weniger als derselbe Name umgebrochen. */
+.teek b{ display:block; font-size:8.5px; font-weight:650; line-height:1.18; color:var(--tx-2);
+  min-height:2.36em; hyphens:auto }
+.teek u{ display:block; margin-top:2px; text-decoration:none; font-size:8px; font-weight:700;
+  letter-spacing:.06em; color:var(--tee) }
+@media(max-width:379px){ .teek b{ font-size:8px } }
 
 /* ─── Eine Mitgliedskarte ─────────────────────────────────────────
    Oben wer, unten was ihr euch zusammen aufgebaut habt.
@@ -4739,7 +4769,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 
       <div class="fk" id="fi-karte">
         <button class="fk-kopf" id="fi-auf" aria-expanded="false">
-          <span class="fk-logo"><img src="firma-miller.png?v=1" alt="" aria-hidden="true"></span>
+          <span class="fk-logo"><img src="firma-miller-wort.webp?v=1" alt="" aria-hidden="true"></span>
           <span class="fk-t"><b id="fi-name">—</b><small id="fi-sub">—</small></span>
           <svg class="fk-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
         </button>
@@ -4932,8 +4962,10 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         <div id="rb-liste"></div>
         <p class="rb-fuss">Jeder exportierte Monat zählt einmal. Alle vier Monate geht es eine Stufe hoch.</p>
       </div>
-    <button class="mi" data-act="firma">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V6.5l7-3.5 7 3.5V21"/><path d="M9.5 21v-5h5v5M9 10h1.5M13.5 10H15"/></svg>
+    <!-- Statt des Haussymbols die Marke des Dienstgebers. Das Aufbauskript
+         legt die Kachel um das erste Kind — hier also um das Bild. -->
+    <button class="mi mi-firma" data-act="firma">
+      <img src="firma-miller.png?v=1" alt="" aria-hidden="true">
       Meine Firma
       <span class="zaehler tee" id="fi-zaehler" hidden></span>
     </button>
@@ -5471,7 +5503,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1540';
+const APP_STAND = '2026-09-15-1620';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -8901,6 +8933,21 @@ function malTeam(){
       + '</div>' + unten + '</article>';
   }).join('');
 }
+/* Was es mit den Bubble Teas auf sich hat — in den Details der
+   Firmenkachel, nicht auf der Liste: wer sie schon kennt, soll nicht
+   jedes Mal daran vorbeilesen. */
+function teeKundeHtml(){
+  return '<div class="fiz fiz-tee"><u>Bubble Tea</u><b>Zehn Stufen zum Freischalten'
+    + '<small>Schick jemandem einen Tee, dann seid ihr auf Stufe 1. Jeder Tee ist ein Punkt '
+    + 'im gemeinsamen Topf — ihr zahlt beide ein, also höchstens zwei am Tag. Ab dann braucht '
+    + 'jede weitere Stufe zehn Getränke.</small></b></div>'
+    + '<div class="teekunde">'
+    + TEE.map((t, i) => '<span class="teek" style="--tee:' + t.f + '">'
+        + '<img src="tee-' + (i + 1) + '.webp" alt="" loading="lazy">'
+        + '<b>' + esc(t.n) + '</b><u>' + (i === 0 ? 'ab 1' : 'ab ' + (i * 10 + 1)) + '</u>'
+        + '</span>').join('')
+    + '</div>';
+}
 function teeKnopf(m, paar){
   if(paar.heuteSchon){
     return '<button class="tm-send aus" disabled>'
@@ -8990,7 +9037,8 @@ function malFirma(){
     + zeile('Dabei seit', seitText())
     + zeile('Feiertage', 'Österreich', 'Werden inklusive Ostertermin selbst berechnet.')
     + '<p class="fihint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.01"/></svg>'
-    + 'Der Dienstgeber ist fest eingestellt und lässt sich in der App nicht ändern.</p>';
+    + 'Der Dienstgeber ist fest eingestellt und lässt sich in der App nicht ändern.</p>'
+    + teeKundeHtml();
   malTeam();
 }
 /* Die Kachel faengt zugeklappt an: die Firma steht fest, die liest man
@@ -13128,9 +13176,12 @@ $('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
     menu.querySelectorAll('.mi').forEach(mi => {
       const act = mi.dataset.act;
       if (!mi.querySelector('.miico')) {
-        const svg = mi.querySelector('svg');
-        if (svg) { const kachel = document.createElement('span');
-          kachel.className = 'miico'; svg.parentNode.insertBefore(kachel, svg); kachel.appendChild(svg); }
+        /* Die Firmenzeile traegt ein Bild statt eines gezeichneten
+           Zeichens — die Kachel legt sich um das, was da ist. */
+        const zeichen = mi.querySelector('svg, img');
+        if (zeichen) { const kachel = document.createElement('span');
+          kachel.className = 'miico'; zeichen.parentNode.insertBefore(kachel, zeichen);
+          kachel.appendChild(zeichen); }
       }
       if (!mi.querySelector('.mitxt') && !mi.querySelector('#mi-erin-t, #mi-pk-t')) {
         const knoten = [...mi.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim());
