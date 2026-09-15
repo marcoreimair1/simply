@@ -458,6 +458,45 @@ das einen Moment. Vorher blendete die Hülle nach fester Uhr auf und war dabei k
 zählt, was später kommt: die halbe Strecke **oder** das fertige Bild (`img.decode()`). Die Hülle
 behält dabei ihren Platz, damit beim Erscheinen nichts rückt.
 
+**Und dann fängt es an zu atmen.** Seit 15. September 2026 ist das Männchen im Vorspann kein
+Standbild mehr, sondern **dreizehn Einzelbilder als bewegtes WebP**, 1,35 s im Kreis: der Körper
+wird größer und wieder kleiner wie beim Atmen, dazwischen blinzelt und zwinkert er, und ab und
+zu fliegen Schwungstriche mit. Die Vorlage war ein Bogen mit 24 gezeichneten Fassungen
+(`DAC1DF8E….PNG`, 8 × 3). Ausgeschnitten sind sie über die Alphakanten, ausgerichtet über
+**Körpermitte und Grundlinie** — der grüne Punkt hat dabei als Passmarke gedient, sein
+Durchmesser schwankt über alle 24 nur zwischen 50,3 und 51,8 px, die Vorlagen stehen also im
+selben Maßstab.
+
+Ausgewählt und sortiert sind die dreizehn **nach Körperhöhe**: 157 → 166 → 170 → 172 → 174 →
+176 → 179 und wieder hinunter über 176 → 172 → 170 → 167 → 165 → 150. Bodenbündig gestellt
+liest sich das als Atemzug mit einem kleinen Nachfedern am Ende. Die Blinzler liegen auf dem
+Weg nach unten, nicht verstreut — sonst flackern sie. Wie gut zwei aufeinanderfolgende Bilder
+zusammenpassen, ist nachgemessen (Überdeckung der Silhouetten): im Schnitt 0,91, im
+schlechtesten Übergang 0,84 — das ist der Atemzug selbst, kein Versatz.
+
+**Drei Dinge halten das billig und sicher:**
+
+- **Es ist eine Datei, keine Datenzeile.** 84 KB im Quelltext wären ein Drittel mehr Seite bei
+  *jedem* Start. Geholt wird sie per `<link rel="preload">` gleich im Kopf.
+- **Getauscht wird nur, solange nichts zu sehen ist.** `lebenHolen()` setzt das bewegte Bild erst
+  bei `onload` ein und nur, wenn `.mark-wrap` noch *kein* `.da` trägt. Kommt die Datei zu spät —
+  erster Besuch, langsame Leitung —, bleibt es beim eingebetteten Standbild. Der Grund: die
+  Einzelbilder haben mit 237 × 227 einen flacheren Rahmen als das Standbild mit 385 × 315
+  (sie brauchen oben und unten Luft für die Schwungstriche), die Kachel wechselt beim Tausch
+  also ihr Maß. Vor offenen Augen wäre das ein Sprung.
+- **Gleich groß wirkt es trotzdem.** `.mark-logo.lebt` wächst im selben Verhältnis mit:
+  184 · (237 · 381/218) / 385 = **198 px**. Nachgemessen im Browser ist der Körper in beiden
+  Fassungen **170,7 px** breit.
+
+**Der Glanz trägt jetzt die Schnittmenge als Maske.** Er ist auf die Silhouette maskiert
+(`--moji-maske`) — aber die ändert sich ja bei jedem Bild. `MOJI_MASKE` enthält darum, was in
+*jedem* der dreizehn Körper ist. So kann das Lichtband nie über den Rand hinauslaufen und im
+Leeren leuchten. Es deckt 84 % der kleinsten Silhouette ab; bei einem weichen Band von einem
+Viertel Breite fällt das nicht auf.
+
+Wer **Bewegung abbestellt** hat (`prefers-reduced-motion`), bekommt das Standbild — ein
+bewegtes Bild lässt sich mit CSS nicht anhalten, also wird es gar nicht erst geholt.
+
 **Und der Vorspann hat keinen eigenen Hintergrund mehr.** Er ist durchsichtig und lässt die
 Farbwolken der App durch — also genau die Fläche, auf der gleich die Anmeldeseite steht. Vorher
 lagen dort ein dunkler Schleier, eine eigene Farbfläche (`.aurahg`), schwebende Lichtpunkte auf

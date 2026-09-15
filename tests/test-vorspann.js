@@ -245,8 +245,43 @@ setTimeout(() => {
     /\.mark-wrap\.da \.mark-glanz::after\{[\s\S]{0,120}kartenGlanz [\d.]+s [\d.]+s var\(--ease\) 1 both/],
    ['Das Zeichen ist erst mit dem Vermerk zu sehen',
     /\.mark-wrap\{[\s\S]{0,220}opacity:0[\s\S]{0,220}\.mark-wrap\.da\{opacity:1/],
-   ['Und es wartet auf das dekodierte Bild', /bild\.decode \? bild\.decode\(\)/]
+   ['Und es wartet auf das dekodierte Bild', /bild\.decode \? bild\.decode\(\)/],
+   /* ─── Das lebende Maennchen, seit 15.09.2026 ───────────────────
+      Dreizehn Einzelbilder als bewegtes WebP. Das Standbild bleibt im
+      Quelltext und traegt den Start; die Datei tritt nur an seine
+      Stelle, wenn sie rechtzeitig fertig ist. */
+   ['Die Datei wird schon im Kopf geholt',
+    /<link rel="preload" as="image" href="moji-leben\.webp">/],
+   ['Der Vorspann kennt sie', /const MOJI_LEBT\s+= 'moji-leben\.webp';/],
+   ['Der Glanz bekommt eine eigene, kleine Maske',
+    /const MOJI_MASKE = 'data:image\/webp;base64,[A-Za-z0-9+/=]{800,4000}';/],
+   ['playIntro holt sie', /lebenHolen\(bild, huelle, glanz\);/],
+   ['Getauscht wird nur, solange nichts zu sehen ist',
+    /w\.classList\.contains\('da'\)\) return;\s*\n\s*huelle\.classList\.add\('lebt'\)/],
+   ['Wer Bewegung abbestellt hat, bekommt das Standbild',
+    /function lebenHolen\([^)]*\)\{\s*\n\s*if\(ruhigGestellt\(\)\) return;/],
+   ['Die Kachel waechst im Verhaeltnis mit',
+    /\.mark-logo\.lebt\{[\s\S]{0,160}width:min\(49\.4vw,198px\)!important;[\s\S]{0,80}aspect-ratio:237\/227!important/],
+   ['Beim Neustart faellt sie wieder weg',
+    /huelle\.classList\.remove\('lebt'\);/]
   ].forEach(([n, re]) => E.push({ n, ok: re.test(roh), z: re.test(roh) ? '' : 'fehlt' }));
+  /* Die Datei muss neben index.html liegen und ein bewegtes WebP sein:
+     RIFF....WEBP, darin ein ANIM-Block. Ohne diese Pruefung waere ein
+     vergessenes Mitliefern erst auf dem Server aufgefallen. */
+  {
+    const pfad = require('path').join(require('path').dirname(DATEI), 'moji-leben.webp');
+    let da = false, bewegt = false, kb = 0;
+    try{
+      const roh2 = fs.readFileSync(pfad);
+      da = roh2.length > 0; kb = roh2.length / 1024;
+      bewegt = roh2.slice(0, 4).toString('latin1') === 'RIFF'
+            && roh2.slice(8, 12).toString('latin1') === 'WEBP'
+            && roh2.indexOf(Buffer.from('ANIM')) > -1;
+    }catch(e){}
+    E.push({ n: 'Die Bilddatei liegt daneben', ok: da, z: da ? '' : pfad });
+    E.push({ n: 'Und sie bewegt sich wirklich', ok: bewegt, z: bewegt ? '' : 'kein ANIM-Block' });
+    E.push({ n: 'Und bleibt unter 120 KB', ok: kb > 0 && kb < 120, z: Math.round(kb) + ' KB' });
+  }
   /* Im Vorspann-Markup darf nichts davon mehr vorkommen. */
   const splash = (roh.match(/<div id="splash"[\s\S]*?\n<\/div>/) || [''])[0];
   [['Keine Unterzeile im Vorspann', splash.indexOf('subline') < 0],

@@ -24,6 +24,11 @@
   if (m) m.content = d ? '#0B0711' : '#F4F1FA';
 }catch(e){}})();
 </script>
+<!-- Das lebende Maennchen fuer den Vorspann. Es holt sich die Datei
+     gleich beim Laden, damit sie fertig ist, wenn das Zeichen nach
+     820 ms erscheint. Kommt sie nicht rechtzeitig, bleibt der
+     Vorspann beim eingebetteten Standbild — siehe playIntro(). -->
+<link rel="preload" as="image" href="moji-leben.webp">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3523,6 +3528,21 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 }
 .mark-logo::before, .mark-logo::after{ display:none!important }
 
+/* ─── Wenn das Maennchen lebt ────────────────────────────────────
+   Die Einzelbilder sind auf eine gemeinsame Grundlinie gestellt und
+   tragen ueber und unter sich Luft fuer die Schwungstriche. Ihr
+   Rahmen ist darum flacher als der des Standbilds: 237 zu 227 statt
+   385 zu 315.
+
+   Damit das Maennchen trotzdem gleich gross wirkt, waechst die Kachel
+   im selben Verhaeltnis mit. Nachgerechnet: der Koerper misst in den
+   Einzelbildern im Schnitt 218 von 237 Punkten, im Standbild 381 von
+   385. 184 · (237 · 381/218) / 385 = 198. */
+.mark-logo.lebt{
+  width:min(49.4vw,198px)!important;
+  aspect-ratio:237/227!important;
+}
+
 /* ─── Glanz wie ueber einer Metallkarte ──────────────────────────
    Ein schmales, weiches Lichtband liegt quer und wandert von links
    oben nach rechts unten. Gebaut ist es als senkrechter Streifen, um
@@ -5504,7 +5524,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1815';
+const APP_STAND = '2026-09-15-1935';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6610,6 +6630,52 @@ const LOGO_MOJI = 'data:image/webp;base64,UklGRsQpAABXRUJQVlA4WAoAAAAQAAAAgAEAOg
 
 const QR_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZYAAAGWAQMAAABhNjfVAAAABlBMVEUZCyT////ZgMX2AAABnElEQVR42u2cQY7CMBAER+QBfhJf95PygEjeKHjGMxEXLsv2qnwiRnVBTaunbbDx8ToMBgYGBuYrzG5rbdfTtfkc56t2vkxvn5vjeNjnCwbmNxmX8FxL12N0O2XfXptz7egaRkrX04wvXT9DyaHr3b0cXcOo6joix5Q3uob5J7p2Cb/d5HOD0cvX4zUptjNf+9xIvoaR1HXtQ3LMDi+nD4ER03Vd4d7Rh9y7QT43GA1dd1vW3NJTnRvxaxg1v/bi+shi94xCvobRnRunJ8+BMRUhXovg1zCSfUg49BWs83njbP0a+RpGStcrWKd1Pc3N7raNrmF05sYwY7/p1G75uhv5GkbPr7dci9RTmiV2/BpGzq/Nx8cZpbtZaf3I1zCK+dq8Dxn3iyHpG4CuYXT8up431sP16ACZG2HE/HqtLaftatvoGkYuh9Rmz/vrcmZDHwKjma/r72X6zcvRNYywrt/8sPHwjMLcCKPr1/lGSCuXV/FrGNV8Hdef1h8sbOvSCH4No9mHjCXofMkvSm10DaOha/4bCAYGBubvMz8F19l5wgC1sgAAAABJRU5ErkJggg==';
 
+/* ─── Das lebende Maennchen ──────────────────────────────────────
+   Dreizehn Einzelbilder, auf eine gemeinsame Grundlinie gestellt und
+   als bewegtes WebP gebunden: 1,35 s im Kreis. Der Koerper wird
+   groesser und wieder kleiner wie beim Atmen, dazwischen blinzelt und
+   zwinkert er, und ab und zu fliegen Schwungstriche mit.
+
+   Es ist eine Datei und keine Datenzeile — 84 KB waeren im Quelltext
+   ein Drittel mehr Seite, die jeder Start mitlaedt, auch wer gar nicht
+   bis zum Vorspann kommt. Geholt wird sie per preload gleich im Kopf.
+
+   Der Glanz braucht eine Silhouette, aber die aendert sich ja bei
+   jedem Bild. Darum liegt hier die SCHNITTMENGE aller dreizehn — was
+   in jedem Bild Koerper ist. So kann das Lichtband nie ueber den Rand
+   hinauslaufen und im Leeren leuchten. Es deckt 84 Prozent der
+   kleinsten Silhouette ab; bei einem weichen Band von einem Viertel
+   Breite faellt der Unterschied nicht auf. */
+const MOJI_LEBT  = 'moji-leben.webp';
+const MOJI_MASKE = 'data:image/webp;base64,UklGRoIFAABXRUJQVlA4THYFAAAvdkAcEAZKkiQJbiP//7cxBAaY1nHXIiMoYNtkSJL+jKjdsz2zPNu2bdu2bdu2bdu27eEa3ZkZEdlVMQH9D1FhQ7Xtn7HhQvAuwqGdbji4NtTshpvfghluTtPBpYDRjoUwVFi3DRzmAnd42Q/+02fA4PTp8ZO33O0CB1jerFBhdCIBD8pwO7rMJ3olXql1Vko6Gl6Z5E+POsGyKiiMDoMwlKWc6HU9OlzDZG1RkgmbUo2OyBJVeCb61DlWxRDqICjILPbxmgk8Kk2m18r7jIipuZZPnWgkhPAhUJDFne03HpUIfZN98EqkeAbcbhVIwAcYhqziYRO4hlClYt+oJitc29PWg7DwNARZ1N0iV2SmXO+CrdsJ5cwz1oDQszCYxtnGc0qUd9m2vkvixPVmA/wgJIClvccZUX6exH1lCVA9BkFONYGLyiMlbtAmgIRnqNLlcU4k9oyIouU4CP2egAIr+Z2LlD2lydzNpgX8awjKISZwWWHrsZO5tywA+LcwOMa9buOMKg+XuD4bAf4lDDZjPDLl8USjZXPAvyDgVxUYrUctUeWE0zHOcoC/hbAA1yqvcVk5JNH43myAvoIFKF1Wt6mtbGFTyzifS+wUydzDCH8BCZDlnORlPZRXWsp2jkTuHFDdhiBbeEWbpyYyoVPIxnaMidQ2oLoJg+Ge5FFRJlGldnmMyIy1IqBbMFjNf1waoZdK7DARxb9GA7oBgxWN1Yj0TzalF3aQZO4lFRI+QmCk39US/ZNtowrbOqmOyB0C+BNh2PMakb77ctwx/5pb2AcYHM1MpWO7YlOOuXeSuHMAvyekSw+RqdIV69CjenQJe6uZxqtcYn/tVIncmYDfQ2Blkwllf7GTjI79QYniX3OB8FYIHMdFpnQguo1dRUXuRMDvCXhu4yJTdrHT7C+i9r3pQHirTeVOTqjCXthx2C6iMrM14PcSljOYminHvdh2JXG3AvogYdlKv8JOs7/YS0Txm5lB+KBh8Dgnp+mFja5rWcumgD8J5Q4uH4fRsdr+kLgL7wCrm0TZadp6d7LiTQzCJ0u373TIcT5kEncDIPgYg/2pSNnJ6LQtf48L1aaeTeYeAqHPl4P0yYSebJLVAd0QAnvrSCcj3MMCgjsxsqMi0R2LzWRLwk1gP7VIx04lc6cCgpsczkW6HUrm3jUNEu5y4gs7E+H+MBoQ3OV0LlKmHJnqGLAcYLjNGVxiypEp07YhYLjPKVxSjkyZ2j6A4QsO4ORIREfL7oDhGzajO5HMjbURYPgiAsuZqrDjTOL+thJg+KaQ2f2uoacZ4143AlR9V8hTXGZnkbi2cwwFDF/GMC4pJ5UV7gOrQAi+jcB6hLJz0HETnG1awAJ8fZnT3xp6io1ru8MiEIJfFHIvJ2eghEsesxKEBfhJDHbQOQJlfJ6zJoQR/KiQmf2ooU9jZHxetimEgt/F4GguP4vKaq7tCetBAoZf3sziBzV9EInnf7daGRIw/DgCe2hE9pARhWt86ghdEMLw+0jlHi6yJ5B4xnnYZhhCwROFmc49XKS/NqJwje+cZiEoLMBDl8r1XJF/ickKT797bWVaCGEBnruyj7+4Qn6EyZRnirccZQQURvBsAYHhLtPDFcK+NhJP8oUzLQuFsADPR5CFXek/riGx+0ZlxstPLrK6CgoLcMYhyGhn+kHhGiZTdsOIrMOT/OJ625gBCiM4KAoyk+3c7lctnpqSsf0xSmSm4en3itOsbjoojAQ47DCUWazjRM/7T+Zp1IxUUjq8TPSVG+yiGyqEBTjxMILKfLZwqvv94F+TeJoier3rKvtbylCoMBLg3MPBq+kNt6b9nOY6NzrJFrrhFWEBzj/c4F2E0eCfuSEcCjf4T3Y=';
+/* Wer Bewegung abbestellt hat, bekommt das Standbild. */
+function ruhigGestellt(){
+  try{ return matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  catch(e){ return false; }
+}
+/* Ist die Datei rechtzeitig fertig, tritt sie an die Stelle des
+   Standbilds — aber nur, SOLANGE DAS ZEICHEN NOCH NICHT ZU SEHEN IST.
+   Ein Wechsel vor offenen Augen waere ein Sprung: die Kachel aendert
+   dabei ihr Mass, weil die Einzelbilder einen flacheren Rahmen haben.
+   Kommt sie zu spaet — erster Besuch, langsame Leitung —, bleibt es
+   beim eingebetteten Standbild, und niemand merkt etwas. */
+function lebenHolen(bild, huelle, glanz){
+  if(ruhigGestellt()) return;
+  const v = new Image();
+  v.decoding = 'async';
+  /* onload genuegt, decode() nicht abwarten: auf einer Seite im
+     Hintergrund loest decode() teils gar nicht aus, und gebraucht wird
+     es hier nicht — getauscht wird ja, solange nichts zu sehen ist. */
+  v.onload = () => {
+    const w = $('#mark-wrap');
+    if(!introLaeuft() || !w || w.classList.contains('da')) return;
+    huelle.classList.add('lebt');
+    bild.src = MOJI_LEBT;
+    if(glanz) glanz.style.setProperty('--moji-maske', 'url("' + MOJI_MASKE + '")');
+  };
+  v.src = MOJI_LEBT;
+}
+
 const INTRO_HTML = $('#splash').innerHTML;
 function playIntro(){
   const sp = $('#splash');
@@ -6624,9 +6690,13 @@ function playIntro(){
   /* Aus dem Quelltext — geladen wird nichts. Dasselbe Bild dient dem
      Glanz als Maske, damit er der Silhouette folgt statt einem Rechteck. */
   const bild = $('#mark-img');
+  const huelle = bild.parentNode;
+  huelle.classList.remove('lebt');
   bild.src = LOGO_MOJI;
   const glanz = $('#mark-glanz');
   if(glanz) glanz.style.setProperty('--moji-maske', 'url("' + LOGO_MOJI + '")');
+  /* und, wenn sie rechtzeitig da ist, die bewegte Fassung darueber */
+  lebenHolen(bild, huelle, glanz);
   window.__introLaeuft = true;
   window.__introStart = Date.now();
   _appSteht = false; _angemeldet = false; _nachIntro = [];
