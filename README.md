@@ -1054,6 +1054,17 @@ Beim Öffnen steht die **neueste ungelesene** Nachricht schon offen — sie ist 
 warum die Zahl am Profilbild stand — und ist damit sofort vermerkt. Das Vermerken passiert
 *vor* dem Zählen, sonst stünde oben noch die alte Zahl.
 
+**Verschickt wird durch Veröffentlichen.** Die Ankündigungen stehen in `NACHRICHTEN` im
+Quelltext und sortieren sich nach Datum, neueste oben; wer die App das nächste Mal öffnet, hat
+sie. Einen Versand an einzelne Konten gibt es daneben (`ME.post`), für Persönliches.
+
+**Eine Nachricht kann mehr als Text.** `postText()` macht aus Absätzen `<p>`, aus Zeilen mit `•`
+eine Liste und aus `*Wort*` Fettes. Seit 15. September 2026 gibt es dazu die Marke
+`[[teekunde]]`: ein Absatz, der nur daraus besteht, wird zum **Becher-Gitter** — denselben zehn
+Bechern wie in den Details der Firmenkachel, und auch hier lassen sie sich andrücken. Dafür ist
+`teeGitterHtml()` aus `teeKundeHtml()` herausgelöst, und `becherTipp()` hängt zusätzlich an
+`#pf-liste`. So steht das Gitter **mitten im Text** statt angeklebt am Ende.
+
 **Die Ränder** sind dieselben wie überall: 20 px an den Seiten, und oben rechnet die Karte die
 Geräteaussparung mit (`env(safe-area-inset-top)`) — sonst säße der Griff unter der Uhr des
 Telefons. Der Schließen-Knopf ist dasselbe Kästchen wie im Profilmenü (`.mzurueck`); ein rundes

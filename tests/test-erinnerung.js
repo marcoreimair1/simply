@@ -144,10 +144,30 @@ ok('Ein Tipp klappt die naechste auf', _pfOffen === NACHRICHTEN[1].id, _pfOffen)
 ok('Und vermerkt sie',           ME.gelesen.indexOf(NACHRICHTEN[1].id) > -1);
 ok('Die erste ist wieder zu',    document.querySelectorAll('#pf-liste .pfm.auf').length === 1);
 
+/* ── 8b2 · Die Bubble Teas erklaert ── */
+const bt = NACHRICHTEN.filter(n => n.id === 'bubble-tea-2026-09')[0];
+ok('Die Tee-Nachricht liegt im Postfach', !!bt);
+ok('Und steht ganz oben',        NACHRICHTEN[0] === bt, NACHRICHTEN[0].id);
+ok('Mit einem Becher als Zeichen', bt.art === 'becher' && !!POST_ZEICHEN.becher, bt.art);
+_pfOffen = bt.id; malPostfach();
+const gitter = document.querySelectorAll('#pf-liste .pfm.auf .teekunde .teek');
+ok('Alle zehn Becher stehen darin', gitter.length === 10, gitter.length);
+ok('Jeder in seiner Farbe',
+   gitter[0].getAttribute('style').indexOf(TEE[0].f) > -1
+   && gitter[9].getAttribute('style').indexOf(TEE[9].f) > -1,
+   gitter[9].getAttribute('style'));
+ok('Und die Marke ist verschwunden',
+   document.querySelector('#pf-liste .pfm.auf .pfm-text').textContent.indexOf('[[') < 0);
+gitter[3].dispatchEvent(new window.MouseEvent('pointerdown', { bubbles:true }));
+ok('Antippen laesst sie auch hier glitzern', gitter[3].classList.contains('glitzer'));
+ok('Ube Pop kommt vor',
+   bt.text.indexOf('Ube Pop') > -1 && bt.text.indexOf('Yamswurzel') > -1);
+
 /* ── 8c · MOJI stellt sich vor ── */
 const vor = NACHRICHTEN.filter(n => n.id === 'moji-stellt-sich-vor-2026-09')[0];
 ok('Die Vorstellung liegt im Postfach', !!vor);
-ok('Sie steht ganz oben',        NACHRICHTEN[0] === vor);
+/* Seit 15.09.2026 steht die Bubble-Tea-Nachricht darueber. */
+ok('Sie steht gleich hinter dem Tee', NACHRICHTEN[1] === vor, NACHRICHTEN[1].id);
 ok('Und bringt ein Bild mit',    vor.bild === true);
 _pfOffen = vor.id; malPostfach();
 const bild = document.querySelector('#pf-liste .pfm.auf .pfm-bild img');

@@ -5588,7 +5588,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-2320';
+const APP_STAND = '2026-09-15-1730';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9055,9 +9055,16 @@ function teeKundeHtml(){
     + '<small>Schick jemandem einen Tee, dann seid ihr auf Stufe 1. Jeder Tee ist ein Punkt '
     + 'im gemeinsamen Topf — ihr zahlt beide ein, also höchstens zwei am Tag. Ab dann braucht '
     + 'jede weitere Stufe zehn Getränke.</small></b></div>'
-    + '<div class="teekunde">'
-    /* Auch hier laesst sich jeder Becher andruecken — und funkelt in
-       seiner eigenen Farbe, die als --tee an der Kachel haengt. */
+    + teeGitterHtml();
+}
+/* Alle zehn Becher als Gitter. Steht in den Details der Firmenkachel und
+   in der Nachricht, die das Ganze erklaert — darum eigens und nicht in
+   teeKundeHtml() eingebacken.
+
+   Jeder Becher laesst sich andruecken und funkelt dann in seiner eigenen
+   Farbe, die als --tee an der Kachel haengt. */
+function teeGitterHtml(){
+  return '<div class="teekunde">'
     + TEE.map((t, i) => '<button type="button" class="teek" style="--tee:' + t.f + '"'
         + ' aria-label="' + esc(t.n) + ' antippen">'
         + '<span class="teekb"><img src="tee-' + (i + 1) + '.webp" alt="" loading="lazy">'
@@ -9096,6 +9103,9 @@ function becherTipp(e){
   zaKlopf();
 }
 $('#v-firma').addEventListener('pointerdown', becherTipp);
+/* Und in der Nachricht, die die Bubble Teas erklaert — dort stehen ja
+   dieselben zehn Becher. */
+$('#pf-liste').addEventListener('pointerdown', becherTipp);
 /* Einen Becher schicken. Die Regel „einmal am Tag" haelt der Server —
    hier wird nur gezeigt, was dabei herauskam. */
 $('#fi-team').addEventListener('click', e => {
@@ -9730,7 +9740,12 @@ const POST_ZEICHEN = {
   torte:   '<path d="M4 20h16M5 20v-6.5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2V20M12 8V4M9.5 5.5 12 3l2.5 2.5"/>',
   stufe:   '<path d="M4 20h4v-6H4zM10 20h4V9h-4zM16 20h4V4h-4z"/>',
   schluessel: '<circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12h9.4M16.8 12v3.3M20.3 12v2.3"/>',
-  stern:   '<path d="m12 3.6 2.5 5.4 5.9.7-4.3 4 1.1 5.8L12 16.8l-5.2 2.7 1.1-5.8-4.3-4 5.9-.7z"/>'
+  stern:   '<path d="m12 3.6 2.5 5.4 5.9.7-4.3 4 1.1 5.8L12 16.8l-5.2 2.7 1.1-5.8-4.3-4 5.9-.7z"/>',
+  /* Becher mit Deckel, Halm und drei Perlen. */
+  becher:  '<path d="M6.6 8h10.8l-1.2 11.2A2 2 0 0 1 14.2 21H9.8a2 2 0 0 1-2-1.8z"/>'
+         + '<path d="M5.2 8h13.6M13.7 8 16.1 3.4"/>'
+         + '<circle cx="10.2" cy="16.8" r=".9"/><circle cx="13.7" cy="17.6" r=".9"/>'
+         + '<circle cx="12" cy="14.2" r=".9"/>'
 };
 function postZeichen(art){
   const d = POST_ZEICHEN[art] || POST_ZEICHEN.stern;
@@ -9751,6 +9766,39 @@ function postDatum(iso){
 }
 
 const NACHRICHTEN = [
+  {
+    /* Die Bubble Teas erklaert. Darf lustig sein — es ist das einzige
+       in dieser App, das nichts mit Arbeitszeit zu tun hat. */
+    id: 'bubble-tea-2026-09',
+    datum: '2026-09-15',
+    art: 'becher',
+    titel: 'Ein Bubble Tea am Tag',
+    text: 'Es gibt jetzt Bubble Tea in MOJI. Keinen echten — ich bin eine App, ich '
+        + 'kann nicht liefern. Aber einen, den du deinen Kolleginnen und Kollegen '
+        + 'schicken kannst.\n\n'
+        + '*Wo?* Im Menü unter Meine Firma. Dort steht dein Team, und neben jedem '
+        + 'Namen ein Knopf. Ein Tipp, ein Tee.\n\n'
+        + '*Und dann?* Jeder Tee ist ein Punkt, den ihr euch teilt. Ihr zahlt beide '
+        + 'in denselben Topf ein — also höchstens zwei am Tag, einer von dir, einer '
+        + 'von der anderen Seite. Der allererste bringt euch schon auf Stufe 1, '
+        + 'danach braucht jede weitere zehn Getränke. Zehn Stufen gibt es:\n\n'
+        + '[[teekunde]]\n\n'
+        + 'Ihr fangt bei *Ube Pop* an, und das ist kein Zufall. Ube — die violette '
+        + 'Yamswurzel von den Philippinen — ist gerade das Getränk, an dem niemand '
+        + 'vorbeikommt. Violett. Wie ich. Ich habe mir das nicht ausgesucht, ich war '
+        + 'einfach schon vorher so. Nennen wir es Weitblick.\n\n'
+        + 'Ganz oben wartet *Ruby Royale*. Das sind 91 Tees. Wenn ihr beide jeden Tag '
+        + 'daran denkt, seid ihr in anderthalb Monaten dort. Wenn nicht, auch gut — '
+        + 'der Becher läuft nicht weg.\n\n'
+        + 'Zwei Kleinigkeiten noch:\n\n'
+        + '• *Das Herz* neben einem Namen markiert deine Lieblingsleute. Die stehen '
+        + 'dann weiter oben. Sehen tust nur du das.\n'
+        + '• *Hat dir jemand einen geschickt*, rückt er ganz nach oben und sein Bild '
+        + 'schwebt ein bisschen, bis du zurückschickst. Subtil ist anders, ich weiß.\n\n'
+        + 'Und ja: du darfst auf die Becher tippen, einfach so. Sie wackeln dann. '
+        + 'Mehr passiert nicht, versprochen — es wird nichts verschickt, nur gewackelt.',
+    von: 'MOJI · Studio MARU 丸'
+  },
   {
     /* Die Vorstellung nach dem Umbranden. Einfache Saetze, kurze Zeilen:
        wer die App aufmacht, will arbeiten und nicht lesen. */
@@ -9952,6 +10000,9 @@ function malPostfach(){
    Aufzaehlung auch wie eine. */
 function postText(roh){
   return String(roh).split(/\n\s*\n/).map(block => {
+    /* Ein Absatz, der nur aus der Marke besteht, wird zum Becher-Gitter.
+       So steht es mitten im Text und nicht angeklebt am Ende. */
+    if(block.trim() === '[[teekunde]]') return teeGitterHtml();
     const zeilen = block.split('\n');
     if(zeilen.every(z => /^\s*•\s/.test(z))){
       return '<ul>' + zeilen.map(z => '<li>'
