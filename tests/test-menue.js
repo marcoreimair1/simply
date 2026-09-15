@@ -375,8 +375,13 @@ window.__WEITER = function(){
      dort waere \\d nur ein d. */
   ok('Mehrere Tage werden gezaehlt',  zuletztText(vor(24 * 12)) === 'vor 12 Tagen',
      zuletztText(vor(24 * 12)));
-  ok('Ab 41 Tagen wird es vage',      zuletztText(vor(24 * 60)) === 'es ist schon ewig her',
+  /* Bis 90 Tage wird gezaehlt — vorher war bei 40 Schluss. */
+  ok('Auch nach zwei Monaten noch',   zuletztText(vor(24 * 60)) === 'vor 60 Tagen',
      zuletztText(vor(24 * 60)));
+  ok('Bei 89 Tagen noch die Zahl',    zuletztText(vor(24 * 89 + 2)) === 'vor 89 Tagen',
+     zuletztText(vor(24 * 89 + 2)));
+  ok('Ab 90 Tagen wird es vage',      zuletztText(vor(24 * 90 + 2)) === 'es ist schon ewig her',
+     zuletztText(vor(24 * 90 + 2)));
   ok('Ohne Zeitstempel steht nichts', zuletztText(null) === '');
 
   /* Die Liste selbst. */
@@ -438,6 +443,22 @@ window.__WEITER = function(){
   var bernd = document.querySelectorAll('#fi-team .tm')[1];
   ok('Der offene Tee faerbt die Karte', bernd.classList.contains('offen'));
   ok('Und sagt es auch',                !!bernd.querySelector('.tm-neu'));
+  /* Vorher stand dort nur „Hat dir einen geschickt" — einen was? */
+  ok('Und zwar, was geschickt wurde',
+     bernd.querySelector('.tm-neu').textContent === 'Hat dir einen Bubble Tea geschickt',
+     bernd.querySelector('.tm-neu').textContent);
+  /* Der Satz ist zu lang fuer die schmale Spalte neben dem Namen und
+     steht darum in einer eigenen Zeile unter dem Kopf. */
+  ok('Und steht unter dem Kopf, nicht daneben',
+     bernd.querySelector('.tm-neu').parentNode === bernd,
+     bernd.querySelector('.tm-neu').parentNode.className);
+  /* Der Becher ist ein Knopf: antippen laesst ihn wackeln und funkeln. */
+  var bec = bernd.querySelector('.tm-becher');
+  ok('Der Becher laesst sich antippen', !!bec && bec.tagName === 'BUTTON');
+  ok('Mit drei Funken darin',           bec && bec.querySelectorAll('i').length === 3);
+  ok('Und dem Becher selbst',           !!bec.querySelector('img.becher'));
+  bec.dispatchEvent(new window.MouseEvent('pointerdown', { bubbles:true }));
+  ok('Ein Tipp laesst ihn glitzern',    bec.classList.contains('glitzer'));
   ok('Das Herz ist bei der Bestie gesetzt',
      document.querySelectorAll('#fi-team .tm')[2]
        .querySelector('.tm-herz').getAttribute('aria-pressed') === 'true');
@@ -611,6 +632,23 @@ setTimeout(() => {
     && /\.mi\.mi-firma > \.miico img\{[^}]*border-radius:inherit/.test(roh)],
    ['Der Zaehler liegt ueber dem Logo',
     /\.mi \.miico > \.zaehler\{[^}]*z-index:2\}/.test(roh)],
+   /* ─── 15.09.2026: Schweben, Wackeln, Funkeln ─────────────────── */
+   ['Wer mir einen geschickt hat, dessen Bild schwebt',
+    /\.tm\.offen \.tm-bild\{ animation:mkWippe 3\.4s ease-in-out infinite alternate \}/.test(roh)],
+   ['Und zwar genauso wie auf der Mitgliedschaftskarte',
+    /\.mk-bild\{[\s\S]{0,260}animation:mkWippe 3\.4s ease-in-out infinite alternate/.test(roh)],
+   ['Der Becher wackelt beim Andruecken',
+    /\.tm-becher\.glitzer \.becher\{ animation:teeWackel/.test(roh)
+    && /@keyframes teeWackel\{/.test(roh)],
+   ['Und es funkelt dazu',
+    /\.tm-becher\.glitzer i\{ animation:teeFunke/.test(roh) && /@keyframes teeFunke\{/.test(roh)],
+   ['Die Funken sind Sterne in der Farbe des Getraenks',
+    /\.tm-becher i\{[\s\S]{0,200}background:var\(--tee, var\(--butter\)\);[\s\S]{0,120}clip-path:polygon/.test(roh)],
+   ['Weniger Bewegung laesst beides weg',
+    /prefers-reduced-motion:reduce\)\{[\s\S]{0,260}\.tm\.offen \.tm-bild\{ animation:none \}[\s\S]{0,160}\.tm-becher\.glitzer \.becher, \.tm-becher\.glitzer i\{ animation:none \}/.test(roh)],
+   ['Der Vermerk bricht nicht um',
+    /\.tm-neu\{[\s\S]{0,260}white-space:nowrap/.test(roh)],
+   ['Bis 90 Tage wird gezaehlt', /if\(tage < 90\) return 'vor ' \+ tage \+ ' Tagen';/.test(roh)],
    ['Halb rot, halb violett gibt es wirklich',
     /\.zaehler\.beides\{background:linear-gradient\(90deg,#FF453A 0 50%,var\(--butter\) 50% 100%\)\}/.test(roh)]
   ];

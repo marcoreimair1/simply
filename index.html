@@ -2288,16 +2288,54 @@ body.sigmodus .fb-s{display:inline-flex}
    derselbe violette Ton wie meine eigene Karte, und ganz oben. */
 .tm.offen{ border-color:rgba(var(--marke-rgb),.34);
   background:linear-gradient(170deg,rgba(var(--marke-rgb),.10),var(--karte) 62%) }
-.tm-neu{ display:inline-flex; align-items:center; gap:5px; margin-top:4px; padding:3px 8px;
-  border-radius:99px; font-size:10px; font-weight:700; letter-spacing:.06em;
+/* Eine eigene Zeile unter dem Kopf, nicht neben dem Namen: dort waere
+   der Satz in zwei Zeilen umgebrochen und die Pille haette ihre Form
+   verloren. */
+.tm-neu{ display:block; width:fit-content; max-width:100%; margin:9px 0 0; padding:4px 10px;
+  border-radius:99px; font-size:10px; font-weight:700; letter-spacing:.06em; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis;
   color:var(--on-primary); background:linear-gradient(120deg,var(--butter-2),var(--butter)) }
+/* Wer mir einen geschickt hat, steht ganz oben — und sein Bild schwebt
+   dort, genau wie auf der Mitgliedschaftskarte (mkWippe). */
+.tm.offen .tm-bild{ animation:mkWippe 3.4s ease-in-out infinite alternate }
 .tm-lvl.an{ background:color-mix(in srgb, var(--tee) 16%, transparent);
   border-color:color-mix(in srgb, var(--tee) 40%, transparent) }
 .tm-lvl.an b{ color:var(--tee) }
 .tm-tee{ display:flex; align-items:center; gap:10px; margin-top:11px; padding-top:10px;
   border-top:1px solid var(--line-2) }
-.tm-tee .becher{ flex:none; width:24px; height:auto; display:block }
+/* Der Becher laesst sich andruecken: er wackelt und es funkelt kurz.
+   Das schickt nichts ab — Schicken bleibt beim Knopf daneben. Die
+   Huelle traegt die Funken, damit sie ueber den Rand hinausblitzen
+   koennen, ohne den Becher selbst zu vergroessern. */
+.tm-becher{ flex:none; position:relative; display:block; width:24px; line-height:0;
+  background:none; border:0; padding:0; cursor:pointer;
+  -webkit-tap-highlight-color:transparent }
+.tm-tee .becher{ flex:none; width:24px; height:auto; display:block;
+  transform-origin:50% 88% }
 .tm-tee .becher.leer{ opacity:.3; filter:grayscale(1) }
+.tm-becher i{ position:absolute; width:7px; height:7px; opacity:0; pointer-events:none;
+  background:var(--tee, var(--butter));
+  clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%) }
+.tm-becher i:nth-of-type(1){ left:-8px;  top:16% }
+.tm-becher i:nth-of-type(2){ right:-9px; top:2%; width:9px; height:9px }
+.tm-becher i:nth-of-type(3){ left:34%;   top:-10px; width:6px; height:6px }
+.tm-becher.glitzer .becher{ animation:teeWackel .62s var(--ease-out) }
+.tm-becher.glitzer i{ animation:teeFunke .62s var(--ease-out) }
+.tm-becher.glitzer i:nth-of-type(2){ animation-delay:.06s }
+.tm-becher.glitzer i:nth-of-type(3){ animation-delay:.12s }
+@keyframes teeWackel{
+  0%{ transform:none }
+  18%{ transform:rotate(-11deg) scale(1.09) }
+  38%{ transform:rotate(9deg)   scale(1.06) }
+  58%{ transform:rotate(-6deg)  scale(1.03) }
+  78%{ transform:rotate(3deg) }
+  100%{ transform:none }
+}
+@keyframes teeFunke{
+  0%{ opacity:0; transform:scale(.3) rotate(0) }
+  40%{ opacity:1; transform:scale(1.15) rotate(35deg) }
+  100%{ opacity:0; transform:scale(.5) rotate(70deg) }
+}
 .tm-tee .txt{ flex:1; min-width:0 }
 .tm-tee .txt b{ display:block; font-size:12.5px; font-weight:650; color:var(--tx-2) }
 .tm-tee .txt small{ display:block; margin-top:3px; font-size:10.5px; color:var(--tx-3) }
@@ -2321,7 +2359,11 @@ body.sigmodus .fb-s{display:inline-flex}
 }
 .fileer{ text-align:center; color:var(--tx-3); font-size:13px; line-height:1.6; padding:26px 10px }
 .fileer b{ color:var(--tx-2) }
-@media(prefers-reduced-motion:reduce){ .mk-tee .becher.weg{ animation:none } }
+@media(prefers-reduced-motion:reduce){
+  .mk-tee .becher.weg{ animation:none }
+  .tm.offen .tm-bild{ animation:none }
+  .tm-becher.glitzer .becher, .tm-becher.glitzer i{ animation:none }
+}
 
 /* ─── Tagesblatt ──────────────────────────────────────────────────────
    Kompakter als vorher, und sobald eine Art gewählt ist, treten die
@@ -5521,7 +5563,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-2050';
+const APP_STAND = '2026-09-15-2140';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -8758,7 +8800,7 @@ function zuletztText(iso){
   const tage = Math.floor((h - new Date(d).setHours(0,0,0,0)) / 86400e3);
   if(tage <= 0) return 'heute zuletzt online';
   if(tage === 1) return 'gestern';
-  if(tage <= 40) return 'vor ' + tage + ' Tagen';
+  if(tage < 90) return 'vor ' + tage + ' Tagen';
   return 'es ist schon ewig her';
 }
 function zuletztArt(iso){
@@ -8916,13 +8958,13 @@ function malTeam(){
       unten = '';
     } else if(lvl === 0){
       unten = '<div class="tm-tee">'
-        + '<img class="becher leer" src="tee-1.webp" alt="" loading="lazy">'
+        + becherHtml(1, ' leer')
         + '<span class="txt"><b style="color:var(--tx-3)">Noch kein Bubble Tea</b>'
         + '<small>Der erste bringt euch sofort auf Level 1</small></span>'
         + teeKnopf(m, paar) + '</div>';
     } else {
       unten = '<div class="tm-tee">'
-        + '<img class="becher" src="tee-' + lvl + '.webp" alt="" loading="lazy">'
+        + becherHtml(lvl, '')
         + '<span class="txt"><b>' + esc(tee.n) + '</b>'
         + '<small>' + (rest
             ? rest.hat + ' von ' + rest.braucht + ' bis ' + esc(rest.name)
@@ -8942,7 +8984,6 @@ function malTeam(){
       +   '<span class="tm-t"><b>' + esc(mitgliedName(m)) + (ich ? ' · du' : '') + '</b>'
       +     '<span class="wo">' + wo + '</span>'
       +     (ich ? '' : '<span class="seit ' + art + '"><i></i>' + esc(zuletztText(m.zuletzt)) + '</span>')
-      +     (offen ? '<span class="tm-neu">Hat dir einen geschickt</span>' : '')
       +   '</span>'
       +   (ich ? '' : '<span class="tm-rechts">'
       +     '<span class="tm-lvl' + (lvl ? ' an' : '') + '"><b>' + lvl + '</b><u>Lvl</u></span>'
@@ -8951,7 +8992,12 @@ function malTeam(){
       +       ' aria-label="' + (herz ? 'Markierung aufheben' : 'Als Liebling markieren') + '">'
       +       '<svg viewBox="0 0 24 24" fill="' + (herz ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.4 4.6 13a4.6 4.6 0 0 1 6.5-6.5l.9.9.9-.9A4.6 4.6 0 0 1 19.4 13z"/></svg>'
       +     '</button></span>')
-      + '</div>' + unten + '</article>';
+      + '</div>'
+      /* Der Vermerk steht unter der Zeile und nicht neben dem Namen:
+         „Hat dir einen Bubble Tea geschickt" ist zu lang fuer die
+         schmale Spalte und braeche dort in zwei Zeilen um. */
+      + (offen ? '<span class="tm-neu">Hat dir einen Bubble Tea geschickt</span>' : '')
+      + unten + '</article>';
   }).join('');
 }
 /* Was es mit den Bubble Teas auf sich hat — in den Details der
@@ -8969,6 +9015,15 @@ function teeKundeHtml(){
         + '</span>').join('')
     + '</div>';
 }
+/* Der Becher in der Karte. Er sitzt in einer eigenen Huelle, weil die
+   Funken ueber seinen Rand hinausblitzen — und weil ein Knopf daraus
+   wird: andruecken laesst ihn wackeln und funkeln. Geschickt wird damit
+   nichts, das bleibt beim Knopf daneben. */
+function becherHtml(lvl, zusatz){
+  return '<button type="button" class="tm-becher" aria-label="Bubble Tea antippen">'
+    + '<img class="becher' + zusatz + '" src="tee-' + lvl + '.webp" alt="" loading="lazy">'
+    + '<i></i><i></i><i></i></button>';
+}
 function teeKnopf(m, paar){
   if(paar.heuteSchon){
     return '<button class="tm-send aus" disabled>'
@@ -8977,6 +9032,14 @@ function teeKnopf(m, paar){
   return '<button class="tm-send" data-tee="' + esc(m.user_id) + '">'
     + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h13M12 6l6 6-6 6"/></svg>Senden</button>';
 }
+/* Ein Tipp auf den Becher ist reines Spiel: er wackelt, es funkelt,
+   und sonst passiert nichts. pointerdown statt click, damit es unter
+   dem Finger sofort losgeht. */
+$('#fi-team').addEventListener('pointerdown', e => {
+  const b = e.target.closest('.tm-becher'); if(!b) return;
+  b.classList.remove('glitzer'); void b.offsetWidth; b.classList.add('glitzer');
+  zaKlopf();
+});
 /* Einen Becher schicken. Die Regel „einmal am Tag" haelt der Server —
    hier wird nur gezeigt, was dabei herauskam. */
 $('#fi-team').addEventListener('click', e => {

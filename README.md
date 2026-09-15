@@ -965,7 +965,22 @@ also die eigene: der andere erfährt davon nichts.
 lange jemand schon dabei ist.
 
 **Wer einem einen geschickt hat**, bekommt denselben violetten Ton wie die eigene Karte und die
-Zeile *Hat dir einen geschickt*.
+Zeile *Hat dir einen Bubble Tea geschickt* — bis 15. September 2026 stand dort nur *Hat dir
+einen geschickt*, einen was? Der ganze Satz ist zu lang für die schmale Spalte neben dem Namen
+(206 von 174 verfügbaren px) und steht darum in einer **eigenen Zeile unter dem Kopf**.
+
+**Und sein Bild schwebt.** `.tm.offen .tm-bild` läuft dieselbe `mkWippe` wie das Bild auf der
+Mitgliedschaftskarte: 3,4 s, `alternate`, fünf Pixel hoch und knapp drei Grad hin und her. Wer
+oben in der Liste auftaucht, weil er einem etwas geschickt hat, soll dort auch nicht stillstehen.
+
+**Der Becher lässt sich andrücken.** Er sitzt in einer eigenen Hülle (`.tm-becher`, ein Knopf)
+mit drei Funken darin — denselben vierzackigen Sternen wie auf der goldenen Mitgliedschaftskarte,
+aber in der Farbe des Getränks, das ihr gerade habt. Ein `pointerdown` lässt ihn wackeln
+(`teeWackel`, 0,62 s, Drehpunkt bei 88 % Höhe, damit er auf dem Boden kippt statt um die Mitte zu
+rotieren) und die Funken nacheinander aufblitzen (`teeFunke`, versetzt um 60 und 120 ms).
+**Geschickt wird damit nichts** — das bleibt beim Knopf daneben; ein Becher, der bei jeder
+Berührung einen Tee abschickt, wäre eine Falle. Die Funken liegen absolut in der Hülle und dürfen
+über ihren Rand hinausblitzen, ohne den Becher zu vergrößern.
 
 **Das geteilte Level.** Jeder Bubble Tea ist ein Punkt im gemeinsamen Topf, beide zahlen ein,
 also höchstens zwei am Tag. Der erste bringt Stufe 1 (*Ube Pop*), danach je zehn eine weitere
@@ -986,8 +1001,9 @@ fremder Punkt zwischen Bild und Text. Die Kachel entsteht erst beim Aufbau des M
 Zähler wandert deshalb in `malZaehler()` hinein.
 
 **Zuletzt online** ist eine Leiter, keine Uhrzeit: *kürzlich gesehen* (bis 4 h), *heute zuletzt
-online*, *gestern*, *vor n Tagen* bis 40, danach *es ist schon ewig her*. Niemand rechnet aus,
-wie lange 14:32 her ist.
+online*, *gestern*, *vor n Tagen* bis 89, ab 90 Tagen *es ist schon ewig her*. Niemand rechnet aus,
+wie lange 14:32 her ist. Bis 15. September 2026 war schon bei 40 Tagen Schluss — ein Vierteljahr
+ist die ehrlichere Grenze für „schon ewig".
 
 ### Das Postfach
 
