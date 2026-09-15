@@ -238,6 +238,29 @@ ok('Und nennt die Datei',          document.getElementById('ex-ov-s').textConten
 ok('Ohne Ziffernsperrung',         !document.getElementById('ex-ov-s').classList.contains('expro'));
 ov.stop(); ov.el.remove();
 
+/* ── Das lebende Maennchen im Ladekreis ──
+   Ohne die Datei bleibt es beim Standbild aus dem Quelltext — das ist
+   der Fall gerade eben. Liegt sie vor, tritt sie an seine Stelle. */
+_lebtDa = true;
+const ov2 = exOverlay();
+const m2 = document.querySelector('.exmoji');
+ok('Liegt die Datei vor, bewegt es sich',
+   (m2.querySelector('img').getAttribute('src') || '') === 'moji-leben.webp',
+   m2.querySelector('img').getAttribute('src'));
+ok('Und die Kachel weiss davon',   m2.classList.contains('lebt'));
+ok('Der Glanz bekommt die kleine Maske',
+   (m2.querySelector('.exglanz2').style.getPropertyValue('--moji-maske') || '').length < 4000,
+   String((m2.querySelector('.exglanz2').style.getPropertyValue('--moji-maske') || '').length));
+ov2.stop(); ov2.el.remove();
+/* Das Aufmachen der Exportseite stoesst das Laden an. */
+_lebtDa = false;
+let geholt = '';
+const echtImage = window.Image;
+window.Image = function(){ const o = {}; Object.defineProperty(o, 'src', { set(v){ geholt = v; } }); return o; };
+go('v-export');
+window.Image = echtImage;
+ok('Die Exportseite holt die Datei', geholt === 'moji-leben.webp', geholt || '(nichts)');
+
 ME = null;
 window.__FERTIG = true;
 `;
@@ -295,7 +318,24 @@ setTimeout(() => {
    ['Der Kreis laeuft ueber den Umfang',
     /strokeDashoffset = \(EX_U \* \(1 - stand \/ 100\)\)/.test(roh)],
    ['Der Glanz nimmt das Maennchen als Maske',
-    /\.exglanz2\{[\s\S]{0,200}mask-image:var\(--moji-maske\)/.test(roh)]
+    /\.exglanz2\{[\s\S]{0,200}mask-image:var\(--moji-maske\)/.test(roh)],
+   /* ─── Das lebende Maennchen, seit 15.09.2026 ─────────────────── */
+   ['Der Ladekreis kennt die bewegte Fassung',
+    /const MOJI_LEBT\s+= 'moji-leben\.webp';/.test(roh)],
+   ['Und eine eigene, kleine Maske dafuer',
+    /const MOJI_MASKE = 'data:image\/webp;base64,[A-Za-z0-9+/=]{800,4000}';/.test(roh)],
+   ['Getauscht wird nicht mitten im Warten',
+    /const lebt = _lebtDa && !ruhigGestellt\(\);/.test(roh)],
+   ['Wer Bewegung abbestellt hat, bekommt das Standbild',
+    /function lebenVorladen\(\)\{\s*\n\s*if\(_lebtDa \|\| ruhigGestellt\(\)\) return;/.test(roh)],
+   ['Die Kachel waechst im selben Verhaeltnis mit',
+    /\.exmoji\.lebt\{ width:84px; aspect-ratio:237\/227; animation:none \}/.test(roh)],
+   ['Und der Koerper sitzt nicht zu hoch im Ring',
+    /\.exmoji\.lebt img\{ transform:translateY\(2\.6%\) \}/.test(roh)],
+   ['Zweimal atmen waere einmal zu viel',
+    /\.exmoji\.lebt\{[^}]*animation:none/.test(roh)],
+   ['Der Hupfer am Schluss bleibt',
+    /\.exdone\.fertig \.exmoji\.lebt\{ animation:exHuepf/.test(roh)]
   ].forEach(([n, re]) => {
     const gut = (typeof re === 'boolean') ? re : re.test(roh);
     E.push({ n, ok: gut, z: gut ? '' : 'Regel fehlt' });

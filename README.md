@@ -458,45 +458,6 @@ das einen Moment. Vorher blendete die Hülle nach fester Uhr auf und war dabei k
 zählt, was später kommt: die halbe Strecke **oder** das fertige Bild (`img.decode()`). Die Hülle
 behält dabei ihren Platz, damit beim Erscheinen nichts rückt.
 
-**Und dann fängt es an zu atmen.** Seit 15. September 2026 ist das Männchen im Vorspann kein
-Standbild mehr, sondern **dreizehn Einzelbilder als bewegtes WebP**, 1,35 s im Kreis: der Körper
-wird größer und wieder kleiner wie beim Atmen, dazwischen blinzelt und zwinkert er, und ab und
-zu fliegen Schwungstriche mit. Die Vorlage war ein Bogen mit 24 gezeichneten Fassungen
-(`DAC1DF8E….PNG`, 8 × 3). Ausgeschnitten sind sie über die Alphakanten, ausgerichtet über
-**Körpermitte und Grundlinie** — der grüne Punkt hat dabei als Passmarke gedient, sein
-Durchmesser schwankt über alle 24 nur zwischen 50,3 und 51,8 px, die Vorlagen stehen also im
-selben Maßstab.
-
-Ausgewählt und sortiert sind die dreizehn **nach Körperhöhe**: 157 → 166 → 170 → 172 → 174 →
-176 → 179 und wieder hinunter über 176 → 172 → 170 → 167 → 165 → 150. Bodenbündig gestellt
-liest sich das als Atemzug mit einem kleinen Nachfedern am Ende. Die Blinzler liegen auf dem
-Weg nach unten, nicht verstreut — sonst flackern sie. Wie gut zwei aufeinanderfolgende Bilder
-zusammenpassen, ist nachgemessen (Überdeckung der Silhouetten): im Schnitt 0,91, im
-schlechtesten Übergang 0,84 — das ist der Atemzug selbst, kein Versatz.
-
-**Drei Dinge halten das billig und sicher:**
-
-- **Es ist eine Datei, keine Datenzeile.** 84 KB im Quelltext wären ein Drittel mehr Seite bei
-  *jedem* Start. Geholt wird sie per `<link rel="preload">` gleich im Kopf.
-- **Getauscht wird nur, solange nichts zu sehen ist.** `lebenHolen()` setzt das bewegte Bild erst
-  bei `onload` ein und nur, wenn `.mark-wrap` noch *kein* `.da` trägt. Kommt die Datei zu spät —
-  erster Besuch, langsame Leitung —, bleibt es beim eingebetteten Standbild. Der Grund: die
-  Einzelbilder haben mit 237 × 227 einen flacheren Rahmen als das Standbild mit 385 × 315
-  (sie brauchen oben und unten Luft für die Schwungstriche), die Kachel wechselt beim Tausch
-  also ihr Maß. Vor offenen Augen wäre das ein Sprung.
-- **Gleich groß wirkt es trotzdem.** `.mark-logo.lebt` wächst im selben Verhältnis mit:
-  184 · (237 · 381/218) / 385 = **198 px**. Nachgemessen im Browser ist der Körper in beiden
-  Fassungen **170,7 px** breit.
-
-**Der Glanz trägt jetzt die Schnittmenge als Maske.** Er ist auf die Silhouette maskiert
-(`--moji-maske`) — aber die ändert sich ja bei jedem Bild. `MOJI_MASKE` enthält darum, was in
-*jedem* der dreizehn Körper ist. So kann das Lichtband nie über den Rand hinauslaufen und im
-Leeren leuchten. Es deckt 84 % der kleinsten Silhouette ab; bei einem weichen Band von einem
-Viertel Breite fällt das nicht auf.
-
-Wer **Bewegung abbestellt** hat (`prefers-reduced-motion`), bekommt das Standbild — ein
-bewegtes Bild lässt sich mit CSS nicht anhalten, also wird es gar nicht erst geholt.
-
 **Und der Vorspann hat keinen eigenen Hintergrund mehr.** Er ist durchsichtig und lässt die
 Farbwolken der App durch — also genau die Fläche, auf der gleich die Anmeldeseite steht. Vorher
 lagen dort ein dunkler Schleier, eine eigene Farbfläche (`.aurahg`), schwebende Lichtpunkte auf
@@ -1154,6 +1115,48 @@ der Ring wirklich geschlossen ist und das Männchen einmal gehüpft hat.
 
 Davor füllte sich hier ein Glas mit goldener Flüssigkeit, mit Wellen, Blasen und einem *Prost!*
 zum Schluss — hübsch gebaut, und mit Arbeitszeit hatte es nichts zu tun.
+
+**Und seit 15. September 2026 atmet das Männchen im Ring.** Es ist kein Standbild mehr, sondern
+**dreizehn Einzelbilder als bewegtes WebP** (`moji-leben.webp`, 84 KB), 1,35 s im Kreis: der
+Körper wird größer und wieder kleiner wie beim Atmen, dazwischen blinzelt und zwinkert er, und
+ab und zu fliegen Schwungstriche mit.
+
+Die Vorlage war ein Bogen mit 24 gezeichneten Fassungen, 8 × 3. Ausgeschnitten sind sie über die
+Alphakanten, ausgerichtet über **Körpermitte und Grundlinie** — der grüne Punkt hat als
+Passmarke gedient, sein Durchmesser schwankt über alle 24 nur zwischen 50,3 und 51,8 px, die
+Vorlagen stehen also im selben Maßstab. Ausgewählt und sortiert sind die dreizehn **nach
+Körperhöhe**: 157 → 166 → 170 → 172 → 174 → 176 → 179 und wieder hinunter über 176 → 172 → 170 →
+167 → 165 → 150. Bodenbündig gestellt liest sich das als Atemzug mit einem kleinen Nachfedern am
+Ende. Die Blinzler liegen auf dem Weg nach unten, nicht verstreut — sonst flackern sie. Wie gut
+zwei aufeinanderfolgende Bilder zusammenpassen, ist nachgemessen (Überdeckung der Silhouetten):
+im Schnitt 0,91, im schlechtesten Übergang 0,84 — das ist der Atemzug selbst, kein Versatz.
+
+**Es steht hier und sonst nirgends.** Im Vorspann war es einen Nachmittag lang drin und ist
+wieder heraus: dort dauert das Warten 2,45 s, und 84 KB für anderthalb Sekunden Bewegung, die
+*jeder* Start mitlädt, ist kein guter Tausch. Beim Export dauert das Warten länger, und es ist
+die einzige Stelle, an der man wirklich zusieht.
+
+**Geholt wird die Datei beim Aufmachen der Exportseite** (`lebenVorladen()` in `go()`). Bis
+jemand die Monate gewählt und unterschrieben hat, ist sie da; wer nie exportiert, lädt sie nie.
+**Getauscht wird nicht mitten im Warten:** entweder sie liegt vor, wenn der Kreis aufgeht, oder
+es bleibt beim eingebetteten Standbild. Der Grund ist das Maß — die Einzelbilder brauchen oben
+und unten Luft für die Schwungstriche und haben mit 237 × 227 einen flacheren Rahmen als das
+Standbild mit 385 × 315.
+
+**Gleich groß steht es trotzdem im Ring.** `.exmoji.lebt` wächst im selben Verhältnis mit:
+78 · (237 · 381/218) / 385 = **84 px**. Nachgemessen im Browser ist der Körper in beiden
+Fassungen **78 bzw. 79 px** breit. Dazu ein `translateY(2.6 %)`, weil der Körper in den
+Einzelbildern auf einer Grundlinie bei 84,6 % der Rahmenhöhe steht und ohne den Versatz zu hoch
+im Ring hinge; gerechnet ist er auf die **mittlere** Körperhöhe, der Rest des Ausschlags ist das
+Atmen selbst (±2 px um die Ringmitte).
+
+**Das Atmen per CSS ist dafür aus.** `exAtmen` skalierte das Standbild alle 3,4 s — zweimal
+atmen wäre einmal zu viel. Der Hüpfer am Schluss (`exHuepf`) bleibt, der ist ein Moment. Und der
+Glanz trägt jetzt die **Schnittmenge aller dreizehn** Silhouetten als Maske (`MOJI_MASKE`, eine
+Datenzeile von 1,9 kB), damit das Lichtband nie über den Rand hinaus ins Leere leuchtet.
+
+Wer **Bewegung abbestellt** hat (`prefers-reduced-motion`), bekommt das Standbild — ein bewegtes
+Bild lässt sich mit CSS nicht anhalten, also wird es gar nicht erst geholt.
 
 **Zugeschnitten wird auf den beschriebenen Teil.** `sigBild()` liest die Alphawerte der
 Leinwand, sucht die Randpunkte und schneidet mit 8 px Rand aus — sonst hinge die Unterschrift
