@@ -5597,7 +5597,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1830';
+const APP_STAND = '2026-09-15-1905';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6112,9 +6112,15 @@ function normalize(p){
       if(!e || !e.t || !TYPES[e.t]) delete p.events[k];
     });
   }
-  /* Nur die Nummer des Motivs, kein Bild — die Zeile in der Cloud bleibt klein. */
+  /* Nur die Nummer des Motivs, kein Bild — die Zeile in der Cloud bleibt klein.
+
+     Die Obergrenze MUSS AVATARE sein und keine Zahl: sie stand bis
+     15.09.2026 als 12 hier, und als aus zwoelf Motiven 117 wurden, warf
+     normalize() jede hoehere Wahl beim Laden wieder weg. Wer sich eines
+     der neuen aussuchte, hatte nach dem Neuladen wieder das zugeteilte
+     drin — und nichts deutete darauf hin, warum. */
   const av = +p.avatar;
-  if(!(av >= 1 && av <= 12)) delete p.avatar;
+  if(!(av >= 1 && av <= AVATARE)) delete p.avatar;
   if(!Array.isArray(p.gelesen)) p.gelesen = [];
   if(!Array.isArray(p.post)) p.post = [];
   if(typeof p.pkHost !== 'string') p.pkHost = '';
@@ -10086,11 +10092,11 @@ $('#pf-alle').addEventListener('click', () => pfMerke(alleNachrichten().map(n =>
    Geburtsdatum, damit dasselbe Profil auf jedem Gerät dasselbe Bild
    zeigt, ohne dass wir dafür etwas speichern müssen.
    ═══════════════════════════════════════════════════════════ */
-const AVATARE = 117;
+const AVATARE = 115;
 /* Die Versionsangabe hängt am Namen, damit ein überarbeitetes Motiv auch
    bei Geräten ankommt, die die alte Datei schon im Zwischenspeicher haben.
    Bei jeder Änderung an den Bildern wird die Zahl erhöht. */
-const AV_STAND = 7;
+const AV_STAND = 8;
 /* Der Pastellgrund jedes Motivs. Er liegt hinter dem Bild im Rahmen —
    rutscht das Bild nach unten, kommt also dieselbe Farbe zum Vorschein
    und nicht Weiß.
@@ -10111,16 +10117,16 @@ const AV_GRUND = ['#D9F2DF','#F2D9DC','#D2EAFD','#F2D9DA','#F2E4D9','#F2EED9',
                   '#E9DDF4','#CFE6FB','#DCEAFD','#F9D4E3','#FCDDC1','#CFF2D9',
                   '#FEE1E8','#FCF0D8','#D7F6DB','#FEE7D4','#DAEDFE','#DBD0F8',
                   '#E8DAFD','#DAEDFE','#FEE0E5','#FDF3D9','#E6F0D6','#FEF4C6',
-                  '#FEE0E6','#DEEFFE','#FEDADC','#FEF0DC','#F3E9FD','#D4E7FC',
-                  '#FCDCE8','#FDF2D6','#FBDDE9','#F7F0D4','#D5F2CF','#EDDEFA',
-                  '#D1E7FC','#FCDDE8','#D2F1DE','#EBDDFA','#FDDBD8','#C7E4FA',
-                  '#FBDDE9','#D8ECFE','#FBE0E6','#E4DAFD','#FBF2CE','#DBF6E0',
-                  '#D9F3DF','#FCE0E6','#D8ECFE','#FCF4DF','#FCDFE5','#FCF3DB',
-                  '#DBF6E0','#DDD2FD','#D6EBFE','#DAEDFD','#FBDFD4','#FCF2D8',
-                  '#FCF3D5','#E5DAFD','#DAF5E0','#D3EAFE','#FCE1E6','#F6E5D2',
-                  '#D2F2D7','#D0E5FD','#FBD7DE','#FBD7DD','#FAEDD1','#E3DCFD',
-                  '#D4F5DE','#D0E4FD','#F9D5DB','#FAEFD8','#E2DBFD','#E1F0D4',
-                  '#C6E3FD','#FBD3DB','#FBEFCE'];
+                  '#FEE0E6','#FEDADC','#FEF0DC','#F3E9FD','#D4E7FC','#FCDCE8',
+                  '#FBDDE9','#F7F0D4','#D5F2CF','#EDDEFA','#D1E7FC','#FCDDE8',
+                  '#D2F1DE','#EBDDFA','#FDDBD8','#C7E4FA','#FBDDE9','#D8ECFE',
+                  '#FBE0E6','#E4DAFD','#FBF2CE','#DBF6E0','#D9F3DF','#FCE0E6',
+                  '#D8ECFE','#FCF4DF','#FCDFE5','#FCF3DB','#DBF6E0','#DDD2FD',
+                  '#D6EBFE','#DAEDFD','#FBDFD4','#FCF2D8','#FCF3D5','#E5DAFD',
+                  '#DAF5E0','#D3EAFE','#FCE1E6','#F6E5D2','#D2F2D7','#D0E5FD',
+                  '#FBD7DE','#FBD7DD','#FAEDD1','#E3DCFD','#D4F5DE','#D0E4FD',
+                  '#F9D5DB','#FAEFD8','#E2DBFD','#E1F0D4','#C6E3FD','#FBD3DB',
+                  '#FBEFCE'];
 function avDatei(n){ return 'av-' + n + '.webp?v=' + AV_STAND; }
 function avZufall(){
   /* Aus Vorname und Geburtsdatum eine Zahl bilden — gleicher Mensch,

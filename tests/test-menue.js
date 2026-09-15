@@ -323,7 +323,7 @@ window.__WEITER = function(){
      document.querySelector('.mi[data-act="firma"]').innerHTML.slice(0, 80));
   /* ── Die Profilbilder ──
      Seit 15.09.2026 sind es 117 statt 12, als WebP in 288 x 384. */
-  ok('117 Motive stehen zur Wahl',  AVATARE === 117, AVATARE);
+  ok('115 Motive stehen zur Wahl',  AVATARE === 115, AVATARE);
   ok('Zu jedem ein Pastellgrund',   AV_GRUND.length === AVATARE, AV_GRUND.length);
   ok('Und alle sind Farbwerte',
      AV_GRUND.every(function(c){ return /^#[0-9A-F]{6}$/.test(c); }),
@@ -345,6 +345,17 @@ window.__WEITER = function(){
   /* Das dritte Motiv ist ersetzt, nicht entfernt: die Nummer bleibt,
      damit sich bei niemandem das Bild verschiebt. */
   ok('Nummer 3 traegt jetzt ein neues', AV_GRUND[2] === '#D2EAFD', AV_GRUND[2]);
+  /* normalize() hatte die Obergrenze als Zahl stehen: 12. Als aus zwoelf
+     Motiven ueber hundert wurden, warf es jede hoehere Wahl beim Laden
+     weg — man suchte sich eines aus und hatte nach dem Neuladen wieder
+     das zugeteilte drin. */
+  ok('Eine hohe Wahl ueberlebt das Laden',
+     normalize({ id:'pAv', vorname:'Test', dob:'1990-01-01', avatar:AVATARE }).avatar === AVATARE,
+     normalize({ id:'pAv', vorname:'Test', dob:'1990-01-01', avatar:AVATARE }).avatar);
+  ok('Eine zu hohe faellt weg',
+     normalize({ id:'pAv', vorname:'Test', dob:'1990-01-01', avatar:AVATARE + 1 }).avatar === undefined);
+  ok('Und eine von null auch',
+     normalize({ id:'pAv', vorname:'Test', dob:'1990-01-01', avatar:0 }).avatar === undefined);
 
   /* Die Bubble Teas werden in den Details erklaert, nicht auf der Liste. */
   malFirma();
@@ -737,6 +748,8 @@ setTimeout(() => {
       Kasten — 14,7 px hoch, die Kacheln uebereinander. */
    ['Und die Reihen behalten ihre Hoehe',
     /\.avgrid\{[\s\S]{0,600}grid-auto-rows:min-content;/.test(roh)],
+   ['Die Obergrenze in normalize steht nicht als Zahl da',
+    /if\(!\(av >= 1 && av <= AVATARE\)\) delete p\.avatar;/.test(roh)],
    ['Nur die ersten laufen gestaffelt ein',
     /\.menu-card\.avauf \.avopt:nth-child\(n\+14\)\{animation:none\}/.test(roh)],
    ['Und die Bilder laden erst beim Scrollen',

@@ -848,8 +848,9 @@ abgegebenes Blatt nachträglich umzurechnen hilft niemandem.
 
 ### Die Profilbilder
 
-**117 Motive**, seit 15. September 2026. Vorher waren es zwölf. Die neuen 106 kommen aus sechs
-Bögen mit je 16 oder 25 Aufklebern.
+**115 Motive**, seit 15. September 2026. Vorher waren es zwölf. Die neuen 104 kommen aus sechs
+Bögen mit je 16 oder 25 Aufklebern; 19 der 123 sind aussortiert, meist weil dasselbe Tier auf
+zwei Bögen fast gleich vorkam.
 
 **Geschnitten an den echten Fugen**, nicht am gleichmäßigen Raster: die Bögen sind leicht
 ungleichmäßig (die unterste Reihe bis zu 30 px höher), und beim gleichmäßigen Teilen bekam jede
@@ -857,13 +858,13 @@ Kachel einen Streifen der Nachbarin mit. Ein Bogen hat gar keine weißen Fugen �
 Schnitte über die ruhigsten Bildzeilen.
 
 **288 × 384 statt 192 × 256** und **WebP statt PNG**: 9 KB je Bild statt 88, alle 117 zusammen
-1,3 MB. Mehr Auflösung steckt in den Vorlagen nicht, sie messen selbst nur 220 bis 300 Punkte.
+1,2 MB. Mehr Auflösung steckt in den Vorlagen nicht, sie messen selbst nur 220 bis 300 Punkte.
 
 **Das Format trägt die Rutsch-Animation.** Kommt eine Nachricht, schiebt sich das Tier im Rahmen
 um 14 % nach unten (`#avwrap.meldung .avatar img`). Damit dabei keine weiße Lücke entsteht,
 braucht es zweierlei: über dem Tier muss im Bild selbst sein eigener Pastellton stehen, und
 derselbe Ton muss als `AV_GRUND` im Rahmen liegen. Beides kommt aus **der Oberkante der
-Vorlage** — dort, wo die Verlängerung ansetzt. Nachgemessen über alle 117: die größte Abweichung
+Vorlage** — dort, wo die Verlängerung ansetzt. Nachgemessen über alle: die größte Abweichung
 zwischen Bildoberkante und `AV_GRUND` beträgt **4 von 765** Farbstufen.
 
 Wo das Quadrat im Hochformat sitzt, ist ausgerechnet, nicht geschätzt. Der Rahmen ist quadratisch,
@@ -873,6 +874,12 @@ bei 28,7 % bis 128,7 % der Bildbreite. Genau dort beginnt das Quadrat: **Zeile 8
 **Das dritte Motiv ist ersetzt, nicht entfernt.** Die Nummer steht in jedem Profil; würde sie
 wegfallen, rutschten alle Nummern darüber um eins und wechselten bei den Leuten das Bild. Die
 Nummer bleibt also und trägt jetzt ein neues Motiv.
+
+**Und `normalize()` darf die Obergrenze nicht als Zahl kennen.** Dort stand `av <= 12`, seit es
+zwölf Motive gab. Als daraus 117 wurden, warf `normalize()` beim Laden **jede Wahl über 12
+wieder weg** — man suchte sich eines der neuen aus, lud neu, und hatte wieder das zugeteilte
+drin, ohne dass irgendetwas auf den Grund hindeutete. Jetzt steht dort `AVATARE`, und drei
+Prüfungen halten fest, dass eine hohe Wahl das Laden übersteht.
 
 **Zwei Dinge am Auswahlgitter mussten nachgezogen werden**, weil aus 3 Reihen 30 wurden:
 
@@ -1834,7 +1841,7 @@ Stand 14. September 2026, gegen `git ls-files` geprüft.
 | `index.html` | die ganze App: Aufbau, Gestaltung, Logik |
 | `manifest.webmanifest` | Name und Symbol am Startbildschirm |
 | `icon-180.png`, `icon-512.png` | ebendieses Symbol, zwei Größen |
-| `av-1.webp` … `av-117.webp` | die 117 Profilbilder |
+| `av-1.webp` … `av-115.webp` | die 115 Profilbilder |
 | `firma-miller.png` | Logo Miller Optik, in der Ansicht *Meine Firma* im Profilmenü |
 | `schwein-troete.png` | Schwein mit Tröte. Erscheint im Block `#bleib`, wenn jemand das Löschen des Profils abbricht — „Schön, dass du dich nochmal umentschieden hast" |
 | `moji-bricolage*.woff2`, `moji-jakarta*.woff2`, `moji-caveat*.woff2` | die drei Schriften, selbst gehostet |
