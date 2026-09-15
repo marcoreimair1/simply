@@ -1,8 +1,14 @@
 -- ══════════════════════════════════════════════════════════════════
 -- MOJI · Team und Bubble Tea
--- Im SQL-Editor von Supabase ausführen. Läuft mehrfach durch, ohne
--- Schaden anzurichten — jede Anweisung ist "if not exists" oder
--- "create or replace".
+--
+-- Zwei Wege, beide mit derselben Datei — es gibt bewusst keine zweite,
+-- abweichende Fassung:
+--   1) Dashboard → SQL-Editor → Inhalt hineinkopieren → Run.
+--   2) npx supabase link --project-ref kzduwbmiytusvlbotrrr
+--      npx supabase db push
+--
+-- Läuft mehrfach durch, ohne Schaden anzurichten — jede Anweisung ist
+-- "if not exists" oder "create or replace".
 --
 -- Was hier entsteht:
 --   mitglieder   Wer arbeitet in derselben Firma, mit Name, Bild,
