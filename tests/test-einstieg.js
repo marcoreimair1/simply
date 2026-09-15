@@ -113,6 +113,18 @@ ok('Blatt Adresse zu',       !el('lg-mailstep').classList.contains('on'));
 ok('Es blaettert, statt neu aufzuziehen', el('lg-codestep').classList.contains('weiter'));
 ok('Und zwar nach vorn',     !el('lg-codestep').classList.contains('rueck'));
 ok('Adresse steht im Text',  el('lg-sent-t').textContent === 'anna@example.org', el('lg-sent-t').textContent);
+/* Seit 15.09.2026: der Hinweis auf den Spam-Ordner. Mails von einem
+   neuen Absender landen dort oft beim ersten Mal, und wer das nicht
+   weiss, haelt die Anmeldung fuer kaputt. */
+ok('Der Spam-Ordner wird erwaehnt',
+   !!el('lg-spam') && el('lg-spam').textContent.indexOf('Spam-Ordner') > -1,
+   el('lg-spam') && el('lg-spam').textContent.trim().slice(0, 40));
+/* Zwischen Eingabe und „erneut senden": davor waere er Beiwerk, danach
+   fande ihn niemand mehr. */
+ok('Und zwar vor dem erneuten Senden',
+   el('lg-spam').nextElementSibling === el('lg-again')
+   && el('lg-spam').previousElementSibling === el('lg-otp-go'),
+   el('lg-spam').nextElementSibling && el('lg-spam').nextElementSibling.id);
 ok('Code-Feld hat den Fokus', document.activeElement === el('lg-otp'),
    document.activeElement && document.activeElement.id);
 

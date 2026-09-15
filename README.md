@@ -146,6 +146,13 @@ gesperrt** und zählt die Sekunden herunter; jeder Versand — auch der erste �
 neu. Supabase wehrt sich gegen zu viele Anfragen von selbst, mit einem Fehler; schöner ist es,
 wenn der Knopf gar nicht erst mitspielt.
 
+**Und darunter steht der Spam-Hinweis** (seit 15. September 2026): *Nichts angekommen? Schau
+bitte auch im Spam-Ordner nach.* Mails von einem neuen Absender landen dort oft beim ersten Mal,
+und wer das nicht weiß, hält die Anmeldung für kaputt. Er steht **zwischen Eingabe und „erneut
+senden"** — davor wäre er Beiwerk, das man überliest, danach fände ihn niemand mehr. Leiser
+gesetzt als die Unterzeile, weil er eine Fußnote für den Fehlerfall ist und kein Teil der
+Anweisung.
+
 In der Mail stehen weiterhin ein Link **und** ein Code. Der Code ist der wichtigere: wer MOJI
 vom iPhone-Startbildschirm öffnet, kann den Link nicht nutzen, weil er in Safari landet und eine
 Startbildschirm-App auf iOS einen eigenen Speicher hat.

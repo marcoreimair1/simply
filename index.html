@@ -3910,7 +3910,11 @@ body.blattoffen #lg-start{ transform:scale(.93); opacity:.5 }
 .blatt .field{ margin-top:22px; text-align:left }
 .blatt .field input{ border-radius:16px }
 .blatt-weiter{ margin-top:11px }
-.blatt-nochmal{ display:inline-block; margin-top:20px }
+/* Leiser als die Unterzeile: es ist eine Fussnote fuer den Fall, dass
+   etwas fehlt, und kein Teil der Anweisung. */
+.blatt-tipp{ margin:18px 0 0; font-size:12px; line-height:1.5; color:var(--tx-3) }
+.blatt-tipp b{ color:var(--tx-2); font-weight:600 }
+.blatt-nochmal{ display:inline-block; margin-top:12px }
 .blatt-nochmal:disabled{ color:var(--tx-3); text-decoration-color:transparent;
   cursor:default; font-variant-numeric:tabular-nums }
 
@@ -4545,6 +4549,12 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
               <label for="lg-otp">Code</label>
             </div>
             <button class="einb prim blatt-weiter" id="lg-otp-go" disabled>Weiter</button>
+            <!-- Der Hinweis steht zwischen Eingabe und „erneut senden": genau
+                 dort landet, wer wartet und nichts sieht. Vorher davor waere
+                 er Beiwerk, danach fande ihn niemand mehr. -->
+            <p class="blatt-tipp" id="lg-spam">Nichts angekommen? Schau bitte auch im
+              <b>Spam-Ordner</b> nach — dort landen Mails von neuen Absendern oft beim
+              ersten Mal.</p>
             <button class="linkbtn blatt-nochmal" id="lg-again">E-Mail erneut senden</button>
             <p class="ein-err" id="lg-otp-err"></p>
           </div>
@@ -5597,7 +5607,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1905';
+const APP_STAND = '2026-09-15-1930';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
