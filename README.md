@@ -195,7 +195,14 @@ steht dieselbe `sched`-Struktur wie vorher.
 |---|---|
 | Gruß | MOJI in der Mitte des Schirms: *Hi Anna! Ich bin MOJI.* → *Lass uns kurz deine Arbeitszeiten festlegen…* Zwei Wege: **Ja, starten wir!** / **Hab's mir anders überlegt**. Hier gibt es weder Zählung noch Balken — es ist ja noch nichts geschehen |
 | Abbruch | *…* — dann *Ok, schade. Du kannst deine Zeiten jederzeit im Profilmenü nachtragen.* Erst ein weiterer Tipp führt in die App |
-| Wochen | MOJI rückt nach oben und bleibt dort. *Arbeitest du jede Woche gleich?* → darunter die Aufforderung *Wähle aus, in welchem Wochen-Intervall du arbeitest:* und vier Knöpfe: 1 bis 4 Wochen |
+| Wochen | MOJI rückt nach oben und bleibt dort. *Arbeitest du jede Woche gleich?* → darunter die Aufforderung *Wähle aus, in welchem Wochen-Intervall du arbeitest:* und vier Knöpfe: 1 bis 4 Wochen. Darunter **Ich brauche Hilfe bei dieser Frage** — ein Tipp klappt vier Beispiele auf, eines je Zahl |
+**Die Hilfe zur Wochenfrage** steht hinter einem Knopf, nicht davor: wer weiß, wie sein
+Dienstplan läuft, soll nicht an einer Erklärung vorbeilesen müssen. Aufgeklappt kommt je Zahl
+eine Karte (`ZA_RHYTHMEN`) mit **Bedeutung**, **Beispiel** und **Wiederholung** — in einem
+Dienstplan in Worten, nicht in einer Definition. Jede Karte trägt die Farbe, die diese Woche
+später in den Reitern und im Kalender hat (`WOCHENFARBE`). Die Karten sind **nicht antippbar**:
+gewählt wird oben, sonst verstellte ein Blick in die Erklärung den Plan.
+
 | Tage | *Heute ist Montag in der KW 38. An welchen Tagen arbeitest du diese Woche?* → sechs Knöpfe, angetippt bekommen sie einen **grünen Rand** im Grün aus der Kugel des Männchens (`--moji-gruen`, aus dem Bild gemessen) |
 | Tag für Tag | Vormittag und Nachmittag je mit Schalter, den Stunden bündig rechts an der Kachel und **zwei Rädern**. Darunter *8,00 h Arbeitszeit · 1,00 h Pause*. Ein abgeschalteter Abschnitt behält seine Zeiten und richtet seine Räder neu, sobald er wieder eingeschaltet wird |
 | Schluss | MOJI wieder mittig: *Super, Anna! …* → **Abschließen** → Willkommensgruß → Kalender |
@@ -1766,6 +1773,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Hilfe zur Wochenfrage** (15. September 2026): Unter den vier Knöpfen steht jetzt
+  *Ich brauche Hilfe bei dieser Frage*; ein Tipp klappt vier Karten auf — je Zahl Bedeutung,
+  Beispiel und Wiederholung, in der Farbe, die diese Woche später im Kalender trägt.
+  690 Prüfungen
 
 - **Ein Anlegen darf nichts wegnehmen** (14. September 2026): `pkAdd()` löschte bei
   „gibt es schon" alle Passkeys des Kontos und legte neu an — brach der zweite Versuch ab,

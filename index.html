@@ -3899,6 +3899,42 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 #za-inhalt > .za-tage > button:nth-child(6){ animation-delay:.375s }
 @keyframes zaKachel{ from{ opacity:0; transform:translateY(12px) scale(.96) } }
 
+/* ─── Hilfe zur Wochenfrage ──────────────────────────────────────
+   Hinter einem Knopf, nicht davor: wer weiss, wie sein Dienstplan
+   laeuft, soll nicht an einer Erklaerung vorbeilesen muessen. */
+.za-hilfe{ display:inline-flex; align-items:center; gap:8px; margin:16px 2px 0;
+  padding:9px 14px 9px 11px; border-radius:99px; font-size:12.5px; font-weight:600;
+  color:var(--tx-3); background:rgba(var(--tx-rgb),.05);
+  border:1px solid var(--line-2); transition:.2s var(--ease) }
+.za-hilfe svg{ width:16px; height:16px; flex:none }
+.za-hilfe:active{ transform:scale(.97) }
+.za-hilfe.auf{ color:var(--butter); border-color:var(--butter-dim);
+  background:rgba(var(--marke-rgb),.09) }
+.za-hilfebox{ display:grid; gap:10px; margin-top:12px;
+  animation:zaRein .42s var(--ease-out) both }
+.za-hilfebox[hidden]{ display:none }
+/* Eine Karte je Rhythmus, in der Farbe, die diese Woche spaeter im
+   Kalender und in den Reitern traegt. */
+.zah{ border:1px solid var(--karte-rand); border-radius:18px; padding:13px 14px 12px;
+  background:var(--karte); box-shadow:var(--karte-schatten);
+  border-left:3px solid var(--zahf) }
+.zah-kopf{ display:flex; align-items:center; gap:10px; margin-bottom:7px }
+.zah-nr{ flex:none; width:28px; height:28px; border-radius:10px; display:grid;
+  place-items:center; font-size:14px; font-weight:700; color:var(--zahf);
+  background:color-mix(in srgb, var(--zahf) 16%, transparent) }
+.zah-kopf b{ font-size:13.5px; font-weight:650; line-height:1.25 }
+.zah-kopf b small{ display:block; margin-top:1px; font-size:11px; font-weight:500;
+  color:var(--tx-3) }
+.zah-was{ margin:0; font-size:13px; line-height:1.5; color:var(--tx-2) }
+.zah-bsp{ margin:8px 0 0; padding:0; list-style:none; display:grid; gap:4px }
+.zah-bsp li{ position:relative; padding-left:15px; font-size:12.5px; line-height:1.45;
+  color:var(--tx-2) }
+.zah-bsp li::before{ content:""; position:absolute; left:3px; top:.58em; width:5px; height:5px;
+  border-radius:50%; background:var(--zahf) }
+.zah-wdh{ display:flex; align-items:flex-start; gap:7px; margin:9px 0 0;
+  font-size:11.5px; line-height:1.45; color:var(--tx-3) }
+.zah-wdh svg{ width:13px; height:13px; flex:none; margin-top:1px }
+
 /* MOJI tritt auf, statt einfach dazustehen. */
 #v-zeitassi.on .za-moji{ animation:zaAuftritt .95s var(--ease-out) both }
 @keyframes zaAuftritt{ from{ opacity:0; transform:translateY(16px) scale(.94) } }
@@ -5310,7 +5346,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-14-2359c';
+const APP_STAND = '2026-09-15-0020';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7493,6 +7529,44 @@ function zaAbbruch(){
       + '<button class="einb prim" data-za="fertigab">Alles klar, weiter</button></div>');
   });
 }
+/* Was die vier Zahlen bedeuten — in Beispielen, nicht in Definitionen.
+   Wer den Begriff „Wochenintervall" noch nie gehoert hat, kommt mit einem
+   Dienstplan in Worten weiter als mit einer Erklaerung. Steht hinter
+   einem Knopf: wer es weiss, soll nicht daran vorbeilesen muessen. */
+const ZA_RHYTHMEN = [
+  { n:1, t:'Feste Routine',
+    was:'Jede Woche läuft genau gleich ab.',
+    bsp:['Du arbeitest jede Woche von Montag bis Freitag, Samstag und Sonntag sind immer frei.'],
+    wdh:'Nach 7 Tagen beginnt derselbe Ablauf von vorn.' },
+  { n:2, t:'Klassischer Wechsel',
+    was:'Zwei unterschiedliche Wochen wechseln sich ab.',
+    bsp:['Woche 1: Frühschicht (Montag bis Freitag)',
+         'Woche 2: Spätschicht (Montag bis Freitag)'],
+    wdh:'Woche 1 → Woche 2 → wieder Woche 1.' },
+  { n:3, t:'Rollierendes System',
+    was:'Ein Ablauf über drei Wochen, der sich danach wiederholt.',
+    bsp:['Woche 1: Frühschicht', 'Woche 2: Spätschicht', 'Woche 3: Nachtschicht'],
+    wdh:'Nach Woche 3 startet der Zyklus wieder bei Woche 1.' },
+  { n:4, t:'Monatszyklus',
+    was:'Vier verschiedene Wochenblöcke, oft genutzt für Wochenend-Dienste.',
+    bsp:['Woche 1: Normaldienst (Mo–Fr)', 'Woche 2: Normaldienst (Mo–Fr)',
+         'Woche 3: Spätdienst + Samstagseinsatz',
+         'Woche 4: Kurze Woche als Freizeitausgleich'],
+    wdh:'Erst nach Ablauf aller 4 Wochen beginnt die Serie erneut.' }
+];
+function zaHilfeHtml(){
+  return '<div class="za-hilfebox" id="za-hilfebox" hidden>'
+    + ZA_RHYTHMEN.map(r => '<div class="zah" style="--zahf:' + WOCHENFARBE[r.n - 1] + '">'
+      + '<div class="zah-kopf"><span class="zah-nr">' + r.n + '</span>'
+      + '<b>' + r.n + '-Wochen-Rhythmus<small>' + esc(r.t) + '</small></b></div>'
+      + '<p class="zah-was">' + esc(r.was) + '</p>'
+      + '<ul class="zah-bsp">' + r.bsp.map(z => '<li>' + esc(z) + '</li>').join('') + '</ul>'
+      + '<p class="zah-wdh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+      + 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+      + '<path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/></svg>' + esc(r.wdh) + '</p>'
+      + '</div>').join('')
+    + '</div>';
+}
 function zaWochen(){
   ZA.schritt = 'wochen'; ZA.wi = 0;
   zaMoji('oben'); zaFarbe(); zaFortschritt();
@@ -7501,7 +7575,14 @@ function zaWochen(){
       + '<div class="za-wahl">'
       + [1,2,3,4].map(n => '<button data-wc="' + n + '">' + n
           + '<small>' + (n === 1 ? 'Woche' : 'Wochen') + '</small></button>').join('')
-      + '</div>');
+      + '</div>'
+      + '<button class="za-hilfe" id="za-hilfe" data-za="hilfe" aria-expanded="false">'
+      +   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+      +   'stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/>'
+      +   '<path d="M9.4 9.3a2.7 2.7 0 1 1 3.4 2.6c-.6.2-.8.7-.8 1.3v.5"/>'
+      +   '<path d="M12 17.1v.01"/></svg>'
+      +   '<span>Ich brauche Hilfe bei dieser Frage</span></button>'
+      + zaHilfeHtml());
   });
 }
 function zaTageFrage(){
@@ -7744,6 +7825,22 @@ $('#za-inhalt').addEventListener('click', e => {
   }
 
   switch(b.dataset.za){
+    case 'hilfe': {
+      const box = $('#za-hilfebox'), knopf = $('#za-hilfe');
+      if(!box || !knopf) break;
+      const auf = box.hidden;
+      box.hidden = !auf;
+      knopf.setAttribute('aria-expanded', String(auf));
+      knopf.classList.toggle('auf', auf);
+      $('span', knopf).textContent = auf
+        ? 'Beispiele wieder ausblenden'
+        : 'Ich brauche Hilfe bei dieser Frage';
+      /* Aufgeklappt reicht der Schirm nicht mehr — dann mitfahren. */
+      if(auf) setTimeout(() => {
+        try{ box.scrollIntoView({ behavior:'smooth', block:'nearest' }); }catch(e){}
+      }, 120);
+      break;
+    }
     case 'los':      zaWochen(); break;
     case 'spaeter':  zaAbbruch(); break;
     case 'fertigab': finishOnboarding(); break;

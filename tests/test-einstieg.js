@@ -258,6 +258,37 @@ ok('Eine Zeile sagt, was zu tun ist',
 ok('Die Zeile steht vor den Kn\u00f6pfen',
    el('za-inhalt').firstElementChild && el('za-inhalt').firstElementChild.classList.contains('za-vor'),
    el('za-inhalt').firstElementChild && el('za-inhalt').firstElementChild.className);
+/* Wer mit „Wochenintervall" nichts anfangen kann, bekommt Beispiele —
+   aber erst auf Nachfrage. */
+const hk = el('za-hilfe');
+ok('Ein Knopf bietet Hilfe an', !!hk && hk.querySelector('span').textContent
+   === 'Ich brauche Hilfe bei dieser Frage',
+   hk && hk.querySelector('span').textContent);
+ok('Er steht unter den Kacheln',
+   el('za-inhalt').children[2] === hk, el('za-inhalt').children[2].className);
+ok('Die Beispiele liegen erst weg', el('za-hilfebox').hidden);
+hk.click();
+ok('Ein Tipp klappt sie auf',   !el('za-hilfebox').hidden
+   && hk.getAttribute('aria-expanded') === 'true');
+ok('Vier Beispiele, eines je Zahl',
+   document.querySelectorAll('#za-hilfebox .zah').length === 4,
+   document.querySelectorAll('#za-hilfebox .zah').length);
+ok('Jedes nennt seinen Rhythmus',
+   document.querySelector('#za-hilfebox .zah b').textContent.indexOf('1-Wochen-Rhythmus') === 0,
+   document.querySelector('#za-hilfebox .zah b').textContent);
+ok('Und die Wiederholung dazu',
+   document.querySelectorAll('#za-hilfebox .zah-wdh').length === 4);
+ok('Der Monatszyklus zeigt vier Wochen',
+   document.querySelectorAll('#za-hilfebox .zah')[3].querySelectorAll('li').length === 4,
+   document.querySelectorAll('#za-hilfebox .zah')[3].querySelectorAll('li').length);
+ok('Der Knopf bietet jetzt das Gegenteil an',
+   hk.querySelector('span').textContent === 'Beispiele wieder ausblenden',
+   hk.querySelector('span').textContent);
+hk.click();
+ok('Und klappt wieder zu',      el('za-hilfebox').hidden
+   && hk.getAttribute('aria-expanded') === 'false');
+ok('Hilfe waehlt nichts aus',   ZA.wc === 1, ZA.wc);
+
 document.querySelector('[data-wc="2"]').click();
 ok('Zwei Wochen gemerkt',     ZA.wc === 2, ZA.wc);
 
