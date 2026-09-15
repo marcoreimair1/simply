@@ -304,8 +304,13 @@ benutzen ihn beide; `renderSched()`, `openTime()` und das Zeit-Popover sind ersa
 > Sonntag gilt in der ganzen App als frei — in `dayPlan()`, in `qTouched()` und auf der A4-Seite.
 > Sonntagsarbeit wäre ein eigener Umbau quer durch die Rechnung, nicht eine Taste mehr.
 
-Zum Schluss kommt das **Profilbild**, das MOJI gerade zugeteilt hat: rund, ein Reif zieht sich
-darum, der Haken springt an die Ecke, Konfetti steigt. Darüber steht *Hi Anna!* und darunter
+Zum Schluss kommt das **Profilbild**, das MOJI gerade zugeteilt hat: ein Reif zieht sich darum,
+der Haken springt an die Ecke, Konfetti steigt. Das Bild bleibt dabei das **weiche Viereck**,
+das es überall in der App ist — bis 15. September 2026 wurde es hier rund (`border-radius:50%`)
+und war damit das einzige runde Profilbild der App. Der Reif ist jetzt ein `<rect>` mit
+derselben Ecke (`rx="31"`) statt eines Kreises; er läuft über die gemessenen 331 Einheiten
+Umfang (`getTotalLength()` sagt 330,5 — `pathLength` wäre eleganter, wird auf `<rect>` aber
+nicht überall gerechnet). Darüber steht *Hi Anna!* und darunter
 *Willkommen bei MOJI.* Dahinter baut sich der Kalender auf und fährt herein, sobald der Gruß
 sich auflöst.
 
@@ -1773,6 +1778,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Das Profilbild im Willkommensgruß bleibt eckig** (15. September 2026): Am Funnelende wurde
+  es rund und war damit das einzige runde Profilbild der App — im Gruß, am Geburtstag und im
+  Menü steht es als weiches Viereck. Der Reif darum ist jetzt ein `<rect>` mit derselben Ecke
+  statt eines Kreises. 694 Prüfungen
 
 - **Hilfe zur Wochenfrage** (15. September 2026): Unter den vier Knöpfen steht jetzt
   *Ich brauche Hilfe bei dieser Frage*; ein Tipp klappt vier Karten auf — je Zahl Bedeutung,

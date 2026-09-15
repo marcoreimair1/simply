@@ -3729,15 +3729,21 @@ body.blattoffen #lg-start{ transform:scale(.93); opacity:.5 }
    Profilbild bleibt dabei stehen — es ist gerade zugeteilt worden und
    soll hier zum ersten Mal zu sehen sein; eine erste Fassung deckte es
    mit einem gezeichneten Haken zu, dann sah man es gar nicht.
-   Stattdessen wird es rund, ein Reif zieht sich darum, und zuletzt
-   springt der Haken an die Ecke.
+   Stattdessen zieht sich ein Reif darum, und zuletzt springt der Haken
+   an die Ecke. Das Bild blieb dabei bis 15. September 2026 rund — damit
+   war es das einzige runde Profilbild der App, waehrend es im Gruss, am
+   Geburtstag und im Menue als weiches Viereck steht. Jetzt behaelt es
+   seine Form, und der Reif nimmt sie an.
    Danach kommt der Kalender nicht einfach, er faehrt herein. */
 .hallo-ring{ display:none; position:absolute; inset:-9%; pointer-events:none }
 .hallo.fertig .hallo-ring{ display:block }
-.hallo.fertig .hallo-bild{ border-radius:50% }
 .hallo-ring svg{ display:block; width:100%; height:100%; overflow:visible }
+/* 331 ist der Umfang des weichen Vierecks: zweimal 34 gerade Strecke je
+   Achse plus der volle Kreis aus den vier Ecken (2π·31) — am Geraet mit
+   getTotalLength() nachgemessen: 330,46. pathLength waere eleganter,
+   wird auf <rect> aber nicht ueberall gerechnet. */
 .hallo-ring .rg{ fill:none; stroke:var(--butter); stroke-width:3.4; stroke-linecap:round;
-  stroke-dasharray:283; stroke-dashoffset:283;
+  stroke-dasharray:331; stroke-dashoffset:331;
   animation:ringZieh .9s var(--ease-out) .45s forwards }
 @keyframes ringZieh{ to{ stroke-dashoffset:0 } }
 body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
@@ -5136,7 +5142,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
   <div class="hallo-in">
     <div class="hallo-rahmen">
       <!-- Nur am Ende des Funnels: der Reif zieht sich um das Profilbild. -->
-      <div class="hallo-ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="rg" cx="50" cy="50" r="45" transform="rotate(-90 50 50)"/></svg></div>
+      <div class="hallo-ring" aria-hidden="true"><svg viewBox="0 0 100 100"><rect class="rg" x="2" y="2" width="96" height="96" rx="31"/></svg></div>
       <div class="hallo-bild"><img id="hallo-img" alt=""></div>
       <span class="hallo-haken" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"/></svg></span>
     </div>
@@ -5346,7 +5352,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-0020';
+const APP_STAND = '2026-09-15-0105';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;

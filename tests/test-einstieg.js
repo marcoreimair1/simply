@@ -394,6 +394,13 @@ ok('GRUSS kennt fertig',      !!GRUSS.fertig);
 ok('Fertig traegt Konfetti',  GRUSS.fertig.konfetti === true);
 ok('Reif liegt um das Profilbild',
    !!document.querySelector('#hallo .hallo-rahmen .hallo-ring .rg'));
+/* Das Profilbild bleibt ein weiches Viereck wie ueberall sonst; der Reif
+   nimmt seine Form an, statt es rund zu machen. */
+ok('Der Reif ist ein weiches Viereck',
+   document.querySelector('#hallo .hallo-ring .rg').tagName.toLowerCase() === 'rect',
+   document.querySelector('#hallo .hallo-ring .rg').tagName);
+ok('Mit derselben Ecke wie das Bild',
+   document.querySelector('#hallo .hallo-ring .rg').getAttribute('rx') === '31');
 ok('Der Haken steht daneben',  !!document.querySelector('#hallo .hallo-haken svg'));
 /* Der Gruss braucht jemanden zum Gruessen — sonst kehrt er sofort um. */
 ME = normalize({ id:'pGruss', vorname:'Anna', nachname:'Muster', dob:'1994-03-14' });
@@ -555,6 +562,11 @@ roh('Aufgeraeumt wird nur auf dem bewussten Weg',
     (HTML.match(/await pkAlleLoeschen\(\)/g) || []).length + ' Aufrufe');
 roh('Und gefragt nur bei sicherem Stand',
     /if\(!Array\.isArray\(PK_LISTE\) \|\| PK_LISTE\.length\)\{ weiter\(\); return; \}/.test(HTML));
+/* Das Profilbild war am Funnelende das einzige runde der App. */
+roh('Der Gruss macht das Bild nicht mehr rund',
+    !/\.hallo\.fertig \.hallo-bild\{ ?border-radius:50%/.test(HTML));
+roh('Der Reif laeuft ueber den gemessenen Umfang',
+    /stroke-dasharray:331; stroke-dashoffset:331/.test(HTML));
 roh('Ruhige Geraete bekommen nichts davon',
     /#za-inhalt > \.za-wahl > button, #za-inhalt > \.za-tage > button,\s*\n\s*#v-zeitassi\.on \.za-moji\{ animation:none \}/.test(HTML));
 
