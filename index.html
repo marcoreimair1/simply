@@ -825,8 +825,12 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
    unterscheiden. */
 .zaehler.tee{background:var(--butter)}
 .zaehler.beides{background:linear-gradient(90deg,#FF453A 0 50%,var(--butter) 50% 100%)}
-/* Im Menue sitzt er am rechten Ende der Zeile, nicht an der Ecke. */
-.mi > .zaehler{position:static;margin-left:auto;animation:none}
+/* Im Menue sitzt er an der Ecke der Symbolkachel — genau wie der rote
+   am Briefsymbol im Profilkopf. Frei in der Zeile war er ein fremder
+   Punkt zwischen Bild und Text. */
+.mi > .miico{position:relative;overflow:visible}
+.mi .miico > .zaehler{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;
+  font-size:10.5px;animation:none}
 .avatar.hatbild{background:#fff;border-color:rgba(var(--s-auf),.28)}
 
 /* Menü */
@@ -5467,7 +5471,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1500';
+const APP_STAND = '2026-09-15-1540';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9669,6 +9673,10 @@ function malZaehler(){
   setz('#av-zaehler', _zaehlerFrei ? oben : 0);
   setz('#pf-zaehler', post);
   setz('#mr-zaehler', stufen);
+  /* Die Symbolkachel wird beim Aufbau des Menues um das SVG gelegt; der
+     Zaehler muss danach hineinwandern. */
+  const fz = $('#fi-zaehler'), fico = $('.mi[data-act="firma"] .miico');
+  if(fz && fico && fz.parentNode !== fico) fico.appendChild(fz);
   setz('#fi-zaehler', tee);
   const z = $('#av-zaehler');
   if(z){

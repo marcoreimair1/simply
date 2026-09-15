@@ -446,6 +446,11 @@ window.__WEITER = function(){
   ok('Und im Menue steht es auch',
      document.getElementById('fi-zaehler').textContent === '1'
      && !document.getElementById('fi-zaehler').hidden);
+  /* An der Ecke der Symbolkachel, wie der rote am Briefsymbol — frei in
+     der Zeile war er ein fremder Punkt zwischen Bild und Text. */
+  ok('Er sitzt an der Ecke des Symbols',
+     document.getElementById('fi-zaehler').parentNode.classList.contains('miico'),
+     document.getElementById('fi-zaehler').parentNode.className);
   ME.gelesen = []; malZaehler();
   var summe = pfNeu().length + aufOffen() + 1;
   ok('Beides: halb und halb, Zahl zusammengezaehlt',
@@ -555,6 +560,8 @@ setTimeout(() => {
       Seite breiter als den Schirm. */
    ['Die Firmenansicht laeuft nicht ueber', /#v-firma\{ overflow-x:hidden \}/.test(roh)
     && /#v-firma \.fi-sek\{ margin-top:26px/.test(roh)],
+   ['Der Zaehler haengt an der Symbolkachel',
+    /\.mi \.miico > \.zaehler\{position:absolute;top:-7px;right:-7px/.test(roh)],
    ['Halb rot, halb violett gibt es wirklich',
     /\.zaehler\.beides\{background:linear-gradient\(90deg,#FF453A 0 50%,var\(--butter\) 50% 100%\)\}/.test(roh)]
   ];

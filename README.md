@@ -965,7 +965,10 @@ Uhr früh) und zählt nur dann. Im Browser wäre das in zehn Sekunden ausgehebel
 und wartende Bubble Teas in einer Zahl. Welche Art dahintersteckt, sagt die **Farbe** — Rot für
 Nachrichten, Violett für einen Tee, und kommt beides zusammen, wird der Kreis halb und halb
 (`.zaehler.beides`). Zwei Punkte nebeneinander wären an einem 20-px-Kreis nicht mehr zu
-unterscheiden. Im Menü steht die Zahl der wartenden Tees zusätzlich in der Zeile *Meine Firma*.
+unterscheiden. Im Menü steht die Zahl der wartenden Tees zusätzlich in der Zeile *Meine Firma* — an der Ecke
+der Symbolkachel, wie der rote Punkt am Briefsymbol im Profilkopf. Frei in der Zeile war er ein
+fremder Punkt zwischen Bild und Text. Die Kachel entsteht erst beim Aufbau des Menüs, der
+Zähler wandert deshalb in `malZaehler()` hinein.
 
 **Zuletzt online** ist eine Leiter, keine Uhrzeit: *kürzlich gesehen* (bis 4 h), *heute zuletzt
 online*, *gestern*, *vor n Tagen* bis 40, danach *es ist schon ewig her*. Niemand rechnet aus,
