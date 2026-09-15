@@ -926,6 +926,10 @@ in ein 52-px-Quadrat gequetscht war er 24 px breit und nicht mehr zu lesen. Jetz
 Platte in dem Blau, das die Marke selbst mitbringt. Im Menü bleibt die quadratische Fassung:
 bei 36 px ist ohnehin kein Schriftzug lesbar, dort zählt der Wiedererkennungswert der Fläche.
 
+Dass der Dienstgeber feststeht, steht **in der Zeile Arbeitsort**, nicht in einem eigenen
+Kasten: dort saß der Satz zwischen den Angaben und den Getränken, trennte beides und las sich,
+als gehöre er zu den Getränken. Die fünf Zeilen wiegen jetzt gleich schwer.
+
 **Was ein Bubble Tea ist**, steht in den aufgeklappten Details — mit allen zehn Getränken,
 ihren Namen und ab wie vielen Punkten sie kommen. Nicht auf der Liste: wer sie kennt, soll
 nicht jedes Mal daran vorbeilesen.
@@ -1871,6 +1875,10 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Der Hinweis zum Dienstgeber wandert zum Dienstgeber** (15. September 2026): Als eigener
+  Kasten saß er zwischen den Angaben und den Getränken und trennte beides. Jetzt ist er die
+  Unterzeile von *Arbeitsort*; die fünf Zeilen wiegen gleich schwer. 766 Prüfungen
 
 - **Die Marke des Dienstgebers, und was ein Bubble Tea ist** (15. September 2026): Die
   Wortmarke ist aus der Vorlage geschnitten und sitzt als breite Platte in der Kachel; im

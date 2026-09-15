@@ -2210,10 +2210,6 @@ body.sigmodus .fb-s{display:inline-flex}
 .fiz b{ flex:1; min-width:0; font-size:13.5px; font-weight:600; line-height:1.35 }
 .fiz b small{ display:block; margin-top:3px; font-size:11px; font-weight:400; line-height:1.45;
   color:var(--tx-3) }
-.fihint{ display:flex; gap:9px; align-items:flex-start; margin:12px 0 0; padding:10px 12px;
-  border-radius:13px; background:rgba(var(--marke-rgb),.07); font-size:11.5px; line-height:1.5;
-  color:var(--tx-2) }
-.fihint svg{ flex:none; width:15px; height:15px; color:var(--butter); margin-top:1px }
 .fi-sek span{ color:var(--tx-3); font-weight:500 }
 /* Die zehn Getraenke als Leiste — man sieht auf einen Blick, was noch
    kommt, ohne dass es die Firmendaten erschlaegt. */
@@ -5503,7 +5499,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1620';
+const APP_STAND = '2026-09-15-1650';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9031,13 +9027,15 @@ function malFirma(){
   $('#fi-sub').textContent = 'Dein Dienstgeber'
     + (TEAM && TEAM.length ? ' · ' + TEAM.length
         + (TEAM.length === 1 ? ' Mitglied' : ' Mitglieder') : '');
+  /* Dass der Dienstgeber feststeht, gehoert zum Dienstgeber — nicht in
+     einen eigenen Kasten mittendrin. Dort trennte er die Angaben von den
+     Getraenken und las sich, als gehoere er zu diesen. */
   $('#fi-zeilen').innerHTML =
-      zeile('Arbeitsort', EMPLOYER, 'Steht so auf jedem Monats-PDF in der Zeile „Dienstgeber / Arbeitsort".')
+      zeile('Arbeitsort', EMPLOYER, 'Fest eingestellt, in der App nicht änderbar. '
+            + 'Steht so auf jedem Monats-PDF in der Zeile „Dienstgeber / Arbeitsort".')
     + zeile('Dein Dienstplan', rhythmus, 'Ändern über „Dienstzeiten bearbeiten".')
     + zeile('Dabei seit', seitText())
     + zeile('Feiertage', 'Österreich', 'Werden inklusive Ostertermin selbst berechnet.')
-    + '<p class="fihint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.01"/></svg>'
-    + 'Der Dienstgeber ist fest eingestellt und lässt sich in der App nicht ändern.</p>'
     + teeKundeHtml();
   malTeam();
 }

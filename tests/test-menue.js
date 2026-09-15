@@ -333,6 +333,19 @@ window.__WEITER = function(){
   ok('Und einer Erklaerung davor',
      document.querySelector('#fi-zeilen .fiz-tee b').textContent
        .indexOf('Zehn Stufen zum Freischalten') === 0);
+  /* Der Hinweis zum Dienstgeber sass als eigener Kasten zwischen den
+     Angaben und den Getraenken — dort trennte er, statt zu erklaeren. */
+  ok('Kein eigener Kasten mehr',   document.querySelectorAll('#fi-zeilen .fihint').length === 0);
+  ok('Der Hinweis steht beim Dienstgeber',
+     document.querySelector('#fi-zeilen .fiz b small').textContent
+       .indexOf('Fest eingestellt') === 0,
+     document.querySelector('#fi-zeilen .fiz b small').textContent.slice(0, 40));
+  ok('Fuenf gleich schwere Zeilen',
+     [].slice.call(document.querySelectorAll('#fi-zeilen .fiz u'))
+       .map(function(u){ return u.textContent; }).join('|')
+     === 'Arbeitsort|Dein Dienstplan|Dabei seit|Feiertage|Bubble Tea',
+     [].slice.call(document.querySelectorAll('#fi-zeilen .fiz u'))
+       .map(function(u){ return u.textContent; }).join('|'));
   ok('Es gibt einen Zurueck-Knopf', !!document.getElementById('fi-back'));
   ok('Die alte Augenbraue ist weg', !document.querySelector('#v-firma .eyebrow'));
 
