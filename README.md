@@ -1023,10 +1023,19 @@ der Symbolkachel, wie der rote Punkt am Briefsymbol im Profilkopf. Frei in der Z
 fremder Punkt zwischen Bild und Text. Die Kachel entsteht erst beim Aufbau des Menüs, der
 Zähler wandert deshalb in `malZaehler()` hinein.
 
-**Zuletzt online** ist eine Leiter, keine Uhrzeit: *kürzlich gesehen* (bis 4 h), *heute zuletzt
-online*, *gestern*, *vor n Tagen* bis 89, ab 90 Tagen *es ist schon ewig her*. Niemand rechnet aus,
-wie lange 14:32 her ist. Bis 15. September 2026 war schon bei 40 Tagen Schluss — ein Vierteljahr
-ist die ehrlichere Grenze für „schon ewig".
+**Zuletzt online** ist eine Leiter, keine Uhrzeit — und sie wird nach hinten immer gröber:
+*kürzlich gesehen* (bis 1 h), *vor 1 Stunde* bis *vor 4 Stunden*, dann *heute zuletzt online*,
+*gestern*, *vor n Tagen* bis 89, ab 90 Tagen *es ist schon ewig her*. Niemand rechnet aus, wie
+lange 14:32 her ist.
+
+**Die Stunden gehen den Tagen vor.** Wer um ein Uhr früh nachsieht und jemanden um zehn Uhr
+abends zuletzt gesehen hat, liest lieber *vor 3 Stunden* als *gestern*. Und der **grüne Punkt
+hält mit dem Wort Schritt**: er steht, solange *kürzlich gesehen* dasteht — also bis zur ersten
+Stunde, nicht mehr bis zur vierten.
+
+Zwei Grenzen sind am 15. September 2026 gewandert: *kürzlich gesehen* galt vorher **vier
+Stunden** lang, und das waren keine Momente mehr; und bei den Tagen war schon nach **40** Schluss
+— ein Vierteljahr ist die ehrlichere Grenze für „schon ewig".
 
 ### Das Postfach
 

@@ -379,10 +379,22 @@ window.__WEITER = function(){
 
   /* „Zuletzt online" — die Leiter. */
   var vor = function(h){ return new Date(Date.now() - h * 3600e3).toISOString(); };
-  ok('Bis vier Stunden: kuerzlich',   zuletztText(vor(1)) === 'kürzlich gesehen',
-     zuletztText(vor(1)));
-  ok('Spaeter am selben Tag: heute',  zuletztText(vor(5)).indexOf('heute') === 0
-     || zuletztText(vor(5)) === 'gestern', zuletztText(vor(5)));
+  /* Seit 15.09.2026: die erste Stunde ist „kuerzlich", danach vier
+     Stunden einzeln, dann erst der Tag. */
+  ok('Bis eine Stunde: kuerzlich',    zuletztText(vor(0.5)) === 'kürzlich gesehen',
+     zuletztText(vor(0.5)));
+  ok('Eine Stunde im Singular',       zuletztText(vor(1.2)) === 'vor 1 Stunde',
+     zuletztText(vor(1.2)));
+  ok('Zwei bis vier im Plural',
+     zuletztText(vor(2.3)) === 'vor 2 Stunden' && zuletztText(vor(3.1)) === 'vor 3 Stunden'
+     && zuletztText(vor(4.6)) === 'vor 4 Stunden',
+     [zuletztText(vor(2.3)), zuletztText(vor(3.1)), zuletztText(vor(4.6))].join(' | '));
+  ok('Spaeter am selben Tag: heute',  zuletztText(vor(5.2)).indexOf('heute') === 0
+     || zuletztText(vor(5.2)) === 'gestern', zuletztText(vor(5.2)));
+  /* Der Punkt haelt mit dem Wort Schritt. */
+  ok('Gruen nur, solange kuerzlich dasteht',
+     zuletztArt(vor(0.5)) === 'frisch' && zuletztArt(vor(1.2)) !== 'frisch',
+     zuletztArt(vor(0.5)) + ' / ' + zuletztArt(vor(1.2)));
   ok('Ein Tag: gestern',              zuletztText(vor(24 * 1 + 12)) === 'gestern'
      || zuletztText(vor(24 * 1 + 12)) === 'vor 2 Tagen', zuletztText(vor(36)));
   /* Ohne regulaeren Ausdruck: der Pruefteil steckt in einer Vorlage,
@@ -693,6 +705,8 @@ setTimeout(() => {
    ['Die Farben bleiben, wie sie waren',
     /\.tm-lvl\.an\{ color:var\(--tee\); background:color-mix\(in srgb, var\(--tee\) 16%, transparent\)/.test(roh)],
    ['Bis 90 Tage wird gezaehlt', /if\(tage < 90\) return 'vor ' \+ tage \+ ' Tagen';/.test(roh)],
+   ['Die Stunden gehen den Tagen vor',
+    /if\(std === 1\) return 'vor 1 Stunde';\s*\n\s*if\(std <= 4\) return 'vor ' \+ std \+ ' Stunden';\s*\n\s*const h = new Date\(\)/.test(roh)],
    ['Halb rot, halb violett gibt es wirklich',
     /\.zaehler\.beides\{background:linear-gradient\(90deg,#FF453A 0 50%,var\(--butter\) 50% 100%\)\}/.test(roh)]
   ];
