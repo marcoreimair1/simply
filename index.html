@@ -935,8 +935,13 @@ body.menuauf #avatar{transform:scale(.92)}
    bleibt stehen, die Bilder kommen dort heraus, wo vorher die Zeilen waren. */
 .mbody{position:relative}
 .avgrid{position:absolute;inset:-4px -6px;z-index:3;
-  display:grid;grid-template-columns:repeat(4,1fr);gap:9px;align-content:center;
-  padding:10px 5px;border-radius:var(--r-s);overflow:auto;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:9px;align-content:start;
+  /* min-content und nicht auto: der Kasten hat eine feste Hoehe, und mit
+     auto quetscht das Gitter alle Reihen hinein, statt zu scrollen. Bei
+     zwoelf Motiven fiel das nicht auf — bei 117 waren die Reihen nur
+     noch 14,7 px hoch und die Kacheln lagen uebereinander. */
+  grid-auto-rows:min-content;
+  padding:10px 5px;border-radius:var(--r-s);overflow:auto;-webkit-overflow-scrolling:touch;
   background:rgba(var(--s-hoch),.97);
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
@@ -1166,6 +1171,10 @@ body.menuauf #avatar{transform:scale(.92)}
 .menu-card.avauf .avopt:nth-child(10){animation-delay:.29s}
 .menu-card.avauf .avopt:nth-child(11){animation-delay:.32s}
 .menu-card.avauf .avopt:nth-child(12){animation-delay:.35s}
+/* Ab dem dreizehnten nicht mehr: seit 15.09.2026 stehen 117 Motive im
+   Gitter, und hundert gleichzeitig einlaufende Kacheln waeren weder zu
+   sehen — sie liegen unter dem Rand — noch billig zu zeichnen. */
+.menu-card.avauf .avopt:nth-child(n+14){animation:none}
 /* Der Wechsel selbst: das große Bild dreht sich kurz herein. */
 @keyframes avTausch{
   0%{transform:scale(.86) rotate(-7deg);opacity:.35}
@@ -5588,7 +5597,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-1730';
+const APP_STAND = '2026-09-15-1830';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -10077,17 +10086,42 @@ $('#pf-alle').addEventListener('click', () => pfMerke(alleNachrichten().map(n =>
    Geburtsdatum, damit dasselbe Profil auf jedem Gerät dasselbe Bild
    zeigt, ohne dass wir dafür etwas speichern müssen.
    ═══════════════════════════════════════════════════════════ */
-const AVATARE = 12;
+const AVATARE = 117;
 /* Die Versionsangabe hängt am Namen, damit ein überarbeitetes Motiv auch
    bei Geräten ankommt, die die alte Datei schon im Zwischenspeicher haben.
    Bei jeder Änderung an den Bildern wird die Zahl erhöht. */
-const AV_STAND = 6;
+const AV_STAND = 7;
 /* Der Pastellgrund jedes Motivs. Er liegt hinter dem Bild im Rahmen —
    rutscht das Bild nach unten, kommt also dieselbe Farbe zum Vorschein
-   und nicht Weiß. */
-const AV_GRUND = ['#D9F2DF','#F2D9DC','#F2D9DE','#F2D9DA','#F2E4D9','#F2EED9',
-                  '#F2EBD9','#F2D9DE','#F2E5D9','#F2EED9','#F2F2D9','#F2DCD9'];
-function avDatei(n){ return 'av-' + n + '.png?v=' + AV_STAND; }
+   und nicht Weiß.
+
+   Bei den 106 neuen Motiven ist die Farbe aus der OBERKANTE der Vorlage
+   abgenommen: genau dort schliesst die Verlaengerung nach oben an, die
+   beim Rutschen sichtbar wird. Deshalb entsteht dabei keine Kante.
+
+   Seit 15.09.2026 als WebP statt PNG. Dasselbe Motiv in 288 × 384 statt
+   192 × 256 kostet so 9 KB statt 88 — alle 117 zusammen 1,3 MB. */
+const AV_GRUND = ['#D9F2DF','#F2D9DC','#D2EAFD','#F2D9DA','#F2E4D9','#F2EED9',
+                  '#F2EBD9','#F2D9DE','#F2E5D9','#F2EED9','#F2F2D9','#F2DCD9',
+                  '#D8F6E1','#FEDEE2','#FEF2DB','#E9DFFE','#E2D4FD','#D6F6DF',
+                  '#D0ECFD','#FEDFE2','#FEF2DB','#FEF1D0','#FEDBE5','#E4DAFD',
+                  '#D1E9FD','#E6DDFD','#FEF3DE','#FDDCE3','#E7FBD8','#FEDCE2',
+                  '#FEDEE9','#FEF1D8','#E6DBFD','#FCDBE7','#FCEDD1','#D2F7D5',
+                  '#E5D9FB','#FCF3D3','#FDDCEA','#D3E2F3','#FBE7CF','#D9F4E3',
+                  '#E9DDF4','#CFE6FB','#DCEAFD','#F9D4E3','#FCDDC1','#CFF2D9',
+                  '#FEE1E8','#FCF0D8','#D7F6DB','#FEE7D4','#DAEDFE','#DBD0F8',
+                  '#E8DAFD','#DAEDFE','#FEE0E5','#FDF3D9','#E6F0D6','#FEF4C6',
+                  '#FEE0E6','#DEEFFE','#FEDADC','#FEF0DC','#F3E9FD','#D4E7FC',
+                  '#FCDCE8','#FDF2D6','#FBDDE9','#F7F0D4','#D5F2CF','#EDDEFA',
+                  '#D1E7FC','#FCDDE8','#D2F1DE','#EBDDFA','#FDDBD8','#C7E4FA',
+                  '#FBDDE9','#D8ECFE','#FBE0E6','#E4DAFD','#FBF2CE','#DBF6E0',
+                  '#D9F3DF','#FCE0E6','#D8ECFE','#FCF4DF','#FCDFE5','#FCF3DB',
+                  '#DBF6E0','#DDD2FD','#D6EBFE','#DAEDFD','#FBDFD4','#FCF2D8',
+                  '#FCF3D5','#E5DAFD','#DAF5E0','#D3EAFE','#FCE1E6','#F6E5D2',
+                  '#D2F2D7','#D0E5FD','#FBD7DE','#FBD7DD','#FAEDD1','#E3DCFD',
+                  '#D4F5DE','#D0E4FD','#F9D5DB','#FAEFD8','#E2DBFD','#E1F0D4',
+                  '#C6E3FD','#FBD3DB','#FBEFCE'];
+function avDatei(n){ return 'av-' + n + '.webp?v=' + AV_STAND; }
 function avZufall(){
   /* Aus Vorname und Geburtsdatum eine Zahl bilden — gleicher Mensch,
      gleiches Bild, ohne Zufallsgenerator und ohne Speicherzugriff. */
@@ -10120,7 +10154,8 @@ function malAvGitter(){
   let h = PFEIL_ZURUECK;
   for(let i = 1; i <= AVATARE; i++)
     h += '<button class="avopt' + (i === jetzt ? ' on' : '') + '" data-av="' + i + '" '
-       + 'aria-label="Motiv ' + i + '"><img src="' + avDatei(i) + '" alt=""></button>';
+       + 'aria-label="Motiv ' + i + '"><img src="' + avDatei(i) + '" alt="" '
+       + 'loading="lazy" decoding="async"></button>';
   $('#avgrid').innerHTML = h;
 }
 /* Ein- und ausblenden. Die Fläche liegt über dem Bereich unter dem Kopf,

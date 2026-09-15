@@ -321,6 +321,31 @@ window.__WEITER = function(){
        && document.querySelector('.mi[data-act="firma"] img')
             .getAttribute('src').indexOf('firma-miller.png') === 0,
      document.querySelector('.mi[data-act="firma"]').innerHTML.slice(0, 80));
+  /* ── Die Profilbilder ──
+     Seit 15.09.2026 sind es 117 statt 12, als WebP in 288 x 384. */
+  ok('117 Motive stehen zur Wahl',  AVATARE === 117, AVATARE);
+  ok('Zu jedem ein Pastellgrund',   AV_GRUND.length === AVATARE, AV_GRUND.length);
+  ok('Und alle sind Farbwerte',
+     AV_GRUND.every(function(c){ return /^#[0-9A-F]{6}$/.test(c); }),
+     AV_GRUND.filter(function(c){ return !/^#[0-9A-F]{6}$/.test(c); }).join(','));
+  /* Kein Muster mit Backslash: diese Pruefungen stehen in einer
+     Schablonenzeichenkette, dort wird aus \d ein d. */
+  ok('Die Bilder sind WebP',        avDatei(1) === 'av-1.webp?v=' + AV_STAND, avDatei(1));
+  malAvGitter();
+  ok('Das Gitter zeigt alle',
+     document.querySelectorAll('#avgrid .avopt').length === AVATARE,
+     document.querySelectorAll('#avgrid .avopt').length);
+  ok('Mit dem Zurueck-Knopf davor',
+     document.querySelector('#avgrid').firstElementChild.classList.contains('zurueckbtn'));
+  /* 117 Bilder auf einmal zu laden waere ein Schwall — sie kommen, wenn
+     man zu ihnen scrollt. */
+  ok('Sie laden erst beim Scrollen',
+     [].every.call(document.querySelectorAll('#avgrid .avopt img'),
+                   function(i){ return i.getAttribute('loading') === 'lazy'; }));
+  /* Das dritte Motiv ist ersetzt, nicht entfernt: die Nummer bleibt,
+     damit sich bei niemandem das Bild verschiebt. */
+  ok('Nummer 3 traegt jetzt ein neues', AV_GRUND[2] === '#D2EAFD', AV_GRUND[2]);
+
   /* Die Bubble Teas werden in den Details erklaert, nicht auf der Liste. */
   malFirma();
   ok('Alle zehn Getraenke stehen in den Details',
@@ -705,11 +730,36 @@ setTimeout(() => {
    ['Die Farben bleiben, wie sie waren',
     /\.tm-lvl\.an\{ color:var\(--tee\); background:color-mix\(in srgb, var\(--tee\) 16%, transparent\)/.test(roh)],
    ['Bis 90 Tage wird gezaehlt', /if\(tage < 90\) return 'vor ' \+ tage \+ ' Tagen';/.test(roh)],
+   /* ─── 15.09.2026: 117 Profilbilder ────────────────────────────── */
+   ['Das Bildgitter faengt oben an, nicht in der Mitte',
+    /\.avgrid\{[\s\S]{0,200}align-content:start/.test(roh)],
+   /* Nachgemessen: mit auto quetscht das Gitter alle 30 Reihen in den
+      Kasten — 14,7 px hoch, die Kacheln uebereinander. */
+   ['Und die Reihen behalten ihre Hoehe',
+    /\.avgrid\{[\s\S]{0,600}grid-auto-rows:min-content;/.test(roh)],
+   ['Nur die ersten laufen gestaffelt ein',
+    /\.menu-card\.avauf \.avopt:nth-child\(n\+14\)\{animation:none\}/.test(roh)],
+   ['Und die Bilder laden erst beim Scrollen',
+    /avDatei\(i\) \+ '" alt="" '\s*\n\s*\+ 'loading="lazy" decoding="async"/.test(roh)],
    ['Die Stunden gehen den Tagen vor',
     /if\(std === 1\) return 'vor 1 Stunde';\s*\n\s*if\(std <= 4\) return 'vor ' \+ std \+ ' Stunden';\s*\n\s*const h = new Date\(\)/.test(roh)],
    ['Halb rot, halb violett gibt es wirklich',
     /\.zaehler\.beides\{background:linear-gradient\(90deg,#FF453A 0 50%,var\(--butter\) 50% 100%\)\}/.test(roh)]
   ];
+  /* Jedes Motiv braucht seine Datei — ohne diese Pruefung faende man
+     eine vergessene erst als leeren Rahmen auf dem Telefon. */
+  {
+    const ordner = require('path').dirname(DATEI);
+    const anz = +(roh.match(/const AVATARE = (\d+);/) || [])[1];
+    const fehlen = [];
+    for(let i = 1; i <= anz; i++)
+      if(!fs.existsSync(require('path').join(ordner, 'av-' + i + '.webp'))) fehlen.push(i);
+    E.push({ n: 'Zu jedem Motiv liegt eine Datei',
+             ok: anz > 0 && fehlen.length === 0,
+             z: fehlen.length ? 'es fehlen ' + fehlen.join(',') : '' });
+    const png = fs.readdirSync(ordner).filter(f => /^av-\d+\.png$/.test(f));
+    E.push({ n: 'Und kein altes PNG mehr daneben', ok: png.length === 0, z: png.join(',') });
+  }
   /* Manche Pruefungen sind ein Muster, manche schon ein Ja/Nein. */
   css.forEach(([n, re]) => {
     const gut = (typeof re === 'boolean') ? re : re.test(roh);
