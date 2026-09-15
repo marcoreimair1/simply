@@ -14,7 +14,7 @@ const roh = fs.readFileSync(DATEI, 'utf8');
 const policy = (function(){
   try{
     const d = path.join(__dirname, '..', 'supabase', 'migrations');
-    return fs.readdirSync(d).filter(f => /team_policy/.test(f))
+    return fs.readdirSync(d).filter(f => /team_policy|team_nachzug|team_ausloeser/.test(f))
              .map(f => fs.readFileSync(path.join(d, f), 'utf8')).join('\n')
              /* Kommentare heraus: dort steht die alte, falsche Regel als
                 Erklaerung — die soll die Pruefung nicht finden. */
@@ -468,7 +468,17 @@ setTimeout(() => {
    ['Und die Mitarbeiterkarte behaelt ihr mk', /\.mk\{position:relative;overflow:hidden/.test(roh)],
    ['Die Firma kommt aus einer eigenen Funktion',
     /create or replace function public\.meine_firma\(\)/.test(policy)
-    && /security definer/.test(policy)]
+    && /security definer/.test(policy)],
+   /* Bestehende Konten kommen ueber einen Ausloeser an records ins
+      Team — nicht erst, wenn jemand die Ansicht aufmacht. */
+   ['Ein Ausloeser zieht das Team nach', /create trigger records_mitglied/.test(policy)],
+   ['Und er darf das Sichern nie aufhalten',
+    /exception when others then/.test(policy) && /raise warning 'mitglied_nachziehen/.test(policy)],
+   ['Die Stufe rechnet die Datenbank wie die App',
+    /create or replace function public\.moji_stufe/.test(policy)
+    && /\/ 4\s*\n?\s*\) \+ 1/.test(policy)],
+   ['Ohne Namen kein Eintrag', /if vn = '' then/.test(policy)],
+   ['Der Nachzug prueft sich selbst', /Nachzug unvollstaendig/.test(policy)]
   ];
   /* Manche Pruefungen sind ein Muster, manche schon ein Ja/Nein. */
   css.forEach(([n, re]) => {

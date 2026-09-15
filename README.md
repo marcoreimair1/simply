@@ -919,6 +919,21 @@ Lesen darf, wer in derselben Firma ist (→ `supabase/migrations/`).
 > `.mk-bild`. Jetzt heißt alles `tm-`. Eine Prüfung achtet darauf, dass es dabei bleibt — und
 > eine zweite sieht die berechnete Textfarbe nach, statt nur die Regel zu suchen.
 
+**Wie die Liste voll wird.** Ein Auslöser an `records` zieht die öffentliche Zeile bei jedem
+Sichern nach — Name, Anfangsbuchstabe, Bild, Stufe, zuletzt aktiv. Vorher legte nur die App
+selbst eine Zeile an, und auch das erst, wenn jemand *Meine Firma* aufmachte: wer MOJI seit
+Monaten benutzt und dort nie hineingesehen hat, fehlte im Team. Einmalig sind alle bestehenden
+Profile nachgezogen worden (`20260915120000_team_nachzug.sql`), und die Migration prüft sich
+selbst: kommen weniger Zeilen an, als es Profile mit Namen gibt, schlägt sie fehl.
+
+> **Der Auslöser darf das Sichern nie verhindern.** Er hängt an jedem Schreibvorgang auf
+> `records`; würde er werfen, könnte jemand seine Arbeitszeit nicht mehr speichern, weil eine
+> Namensliste klemmt. Das wäre die falsche Reihenfolge — die Aufzeichnung ist der Zweck der App,
+> das Team ist Beiwerk. Darum fängt die Funktion alles ab und meldet es als Warnung.
+
+Wer keinen Vornamen hat, kommt nicht in die Liste: dann wurde der Funnel nie beendet, und eine
+Namensliste ohne Namen hilft niemandem.
+
 **Die Mitgliedskarte** hat zwei Zeilen: oben wer — Bild, *Anna M.*, klein und grau Filiale und
 MOJI-Stufe, darunter *kürzlich gesehen* mit farbigem Punkt, rechts die eckige Box mit dem
 geteilten Level. Unten das gemeinsame Getränk, der Weg zur nächsten Stufe und **Senden**.
@@ -1823,6 +1838,11 @@ Gedächtnis des Projekts, zusammen mit den Kommentaren im Code.
   `save()` schreibt sonst in das echte Profil. Erst prüfen, dass `UID === null` ist
 
 ### 19.4 Woran gerade gearbeitet wurde
+
+- **Alle bestehenden Konten sind im Team** (15. September 2026): Ein Auslöser an `records`
+  zieht die öffentliche Zeile bei jedem Sichern nach, und ein einmaliger Nachzug hat alles
+  geholt, was schon da war. Der Auslöser fängt jeden Fehler ab — er darf das Sichern der
+  Arbeitszeit nie verhindern. 736 Prüfungen
 
 - **Die Namen standen unsichtbar auf der Teamkarte** (15. September 2026): Sie hieß `.mk` wie
   die Mitarbeiterkarte im Menü, und deren spätere Regel setzt fast weiße Schrift. Umbenannt
