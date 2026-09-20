@@ -929,8 +929,25 @@ setTimeout(() => {
    ['Aber nur, solange das Menue offen ist',
     /\.ma-glanz\{ position:absolute;[^}]*transform:translateX\(-85%\) \}/.test(roh)
     && (roh.match(/animation:maGlanz/g) || []).length === 1],
-   ['Das dunkle Band traegt die Wortmarke',
-    /\.ma-band\{[\s\S]{0,200}background:var\(--karton-band, #0B0711\)/.test(roh)],
+   /* Schwarz sass auf dem hellen Pastell wie ein Riegel und verschwand
+      in der dunklen Fassung im Grund der Seite. */
+   ['Das Band im Kopf traegt die Farbe der Stufe',
+    /\.ma-band\{[\s\S]{0,260}background:var\(--rd, #5C6A94\)/.test(roh)],
+   ['Die Vorderseite fuellt die Karte ganz aus',
+    /\.kt-vorn\{ position:relative; flex:1; width:100%;/.test(roh)
+    && /\.kt-dreh\{ position:relative; flex:1; display:flex;/.test(roh)],
+   ['Im Fach bricht nichts um',
+    /\.kt-fach b\{[\s\S]{0,160}white-space:nowrap; flex:none \}/.test(roh)],
+   /* Die Karten drehen sich beim Wischen leicht mit — das sagt, dass sie
+      eine Rueckseite haben. Ohne den Hinweis kam niemand darauf. */
+   ['Beim Wischen drehen die Karten mit',
+    /transform:rotateY\(calc\(var\(--seite, 0\) \* 16deg\)\);/.test(roh)
+    && /k\.style\.setProperty\('--seite'/.test(roh)],
+   ['Waehrend des Wischens ohne Uebergang',
+    /\.kt-bahn\.wischt \.kt-dreh\{ transition:none \}/.test(roh)
+    && /bahn\.classList\.add\('wischt'\);/.test(roh)],
+   ['Beim Aufschlagen stupst die vordere Karte an',
+    /\.kt\.stups \.kt-dreh\{ animation:ktStups/.test(roh) && /@keyframes ktStups\{/.test(roh)],
    ['Die Obergrenze in normalize steht nicht als Zahl da',
     /if\(!\(av >= 1 && av <= AVATARE\)\) delete p\.avatar;/.test(roh)],
    ['Das zugeteilte Bild wird hinterlegt',

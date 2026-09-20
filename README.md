@@ -887,7 +887,9 @@ hell, weil `--pa` 84 % Weiß unter die Stufenfarbe mischt; ein fester dunkler We
 `pointer-events:auto` zurück — Knöpfe ineinander gibt es in HTML nicht.
 
 **Die Plakette trägt die Farbe ihrer Stufe.** Sie saß mit 82 % Tinte wie ein schwarzer Fleck in
-der Ecke; jetzt `--rd`, die dunkle Farbe des Rangs — sie gehört ja zu ihm.
+der Ecke; jetzt `--rd`, die dunkle Farbe des Rangs — sie gehört ja zu ihm. **Dasselbe für das
+Band unten:** Schwarz saß auf dem hellen Pastell wie ein Riegel und verschwand in der dunklen
+Fassung im Grund der Seite.
 
 **Und der Glanz wandert auch hier.** Dasselbe schmale Lichtband wie auf der großen Karte zieht
 quer über den Kopf — er *ist* ja die Karte, also soll er sich auch so verhalten. Es lag zuerst
@@ -951,6 +953,19 @@ Angewendet wird es über `scale`, nicht `transform` — sonst fahren Einlauf-Ani
 **Dreimal dieselbe Liste ist weggefallen.** Die Stufen gab es als Fläche im Menü (`rangbox`), als
 eigenes Blatt (`rsheet`) und kurz als Knopf in der Karte. Der Stapel ist alle drei: er zeigt jede
 Stufe, ihren Namen, ihren Satz und was sie kostet.
+
+**Beim Wischen drehen sich die Karten leicht mit** (`--seite`, der vorzeichenbehaftete Abstand
+zur Mitte, mal 16 Grad). Das sieht nicht nur besser aus — es sagt auch, dass die Karte eine
+Rückseite hat. Ohne diesen Hinweis kam niemand auf die Idee, sie umzudrehen. Beim Aufschlagen
+stupst die vordere Karte zusätzlich einmal an. Während gewischt wird, läuft die Drehung **ohne
+Übergang** (`.kt-bahn.wischt`) — sonst liefe sie dem Finger hinterher, genau wie vorher die
+Größe.
+
+**Die Vorderseite füllt die Karte** (`flex:1`). Die Karten werden alle so hoch wie die höchste;
+ohne das blieb unter dem Band ein Streifen blanke Karte stehen, und weil das Band durchscheinend
+ist, sah es aus, als lege es sich über das Fach darüber. Dass eine Karte überhaupt höher wurde,
+lag am Fach: bei *Geschafft mit 20 Monaten* rutschte der Wert in eine zweite Zeile. Jetzt bricht
+dort nichts mehr um.
 
 **Umdrehen gibt es weiterhin.** Ein Tipp dreht die Karte, die vorne liegt — hinten das Zeichen
 als Prägung, darunter *Mitglied seit*, *Abgegeben*, *Zuletzt* und *Dafür nötig*, und ganz unten

@@ -2790,6 +2790,7 @@ body.sigmodus .fb-s{display:inline-flex}
 .kt{
   scroll-snap-align:center; scroll-snap-stop:always;
   flex:none; width:var(--kb); position:relative; perspective:1600px; cursor:pointer;
+  display:flex;
   /* KEIN transition auf scale: --nah wird bei jedem Bild neu gesetzt,
      waehrend gewischt wird. Ein Uebergang wuerde bei jedem dieser Werte
      von vorne anfangen und dem Finger hinterherlaufen — genau das war
@@ -2797,14 +2798,37 @@ body.sigmodus .fb-s{display:inline-flex}
   scale:calc(.9 + .1 * var(--nah, 1));
   opacity:calc(.55 + .45 * var(--nah, 1));
 }
-.kt-dreh{ position:relative; transform-style:preserve-3d;
+/* Beim Wischen drehen sich die Karten leicht mit: die in der Mitte
+   steht gerade, die daneben stehen schraeg im Raum. Das sieht nicht nur
+   besser aus — es sagt auch, dass die Karte eine Rueckseite hat. Ohne
+   diesen Hinweis kam niemand auf die Idee, sie umzudrehen.
+
+   --seite ist der vorzeichenbehaftete Abstand zur Mitte (-1 bis 1) und
+   wird von kartenTiefe() bei jedem Bild gesetzt. */
+.kt-dreh{ position:relative; flex:1; display:flex; transform-style:preserve-3d;
+  transform:rotateY(calc(var(--seite, 0) * 16deg));
   transition:transform .62s cubic-bezier(.22,1,.28,1) }
+/* Waehrend gewischt wird ohne Uebergang — sonst liefe die Drehung dem
+   Finger hinterher, genau wie vorher die Groesse. */
+.kt-bahn.wischt .kt-dreh{ transition:none }
 .kt.um .kt-dreh{ transform:rotateY(180deg) }
+/* Beim Aufschlagen stupst die vordere Karte einmal an: eine kurze
+   Drehung, die zeigt, dass da eine Rueckseite ist. */
+.kt.stups .kt-dreh{ animation:ktStups 1.5s .5s var(--ease-out) 1 }
+@keyframes ktStups{
+  0%{ transform:rotateY(0) } 26%{ transform:rotateY(-19deg) }
+  58%{ transform:rotateY(6deg) } 100%{ transform:rotateY(0) }
+}
 .kt-vorn, .kt-rueck{ border-radius:26px; overflow:hidden; color:#fff;
   backface-visibility:hidden; -webkit-backface-visibility:hidden;
   background:linear-gradient(170deg, var(--rf2,#5C6A94), var(--rtief,#1D2438) 92%);
   box-shadow:0 26px 56px -24px rgba(var(--s-schatten),.8) }
-.kt-vorn{ position:relative; display:flex; flex-direction:column; padding:9px 9px 0 }
+/* flex:1 und width:100%: die Karten werden alle so hoch wie die
+   hoechste. Ohne das blieb unter dem Band ein Streifen blanke Karte
+   stehen — und weil das Band durchscheinend ist, sah es aus, als lege
+   es sich ueber das Fach darueber. */
+.kt-vorn{ position:relative; flex:1; width:100%; display:flex; flex-direction:column;
+  padding:9px 9px 0 }
 .kt-rueck{ position:absolute; inset:0; transform:rotateY(180deg);
   display:flex; flex-direction:column; padding:22px 22px 0 }
 .kt.zu .kt-vorn, .kt.zu .kt-rueck{
@@ -2872,10 +2896,13 @@ body.sigmodus .fb-s{display:inline-flex}
 .kt-fach{ margin:13px 9px 0; padding:11px 14px; border-radius:15px;
   background:rgba(255,255,255,.12); min-height:54px;
   display:flex; align-items:center; justify-content:space-between; gap:10px }
-.kt-fach u{ text-decoration:none; font-size:9px; letter-spacing:.18em; text-transform:uppercase;
-  color:rgba(255,255,255,.62) }
+/* Nichts umbrechen: bei "Geschafft mit 20 Monaten" rutschte der Wert in
+   eine zweite Zeile, die Karte wurde 31 px hoeher als die anderen und
+   gab der ganzen Reihe ihre Hoehe. */
+.kt-fach u{ text-decoration:none; font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+  color:rgba(255,255,255,.62); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .kt-fach b{ font-family:var(--font-dis); font-weight:400; font-size:21px; letter-spacing:-.01em;
-  text-align:right }
+  text-align:right; white-space:nowrap; flex:none }
 /* margin-top:auto: die Karten stehen nebeneinander und werden alle so
    hoch wie die hoechste — nur die aktuelle traegt ja die Leiter. Ohne
    das klebte das Band bei den anderen mitten in der Karte. */
@@ -2904,7 +2931,8 @@ body.sigmodus .fb-s{display:inline-flex}
 .kt-punkte i.vorne{ width:22px; border-radius:99px }
 @media (prefers-reduced-motion:reduce){
   .kt{ scale:1; opacity:1 }
-  .kt-dreh{ transition:none }
+  .kt-dreh{ transition:none; transform:none }
+  .kt.stups .kt-dreh{ animation:none }
   .kt.vorn .kt-glanz{ animation:none }
   .kt-bahn{ scroll-snap-type:none }
 }
@@ -3638,9 +3666,13 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 .mausweis .mr-schiene{ margin:8px 0 0; background:rgba(26,16,38,.16) }
 .mausweis .mr-bar{ background:linear-gradient(90deg,var(--rf2,#5C6A94),var(--rf,#8FA0C8)) }
 /* Das dunkle Band: dieselbe Signatur wie unten auf der grossen Karte. */
+/* Das Band traegt die dunkle Farbe der Stufe, nicht Schwarz. Schwarz
+   sass auf dem hellen Pastell wie ein Riegel, und in der dunklen
+   Fassung verschwand es im Grund der Seite. Die Stufenfarbe steht in
+   beiden Fassungen — sie gehoert ohnehin zur Karte. */
 .ma-band{ position:relative; z-index:2; display:flex; align-items:center;
   justify-content:space-between; gap:10px; padding:9px 14px;
-  background:var(--karton-band, #0B0711); pointer-events:none }
+  background:var(--rd, #5C6A94); pointer-events:none }
 .ma-wort{ height:14px; width:auto; display:block; filter:brightness(0) invert(1) }
 .ma-band span{ font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
   color:rgba(255,255,255,.55) }
@@ -5824,7 +5856,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-2230';
+const APP_STAND = '2026-09-20-2310';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9678,7 +9710,10 @@ function kartenTiefe(){
     const m = k.offsetLeft + k.offsetWidth / 2;
     const d = Math.abs(m - mitte);
     /* 0 in der Mitte, 1 eine ganze Kartenbreite daneben. */
-    k.style.setProperty('--nah', String(Math.max(0, 1 - d / (k.offsetWidth + 16))));
+    const w = k.offsetWidth + 16;
+    k.style.setProperty('--nah', String(Math.max(0, 1 - d / w)));
+    /* Mit Vorzeichen, fuer die Drehung: links negativ, rechts positiv. */
+    k.style.setProperty('--seite', String(Math.max(-1.4, Math.min(1.4, (m - mitte) / w))));
     if(d < bd){ bd = d; vorne = k; }
   });
   if(!vorne) return;
@@ -9698,6 +9733,12 @@ function ktBahnHorchen(){
   const bahn = $('#kt-bahn'); if(!bahn || bahn._horcht) return;
   bahn._horcht = true;
   bahn.addEventListener('scroll', () => {
+    /* Waehrend gewischt wird, keine Uebergaenge auf der Drehung — sonst
+       laeuft sie dem Finger hinterher. Kurz nach dem letzten Bild wieder
+       an, damit das Umdrehen weich bleibt. */
+    bahn.classList.add('wischt');
+    clearTimeout(bahn._ruhe);
+    bahn._ruhe = setTimeout(() => bahn.classList.remove('wischt'), 140);
     if(_ktRaf) return;
     _ktRaf = requestAnimationFrame(() => { _ktRaf = 0; kartenTiefe(); });
   }, { passive:true });
@@ -9726,7 +9767,12 @@ function karteAuf(){
   /* Erst stellen, wenn die Bahn wirklich eine Breite hat — vorher waere
      offsetLeft null und alles landete ganz links. */
   /* Erst stellen, wenn die Bahn wirklich eine Breite hat. */
-  setTimeout(() => ktZeige(_ktZeig, false), 60);
+  setTimeout(() => {
+    ktZeige(_ktZeig, false);
+    /* Und einmal anstupsen, damit man sieht: die Karte hat zwei Seiten. */
+    const v = $('.kt.vorn');
+    if(v){ v.classList.remove('stups'); void v.offsetWidth; v.classList.add('stups'); }
+  }, 60);
 }
 function karteZu(){
   const b = $('#mkv');
