@@ -1055,7 +1055,11 @@ Leiste.
 Seit 21. September 2026 steht in der Karte nur noch, was sie **zeigt**: Bild, Name, Firma, Stufe,
 Becher, Leiste. Was irgendwohin **führt**, steht darunter.
 
-**Das Bild ist 88 px statt 64** und trägt unten rechts einen violetten Stift. Es ist der Grund,
+**Das Bild ist 88 px statt 64** und trägt **oben rechts** einen violetten Stift mit 24 px. Unten
+saß er genau dort, wo die Reihe mit den drei Ständen beginnt, und schob sich vor das erste Feld;
+oben hat er Luft, und klein genug ist er auch — dass ein Bild mit einem Stift daran antippbar ist,
+versteht man bei 24 px so gut wie bei 28. Zwischen Bild und Namen stehen jetzt 16 statt 12 px. Der
+Name wurde dadurch eine Spur zu groß (122 px Platz, 128 gebraucht) und ist auf 18 px gesetzt. Es ist der Grund,
 warum man die Karte anschaut, und das Einzige, was man daran ändern kann — beides spricht dafür,
 es groß zu zeigen und zu sagen, dass es antippbar ist.
 

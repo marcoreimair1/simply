@@ -3773,13 +3773,13 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
    ging, machte den Stapel auf. Das stand jedem Knopf im Weg, den die
    Karte sonst noch tragen soll. Jetzt fuehrt genau ein Knopf dorthin —
    oben rechts, wo vorher die Stufenpille sass. */
-.ma-karten{ flex:none; align-self:flex-start; display:inline-flex; align-items:center; gap:5px;
-  padding:5px 11px 5px 9px; border:0; border-radius:99px; cursor:pointer;
-  pointer-events:auto; font-family:inherit; font-size:10.5px; font-weight:800;
+.ma-karten{ flex:none; align-self:flex-start; display:inline-flex; align-items:center; gap:4px;
+  padding:5px 10px 5px 8px; border:0; border-radius:99px; cursor:pointer;
+  pointer-events:auto; font-family:inherit; font-size:10px; font-weight:800;
   letter-spacing:.04em; color:#fff; background:var(--rd,#5C6A94);
   box-shadow:0 3px 10px -4px rgba(26,16,38,.5);
   transition:scale .14s var(--ease-out), box-shadow .14s var(--ease-out) }
-.ma-karten svg{ width:15px; height:15px }
+.ma-karten svg{ width:14px; height:14px }
 .ma-karten:active{ scale:.94 }
 .ma-karten:focus-visible{ outline:2px solid var(--ma-ink); outline-offset:2px }
 /* Derselbe Glanz wie auf der grossen Karte: ein schmales Lichtband
@@ -3796,7 +3796,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 @media (prefers-reduced-motion:reduce){
   .menu.on:not(.zu) .mausweis .ma-glanz{ animation:none }
 }
-.ma-oben{ position:relative; z-index:2; display:flex; align-items:flex-start; gap:12px;
+/* 16 statt 12 px Abstand: Name und Firma klebten am Bild. */
+.ma-oben{ position:relative; z-index:2; display:flex; align-items:flex-start; gap:16px;
   padding:14px 14px 0; pointer-events:none }
 .ma-oben .avbig, .ma-oben .avplatz{ pointer-events:auto }
 /* Das Bild ist der Grund, warum man die Karte anschaut — und es ist
@@ -3806,11 +3807,16 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 .avplatz{ position:relative; display:block; flex:none; align-self:flex-start;
   pointer-events:auto }
 .ma-oben .avbig{ width:88px; height:88px; border-radius:24px }
-.avstift{ position:absolute; right:-5px; bottom:-5px; width:28px; height:28px;
+/* Oben rechts statt unten rechts: unten sass der Stift genau dort, wo
+   die Reihe mit den drei Staenden beginnt, und schob sich vor das
+   erste Feld. Oben hat er Luft, und kleiner braucht er sie auch nicht
+   — dass ein Bild mit einem Stift daran antippbar ist, versteht man
+   auch bei 24 px. */
+.avstift{ position:absolute; right:-4px; top:-4px; width:24px; height:24px;
   border-radius:50%; display:grid; place-items:center; pointer-events:none;
   background:var(--butter); color:#fff;
-  box-shadow:0 6px 16px -6px rgba(26,16,38,.55), 0 0 0 3px var(--pa,#EADFF5) }
-.avstift svg{ width:15px; height:15px }
+  box-shadow:0 5px 14px -6px rgba(26,16,38,.55), 0 0 0 3px var(--pa,#EADFF5) }
+.avstift svg{ width:13px; height:13px }
 /* ─── Die drei Staende ───────────────────────────────────────────
    Becher, Serie und Stufe stehen als gleich grosse Felder neben dem
    Profilbild: drei Zahlen, die etwas ueber einen sagen, in derselben
@@ -3895,7 +3901,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   .mw.konfetti .mw-bild i{ animation:none }
 }
 .mausweis .mhtext{ flex:1; min-width:0 }
-.mausweis .mhtext b{ display:block; font-size:19px; line-height:1.14; letter-spacing:-.015em;
+/* 18 statt 19 px: mit dem groesseren Abstand zum Bild und dem Knopf
+   zu den Karten blieben 122 px fuer den Namen, und "Marco Reimair"
+   brauchte 128. Ein Punkt weniger, und er steht ganz da. */
+.mausweis .mhtext b{ display:block; font-size:18px; line-height:1.16; letter-spacing:-.015em;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .mausweis .mhtext small{ display:block; font-size:11.5px; margin-top:2px;
   color:var(--ma-ink-2);
@@ -6210,7 +6219,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-0950';
+const APP_STAND = '2026-09-21-1025';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;

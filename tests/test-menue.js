@@ -1134,9 +1134,13 @@ setTimeout(() => {
     && roh.indexOf('<div class="ikonleiste" id="ikonleiste">') < roh.indexOf('<div class="mbody" id="mbody">')],
    ['Vier gleich breite Felder',
     roh.includes('grid-template-columns:repeat(4,minmax(0,1fr))')],
-   ['Das Bild ist 88 px und traegt einen Stift',
+   /* Unten sass der Stift dort, wo die Reihe mit den Staenden
+      beginnt, und schob sich vor das erste Feld. */
+   ['Das Bild ist 88 px und traegt oben rechts einen Stift',
     roh.includes('.ma-oben .avbig{ width:88px; height:88px; border-radius:24px }')
-    && roh.includes('.avstift{ position:absolute; right:-5px; bottom:-5px;')],
+    && roh.includes('.avstift{ position:absolute; right:-4px; top:-4px; width:24px; height:24px;')],
+   ['Name und Firma kleben nicht am Bild',
+    roh.includes('display:flex; align-items:flex-start; gap:16px;')],
    /* Drei Felder statt Pille und Zeile: Becher, Serie und Stufe in
       derselben Form, jedes ein Knopf mit eigener Spielerei. */
    /* Neben dem Bild blieben je 39 px uebrig und die Beschriftungen
