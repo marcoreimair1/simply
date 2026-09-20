@@ -935,8 +935,25 @@ setTimeout(() => {
     && /k\.style\.setProperty\('--nah'/.test(roh)],
    ['Gerechnet wird einmal je Bild, nicht je Scroll-Ereignis',
     /_ktRaf = requestAnimationFrame\(\(\) => \{ _ktRaf = 0; kartenTiefe\(\); \}\);/.test(roh)],
-   ['Verschlossen schlaegt golden',
-    /\.kt\.zu\.gold \.kt-vorn, \.kt\.zu\.gold \.kt-rueck\{ background:linear-gradient\(170deg,#6E667E,#2E2838 92%\) \}/.test(roh)],
+   /* Die Farbe kommt jetzt fuer alle zwoelf aus demselben Schema um
+      die Rangfarbe herum — vorher lief der Verlauf nach fast Schwarz
+      und alle sahen aus der Entfernung gleich dunkel aus. */
+   ['Der Verlauf bleibt bei der Rangfarbe',
+    roh.includes('background:linear-gradient(168deg, var(--rhoch,#6E7CA8) 0%, var(--rf2,#5C6A94) 52%,')
+    && roh.includes("k.style.setProperty('--rhoch', mischWeiss(rang(n).b, .12));")
+    && roh.includes("k.style.setProperty('--rtief', mischSchwarz(rang(n).b, .26));")],
+   ['Ein zarter Schatten traegt die weisse Schrift',
+    roh.includes('text-shadow:0 1px 2px rgba(10,6,18,.30);')],
+   ['Unten saeuft die Farbe nicht mehr ab',
+    !roh.includes('mischSchwarz(rang(n).b, .58)')],
+   /* Zwei Sonderregeln fuer die Legende sind weggefallen: eine goldene
+      und eine graue, die sie fuer die verschlossene Karte wieder
+      zurueckgenommen hat. Das Schema macht beides von selbst. */
+   ['Keine Sonderregeln mehr fuer die Legende',
+    !roh.includes('.kt.gold .kt-vorn') && !roh.includes('.kt.zu.gold .kt-vorn')],
+   ['Das geteilte Bild nimmt dieselben drei Halte',
+    roh.includes('kg.addColorStop(0, mischWeiss(r.b, .12)); kg.addColorStop(.52, r.b);')
+    && roh.includes('kg.addColorStop(1, dunkel(r.b, .26));')],
    /* Umdrehen wie bisher — vorne wer und wie weit, hinten die Angaben. */
    ['Die Karte laesst sich umdrehen',
     /\.kt\.um \.kt-dreh\{ transform:rotateY\(180deg\) \}/.test(roh)

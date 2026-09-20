@@ -926,6 +926,23 @@ nichts springt. Nur was im Fach steht, wechselt:
 höher als alle anderen — beim Wischen sprang die Reihe. Die Auskunft war ohnehin doppelt: die
 nächste Karte sagt, wie viel noch fehlt. Nachgemessen sind jetzt **alle zwölf 499 px** hoch.
 
+**Die Farben soffen nach unten ab.** Der Verlauf lief von der Rangfarbe nach fast Schwarz — 58 %
+Schwarz beigemischt. Weil Name, Fach und Fuß alle unten liegen, war genau dort von der Farbe
+nichts mehr übrig, und aus der Entfernung sahen alle zwölf gleich dunkel aus. Jetzt sind es drei
+Halte **um die Rangfarbe herum**: oben 12 % aufgehellt, in der Mitte die Farbe selbst, unten 26 %
+tiefer. Die Karte bleibt überall bunt.
+
+Weiter hinauf geht es nicht. Die Schrift ist weiß, und die helle Rangfarbe (`--rf`) trägt sie
+nicht mehr — nachgerechnet 2,6:1 bei Blau und 1,7:1 bei Gelb. Die satte (`--rf2`) trägt sie mit
+2,4 bis 5:1, und ein zarter Schatten unter der Schrift macht den Unterschied dort, wo es knapp
+ist. Er kostet nichts an Farbe.
+
+**Zwei Sonderregeln für die Legende sind weggefallen** — eine goldene mit festen Werten und eine
+graue, die sie für die verschlossene Karte wieder zurücknahm, weil `faerbe()` die Goldklasse an
+beide hängt. Das Schema macht die Legende von selbst golden, und `.kt.zu` bleibt grau, weil
+nichts mehr danach kommt. **Das geteilte Bild nimmt dieselben drei Halte**, sonst teilt man ein
+Bild, das dunkler ist als das, was man vor sich hat.
+
 **Das Fußband nimmt die Fassung auf** (`--kt-band`): im Hellen hell durchscheinend, im Dunkeln
 grau. Vorher lag dort Schwarz mit 34 % — auf einer farbigen Karte ein harter Riegel, der lauter
 war als alles darüber.

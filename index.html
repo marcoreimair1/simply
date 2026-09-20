@@ -2842,7 +2842,24 @@ body.sigmodus .fb-s{display:inline-flex}
    der Ebene ihrer Seite und verschwinden mit ihr. */
 .kt-vorn, .kt-rueck{ border-radius:26px; overflow:hidden; color:#fff; isolation:isolate;
   backface-visibility:hidden; -webkit-backface-visibility:hidden;
-  background:linear-gradient(170deg, var(--rf2,#5C6A94), var(--rtief,#1D2438) 92%);
+  /* Der Verlauf lief von der Rangfarbe nach fast Schwarz — 58 %
+     Schwarz beigemischt. Unten war von der Farbe nichts mehr uebrig,
+     und weil der Fuss, das Fach und der Name alle dort liegen, sahen
+     alle zwoelf Karten aus der Entfernung gleich dunkel aus.
+
+     Jetzt drei Halte um die Rangfarbe herum: oben 16 % aufgehellt,
+     in der Mitte die Farbe selbst, unten 26 % tiefer. Die Karte bleibt
+     ueberall bunt. Weiter hinauf geht es nicht: die Schrift ist weiss,
+     und schon die helle Rangfarbe (--rf) traegt sie nicht mehr —
+     nachgerechnet 2,6:1 bei Blau, 1,7:1 bei Gelb. Die satte (--rf2)
+     traegt sie mit 2,4 bis 5:1. */
+  background:linear-gradient(168deg, var(--rhoch,#6E7CA8) 0%, var(--rf2,#5C6A94) 52%,
+    var(--rtief,#1D2438) 100%);
+  /* Ein zarter Schatten unter der Schrift. Weiss auf einer bunten
+     Flaeche traegt rechnerisch zwischen 2,4:1 (Legende) und 4,9:1
+     (Ordnungsheld) — der Schatten kostet nichts an Farbe und macht den
+     Unterschied dort, wo es knapp ist. */
+  text-shadow:0 1px 2px rgba(10,6,18,.30);
   /* Eine Haarlinie innen: gedruckte Karten haben eine Kante, Flaechen
      auf dem Schirm nicht. Ein Pixel reicht, damit die Karte wie ein
      Gegenstand aussieht und nicht wie ein farbiger Bereich. */
@@ -2961,12 +2978,12 @@ body.sigmodus .fb-s{display:inline-flex}
 .kt-fuss img{ height:14px; width:auto; display:block; filter:brightness(0) invert(1); opacity:.9 }
 .kt-fuss span{ font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
   color:rgba(255,255,255,.52) }
-.kt.gold .kt-vorn, .kt.gold .kt-rueck{ background:linear-gradient(170deg,#C79A18,#6B4E05 92%) }
-/* Verschlossen schlaegt golden: faerbe() haengt die Goldklasse an jede
-   Karte der zwoelften Stufe, auch an die, die noch zu ist. Eine
-   verschlossene Legende, die golden leuchtet, waere ein Versprechen,
-   das die Karte nicht halten kann. */
-.kt.zu.gold .kt-vorn, .kt.zu.gold .kt-rueck{ background:linear-gradient(170deg,#6E667E,#2E2838 92%) }
+/* Fuer die Legende gab es hier zwei Sonderregeln: eine goldene mit
+   festen Werten und eine graue, die sie fuer die verschlossene Karte
+   wieder zuruecknahm — faerbe() haengt die Goldklasse ja an beide.
+   Beide sind weg. Das Schema um die Rangfarbe herum macht die Legende
+   von selbst golden, und .kt.zu bleibt grau, weil nichts mehr danach
+   kommt. */
 /* Die Punktreihe zeigt die Sammlung als Farbverlauf: jeder Punkt in der
    Farbe seiner Stufe, die vordere als Pille. */
 .kt-punkte{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap; padding:2px 6px 0 }
@@ -5901,7 +5918,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-0125';
+const APP_STAND = '2026-09-21-0215';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9723,7 +9740,8 @@ function malKarte(nrZeig){
   $$('.kt', bahn).forEach(k => {
     const n = +k.dataset.n;
     faerbe(k, n);
-    k.style.setProperty('--rtief', mischSchwarz(rang(n).b, .58));
+    k.style.setProperty('--rhoch', mischWeiss(rang(n).b, .12));
+    k.style.setProperty('--rtief', mischSchwarz(rang(n).b, .26));
     k.style.setProperty('--marke', 'url("' + LOGO_MARK + '")');
     const w = $('img', $('.kt-fuss', k));
     if(w) w.src = LOGO_WORD;
@@ -10031,7 +10049,10 @@ async function karteBild(){
   c.save();
   c.shadowColor = 'rgba(0,0,0,.55)'; c.shadowBlur = 90; c.shadowOffsetY = 34;
   const kg = c.createLinearGradient(kx, ky, kx + kb * .3, ky + kh);
-  kg.addColorStop(0, r.b); kg.addColorStop(1, dunkel(r.b, .58));
+  /* Dieselben drei Halte wie auf der Karte im Stapel — sonst teilt man
+     ein Bild, das dunkler ist als das, was man vor sich sieht. */
+  kg.addColorStop(0, mischWeiss(r.b, .12)); kg.addColorStop(.52, r.b);
+  kg.addColorStop(1, dunkel(r.b, .26));
   c.fillStyle = kg; rrect(kx, ky, kb, kh, rad); c.fill();
   c.restore();
   c.save(); rrect(kx, ky, kb, kh, rad); c.clip();
