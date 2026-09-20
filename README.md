@@ -1053,18 +1053,30 @@ Leiste.
 ### Die Leiste unten
 
 Seit 21. September 2026 steht unten eine **Leiste mit vier Zielen**: Kalender, Export, Meine Firma
-und das Profil mit dem eigenen Bild. Sie schwebt über dem Inhalt, 12 px vom Rand, aus Milchglas mit
-einer gleichmäßigen Tuchfarbe — ein Verlauf unter einem Weichzeichner ergibt Schlieren, das war bei
-der Kopfleiste schon einmal zu sehen.
+und das Profil mit dem eigenen Bild. Sie klebt am unteren Rand, geht über die volle Breite und ist
+86 px hoch, aus Milchglas mit einer gleichmäßigen Tuchfarbe — ein Verlauf unter einem
+Weichzeichner ergibt Schlieren, das war bei der Kopfleiste schon einmal zu sehen.
 
-**Nur der Punkt, auf dem man steht, trägt sein Wort.** Vier Wörter nebeneinander wären mehr
-Beschriftung als Bedienung, und *Meine Firma* ist das längste davon. Das Wort ist immer da, aber
-ohne Breite (`max-width: 0`) — so kann es auffahren statt zu erscheinen.
+**Der erste Anlauf schwebte** — 12 px vom Rand, mit Schatten. Das sah gut aus und **hüpfte**: In
+Safari fährt die Adressleiste beim Scrollen ein und aus, und eine festgesetzte Leiste wandert dabei
+mit. Am Rand klebend fällt dasselbe Mitwandern nicht auf, weil sie dort ohnehin anliegt. Den
+Sicherheitsabstand des Telefons trägt sie in ihrem eigenen Polster.
+
+**Und die Größen hatten kein Verhältnis zueinander:** 23 px Symbole in einer 57 px hohen Leiste,
+daneben ein 38 px großes Bild, das unverändert aus der alten Kopfleiste übernommen war. Jetzt sind
+die Symbole 26 px, die Wörter 10 px, und **das Profilbild ist der Anker**: 42 px, mit hellem Ring
+und Schatten, 8 px nach oben herausragend. Es ist das Einzige in der Leiste, das ein Bild ist — das
+darf man sehen.
+
+**Alle vier Wörter stehen da.** Das kostet nichts, und *Meine Firma* ist als Symbol allein nicht
+erratbar. Im ersten Anlauf trug nur der aktive Punkt sein Wort; das war hübscher und sagte weniger.
 
 **Das Profilbild ist von oben rechts heruntergewandert** und sitzt als vierter Punkt rechts außen,
 mit seinem roten Zähler. Ein Eingang ins Menü genügt; oben wird dafür Platz frei. Verschoben wurde
 das Element selbst, nicht nachgebaut — so gelten `malAvatar()`, der Zähler und sein Anlauf
-unverändert weiter.
+unverändert weiter. Der Klick hing dabei am Bild; jetzt ist der ganze Punkt der Knopf, Bild und
+Wort gehören zusammen. Dafür ist das Bild vom `<button>` zum `<span>` geworden — ein Knopf im Knopf
+geht in HTML nicht.
 
 **Unten steht entweder die Navigation oder eine Entscheidung, nie beides.** Sobald ein Zeitraum
 markiert ist, stehen dort *Eintragen* und *Eintrag verwerfen*, beim Unterschreiben *Signieren* —

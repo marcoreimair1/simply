@@ -1088,13 +1088,24 @@ setTimeout(() => {
     /--ma-ink:#1A1026;/.test(roh) && !/\.mausweis\{[\s\S]{0,700}color:var\(--f-2\)/.test(roh)],
    /* Unten steht entweder die Navigation oder eine Entscheidung, nie
       beides — waehrend eines Zeitraums weicht die Leiste. */
-   ['Die Leiste schwebt und ist aus Milchglas',
-    roh.includes('.tabbar{position:fixed; left:12px; right:12px; z-index:35;')
-    && roh.includes('backdrop-filter:blur(22px) saturate(1.3);')],
-   ['Nur der aktive Punkt traegt sein Wort',
-    roh.includes('.tab em{font-style:normal; font-size:11.5px; font-weight:700; letter-spacing:.01em;')
-    && roh.includes('max-width:0; overflow:hidden; white-space:nowrap; opacity:0;')
-    && roh.includes('.tab.an em{max-width:140px; opacity:1}')],
+   /* Schwebend wanderte sie in Safari mit der Adressleiste mit und
+      huepfte dabei. Am Rand klebend faellt dasselbe nicht auf. */
+   ['Die Leiste klebt am unteren Rand',
+    roh.includes('.tabbar{position:fixed; left:0; right:0; bottom:0; z-index:35;')
+    && roh.includes('padding:11px 6px calc(15px + env(safe-area-inset-bottom));')],
+   ['Vier gleich breite Felder aus Milchglas',
+    roh.includes('grid-template-columns:repeat(4,1fr); align-items:end; gap:2px;')
+    && roh.includes('backdrop-filter:blur(22px) saturate(1.2);')],
+   ['Alle vier Woerter stehen da',
+    roh.includes(".tab em{font-style:normal; font-size:10px; font-weight:600;")
+    && !roh.includes('.tab.an em{max-width:140px; opacity:1}')],
+   ['Das Profilbild ist der Anker: groesser, mit Ring, herausragend',
+    roh.includes('.tab-pro .avwrap{ margin-top:-8px }')
+    && roh.includes('.tabbar .avatar{ width:42px; height:42px; border-radius:15px;')
+    && roh.includes('box-shadow:0 0 0 2.5px rgba(var(--s-hoch),.95),')],
+   ['Der ganze Punkt ist der Knopf, nicht nur das Bild',
+    roh.includes("$('#tab-pro').addEventListener('click', () => {")
+    && !roh.includes("$('#avatar').addEventListener")],
    ['Bei einer Entscheidung weicht sie',
     roh.includes('body.zrmodus #tabbar, body.sigmodus #tabbar{')
     && roh.includes('opacity:0; transform:translateY(8px); pointer-events:none }')],

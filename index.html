@@ -3492,31 +3492,40 @@ body.zrmodus #tabbar, body.sigmodus #tabbar{
    Milchglas mit einer gleichmaessigen Tuchfarbe: ein Verlauf unter
    einem Weichzeichner ergibt Schlieren, das haben wir bei der
    Kopfleiste schon gelernt. */
-.tabbar{position:fixed; left:12px; right:12px; z-index:35;
-  bottom:calc(10px + env(safe-area-inset-bottom));
-  display:grid; grid-template-columns:auto auto auto 1fr; align-items:center; gap:4px;
-  padding:8px; border-radius:24px;
-  background:rgba(var(--s-hoch),.86);
-  -webkit-backdrop-filter:blur(22px) saturate(1.3); backdrop-filter:blur(22px) saturate(1.3);
-  box-shadow:0 18px 40px -18px rgba(var(--s-schatten),.6),
-             inset 0 0 0 1px rgba(var(--s-auf),.12);
+/* Am unteren Rand, nicht schwebend. Eine Leiste, die mit Abstand vom
+   Rand steht, wandert in Safari mit der Adressleiste mit: die faehrt
+   beim Scrollen ein und aus, und die Leiste huepft dabei. Am Rand
+   klebend faellt dasselbe Mitwandern nicht auf, weil sie dort ohnehin
+   anliegt. Der Sicherheitsabstand des Telefons steckt im eigenen
+   Polster. */
+.tabbar{position:fixed; left:0; right:0; bottom:0; z-index:35;
+  display:grid; grid-template-columns:repeat(4,1fr); align-items:end; gap:2px;
+  padding:11px 6px calc(15px + env(safe-area-inset-bottom));
+  background:rgba(var(--s-hoch),.92);
+  -webkit-backdrop-filter:blur(22px) saturate(1.2); backdrop-filter:blur(22px) saturate(1.2);
+  box-shadow:inset 0 1px 0 var(--line-2);
   transition:opacity .26s var(--ease), transform .26s var(--ease-out) }
-.tab{display:flex; align-items:center; gap:7px; border:0; background:none; cursor:pointer;
-  padding:9px 11px; border-radius:17px; font-family:inherit; color:var(--tx-2);
-  transition:background .2s var(--ease), color .2s var(--ease), scale .14s var(--ease-out) }
-.tab:active{ scale:.94 }
-.tab:focus-visible{ outline:2px solid var(--butter); outline-offset:2px }
-.tabi{display:grid; place-items:center; width:23px; height:23px}
-.tabi svg{width:23px; height:23px; display:block}
-/* Das Wort steht nur am aktiven Punkt. Es ist da, aber ohne Breite —
-   so kann es auffahren, statt zu erscheinen. */
-.tab em{font-style:normal; font-size:11.5px; font-weight:700; letter-spacing:.01em;
-  max-width:0; overflow:hidden; white-space:nowrap; opacity:0;
-  transition:max-width .28s var(--ease-out), opacity .2s var(--ease) }
-.tab.an{background:var(--butter); color:var(--on-primary); padding-right:14px}
-.tab.an em{max-width:140px; opacity:1}
-/* Das Profilbild rechts aussen, mit seinem Zaehler. */
-.tabbar .avwrap{justify-self:end; margin-right:3px}
+.tab{display:flex; flex-direction:column; align-items:center; gap:5px;
+  border:0; background:none; cursor:pointer; padding:4px 2px;
+  font-family:inherit; color:var(--tx-2);
+  transition:color .2s var(--ease), scale .14s var(--ease-out) }
+.tab:active{ scale:.93 }
+.tab:focus-visible{ outline:2px solid var(--butter); outline-offset:2px; border-radius:14px }
+.tabi{display:grid; place-items:center; width:28px; height:28px}
+.tabi svg{width:26px; height:26px; display:block}
+/* Alle vier Woerter stehen da. Das kostet nichts, und "Meine Firma"
+   ist als Symbol allein nicht erratbar. */
+.tab em{font-style:normal; font-size:10px; font-weight:600; letter-spacing:.005em;
+  max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.tab.an{ color:var(--butter) }
+.tab.an em{ font-weight:700 }
+/* Das Profilbild ist der Anker: groesser als die Symbole, mit hellem
+   Ring und Schatten, und es ragt oben heraus. */
+.tab-pro .avwrap{ margin-top:-8px }
+.tabbar .avatar{ width:42px; height:42px; border-radius:15px; border:0;
+  box-shadow:0 0 0 2.5px rgba(var(--s-hoch),.95), 0 7px 16px -6px rgba(var(--s-schatten),.55) }
+.tabbar .avatar:hover{ transform:none }
+.tabbar .zaehler{ top:-4px; right:-6px }
 .fabbar{position:fixed;left:0;right:0;bottom:0;z-index:35;
   display:flex;align-items:center;justify-content:center;gap:10px;
   padding:16px 20px calc(16px + env(safe-area-inset-bottom));
@@ -5558,12 +5567,18 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <span class="tabi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9.5 21v-6h5v6"/></svg></span>
       <em>Meine Firma</em>
     </button>
-    <!-- Der Zähler kann nicht im Bild selbst liegen, das schneidet für den
-         runden Ausschnitt ab. Deshalb eine Hülle darum. -->
-    <span class="avwrap tab-pro" id="avwrap">
-      <button class="avatar" id="avatar" aria-label="Menü"></button>
-      <span class="zaehler" id="av-zaehler" hidden></span>
-    </span>
+    <!-- Das Profil ist der vierte Punkt. Das Bild ist das Einzige in
+         der Leiste, das ein Bild ist — es darf groesser sein und ein
+         Stueck herausragen. Der Zaehler kann nicht im Bild selbst
+         liegen, das schneidet fuer den runden Ausschnitt ab; deshalb
+         eine Huelle darum. -->
+    <button class="tab tab-pro" id="tab-pro" aria-label="Menü">
+      <span class="avwrap" id="avwrap">
+        <span class="avatar" id="avatar"></span>
+        <span class="zaehler" id="av-zaehler" hidden></span>
+      </span>
+      <em>Profil</em>
+    </button>
   </nav>
 
   <nav class="fabbar" id="fabbar" style="display:none">
@@ -6283,7 +6298,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-1230';
+const APP_STAND = '2026-09-21-1330';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -13790,7 +13805,10 @@ const EI_VON = 240000, EI_BIS = 540000;
   planen(true);
 })();
 
-$('#avatar').addEventListener('click', () => {
+/* Der Horcher hing am Bild selbst, solange es oben rechts allein
+   stand. In der Leiste ist der ganze Punkt der Knopf — Bild und Wort
+   gehoeren zusammen, und ein Knopf im Knopf geht in HTML nicht. */
+$('#tab-pro').addEventListener('click', () => {
   $('#menu').classList.contains('on') ? menuZu() : menuAuf();
 });
 $('#menu').addEventListener('click', e => {
@@ -14272,7 +14290,7 @@ $('#sched-hist').addEventListener('click', e => {
    holt beim Oeffnen das Team nach, und das Profilbild ist der Eingang
    ins Menue — dafuer haengt der Horcher weiterhin an #avatar. */
 $('#tabbar').addEventListener('click', e => {
-  const b = e.target.closest('.tab[data-go]'); if(!b) return;
+  const b = e.target.closest('.tab[data-go]'); if(!b) return;   /* Profil hat keinen */
   const ziel = b.dataset.go;
   if(ziel === 'v-firma'){ firmaAuf(); return; }
   go(ziel);
