@@ -433,7 +433,20 @@ window.__WEITER = function(){
   ok('Und traegt die Farbe der hoechsten Sorte',
      tb.style.getPropertyValue('--tf') === TEE[teeLevel(5) - 1].f,
      tb.style.getPropertyValue('--tf'));
+  ok('Darin steht der echte Becher dieser Sorte',
+     /tee-1\.webp$/.test(document.getElementById('ma-tee-b').getAttribute('src')),
+     document.getElementById('ma-tee-b').getAttribute('src'));
+  ok('Sie steht unter der Stufenpille',
+     document.getElementById('ma-tee').previousElementSibling === document.getElementById('mr-lvl'));
+  /* Der Stand wandert ins Profil — sonst stand die Plakette beim
+     naechsten Start leer da, bis die Tabelle geladen war. */
+  ok('Der Stand ist im Profil gemerkt', ME.teeSum === 13 && ME.teeLvl === teeLevel(5),
+     ME.teeSum + '/' + ME.teeLvl);
   TEE_PAARE = {};
+  malTeeBadge();
+  ok('Ohne geladene Tabelle zeigt sie den gemerkten Stand',
+     !tb.hidden && document.getElementById('ma-tee-n').textContent === '13');
+  ME.teeSum = 0; ME.teeLvl = 0;
   malTeeBadge();
   ok('Ohne Becher bleibt sie weg', tb.hidden);
 
@@ -1122,6 +1135,23 @@ setTimeout(() => {
       Browser gesehen, hier festgehalten. */
    ['Die leere Plakette verschwindet auch wirklich',
     roh.includes('.teebadge[hidden]{ display:none }')],
+   /* Die Zahl kam erst, wenn man "Meine Firma" geoeffnet hatte: bis
+      dahin war TEE_PAARE leer. Jetzt bringt der Start sie mit. */
+   ['Der Start holt die Becher gleich mit',
+    roh.includes("const r = await sb.from('tee').select('a,b,punkte,letzt_a,letzt_b');")
+    && roh.includes('teePaareAus(r.data);\n    malZaehler();\n    malTeeBadge();')],
+   ['Beide Ladewege werten gleich aus',
+    roh.includes('function teePaareAus(zeilen){')
+    && roh.includes('teePaareAus(t.error ? [] : t.data);')],
+   ['Und der Stand wird gemerkt',
+    roh.includes('ME.teeSum = g.summe; ME.teeLvl = g.level;')
+    && roh.includes('else if(ME && ME.teeSum > 0) g = { summe:ME.teeSum, level:ME.teeLvl || 1 };')],
+   ['Die Plakette zeigt den echten Becher',
+    roh.includes("bild.src = 'tee-' + Math.max(1, Math.min(TEE.length, g.level)) + '.webp';")
+    && roh.includes('.teebadge img{ width:22px; height:22px;')],
+   ['Eckiger als die Stufenpille und darunter',
+    roh.includes('padding:3px 9px 3px 4px; border-radius:11px;')
+    && roh.includes('.ma-rechts{ flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:7px }')],
    ['Die Becher-Plakette nimmt die Farbe der Sorte',
     roh.includes("b.style.setProperty('--tf', sorte.f);")],
    ['Die Gruppierung greift nur nach Menuezeilen',

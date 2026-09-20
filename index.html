@@ -3805,20 +3805,24 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   background:var(--butter); color:#fff;
   box-shadow:0 6px 16px -6px rgba(26,16,38,.55), 0 0 0 3px var(--pa,#EADFF5) }
 .avstift svg{ width:15px; height:15px }
-/* Die Plakette mit allen verschickten Bubble Teas. Ihre Farbe ist die
-   Sorte, die man mit irgendjemandem am weitesten freigeschaltet hat —
-   der Becher ist ja das, was man dabei sammelt. */
-.teebadge{ display:inline-flex; align-items:center; gap:5px; margin-top:9px;
-  padding:4px 10px 4px 7px; border-radius:99px; pointer-events:none;
+/* Stufe und Becher stehen untereinander in einer eigenen Spalte: zwei
+   Staende, gleiche Kante, gleiche Ausrichtung. */
+.ma-rechts{ flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:7px }
+/* Die Plakette mit allen verschickten Bubble Teas — mit dem echten
+   Becher darin, nicht mit einer Strichzeichnung. Ihre Farbe ist die
+   Sorte, die man mit irgendjemandem am weitesten freigeschaltet hat.
+   Eckiger als die Stufenpille: die traegt eine Zahl, diese ein Bild. */
+.teebadge{ display:inline-flex; align-items:center; gap:5px;
+  padding:3px 9px 3px 4px; border-radius:11px; pointer-events:none;
   background:color-mix(in oklab, var(--tf,#B85CE8) 24%, #fff);
   box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--tf,#B85CE8) 50%, transparent);
   color:var(--ma-ink); font-size:12px; font-weight:700 }
-.teebadge svg{ width:15px; height:15px; color:var(--tf,#B85CE8) }
+.teebadge img{ width:22px; height:22px; display:block; object-fit:contain }
 /* display:inline-flex schlaegt das eingebaute [hidden]{display:none} —
    ohne diese Zeile stand die Plakette mit einer Null da, wo noch kein
    einziger Becher gelaufen ist. */
 .teebadge[hidden]{ display:none }
-.teebadge b{ font-size:13px; font-weight:800 }
+.teebadge b{ font-size:13px; font-weight:800; font-variant-numeric:tabular-nums }
 .mausweis .mhtext{ flex:1; min-width:0 }
 .mausweis .mhtext b{ display:block; font-size:19px; line-height:1.14; letter-spacing:-.015em;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
@@ -5449,12 +5453,14 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         <div class="mhtext">
           <b id="me-name">—</b>
           <small id="me-sub">Miller Optik GmbH</small>
+        </div>
+        <span class="ma-rechts">
+          <span class="ma-lvl" id="mr-lvl">LVL 1</span>
           <span class="teebadge" id="ma-tee" hidden>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 8h10.8l-1.2 11.2A2 2 0 0 1 14.2 21H9.8a2 2 0 0 1-2-1.8z"/><path d="M5.2 8h13.6M13.7 8 16.1 3.4"/><circle cx="10.2" cy="16.8" r=".9"/><circle cx="13.7" cy="17.6" r=".9"/><circle cx="12" cy="14.2" r=".9"/></svg>
+            <img id="ma-tee-b" src="tee-1.webp" alt="" loading="lazy">
             <b id="ma-tee-n">0</b>
           </span>
-        </div>
-        <span class="ma-lvl" id="mr-lvl">LVL 1</span>
+        </span>
         <span class="zaehler" id="mr-zaehler" hidden></span>
       </div>
       <div class="ma-leiter">
@@ -6121,7 +6127,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-0705';
+const APP_STAND = '2026-09-21-0805';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9439,13 +9445,20 @@ function teeOffenAus(zeilen){
 }
 /* Beim Start einmal nachsehen, damit der Punkt am Profilbild stimmt,
    ohne dass jemand die Firmenansicht aufmachen muss. */
+/* Laeuft beim Betreten der App. Geholt wird dieselbe Tabelle wie in
+   der Firmenansicht — nur eine Spalte mehr, dafuer steht die Plakette
+   am Profilbild sofort richtig. Vorher kam die Zahl erst, wenn man
+   einmal "Meine Firma" geoeffnet oder selbst einen Becher geschickt
+   hatte: bis dahin war TEE_PAARE leer. */
 async function teeOffenLaden(){
   if(!CLOUD_ON || !UID) return;
   try{
-    const r = await sb.from('tee').select('a,b,letzt_a,letzt_b');
+    const r = await sb.from('tee').select('a,b,punkte,letzt_a,letzt_b');
     if(r.error) throw r.error;
     TEE_OFFEN = teeOffenAus(r.data);
+    teePaareAus(r.data);
     malZaehler();
+    malTeeBadge();
   }catch(e){ console.warn('[MOJI] offene Tees', e); }
 }
 function teeOffenAnzahl(){ return Object.keys(TEE_OFFEN).length; }
@@ -9490,15 +9503,13 @@ async function teamGesehen(){
   if(!CLOUD_ON || !UID) return;
   try{ await sb.rpc('moji_gesehen'); }catch(e){}
 }
-async function teamLaden(){
-  if(!CLOUD_ON || !UID) return null;
-  const r = await sb.from('mitglieder')
-    .select('user_id,vorname,kuerzel,avatar,filiale,stufe,zuletzt');
-  if(r.error) throw r.error;
-  const t = await sb.from('tee').select('a,b,punkte,letzt_a,letzt_b');
+/* Aus den Zeilen der Tee-Tabelle wird der Stand je Person. Zwei Wege
+   fuehren hierher — der Start und die Firmenansicht —, und beide
+   sollen dasselbe herausbekommen. */
+function teePaareAus(zeilen){
   TEE_PAARE = {};
   const heute = heuteIso();
-  ((t.error ? [] : t.data) || []).forEach(z => {
+  (zeilen || []).forEach(z => {
     const anderer = z.a === UID ? z.b : z.a;
     const meins  = z.a === UID ? z.letzt_a : z.letzt_b;
     const seins  = z.a === UID ? z.letzt_b : z.letzt_a;
@@ -9513,6 +9524,14 @@ async function teamLaden(){
       wartet: !!meins && (!seins || seins < meins)
     };
   });
+}
+async function teamLaden(){
+  if(!CLOUD_ON || !UID) return null;
+  const r = await sb.from('mitglieder')
+    .select('user_id,vorname,kuerzel,avatar,filiale,stufe,zuletzt');
+  if(r.error) throw r.error;
+  const t = await sb.from('tee').select('a,b,punkte,letzt_a,letzt_b');
+  teePaareAus(t.error ? [] : t.data);
   TEE_OFFEN = teeOffenAus(t.error ? [] : t.data);
   TEAM = (r.data || []).sort(teamReihung);
   return TEAM;
@@ -9863,14 +9882,34 @@ function teeGesamt(){
   });
   return { summe:summe, level:hoch };
 }
+/* Der Stand wandert ins Profil. Beim naechsten Start steht die
+   Plakette damit sofort da — noch bevor die Tabelle geladen ist und
+   auch dann, wenn gerade kein Netz da ist. Die Abfrage korrigiert ihn
+   Sekunden spaeter, falls sich etwas geaendert hat. */
+function teeStandMerken(){
+  if(!ME) return;
+  const g = teeGesamt();
+  if(ME.teeSum === g.summe && ME.teeLvl === g.level) return;
+  ME.teeSum = g.summe; ME.teeLvl = g.level;
+  save();
+}
 function malTeeBadge(){
   const b = $('#ma-tee'); if(!b) return;
-  const g = teeGesamt();
+  let g = teeGesamt();
+  /* Stehen echte Zahlen da, wandern sie ins Profil; steht noch nichts,
+     kommt der gemerkte Stand von dort. So ist die Plakette vom ersten
+     Bild an richtig. */
+  if(g.summe > 0) teeStandMerken();
+  else if(ME && ME.teeSum > 0) g = { summe:ME.teeSum, level:ME.teeLvl || 1 };
   b.hidden = g.summe <= 0;
   if(g.summe <= 0) return;
   $('#ma-tee-n').textContent = g.summe;
-  const sorte = TEE[Math.max(1, g.level) - 1];
+  const sorte = TEE[Math.max(1, Math.min(TEE.length, g.level)) - 1];
   b.style.setProperty('--tf', sorte.f);
+  /* Der echte Becher, nicht die Strichzeichnung: es ist dieselbe Sorte,
+     die in der Firmenansicht gross dasteht. */
+  const bild = $('#ma-tee-b');
+  if(bild) bild.src = 'tee-' + Math.max(1, Math.min(TEE.length, g.level)) + '.webp';
   b.setAttribute('title', g.summe + ' Bubble Teas · ' + sorte.n);
 }
 function malRang(){

@@ -1060,9 +1060,18 @@ warum man die Karte anschaut, und das Einzige, was man daran ändern kann — be
 es groß zu zeigen und zu sagen, dass es antippbar ist.
 
 **Die Becher-Plakette** zählt alle Bubble Teas zusammen, die zwischen einem selbst und den anderen
-gelaufen sind — Manuela 5, Luis 5, Marlene 3 macht 13. Ihre Farbe ist die Sorte, die man mit
-irgendjemandem am weitesten freigeschaltet hat: der höchste Stand zählt, nicht der Schnitt. Ohne
-einen einzigen Becher bleibt sie weg; eine Null ist keine Auszeichnung.
+gelaufen sind — Manuela 5, Luis 5, Marlene 3 macht 13. Sie steht **unter der Stufenpille**, an
+derselben Kante, und ist eckiger als diese: die Pille trägt eine Zahl, die Plakette ein Bild. Darin
+steht **der echte Becher** der Sorte, die man mit irgendjemandem am weitesten freigeschaltet hat —
+dasselbe `tee-N.webp`, das in der Firmenansicht groß dasteht. Der höchste Stand zählt, nicht der
+Schnitt. Ohne einen einzigen Becher bleibt sie weg; eine Null ist keine Auszeichnung.
+
+**Sie stand anfangs leer.** Die Zahl kam erst, wenn man einmal *Meine Firma* geöffnet oder selbst
+einen Becher geschickt hatte — bis dahin war `TEE_PAARE` leer, weil die Tabelle nur dort geladen
+wurde. Zwei Änderungen: `teeOffenLaden()` läuft ohnehin beim Betreten der App und holt jetzt eine
+Spalte mehr (`punkte`), und der Stand wandert ins Profil. Beim nächsten Start steht die Plakette
+damit schon im ersten Bild richtig — auch ohne Netz —, und die Abfrage korrigiert sie Sekunden
+später, falls sich etwas geändert hat. Beide Ladewege werten dieselbe Funktion aus.
 
 **Vier eckige Kacheln** stehen zwischen Karte und den Menügruppen: Postfach mit roter Zahl,
 Sicherungsstand mit farbigem Punkt an der Wolke, Persönliche Daten, Hell/Dunkel. Vier und nicht
