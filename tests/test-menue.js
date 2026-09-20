@@ -21,6 +21,16 @@ const policy = (function(){
              .split('\n').filter(z => !/^\s*--/.test(z)).join('\n');
   }catch(e){ return ''; }
 })();
+/* Und einmal alle Migrationen zusammen, fuer Regeln, die nicht an einer
+   bestimmten Datei haengen. Kommentare wieder heraus. */
+const sql = (function(){
+  try{
+    const d = path.join(__dirname, '..', 'supabase', 'migrations');
+    return fs.readdirSync(d).filter(f => /\.sql$/.test(f)).sort()
+             .map(f => fs.readFileSync(path.join(d, f), 'utf8')).join('\n')
+             .split('\n').filter(z => !/^\s*--/.test(z)).join('\n');
+  }catch(e){ return ''; }
+})();
 const vc = new VirtualConsole();
 ['jsdomError','error','warn'].forEach(e => vc.on(e, () => {}));
 
@@ -364,10 +374,29 @@ window.__WEITER = function(){
   ok('Eine hohe Wahl ueberlebt das Laden',
      normalize({ id:'pAv', vorname:'Test', dob:'1990-01-01', avatar:AVATARE }).avatar === AVATARE,
      normalize({ id:'pAv', vorname:'Test', dob:'1990-01-01', avatar:AVATARE }).avatar);
-  ok('Eine zu hohe faellt weg',
-     normalize({ id:'pAv', vorname:'Test', dob:'1990-01-01', avatar:AVATARE + 1 }).avatar === undefined);
-  ok('Und eine von null auch',
-     normalize({ id:'pAv', vorname:'Test', dob:'1990-01-01', avatar:0 }).avatar === undefined);
+  /* Seit 20.09.2026 bleibt das Feld nicht leer: eine unbrauchbare Zahl
+     wird durch die zugeteilte ersetzt, nicht bloss entfernt. Sonst
+     rechnete sie jedes Zeichnen neu und stuende nirgends — die Datenbank
+     schrieb dann in die oeffentliche Zeile eine 1. */
+  var ohne = { id:'pAv', vorname:'Test', dob:'1990-01-01' };
+  var zu   = normalize({ id:'pAv', vorname:'Test', dob:'1990-01-01', avatar:AVATARE + 1 });
+  var null0= normalize({ id:'pAv', vorname:'Test', dob:'1990-01-01', avatar:0 });
+  ok('Eine zu hohe wird ersetzt',   zu.avatar === avZufall(ohne), zu.avatar + ' / ' + avZufall(ohne));
+  ok('Und eine von null auch',      null0.avatar === avZufall(ohne), null0.avatar);
+  ok('Wer keines hat, bekommt eines',
+     normalize({ id:'pAv2', vorname:'Test', dob:'1990-01-01' }).avatar === avZufall(ohne));
+  ok('Und es steht im Bereich',
+     avZufall(ohne) >= 1 && avZufall(ohne) <= AVATARE, avZufall(ohne));
+  /* Der Teiler ist fest: sonst wechselt jedem ohne eigene Wahl das Bild,
+     sobald Motive dazukommen. */
+  ok('Der Teiler haengt nicht an AVATARE', AV_ZUFALL_BIS === 116, AV_ZUFALL_BIS);
+  ok('Zweimal dieselbe Person, dasselbe Bild',
+     avZufall({ vorname:'Philipp', dob:'1988-03-04' }) === avZufall({ vorname:'Philipp', dob:'1988-03-04' }));
+  ok('Andere Person, anderes Bild',
+     avZufall({ vorname:'Philipp', dob:'1988-03-04' }) !== avZufall({ vorname:'Judith', dob:'1991-07-19' }));
+  /* Eine getroffene Wahl bleibt unangetastet. */
+  ok('Eine gueltige Wahl bleibt',
+     normalize({ id:'pAv3', vorname:'Test', dob:'1990-01-01', avatar:42 }).avatar === 42);
 
   /* Die Bubble Teas werden in den Details erklaert, nicht auf der Liste. */
   malFirma();
@@ -762,6 +791,15 @@ setTimeout(() => {
     /\.avgrid\{[\s\S]{0,600}grid-auto-rows:min-content;/.test(roh)],
    ['Die Obergrenze in normalize steht nicht als Zahl da',
     /if\(!\(av >= 1 && av <= AVATARE\)\) delete p\.avatar;/.test(roh)],
+   ['Das zugeteilte Bild wird hinterlegt',
+    /if\(!p\.avatar && \(p\.vorname \|\| p\.dob\)\) p\.avatar = avZufall\(p\);/.test(roh)],
+   ['Und gleich in die Cloud geschoben',
+    /if\(push \|\| \(!hatteBild && ME\.avatar\)\) cloudQueue\(\);/.test(roh)],
+   ['Der Ausloeser ueberschreibt das Bild nicht mit einer 1',
+    /avatar  = coalesce\(av, public\.mitglieder\.avatar\),/.test(sql)
+    && /av := nullif\(d->>'avatar', ''\)::smallint;/.test(sql)],
+   ['Und gleicht einmalig an, wo records eine Nummer traegt',
+    /update public\.mitglieder m[\s\S]{0,400}nullif\(r\.data::jsonb->>'avatar',''\) is not null/.test(sql)],
    ['Nur die ersten laufen gestaffelt ein',
     /\.menu-card\.avauf \.avopt:nth-child\(n\+14\)\{animation:none\}/.test(roh)],
    ['Und die Bilder laden erst beim Scrollen',

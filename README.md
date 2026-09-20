@@ -888,6 +888,23 @@ wieder weg** — man suchte sich eines der neuen aus, lud neu, und hatte wieder 
 drin, ohne dass irgendetwas auf den Grund hindeutete. Jetzt steht dort `AVATARE`, und drei
 Prüfungen halten fest, dass eine hohe Wahl das Laden übersteht.
 
+**Wer sich keines aussucht, bekommt eines zugeteilt — und behält es.** Die Zahl kommt aus
+Vorname und Geburtsdatum (`avZufall()`), wird aber seit 20. September 2026 **einmal im Profil
+hinterlegt** statt bei jedem Zeichnen neu gerechnet. Der Grund steht in der Firmenansicht: dort
+trug bei acht Leuten die öffentliche Zeile ein anderes Motiv als ihre eigene App. Nachgesehen in
+den Daten — bei genau diesen acht stand in `records` überhaupt keine Nummer. Die Datenbank kann
+sie nicht nachrechnen, ihr Auslöser schrieb also den Vorgabewert **1** und überschrieb damit bei
+jedem Sichern auch das, was die App selbst schon eingetragen hatte.
+
+Zwei Hälften, eine Ursache: `normalize()` hinterlegt die zugeteilte Zahl jetzt, und
+`mitglied_nachziehen()` überschreibt das Bild nur noch, wenn in `records` wirklich eine steht —
+`coalesce(av, mitglieder.avatar)` statt `coalesce(av, 1)`. **Eine fehlende Angabe ist keine
+Angabe und darf keine werden.** Wird beim Laden eine Nummer zugeteilt, geht sie sofort hoch;
+sonst stünde sie nur auf einem Gerät.
+
+Und der **Teiler ist fest** (`AV_ZUFALL_BIS = 116`), nicht `AVATARE`: sonst wechselt jedem ohne
+eigene Wahl das Bild, sobald Motive dazukommen — am 15. September dreimal an einem Nachmittag.
+
 **Nachzügler bekommen die nächste freie Nummer, keine mittendrin.** In jedem Profil steht nur
 die Zahl — eine Nummer einzuschieben würde allen darüber das Bild wechseln. Wo ein Motiv im
 Gitter *steht*, ist deshalb von seiner Nummer getrennt: `AV_NACHZUG` ordnet einzelnen Nummern

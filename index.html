@@ -5607,7 +5607,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-15-2140';
+const APP_STAND = '2026-09-20-0910';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6046,6 +6046,13 @@ function seitAusId(id){
   return jetzt;
 }
 
+/* Der Teiler fuer das zugeteilte Bild ist FEST und nicht AVATARE.
+   Sonst wechselt jedem, der sich nie eines ausgesucht hat, das Bild,
+   sobald Motive dazukommen — am 15.09.2026 dreimal an einem Nachmittag.
+   Er bleibt bei 116, dem Stand, an dem das Zuteilen zum letzten Mal frei
+   gerechnet wurde. */
+const AV_ZUFALL_BIS = 116;
+
 function normalize(p){
   if(!p.sched) p.sched = defaultSched();
   if(!p.sched.weeks || p.sched.weeks.length < 4){
@@ -6131,6 +6138,13 @@ function normalize(p){
      drin — und nichts deutete darauf hin, warum. */
   const av = +p.avatar;
   if(!(av >= 1 && av <= AVATARE)) delete p.avatar;
+  /* Wer sich nie eines ausgesucht hat, bekommt hier EINMAL eines
+     zugeteilt — und behaelt es. Bisher wurde die Zahl bei jedem Zeichnen
+     neu gerechnet und nirgends hinterlegt. Die Datenbank kann sie nicht
+     nachrechnen: ihr Ausloeser schrieb in die oeffentliche Zeile darum
+     eine 1. In der Firmenansicht stand deshalb bei acht Leuten ein
+     anderes Bild als bei ihnen selbst — nachgesehen am 18.09.2026. */
+  if(!p.avatar && (p.vorname || p.dob)) p.avatar = avZufall(p);
   if(!Array.isArray(p.gelesen)) p.gelesen = [];
   if(!Array.isArray(p.post)) p.post = [];
   if(typeof p.pkHost !== 'string') p.pkHost = '';
@@ -10156,13 +10170,15 @@ function avReihenfolge(){
     .forEach(n => { if(n <= AVATARE) reihe.splice(AV_NACHZUG[n] - 1, 0, n); });
   return reihe;
 }
-function avZufall(){
+function avZufall(wer){
   /* Aus Vorname und Geburtsdatum eine Zahl bilden — gleicher Mensch,
-     gleiches Bild, ohne Zufallsgenerator und ohne Speicherzugriff. */
-  const stoff = (ME && ME.vorname ? ME.vorname : '') + '|' + (ME && ME.dob ? ME.dob : '');
+     gleiches Bild, ohne Zufallsgenerator und ohne Speicherzugriff.
+     Der Teiler ist AV_ZUFALL_BIS und bewusst nicht AVATARE. */
+  const q = wer || ME;
+  const stoff = (q && q.vorname ? q.vorname : '') + '|' + (q && q.dob ? q.dob : '');
   let h = 0;
   for(let i = 0; i < stoff.length; i++) h = (h * 31 + stoff.charCodeAt(i)) % 100000;
-  return (h % AVATARE) + 1;
+  return (h % AV_ZUFALL_BIS) + 1;
 }
 function avNummer(){
   const n = ME && +ME.avatar;
@@ -13310,9 +13326,13 @@ async function afterLogin(session, frisch){
     return;
   }
 
+  const hatteBild = !!(rec && rec.avatar);
   ME = normalize(rec);
   setSync(offline ? 'offline' : 'ok');
-  if(push) cloudQueue();
+  /* Hat normalize() eben ein Bild zugeteilt, muss es hoch. Sonst stuende
+     es nur auf diesem Geraet, und in der oeffentlichen Zeile bliebe die
+     1 stehen — das Team saehe weiter ein anderes Motiv. */
+  if(push || (!hatteBild && ME.avatar)) cloudQueue();
   if(offline){ appBetreten(frisch); return; }
   /* Der übliche Weg für alle, die schon ein Profil haben. Nur hier greift
      die einmalige Frage nach der Erinnerung — sie geht vorbei, sobald
