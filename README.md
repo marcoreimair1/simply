@@ -1050,6 +1050,31 @@ Karte, darunter blieb ein Loch bis zu den Knöpfen. Jetzt nimmt die Kiste die ga
 Punktreihe. Nachgemessen auf dem Telefon: **63 px** Luft unter der Karte, **29 px** über der
 Leiste.
 
+### Die Leiste unten
+
+Seit 21. September 2026 steht unten eine **Leiste mit vier Zielen**: Kalender, Export, Meine Firma
+und das Profil mit dem eigenen Bild. Sie schwebt über dem Inhalt, 12 px vom Rand, aus Milchglas mit
+einer gleichmäßigen Tuchfarbe — ein Verlauf unter einem Weichzeichner ergibt Schlieren, das war bei
+der Kopfleiste schon einmal zu sehen.
+
+**Nur der Punkt, auf dem man steht, trägt sein Wort.** Vier Wörter nebeneinander wären mehr
+Beschriftung als Bedienung, und *Meine Firma* ist das längste davon. Das Wort ist immer da, aber
+ohne Breite (`max-width: 0`) — so kann es auffahren statt zu erscheinen.
+
+**Das Profilbild ist von oben rechts heruntergewandert** und sitzt als vierter Punkt rechts außen,
+mit seinem roten Zähler. Ein Eingang ins Menü genügt; oben wird dafür Platz frei. Verschoben wurde
+das Element selbst, nicht nachgebaut — so gelten `malAvatar()`, der Zähler und sein Anlauf
+unverändert weiter.
+
+**Unten steht entweder die Navigation oder eine Entscheidung, nie beides.** Sobald ein Zeitraum
+markiert ist, stehen dort *Eintragen* und *Eintrag verwerfen*, beim Unterschreiben *Signieren* —
+dann weicht die Leiste, als Kreuzblende, nicht als Sprung. Solange etwas zu entscheiden ist, ist
+die Navigation ohnehin nicht gemeint. Die beiden alten Knöpfe *Kalender* und *Export*, die dort
+bisher standen, sind damit weggefallen.
+
+**Meine Firma hat über die Leiste kein Zurück mehr.** Es ist jetzt ein Ziel wie der Kalender, und
+Ziele haben kein Zurück; kommt man aus dem Menü, steht der Pfeil weiterhin da.
+
 ### Die Karte berichtet, die Kacheln führen
 
 Seit 21. September 2026 steht in der Karte nur noch, was sie **zeigt**: Bild, Name, Firma, Stufe,

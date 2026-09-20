@@ -750,7 +750,7 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 #app.on{opacity:1}
 .wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 20px}
 /* Platz für die Tab-Leiste nur dort, wo sie auch steht */
-#v-cal, #v-export{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+#v-cal, #v-export, #v-firma{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 
 /* Eine Flaeche, kein Verlauf. Vorher lief der Grund von 74 auf 34
    Prozent hinunter, waehrend der Weichzeichner ueber die ganze Leiste
@@ -1918,9 +1918,10 @@ body.fassung-neu #app{ transition:opacity .42s var(--ease-blend) }
 .brand{transition:opacity .3s .12s var(--ease),transform .4s .12s var(--ease-out)}
 body.zrmodus .brand{opacity:0;transform:translateY(-8px) scale(.97);pointer-events:none;
   position:absolute;left:20px;transition:opacity .22s var(--ease),transform .28s var(--ease)}
+/* Das Profilbild sass hier oben rechts und trat waehrend eines
+   Zeitraums zur Seite. Seit es unten in der Leiste steht, geht es mit
+   ihr — die Regel dafuer steht bei .tabbar. */
 #avwrap{transition:opacity .24s var(--ease),transform .34s var(--ease-out)}
-body.zrmodus #avwrap{opacity:0;transform:scale(.86) translateX(12px);pointer-events:none;
-  position:absolute;right:20px}
 .tbzr{flex:1;display:flex;align-items:center;gap:10px;min-width:0;
   opacity:0;transform:translateY(-8px) scale(.98);
   transition:opacity .2s var(--ease),transform .28s var(--ease)}
@@ -1971,15 +1972,19 @@ body.zrmodus .cell .gift{opacity:.35}
 body.zrmodus .cell.zr-off{opacity:.4}
 body.zrmodus .cell.zr-edge .num{font-weight:700}
 
-/* Leiste unten: entweder die zwei Ansichten oder die zwei Entscheidungen. */
+/* Unten steht entweder die Navigation oder eine Entscheidung, nie
+   beides. Solange etwas einzutragen oder zu unterschreiben ist, weicht
+   die Leiste — dann ist die Navigation ohnehin nicht gemeint. Sie geht
+   nicht weg, sie blendet: eine Kreuzblende, kein Sprung. */
 .fb-z{display:none}
-body.zrmodus .fb-n{display:none}
 body.zrmodus .fb-z{display:inline-flex}
 /* Unterschreiben: ein Knopf statt zweier, und zwar ueber die ganze
    Breite — er ist gerade das Einzige, was zu tun ist. */
 .fb-s{display:none}
-body.sigmodus .fb-n,body.sigmodus .fb-z{display:none}
+body.sigmodus .fb-z{display:none}
 body.sigmodus .fb-s{display:inline-flex}
+body.zrmodus #tabbar, body.sigmodus #tabbar{
+  opacity:0; transform:translateY(8px); pointer-events:none }
 .fabbar .fb-s{max-width:430px}
 /* Fast deckend: waehrend gearbeitet wird, soll die Kachel darunter nicht
    mitreden — das Warten ist hier der ganze Inhalt. */
@@ -3477,6 +3482,41 @@ body.sigmodus .fb-s{display:inline-flex}
    dem Rand; die kostete Höhe und stand mitten im Bild. (Ihr Vorbild war die
    Knopfleiste der alten Anmeldeseite — die gibt es seit dem Umbau des
    Einstiegs am 14. September 2026 nicht mehr.) */
+/* ─── Die Leiste unten ────────────────────────────────────────────
+   Vier Ziele, schwebend ueber dem Inhalt. Nur der Punkt, auf dem man
+   steht, traegt sein Wort — vier Woerter nebeneinander waeren mehr
+   Beschriftung als Bedienung, und "Meine Firma" ist das laengste
+   davon. Das Profilbild sitzt rechts aussen und ist der Eingang ins
+   Menue; es stand vorher oben rechts in der Kopfleiste.
+
+   Milchglas mit einer gleichmaessigen Tuchfarbe: ein Verlauf unter
+   einem Weichzeichner ergibt Schlieren, das haben wir bei der
+   Kopfleiste schon gelernt. */
+.tabbar{position:fixed; left:12px; right:12px; z-index:35;
+  bottom:calc(10px + env(safe-area-inset-bottom));
+  display:grid; grid-template-columns:auto auto auto 1fr; align-items:center; gap:4px;
+  padding:8px; border-radius:24px;
+  background:rgba(var(--s-hoch),.86);
+  -webkit-backdrop-filter:blur(22px) saturate(1.3); backdrop-filter:blur(22px) saturate(1.3);
+  box-shadow:0 18px 40px -18px rgba(var(--s-schatten),.6),
+             inset 0 0 0 1px rgba(var(--s-auf),.12);
+  transition:opacity .26s var(--ease), transform .26s var(--ease-out) }
+.tab{display:flex; align-items:center; gap:7px; border:0; background:none; cursor:pointer;
+  padding:9px 11px; border-radius:17px; font-family:inherit; color:var(--tx-2);
+  transition:background .2s var(--ease), color .2s var(--ease), scale .14s var(--ease-out) }
+.tab:active{ scale:.94 }
+.tab:focus-visible{ outline:2px solid var(--butter); outline-offset:2px }
+.tabi{display:grid; place-items:center; width:23px; height:23px}
+.tabi svg{width:23px; height:23px; display:block}
+/* Das Wort steht nur am aktiven Punkt. Es ist da, aber ohne Breite —
+   so kann es auffahren, statt zu erscheinen. */
+.tab em{font-style:normal; font-size:11.5px; font-weight:700; letter-spacing:.01em;
+  max-width:0; overflow:hidden; white-space:nowrap; opacity:0;
+  transition:max-width .28s var(--ease-out), opacity .2s var(--ease) }
+.tab.an{background:var(--butter); color:var(--on-primary); padding-right:14px}
+.tab.an em{max-width:140px; opacity:1}
+/* Das Profilbild rechts aussen, mit seinem Zaehler. */
+.tabbar .avwrap{justify-self:end; margin-right:3px}
 .fabbar{position:fixed;left:0;right:0;bottom:0;z-index:35;
   display:flex;align-items:center;justify-content:center;gap:10px;
   padding:16px 20px calc(16px + env(safe-area-inset-bottom));
@@ -3495,7 +3535,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
 @media(max-width:520px){
   .wrap{padding:0 14px}
-  #v-cal, #v-export{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+  #v-cal, #v-export, #v-firma{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
   .pt{padding-top:20px}
   .card{padding:17px;border-radius:20px}
   h1.dis{font-size:clamp(27px,7.6vw,40px)}
@@ -4603,6 +4643,9 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
    Frage ohnehin. */
 /* display:grid kommt aus .obzurueck und machte aus Pfeil und Wort zwei
    Zeilen — im Grid ist der Text ein eigenes Feld. Hier nebeneinander. */
+/* display:inline-flex schlaegt [hidden] — ohne diese Zeile stuende der
+   Pfeil auch dann da, wenn er versteckt sein soll. */
+.za-kopf .obzurueck[hidden]{ display:none }
 .za-kopf .obzurueck{ display:inline-flex; align-items:center; justify-content:flex-start;
   width:auto; height:auto; margin-left:-6px; padding:6px 10px 6px 4px;
   gap:5px; font-size:11px; letter-spacing:.16em; text-transform:uppercase;
@@ -5053,12 +5096,9 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         <span class="zrp-ist" id="zrp-ist" hidden><b id="zrp-ist-v">—</b><u id="zrp-ist-u">Tage offen</u></span>
       </div>
       <div class="spacer"></div>
-      <!-- Der Zähler kann nicht im Bild selbst liegen, das schneidet für den
-           runden Ausschnitt ab. Deshalb eine Hülle darum. -->
-      <span class="avwrap" id="avwrap" style="display:none">
-        <button class="avatar" id="avatar" aria-label="Menü"></button>
-        <span class="zaehler" id="av-zaehler" hidden></span>
-      </span>
+      <!-- Hier sass bis zum 21. September 2026 das Profilbild. Es steht
+           jetzt unten in der Leiste, als vierter Punkt — ein Eingang
+           ins Menue genuegt, und oben wird Platz frei. -->
     </div>
   </header>
 
@@ -5500,9 +5540,33 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 
   </div>
 
+  <!-- Die Leiste unten. Vier Ziele: Kalender, Export, Meine Firma und
+       das Profil mit dem eigenen Bild. Sie schwebt ueber dem Inhalt,
+       und nur der Punkt, auf dem man steht, traegt sein Wort — sonst
+       waeren vier Woerter nebeneinander mehr Beschriftung als
+       Bedienung. -->
+  <nav class="tabbar" id="tabbar" style="display:none">
+    <button class="tab" data-go="v-cal" aria-label="Kalender">
+      <span class="tabi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+      <em>Kalender</em>
+    </button>
+    <button class="tab" data-go="v-export" aria-label="Export">
+      <span class="tabi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg></span>
+      <em>Export</em>
+    </button>
+    <button class="tab" data-go="v-firma" aria-label="Meine Firma">
+      <span class="tabi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9.5 21v-6h5v6"/></svg></span>
+      <em>Meine Firma</em>
+    </button>
+    <!-- Der Zähler kann nicht im Bild selbst liegen, das schneidet für den
+         runden Ausschnitt ab. Deshalb eine Hülle darum. -->
+    <span class="avwrap tab-pro" id="avwrap">
+      <button class="avatar" id="avatar" aria-label="Menü"></button>
+      <span class="zaehler" id="av-zaehler" hidden></span>
+    </span>
+  </nav>
+
   <nav class="fabbar" id="fabbar" style="display:none">
-    <button class="btn btn-p fb-n" data-go="v-cal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Kalender</button>
-    <button class="btn btn-out fb-n" data-go="v-export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg>Export</button>
     <!-- Während eines Zeitraums stehen hier die beiden Entscheidungen. -->
     <button class="btn btn-p fb-z" id="zr-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>Eintragen</button>
     <button class="btn btn-g fb-z" id="zr-weg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Eintrag verwerfen</button>
@@ -6219,7 +6283,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-1115';
+const APP_STAND = '2026-09-21-1230';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -7633,17 +7697,13 @@ function go(id){
      Monate gewaehlt und unterschrieben hat, ist es da. */
   else { try{ lebenVorladen(); }catch(e){} }
   $$('.view').forEach(v => v.classList.toggle('on', v.id === id));
-  const inApp = (id === 'v-cal' || id === 'v-export');
+  /* Die Leiste steht ueber den drei Zielen, die sie anbietet — und
+     ueber dem Export, weil dort die Entscheidungen erscheinen. */
+  const inApp = (id === 'v-cal' || id === 'v-export' || id === 'v-firma');
+  $('#tabbar').style.display = (inApp && ME) ? 'grid' : 'none';
   $('#fabbar').style.display = inApp ? 'flex' : 'none';
-  /* Aktiv ist gold gefüllt, das andere umrandet — wie auf der Anmeldeseite. */
-  /* Nur die beiden Ansichtsknöpfe umfärben — Eintragen und Verwerfen
-     behalten ihr eigenes Aussehen. */
-  $$('#fabbar button[data-go]').forEach(b => {
-    const an = b.dataset.go === id;
-    b.classList.toggle('btn-p', an);
-    b.classList.toggle('btn-out', !an);
-  });
-  $('#avwrap').style.display = ME ? 'grid' : 'none';
+  /* Der Punkt, auf dem man steht, traegt sein Wort. */
+  $$('#tabbar .tab[data-go]').forEach(b => b.classList.toggle('an', b.dataset.go === id));
   window.scrollTo({ top:0, behavior:'smooth' });
   requestAnimationFrame(() => { fitAll(); requestAnimationFrame(fitAll); });
 }
@@ -9934,6 +9994,11 @@ $('#fi-auf').addEventListener('click', () => {
 /* Ganze Seite statt Blatt — wie die Dienstzeiten. Der Zurück-Knopf unten
    führt in das Menü zurück, das dabei wieder aufgeht. */
 function firmaAuf(){
+  /* Der Zurueck-Pfeil gilt nur, wenn man aus dem Menue kommt. Ueber
+     die Leiste unten ist Meine Firma ein Ziel wie der Kalender — und
+     Ziele haben kein Zurueck. */
+  const zur = $('#fi-back');
+  if(zur) zur.hidden = !_vonMenu;
   TEAM = null;
   $('#fi-karte').classList.remove('auf');
   $('#fi-zeilen').hidden = true;
@@ -14202,6 +14267,15 @@ $('#sched-hist').addEventListener('click', e => {
     save(); malSchedHist(); renderCal();
     toast('Fassung bis ' + fmtDate(e2.bis) + ' entfernt');
   }
+});
+/* Die Leiste unten. Kalender und Export sind Ansichten, Meine Firma
+   holt beim Oeffnen das Team nach, und das Profilbild ist der Eingang
+   ins Menue — dafuer haengt der Horcher weiterhin an #avatar. */
+$('#tabbar').addEventListener('click', e => {
+  const b = e.target.closest('.tab[data-go]'); if(!b) return;
+  const ziel = b.dataset.go;
+  if(ziel === 'v-firma'){ firmaAuf(); return; }
+  go(ziel);
 });
 $('#fabbar').addEventListener('click', e => {
   const b = e.target.closest('[data-go]'); if(!b) return;

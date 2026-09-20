@@ -404,6 +404,38 @@ window.__WEITER = function(){
      [].every.call(document.querySelectorAll('#kt-bahn .kt-stempel'),
                    function(p){ return !!p.closest('.kt-fenster'); }));
 
+  /* ── Die Leiste unten ──
+     Vier Ziele: Kalender, Export, Meine Firma und das Profil mit dem
+     eigenen Bild. Das Bild sass vorher oben rechts in der Kopfleiste. */
+  ok('Vier Punkte in der Leiste',
+     document.querySelectorAll('#tabbar .tab[data-go]').length === 3
+     && !!document.querySelector('#tabbar #avatar'));
+  ok('Das Profilbild ist nicht mehr in der Kopfleiste',
+     !document.querySelector('.topbar #avatar'));
+  ok('Und der Zaehler sitzt bei ihm', !!document.querySelector('#tabbar #av-zaehler'));
+  go('v-cal');
+  ok('Die Leiste steht ueber dem Kalender',
+     document.getElementById('tabbar').style.display === 'grid');
+  ok('Kalender traegt sein Wort',
+     document.querySelector('.tab[data-go="v-cal"]').classList.contains('an'));
+  go('v-export');
+  ok('Nach dem Wechsel traegt Export es',
+     document.querySelector('.tab[data-go="v-export"]').classList.contains('an')
+     && !document.querySelector('.tab[data-go="v-cal"]').classList.contains('an'));
+  go('v-hours');
+  ok('In Unteransichten steht sie nicht',
+     document.getElementById('tabbar').style.display === 'none');
+  /* Meine Firma ist ueber die Leiste ein Ziel wie der Kalender — und
+     Ziele haben kein Zurueck. */
+  _vonMenu = false; firmaAuf();
+  ok('Meine Firma ohne Zurueck-Pfeil, wenn aus der Leiste',
+     document.getElementById('fi-back').hidden);
+  _vonMenu = true; firmaAuf();
+  ok('Aber mit Pfeil, wenn aus dem Menue',
+     !document.getElementById('fi-back').hidden);
+  _vonMenu = false;
+  go('v-cal');
+
   /* ── Die Karte traegt nur noch, was sie zeigt ──
      Mail und Geburtsdatum sind in eine eigene Flaeche gewandert,
      Postfach und Sicherungsstand in die Kachelreihe darunter. */
@@ -1054,6 +1086,22 @@ setTimeout(() => {
     /\.mausweis\{[\s\S]{0,700}background:linear-gradient\(168deg,var\(--pa[\s\S]{0,80}var\(--pb/.test(roh)],
    ['Und eine eigene Tinte, nicht --f-2',
     /--ma-ink:#1A1026;/.test(roh) && !/\.mausweis\{[\s\S]{0,700}color:var\(--f-2\)/.test(roh)],
+   /* Unten steht entweder die Navigation oder eine Entscheidung, nie
+      beides — waehrend eines Zeitraums weicht die Leiste. */
+   ['Die Leiste schwebt und ist aus Milchglas',
+    roh.includes('.tabbar{position:fixed; left:12px; right:12px; z-index:35;')
+    && roh.includes('backdrop-filter:blur(22px) saturate(1.3);')],
+   ['Nur der aktive Punkt traegt sein Wort',
+    roh.includes('.tab em{font-style:normal; font-size:11.5px; font-weight:700; letter-spacing:.01em;')
+    && roh.includes('max-width:0; overflow:hidden; white-space:nowrap; opacity:0;')
+    && roh.includes('.tab.an em{max-width:140px; opacity:1}')],
+   ['Bei einer Entscheidung weicht sie',
+    roh.includes('body.zrmodus #tabbar, body.sigmodus #tabbar{')
+    && roh.includes('opacity:0; transform:translateY(8px); pointer-events:none }')],
+   ['Und die beiden alten Ansichtsknoepfe sind weg',
+    !roh.includes('class="btn btn-p fb-n"') && !roh.includes('fb-n{display:none}')],
+   ['Die drei Ziele lassen Platz fuer die Leiste',
+    roh.includes('#v-cal, #v-export, #v-firma{padding-bottom:calc(104px + env(safe-area-inset-bottom))}')],
    /* Die unsichtbare Flaeche ueber der ganzen Karte ist weg — sie
       stand jedem Knopf im Weg, den die Karte sonst tragen soll. */
    ['Keine Druckflaeche mehr ueber der Karte',
