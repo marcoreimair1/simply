@@ -1160,7 +1160,24 @@ setTimeout(() => {
     && /\.kt\{[\s\S]{0,120}scroll-snap-align:center; scroll-snap-stop:always;/.test(roh)],
    ['Die Tiefe kommt aus --nah und geht ueber scale',
     /scale:calc\(\.9 \+ \.1 \* var\(--nah, 1\)\);/.test(roh)
-    && /k\.style\.setProperty\('--nah'/.test(roh)],
+    && roh.includes("k.el.style.setProperty('--nah'")],
+   /* Die Masse aendern sich beim Scrollen nicht. Sie bei jedem Bild
+      abzufragen zwang den Browser, zwischen zwoelf Stil-Schreibungen
+      zwoelf Mal neu zu rechnen — davon wurde das Blaettern zaeh. */
+   ['Die Masse werden einmal gemessen, nicht je Bild',
+    roh.includes('function ktMessen(){')
+    && roh.includes('const m = _ktMasse || ktMessen();')
+    && roh.includes('_ktMasse = null;               /* neue Karten, neue Masse */')],
+   ['Waehrend der Fahrt rastet nichts ein',
+    roh.includes('.kt-bahn.fliegt{ scroll-snap-type:none }')
+    && roh.includes("bahn.classList.add('fliegt', 'wischt');")],
+   /* Zwoelf Karten mit eigener Perspektive und preserve-3d bei jedem
+      Winkel neu zu rastern ist die eigentliche Last. */
+   ['Und die Karten drehen sich dabei nicht',
+    roh.includes('.kt-bahn.fliegt .kt-dreh{ transform:none }')
+    && roh.includes('.kt-bahn.fliegt .kt-glanz{ animation:none }')],
+   ['Und Titel und Punkte nur beim Wechsel',
+    roh.includes('if(n === _ktVorne) return;     /* der Rest gilt nur beim Wechsel */')],
    ['Gerechnet wird einmal je Bild, nicht je Scroll-Ereignis',
     /_ktRaf = requestAnimationFrame\(\(\) => \{ _ktRaf = 0; kartenTiefe\(\); \}\);/.test(roh)],
    /* Die Farbe kommt jetzt fuer alle zwoelf aus demselben Schema um
@@ -1351,7 +1368,7 @@ setTimeout(() => {
       eine Rueckseite haben. Ohne den Hinweis kam niemand darauf. */
    ['Beim Wischen drehen die Karten mit',
     /transform:rotateY\(calc\(var\(--seite, 0\) \* 16deg\)\);/.test(roh)
-    && /k\.style\.setProperty\('--seite'/.test(roh)],
+    && roh.includes("k.el.style.setProperty('--seite'")],
    ['Waehrend des Wischens ohne Uebergang',
     /\.kt-bahn\.wischt \.kt-dreh\{ transition:none \}/.test(roh)
     && /bahn\.classList\.add\('wischt'\);/.test(roh)],
@@ -1399,8 +1416,11 @@ setTimeout(() => {
     roh.includes('function ktFlug(vonNr, bisNr, fertig){')
     && roh.includes('else ktFlug(1, _ktZeig, stups);')],
    ['Gerechnet, damit die Dauer an der Strecke haengt',
-    roh.includes('const dauer = Math.min(1250, 280 + weit * 95);')
-    && roh.includes('const kurve = t => 1 - Math.pow(1 - t, 3);')],
+    roh.includes('const dauer = Math.min(1000, 240 + weit * 70);')],
+   /* Mit 1-(1-t)^3 kroch das letzte Drittel, mit einer S-Kurve war
+      der Start traege. Quadratisch auslaufend trifft beides. */
+   ['Quadratisch auslaufend: gleich los, weich hin',
+    roh.includes('const kurve = t => t * (2 - t);')],
    ['Aus einem Brief heraus steht die Karte sofort da',
     roh.includes('if(nr){ ktZeige(_ktZeig, false); stups(); }')],
    /* Im Hintergrund feuert requestAnimationFrame nicht — dort bliebe

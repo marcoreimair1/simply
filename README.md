@@ -1201,9 +1201,26 @@ es ein Stapel ist, dass er wächst, und wo man darin steht.
 
 Gerechnet statt `scrollTo({behavior:'smooth'})` — der Browser nimmt sich dafür dieselbe kurze Zeit,
 egal ob eine Karte oder elf dazwischenliegen, und über elf Karten wäre das ein Zucken. Hier dauert
-es je Karte ein Stück länger, höchstens 1,25 s, und die Kurve läuft sanft aus, damit die letzte
-Karte sich hinlegt statt anzuschlagen. Nachgemessen von Stufe 1 auf 10: nach 0,15 s Karte 2, nach
-0,43 s Karte 7, nach 0,86 s am Ziel.
+es je Karte ein Stück länger, höchstens 1 s.
+
+**Die Fahrt ruckelte, und die Ursache lag nicht dort, wo man sie vermutet.** Drei Dinge zusammen:
+
+- **`scroll-snap-type` kämpfte gegen die Bewegung.** Bei jedem gesetzten `scrollLeft` zieht der
+  Browser zur nächsten Rastung. Während der Fahrt ist das Einrasten deshalb aus (`.fliegt`).
+- **Zwölf Karten mit eigener Perspektive und `preserve-3d`** müssen bei jedem Winkel neu gerastert
+  werden — das ist die eigentliche Last. Während der Fahrt steht die Drehung still, ebenso der
+  wandernde Glanz, den in dem Moment ohnehin niemand ansieht. Übrig bleiben Größe und Deckkraft,
+  und die kosten nichts.
+- **`kartenTiefe()` las und schrieb abwechselnd Layout**, zwölfmal je Bild: `offsetLeft` abfragen
+  zwingt den Browser zu rechnen, und dazwischen wurden Stile gesetzt. Die Maße ändern sich beim
+  Scrollen nicht — sie werden jetzt einmal gemessen und gemerkt. Nachgemessen 0,047 ms → 0,018 ms
+  je Aufruf. Titel, Zähler und Punktreihe ziehen nur noch beim Kartenwechsel nach.
+
+**Auch die Kurve hat zwei Anläufe gebraucht.** `1-(1-t)³` kroch am Ende: in den letzten 400 ms
+bewegten sich noch 60 von 2650 px, und das liest sich als Stocken, nicht als Ankommen. Eine
+S-Kurve legte dafür einen trägen Start hin — 45 px in den ersten 200 ms, während man schon auf die
+Karten schaut. Jetzt läuft sie quadratisch aus (`t·(2−t)`): nachgemessen von Stufe 1 auf 10 nach
+0,1 s bei 217 px, nach 0,3 s bei 1224, nach 0,95 s am Ziel.
 
 Drei Fälle fahren nicht: wer Bewegung abgestellt hat, wer aus einem Brief kommt (dort gilt die
 Karte, von der der Brief handelt), und **eine Seite im Hintergrund** — dort feuert

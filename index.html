@@ -2913,6 +2913,22 @@ body.zrmodus #tabbar, body.sigmodus #tabbar{
 /* Waehrend gewischt wird ohne Uebergang — sonst liefe die Drehung dem
    Finger hinterher, genau wie vorher die Groesse. */
 .kt-bahn.wischt .kt-dreh{ transition:none }
+/* ─── Waehrend der gerechneten Fahrt ──────────────────────────────
+   Drei Dinge fallen weg, bis sie steht:
+
+   scroll-snap-type, weil es bei jedem gesetzten scrollLeft zur
+   naechsten Karte zieht und damit gegen die Bewegung kaempft;
+
+   die Drehung, weil zwoelf Karten mit eigener Perspektive und
+   preserve-3d bei jedem Winkel neu gerastert werden muessen — das
+   ist die eigentliche Last, nicht das Rechnen;
+
+   und der wandernde Glanz, der waehrend der Fahrt ohnehin niemand
+   ansieht. Uebrig bleiben Groesse und Deckkraft, und die kosten
+   nichts. Am Ende drehen sich die Karten weich in ihre Winkel. */
+.kt-bahn.fliegt{ scroll-snap-type:none }
+.kt-bahn.fliegt .kt-dreh{ transform:none }
+.kt-bahn.fliegt .kt-glanz{ animation:none }
 .kt.um .kt-dreh{ transform:rotateY(180deg) }
 /* Beim Aufschlagen stupst die vordere Karte einmal an: eine kurze
    Drehung, die zeigt, dass da eine Rueckseite ist. */
@@ -6314,7 +6330,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-1420';
+const APP_STAND = '2026-09-21-1510';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -10314,6 +10330,8 @@ function malKarte(nrZeig){
   const bahn = $('#kt-bahn'); if(!bahn) return;
   bahn.innerHTML = RAENGE.map((r, i) => ktKarte(i + 1, echt, anzahl)).join('');
   ktFaerben(bahn);
+  _ktMasse = null;               /* neue Karten, neue Masse */
+  _ktVorne = 0;
   $('#kt-punkte').innerHTML = RAENGE.map((r, i) =>
     '<i class="' + (i + 1 <= echt ? 'frei' : '') + '" style="--pf:' + r.a + '"></i>').join('');
   faerbe($('#mkv'), nrZeig || echt);        /* die Farbwolken im Hintergrund */
@@ -10352,33 +10370,51 @@ let _ktZeig = 1;
    Gerechnet wird bei jedem Bild waehrend des Wischens, aber nur einmal
    je Bild: ein Scroll-Ereignis feuert oefter als der Schirm zeichnet. */
 let _ktRaf = 0;
+/* Die Masse der Karten einmal messen, nicht bei jedem Bild.
+   offsetLeft und offsetWidth aendern sich beim Scrollen nicht — sie
+   abzufragen zwingt den Browser aber jedes Mal zu rechnen, und in
+   einer Schleife, die dazwischen Stile setzt, heisst das: messen,
+   rechnen, messen, rechnen, zwoelf Mal je Bild. Genau davon wurde das
+   Durchblaettern zaeh. */
+let _ktMasse = null;
+function ktMessen(){
+  const bahn = $('#kt-bahn'); if(!bahn) return null;
+  const kt = $$('.kt', bahn);
+  if(!kt.length || !bahn.clientWidth) return null;
+  _ktMasse = {
+    halb: bahn.clientWidth / 2,
+    karten: kt.map(k => ({ el:k, mitte:k.offsetLeft + k.offsetWidth / 2, w:k.offsetWidth + 16 }))
+  };
+  return _ktMasse;
+}
 function kartenTiefe(){
   const bahn = $('#kt-bahn'); if(!bahn) return;
-  const mitte = bahn.scrollLeft + bahn.clientWidth / 2;
+  const m = _ktMasse || ktMessen();
+  if(!m) return;
+  const mitte = bahn.scrollLeft + m.halb;
   let vorne = null, bd = Infinity;
-  $$('.kt', bahn).forEach(k => {
-    const m = k.offsetLeft + k.offsetWidth / 2;
-    const d = Math.abs(m - mitte);
-    /* 0 in der Mitte, 1 eine ganze Kartenbreite daneben. */
-    const w = k.offsetWidth + 16;
-    k.style.setProperty('--nah', String(Math.max(0, 1 - d / w)));
-    /* Mit Vorzeichen, fuer die Drehung: links negativ, rechts positiv. */
-    k.style.setProperty('--seite', String(Math.max(-1.4, Math.min(1.4, (m - mitte) / w))));
-    if(d < bd){ bd = d; vorne = k; }
+  /* Erst alles rechnen, dann alles schreiben. */
+  m.karten.forEach(k => {
+    const d = Math.abs(k.mitte - mitte);
+    k.el.style.setProperty('--nah', String(Math.max(0, 1 - d / k.w)));
+    k.el.style.setProperty('--seite',
+      String(Math.max(-1.4, Math.min(1.4, (k.mitte - mitte) / k.w))));
+    if(d < bd){ bd = d; vorne = k.el; }
   });
   if(!vorne) return;
-  $$('.kt', bahn).forEach(k => k.classList.toggle('vorn', k === vorne));
-  const n = +vorne.dataset.n, echt = stufe();
+  const n = +vorne.dataset.n;
+  if(n === _ktVorne) return;     /* der Rest gilt nur beim Wechsel */
+  m.karten.forEach(k => k.el.classList.toggle('vorn', k.el === vorne));
   $('#kt-titel').textContent = rang(n).n;
   $('#kt-zaehler').textContent = 'Karte ' + n + ' von ' + RAENGE.length;
   $$('#kt-punkte i').forEach((p, i) => p.classList.toggle('vorne', i + 1 === n));
   /* Teilen gilt fuer die Karte, die vorne liegt. Bei einer verschlossenen
      gibt es nichts herzuzeigen. */
   const t = $('#mk-teilen');
-  if(t) t.disabled = n > echt;
+  if(t) t.disabled = n > stufe();
   _ktVorne = n;
 }
-let _ktVorne = 1;
+let _ktVorne = 0;
 function ktBahnHorchen(){
   const bahn = $('#kt-bahn'); if(!bahn || bahn._horcht) return;
   bahn._horcht = true;
@@ -10493,15 +10529,34 @@ function ktFlug(vonNr, bisNr, fertig){
   if(!weit || still || !bahn.clientWidth || document.hidden){
     bahn.scrollLeft = b; kartenTiefe(); return ende();
   }
-  const dauer = Math.min(1250, 280 + weit * 95);
+  const dauer = Math.min(1000, 240 + weit * 70);
+  /* Waehrend der Fahrt kein Einrasten: scroll-snap-type zieht bei
+     jedem gesetzten scrollLeft zur naechsten Karte, und das kaempft
+     gegen die gerechnete Bewegung — daher das Stocken. Und keine
+     Uebergaenge auf der Drehung, die liefen der Fahrt hinterher. */
+  bahn.classList.add('fliegt', 'wischt');
   bahn.scrollLeft = a;
   const start = performance.now();
-  const kurve = t => 1 - Math.pow(1 - t, 3);
+  /* Quadratisch auslaufend: gleich zuegig los, weich hin. Zwei andere
+     Kurven waren vorher dran. 1-(1-t)^3 kroch am Ende — in den letzten
+     400 ms bewegten sich noch 60 von 2650 px, und das liest sich als
+     Stocken. Eine S-Kurve legte dafuer einen traegen Start hin: in den
+     ersten 200 ms nur 45 px, und beim Aufschlagen soll es gleich
+     losgehen. */
+  const kurve = t => t * (2 - t);
+  const landen = () => {
+    bahn.scrollLeft = b;
+    bahn.classList.remove('fliegt');
+    setTimeout(() => bahn.classList.remove('wischt'), 60);
+    kartenTiefe();
+    ende();
+  };
   const bild = jetzt => {
     const p = Math.min(1, (jetzt - start) / dauer);
     bahn.scrollLeft = a + (b - a) * kurve(p);
+    kartenTiefe();               /* gleich hier, nicht ueber den Horcher */
     if(p < 1) requestAnimationFrame(bild);
-    else { bahn.scrollLeft = b; kartenTiefe(); ende(); }
+    else landen();
   };
   requestAnimationFrame(bild);
 }
