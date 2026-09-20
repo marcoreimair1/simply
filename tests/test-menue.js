@@ -383,9 +383,15 @@ window.__WEITER = function(){
      && +document.querySelector('#kt-bahn .kt.jetzt').dataset.n === st);
   ok('Nur die verschlossenen tragen ein Schloss',
      [].every.call(kt, function(k, i){ return (i + 1 > st) === !!k.querySelector('.kt-schloss'); }));
-  ok('Nur die aktuelle traegt die Leiter',
-     document.querySelectorAll('#kt-bahn .kt .kt-leiter').length === 1
-     && !!document.querySelector('#kt-bahn .kt.jetzt .kt-leiter'));
+  /* Keine Leiter mehr: die naechste Karte sagt ohnehin, wie viel fehlt,
+     und ohne sie sind alle zwoelf gleich gross — beim Wischen springt
+     nichts. */
+  ok('Keine Leiter mehr auf der Karte',
+     document.querySelectorAll('#kt-bahn .kt-leiter').length === 0);
+  ok('Alle Karten sind gleich gebaut',
+     [].every.call(kt, function(k){
+       return k.querySelectorAll('.kt-band, .kt-fenster, .kt-wer, .kt-fach, .kt-fuss').length === 5;
+     }));
   ok('Die erreichten tragen einen Stempel, die aktuelle nicht',
      document.querySelectorAll('#kt-bahn .kt-stempel').length === st - 1);
   /* Im Fach steht bei jeder etwas anderes — das ist der einzige Teil,
@@ -903,8 +909,12 @@ setTimeout(() => {
     && /@keyframes ktGlanz\{/.test(roh)],
    ['Und kein Uebergang auf der Groesse, der dem Finger nachlaeuft',
     !/\.kt\{[\s\S]{0,420}transition:scale/.test(roh)],
-   ['Das Band sitzt unten, auch wenn die Karte mitwaechst',
-    /\.kt-fuss\{[\s\S]{0,200}margin-top:auto \}/.test(roh)],
+   ['Das Band sitzt unten und nimmt die Fassung auf',
+    /\.kt-fuss\{[\s\S]{0,240}margin-top:auto;[\s\S]{0,120}background:var\(--kt-band/.test(roh)
+    && /--kt-band:rgba\(255,255,255,\.20\);/.test(roh)
+    && /--kt-band:rgba\(148,142,164,\.20\);/.test(roh)],
+   ['Die Plakette traegt die Farbe der Stufe, kein Schwarz',
+    /\.ma-lvl\{[\s\S]{0,200}background:var\(--rd, #5C6A94\);/.test(roh)],
    ['Weniger Bewegung laesst das Einrasten weg',
     /prefers-reduced-motion:reduce\)\{\s*\n\s*\.kt\{ scale:1; opacity:1 \}[\s\S]{0,200}\.kt-bahn\{ scroll-snap-type:none \}/.test(roh)],
    ['Die alte Drehbuehne ist weg',

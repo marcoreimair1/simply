@@ -197,6 +197,8 @@
 
   --marke-rgb:198,67,254;
   --tx-rgb:243,238,255;
+  /* Das Fussband der Karte: im Dunkeln grau und durchscheinend. */
+  --kt-band:rgba(148,142,164,.20);
   /* Das Gruen der kleinen Kugel im Maennchen, aus dem Bild gemessen.
      Es gilt in beiden Fassungen — die Kugel ist ja auch in beiden
      dieselbe. */
@@ -298,6 +300,8 @@
 
   --marke-rgb:167,22,232;
   --tx-rgb:25,11,36;
+  /* Im Hellen hell und durchscheinend statt schwarz. */
+  --kt-band:rgba(255,255,255,.20);
   /* Wo die Farbe Text traegt, braucht sie Tiefe: die grosse "22" stand
      bei 2,0:1 und war kaum lesbar. Diese Varianten schaffen 3,5:1 und
      bleiben im selben Farbton — nur an Text, nicht an Raendern. */
@@ -372,6 +376,8 @@
 
   --marke-rgb:167,22,232;
   --tx-rgb:25,11,36;
+  /* Im Hellen hell und durchscheinend statt schwarz. */
+  --kt-band:rgba(255,255,255,.20);
   /* Wo die Farbe Text traegt, braucht sie Tiefe: die grosse "22" stand
      bei 2,0:1 und war kaum lesbar. Diese Varianten schaffen 3,5:1 und
      bleiben im selben Farbton — nur an Text, nicht an Raendern. */
@@ -2870,18 +2876,16 @@ body.sigmodus .fb-s{display:inline-flex}
   color:rgba(255,255,255,.62) }
 .kt-fach b{ font-family:var(--font-dis); font-weight:400; font-size:21px; letter-spacing:-.01em;
   text-align:right }
-.kt-leiter{ margin:11px 9px 0 }
-.kt-leiter .rz{ display:flex; align-items:baseline; justify-content:space-between; gap:10px;
-  font-size:10.5px; color:rgba(255,255,255,.64) }
-.kt-schiene{ display:block; height:6px; border-radius:99px; background:rgba(255,255,255,.18);
-  margin:6px 0 0; overflow:hidden }
-.kt-schiene i{ display:block; height:100%; width:0; border-radius:99px; background:var(--rf,#8FA0C8);
-  transition:width .9s var(--ease-out) }
 /* margin-top:auto: die Karten stehen nebeneinander und werden alle so
    hoch wie die hoechste — nur die aktuelle traegt ja die Leiter. Ohne
    das klebte das Band bei den anderen mitten in der Karte. */
+/* Das Band nimmt die Fassung auf: im Hellen hell durchscheinend, im
+   Dunkeln grau. Vorher lag dort schwarz mit 34 % — auf einer farbigen
+   Karte ein harter Riegel, der lauter war als alles darueber. */
 .kt-fuss{ display:flex; align-items:center; justify-content:space-between; gap:10px;
-  margin:13px -9px 0; padding:10px 18px; background:rgba(0,0,0,.34); margin-top:auto }
+  margin:13px -9px 0; padding:10px 18px; margin-top:auto;
+  background:var(--kt-band, rgba(148,142,164,.20));
+  border-top:1px solid rgba(255,255,255,.10) }
 .kt-fuss img{ height:14px; width:auto; display:block; filter:brightness(0) invert(1); opacity:.9 }
 .kt-fuss span{ font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
   color:rgba(255,255,255,.52) }
@@ -3618,9 +3622,13 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 .mausweis .mtile{ width:34px; height:34px; border-radius:12px;
   border-color:rgba(26,16,38,.24);
   background:rgba(255,255,255,.34); color:var(--ma-ink) }
+/* Die Plakette sass mit 82 % Tinte wie ein schwarzer Fleck in der Ecke.
+   Jetzt die Farbe der Stufe selbst — sie gehoert ja zu ihr — und nur so
+   kraeftig, dass die Schrift darauf steht. */
 .ma-lvl{ flex:none; font-size:9.5px; font-weight:800; letter-spacing:.1em; padding:4px 9px;
   border-radius:99px; white-space:nowrap; color:#fff;
-  background:rgba(26,16,38,.82) }
+  background:var(--rd, #5C6A94);
+  box-shadow:0 2px 8px -4px rgba(26,16,38,.45) }
 .mausweis .ma-oben > .zaehler{ position:absolute; top:8px; right:8px; z-index:3 }
 .ma-leiter{ position:relative; z-index:2; padding:12px 14px 13px; pointer-events:none }
 .ma-rz{ display:flex; align-items:baseline; justify-content:space-between; gap:10px }
@@ -5816,7 +5824,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-2145';
+const APP_STAND = '2026-09-20-2230';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9584,16 +9592,13 @@ const KT_SCHLOSS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 function ktKarte(n, echt, anzahl){
   const r = rang(n), noetig = (n - 1) * PRO_STUFE;
   const frei = n <= echt, ist = n === echt;
-  let fach, leiter = '';
+  /* Keine Leiter mehr auf der aktuellen Karte: die naechste Karte sagt
+     ohnehin, wie viel noch fehlt — und ohne sie sind wieder alle zwoelf
+     gleich gross. Beim Wischen springt dann nichts. */
+  let fach;
   if(ist){
     const min = gespartMin();
     fach = '<u>Zeit gespart</u><b>' + esc(anzahl ? fmtDauer(min) : 'noch nichts') + '</b>';
-    const rest = nochBis();
-    leiter = '<div class="kt-leiter"><div class="rz"><span>'
-      + (rest ? 'noch ' + rest + (rest === 1 ? ' Monat' : ' Monate') + ' bis ' + esc(rang(n + 1).n)
-              : 'höchste Stufe erreicht')
-      + '</span><span>' + anzahl + ' / ' + (rest ? n * PRO_STUFE : anzahl) + '</span></div>'
-      + '<span class="kt-schiene"><i></i></span></div>';
   } else if(frei){
     fach = '<u>Geschafft mit</u><b>' + (noetig || 1) + ' Monaten</b>';
   } else {
@@ -9627,7 +9632,6 @@ function ktKarte(n, echt, anzahl){
     + '<div class="kt-wer"><b>' + esc(ME.vorname + ' ' + ME.nachname) + '</b>'
     +   '<small>' + esc(frei ? EMPLOYER : r.w) + '</small></div>'
     + '<div class="kt-fach">' + fach + '</div>'
-    + leiter
     + '<div class="kt-fuss"><img alt="MOJI"><span>'
     +   esc(frei ? seitText() : 'Noch nicht freigeschaltet') + '</span></div>'
     + '</div>' + rueck + '</div></article>';
@@ -9650,7 +9654,6 @@ function malKarte(nrZeig){
   $('#kt-punkte').innerHTML = RAENGE.map((r, i) =>
     '<i class="' + (i + 1 <= echt ? 'frei' : '') + '" style="--pf:' + r.a + '"></i>').join('');
   faerbe($('#mkv'), nrZeig || echt);        /* die Farbwolken im Hintergrund */
-  _mkAnteil = stufeAnteil();
   _ktZeig = nrZeig || echt;
 }
 /* Aus der Stufenfarbe eine dunklere fuer den Verlauf. mischWeiss gibt es
@@ -9710,7 +9713,6 @@ function ktZeige(n, weich){
   else bahn.scrollLeft = ziel;
   kartenTiefe();
 }
-let _mkAnteil = 0;
 function karteAuf(){
   const b = $('#mkv');
   if(b.classList.contains('on')) return;
@@ -9723,13 +9725,8 @@ function karteAuf(){
   ktBahnHorchen();
   /* Erst stellen, wenn die Bahn wirklich eine Breite hat — vorher waere
      offsetLeft null und alles landete ganz links. */
-  setTimeout(() => {
-    ktZeige(_ktZeig, false);
-    /* Die Leiste faellt sich erst, wenn die Karte steht — dann sieht man
-       es laufen. */
-    const bar = $('.kt.jetzt .kt-schiene i');
-    if(bar) bar.style.width = Math.round(_mkAnteil * 100) + '%';
-  }, 60);
+  /* Erst stellen, wenn die Bahn wirklich eine Breite hat. */
+  setTimeout(() => ktZeige(_ktZeig, false), 60);
 }
 function karteZu(){
   const b = $('#mkv');
@@ -9788,11 +9785,7 @@ async function aufFeier(){
   document.body.classList.add('locked');
   ktBahnHorchen();
   faerbe($('#auf-kopf'), bis);
-  setTimeout(() => {
-    ktZeige(von + 1, false);
-    const bar = $('.kt.jetzt .kt-schiene i');
-    if(bar) bar.style.width = Math.round(_mkAnteil * 100) + '%';
-  }, 60);
+  setTimeout(() => ktZeige(von + 1, false), 60);
   konfetti($('#mkkanvas'), () => b.classList.contains('on'),
            { starts: anzahl > 1 ? [120, 520, 1000, 1500, 2100] : [140, 560], regen: 900 + anzahl * 400 });
 

@@ -886,6 +886,9 @@ hell, weil `--pa` 84 % Weiß unter die Stufenfarbe mischt; ein fester dunkler We
 (`.ma-flaeche`, `z-index:0`). Profilbild und Postfach behalten ihre eigenen Knöpfe und holen sich
 `pointer-events:auto` zurück — Knöpfe ineinander gibt es in HTML nicht.
 
+**Die Plakette trägt die Farbe ihrer Stufe.** Sie saß mit 82 % Tinte wie ein schwarzer Fleck in
+der Ecke; jetzt `--rd`, die dunkle Farbe des Rangs — sie gehört ja zu ihm.
+
 **Und der Glanz wandert auch hier.** Dasselbe schmale Lichtband wie auf der großen Karte zieht
 quer über den Kopf — er *ist* ja die Karte, also soll er sich auch so verhalten. Es lag zuerst
 als fester Verlauf darauf und stand still. Die Bewegung hängt an `.menu.on:not(.zu)`: bei
@@ -914,8 +917,16 @@ nichts springt. Nur was im Fach steht, wechselt:
 | | Fach | dazu |
 |---|---|---|
 | **erreicht** | *Geschafft mit 36 Monaten* | ein Stempel oben rechts |
-| **aktuell** | die gesparte Zeit | als einzige die Leiter darunter |
+| **aktuell** | die gesparte Zeit | — |
 | **verschlossen** | *noch 1 Monat · ab 40* | ein Schloss über dem Tier, grau statt farbig |
+
+**Eine Leiter gibt es nicht mehr.** Sie stand nur auf der aktuellen Karte und machte sie 50 px
+höher als alle anderen — beim Wischen sprang die Reihe. Die Auskunft war ohnehin doppelt: die
+nächste Karte sagt, wie viel noch fehlt. Nachgemessen sind jetzt **alle zwölf 499 px** hoch.
+
+**Das Fußband nimmt die Fassung auf** (`--kt-band`): im Hellen hell durchscheinend, im Dunkeln
+grau. Vorher lag dort Schwarz mit 34 % — auf einer farbigen Karte ein harter Riegel, der lauter
+war als alles darüber.
 
 **Das Tier ist groß.** Von allem, was MOJI hat, erkennt man die Tiere am schnellsten wieder —
 116 Stück, jedes ein eigenes. Eine Karte, auf der das Tier klein in der Ecke sitzt, verschenkt
