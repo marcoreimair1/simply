@@ -1076,6 +1076,12 @@ sagt der eigene Stand: die am weitesten freigeschaltete. Wer noch keinen verschi
 **Ube Pop**, den ersten; ein leerer Platz wäre kein Ziel. Die Zahl der wartenden Becher sitzt an
 seiner Ecke.
 
+**Wartet ein Becher auf Antwort, meldet er sich selbst:** alle fünf Sekunden ein kurzes Wackeln,
+dann wieder Ruhe. Die Bewegung steckt in den letzten 30 % der Keyframes — davor steht er still. Eine
+Animation, die dauernd zappelt, übersieht man nach zwei Minuten; eine, die sich hin und wieder
+meldet, nicht. Der Drehpunkt sitzt am Fuß wie bei den Bechern in der Firmenansicht: um die Mitte
+gedreht sähe es aus wie ein Propeller.
+
 **Unter dem Profilbild steht kein Wort.** Die drei anderen Punkte brauchen eines — ein Symbol
 allein muss man raten —, das Bild ist sein eigener Name. Dafür sitzt es mittig in der Leiste statt
 auf der Grundlinie der anderen und ist 48 statt 42 px groß.

@@ -1062,6 +1062,15 @@ setTimeout(() => {
    ['Die Punkte ohne Wort zeigen ihren Zustand als Ring',
     roh.includes('.tab-tee.an img{ border-radius:11px;')
     && roh.includes('.tab-pro.an .avatar{ box-shadow:0 0 0 2.5px var(--butter),')],
+   /* Eine Animation, die dauernd zappelt, uebersieht man nach zwei
+      Minuten; eine, die sich hin und wieder meldet, nicht. */
+   ['Der wartende Becher meldet sich alle fuenf Sekunden',
+    roh.includes('animation:teeWink 5s var(--ease-out) .8s infinite }')
+    && roh.includes('0%, 70%, 100%{ transform:none }')],
+   ['Und zwar nur, solange einer wartet',
+    roh.includes("tt.classList.toggle('wartet', tee > 0);")],
+   ['Er kippt am Fuss, nicht um die Mitte',
+    roh.includes('.tab-tee.wartet img{ transform-origin:50% 86%;')],
    ['Der Punkt traegt den Becher, nicht Haus und Wort',
     roh.includes('<button class="tab tab-tee" data-go="v-firma" aria-label="Meine Firma">')
     && roh.includes('.tab-tee img{ width:34px; height:34px;')],
