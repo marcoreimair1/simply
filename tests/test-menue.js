@@ -343,6 +343,20 @@ window.__WEITER = function(){
      !document.querySelector('.mi[data-act="firma"]'));
   ok('Aber ein Ziel in der Leiste',
      !!document.querySelector('#tabbar .tab[data-go="v-firma"]'));
+  /* Der Punkt zeigt einen Becher statt Haus und Wort — das ist, was
+     man dort tut. Ohne eigenen Becher den ersten: Ube Pop. */
+  TEE_PAARE = {}; ME.teeLvl = 0; malTeeTab();
+  ok('Ohne Becher steht Ube Pop in der Leiste',
+     /tee-1\.webp$/.test(document.getElementById('tab-tee-b').getAttribute('src')),
+     document.getElementById('tab-tee-b').getAttribute('src'));
+  TEE_PAARE = { a:{punkte:25} }; malTeeTab();
+  ok('Mit Bechern die weiteste Sorte',
+     document.getElementById('tab-tee-b').getAttribute('src')
+       === 'tee-' + teeLevel(25) + '.webp',
+     document.getElementById('tab-tee-b').getAttribute('src'));
+  ok('Und kein Wort daneben',
+     !document.querySelector('#tabbar .tab[data-go="v-firma"] em'));
+  TEE_PAARE = {};
   /* ── Der Kopf ist die Karte ──
      Seit 20.09.2026 stehen Name, Bild, Stufe und das dunkle Band in
      einem Stueck. Vorher waren es zwei Kaesten und ein eigener
@@ -1043,6 +1057,14 @@ setTimeout(() => {
     /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/.test(roh)],
    ['Der Zaehler haengt an der Symbolkachel',
     /\.mi \.miico > \.zaehler\{position:absolute;top:-7px;right:-7px/.test(roh)],
+   /* Ein Bild wird nicht violett — die beiden Punkte ohne Wort
+      bekommen einen Ring, wenn sie dran sind. */
+   ['Die Punkte ohne Wort zeigen ihren Zustand als Ring',
+    roh.includes('.tab-tee.an img{ border-radius:11px;')
+    && roh.includes('.tab-pro.an .avatar{ box-shadow:0 0 0 2.5px var(--butter),')],
+   ['Der Punkt traegt den Becher, nicht Haus und Wort',
+    roh.includes('<button class="tab tab-tee" data-go="v-firma" aria-label="Meine Firma">')
+    && roh.includes('.tab-tee img{ width:34px; height:34px;')],
    ['Die wartenden Becher stehen am Punkt in der Leiste',
     roh.includes('<span class="zaehler" id="fi-zaehler" hidden></span></span>')
     && roh.includes('.tabi{position:relative; display:grid; place-items:center;')],

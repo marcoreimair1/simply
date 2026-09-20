@@ -3555,6 +3555,19 @@ body.locked #tabbar{
   max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
 .tab.an{ color:var(--butter) }
 .tab.an em{ font-weight:700 }
+/* Der Becher steht wie das Profilbild ohne Wort da und sitzt deshalb
+   mittig statt auf der Grundlinie der beiden anderen. Kleiner als das
+   Profilbild — das bleibt der Anker. */
+.tab-tee{ align-self:center; padding:0 }
+.tab-tee .tabi{ width:34px; height:34px }
+.tab-tee img{ width:34px; height:34px; display:block; object-fit:contain;
+  filter:drop-shadow(0 4px 9px rgba(var(--s-schatten),.3)) }
+.tab-tee .zaehler{ top:-6px; right:-8px }
+/* Die beiden Punkte ohne Wort koennen ihre Farbe nicht wechseln — ein
+   Bild wird nicht violett. Sie bekommen einen Ring, wenn sie dran
+   sind. */
+.tab-tee.an img{ border-radius:11px;
+  box-shadow:0 0 0 2.5px var(--butter), 0 4px 9px -4px rgba(var(--s-schatten),.4) }
 /* Das Profilbild ist der Anker: groesser als die Symbole, mit hellem
    Ring und Schatten. Ohne Wort darunter sitzt es mittig in der Leiste
    statt unten auf der Grundlinie der drei anderen — und darf dafuer
@@ -3562,6 +3575,7 @@ body.locked #tabbar{
 .tab-pro{ align-self:center; padding:0 }
 .tabbar .avatar{ width:48px; height:48px; border-radius:17px; border:0;
   box-shadow:0 0 0 2.5px rgba(var(--s-hoch),.95), 0 7px 16px -6px rgba(var(--s-schatten),.55) }
+.tab-pro.an .avatar{ box-shadow:0 0 0 2.5px var(--butter), 0 7px 16px -6px rgba(var(--s-schatten),.55) }
 .tabbar .avatar:hover{ transform:none }
 .tabbar .zaehler{ top:-4px; right:-6px }
 .fabbar{position:fixed;left:0;right:0;bottom:0;z-index:35;
@@ -6188,9 +6202,12 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <span class="tabi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg></span>
       <em>Export</em>
     </button>
-    <button class="tab" data-go="v-firma" aria-label="Meine Firma">
-      <span class="tabi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9.5 21v-6h5v6"/></svg><span class="zaehler" id="fi-zaehler" hidden></span></span>
-      <em>Meine Firma</em>
+    <!-- Meine Firma zeigt einen Becher statt Haus und Wort: das ist
+         das, was man dort tut. Welche Sorte, sagt der eigene Stand —
+         die am weitesten freigeschaltete. Wer noch keinen verschickt
+         hat, sieht Ube Pop, den ersten. -->
+    <button class="tab tab-tee" data-go="v-firma" aria-label="Meine Firma">
+      <span class="tabi"><img id="tab-tee-b" src="tee-1.webp" alt="" loading="lazy"><span class="zaehler" id="fi-zaehler" hidden></span></span>
     </button>
     <!-- Das Profil ist der vierte Punkt. Das Bild ist das Einzige in
          der Leiste, das ein Bild ist — es darf groesser sein und ein
@@ -6345,7 +6362,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-1800';
+const APP_STAND = '2026-09-21-1845';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -10154,7 +10171,21 @@ function malWerte(){
   const lk = $('#mw-lvl');
   if(lk) lk.setAttribute('title', 'Stufe ' + nr + ' · ' + rang(nr).n);
 }
+/* Der Becher in der Leiste. Er steht auch dann da, wenn noch keiner
+   gelaufen ist — dann als Ube Pop, der erste. Ein leerer Platz waere
+   kein Ziel. */
+function malTeeTab(){
+  const b = $('#tab-tee-b'); if(!b) return;
+  const g = teeGesamt();
+  const roh = g.level || (ME && ME.teeLvl) || 1;
+  const lvl = Math.max(1, Math.min(TEE.length, roh));
+  const datei = 'tee-' + lvl + '.webp';
+  if(b.getAttribute('src') !== datei) b.src = datei;
+  const knopf = b.closest('.tab');
+  if(knopf) knopf.title = 'Meine Firma · ' + TEE[lvl - 1].n;
+}
 function malTeeBadge(){
+  malTeeTab();
   const b = $('#mw-tee'); if(!b) return;
   let g = teeGesamt();
   /* Stehen echte Zahlen da, wandern sie ins Profil; steht noch nichts,

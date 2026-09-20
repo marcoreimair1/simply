@@ -1071,9 +1071,17 @@ darf man sehen.
 **Alle vier Wörter stehen da.** Das kostet nichts, und *Meine Firma* ist als Symbol allein nicht
 erratbar. Im ersten Anlauf trug nur der aktive Punkt sein Wort; das war hübscher und sagte weniger.
 
+**Meine Firma zeigt einen Becher** statt Haus und Wort — das ist, was man dort tut. Welche Sorte,
+sagt der eigene Stand: die am weitesten freigeschaltete. Wer noch keinen verschickt hat, sieht
+**Ube Pop**, den ersten; ein leerer Platz wäre kein Ziel. Die Zahl der wartenden Becher sitzt an
+seiner Ecke.
+
 **Unter dem Profilbild steht kein Wort.** Die drei anderen Punkte brauchen eines — ein Symbol
 allein muss man raten —, das Bild ist sein eigener Name. Dafür sitzt es mittig in der Leiste statt
 auf der Grundlinie der anderen und ist 48 statt 42 px groß.
+
+**Die beiden Punkte ohne Wort zeigen ihren Zustand als Ring** — ein Bild wird nicht violett. Wer
+dran ist, bekommt einen violetten Ring statt des hellen.
 
 **Alle Zahlen sind violett.** Rot sagt *etwas ist schiefgegangen*; hier wartet nur etwas — eine
 Nachricht, ein Aufstieg, ein Bubble Tea. Damit fielen zwei Sonderfälle weg: die violette Variante
