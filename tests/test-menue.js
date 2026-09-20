@@ -331,6 +331,33 @@ window.__WEITER = function(){
        && document.querySelector('.mi[data-act="firma"] img')
             .getAttribute('src').indexOf('firma-miller.png') === 0,
      document.querySelector('.mi[data-act="firma"]').innerHTML.slice(0, 80));
+  /* ── Der Kopf ist die Karte ──
+     Seit 20.09.2026 stehen Name, Bild, Stufe und das dunkle Band in
+     einem Stueck. Vorher waren es zwei Kaesten und ein eigener
+     Menuepunkt: dreimal dieselbe Person. */
+  malRang();
+  var kopf = document.getElementById('mausweis');
+  ok('Der Kopf ist die Karte',      !!kopf);
+  ok('Die alte Stufenleiste ist weg', !document.getElementById('mrang'));
+  ok('Und der eigene Menuepunkt auch',
+     !document.querySelector('#menu [data-act="karte"]'));
+  ok('Er traegt die Farbe der Stufe',
+     kopf.style.getPropertyValue('--pa') !== '' && kopf.style.getPropertyValue('--rf') !== '',
+     kopf.getAttribute('style'));
+  /* Kein Muster mit Backslash — diese Pruefungen stehen in einer
+     Schablonenzeichenkette, dort wird aus \d ein d. */
+  ok('Im Band steht der Stand der Sammlung',
+     document.getElementById('ma-stand').textContent === stufe() + ' von ' + RAENGE.length + ' Karten',
+     document.getElementById('ma-stand').textContent);
+  ok('Die Flaeche darunter oeffnet die Karte', !!document.getElementById('ma-auf'));
+  /* Knoepfe ineinander gibt es in HTML nicht — Bild und Postfach muessen
+     eigene bleiben und duerfen nicht im Oeffnen-Knopf stecken. */
+  ok('Bild und Postfach sind eigene Knoepfe',
+     document.getElementById('avbig').tagName === 'BUTTON'
+     && document.getElementById('postfach').tagName === 'BUTTON'
+     && !document.getElementById('ma-auf').contains(document.getElementById('avbig')));
+  ok('Die Stufenliste haengt jetzt an der Karte', !!document.getElementById('mk-stufen'));
+
   /* ── Die Profilbilder ──
      Seit 15.09.2026 sind es 117 statt 12, als WebP in 288 x 384. */
   ok('116 Motive stehen zur Wahl',  AVATARE === 116, AVATARE);
@@ -789,6 +816,18 @@ setTimeout(() => {
       Kasten — 14,7 px hoch, die Kacheln uebereinander. */
    ['Und die Reihen behalten ihre Hoehe',
     /\.avgrid\{[\s\S]{0,600}grid-auto-rows:min-content;/.test(roh)],
+   /* ─── 20.09.2026: der Kopf ist die Karte ──────────────────────── */
+   ['Der Kopf traegt dieselben Pastelltoene wie die grosse Karte',
+    /\.mausweis\{[\s\S]{0,700}background:linear-gradient\(168deg,var\(--pa[\s\S]{0,80}var\(--pb/.test(roh)],
+   ['Und eine eigene Tinte, nicht --f-2',
+    /--ma-ink:#1A1026;/.test(roh) && !/\.mausweis\{[\s\S]{0,700}color:var\(--f-2\)/.test(roh)],
+   ['Die Flaeche liegt unter dem Inhalt',
+    /\.ma-flaeche\{ position:absolute; inset:0; z-index:0;/.test(roh)
+    && /\.ma-oben\{[\s\S]{0,160}pointer-events:none \}/.test(roh)],
+   ['Bild und Postfach bleiben anfassbar',
+    /\.ma-oben \.avbig, \.ma-oben \.mtile\{ pointer-events:auto \}/.test(roh)],
+   ['Das dunkle Band traegt die Wortmarke',
+    /\.ma-band\{[\s\S]{0,200}background:var\(--karton-band, #0B0711\)/.test(roh)],
    ['Die Obergrenze in normalize steht nicht als Zahl da',
     /if\(!\(av >= 1 && av <= AVATARE\)\) delete p\.avatar;/.test(roh)],
    ['Das zugeteilte Bild wird hinterlegt',

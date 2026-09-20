@@ -3320,7 +3320,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 /* Eine Breite für alles. Vorher trug nur .menu-card > * die Begrenzung —
    die Profilkarte ist ein direktes Kind, die Gruppen nicht. Auf breiten
    Geräten lief die Karte deshalb anders als die Boxen darunter. */
-.mkopf, .mh.avwahl, .mrang, .msek, .mgruppe, .mfoot{
+.mkopf, .mausweis, .msek, .mgruppe, .mfoot{
   max-width:520px; margin-left:auto; margin-right:auto; box-sizing:border-box;
 }
 
@@ -3401,16 +3401,72 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 
    --karte macht genau das: im Hellen weiss mit Schatten, im Dunkeln
    eine Spur heller als die Seite. */
-.mgruppe, .mh.avwahl, .mrang{
+.mgruppe{
   background:var(--karte); border:1px solid var(--karte-rand);
   box-shadow:var(--karte-schatten);
 }
 
-/* ─── Profilkarte ────────────────────────────────────────────────── */
-/* Etwas gedrungener als vorher: das Profilbild war so gross, dass die
-   Karte fast ein Drittel des Bildschirms einnahm. */
-.mh.avwahl{ margin:4px 14px 14px; padding:13px; border-radius:var(--r-m) }
-.mh.avwahl .avbig{ width:84px; height:84px }
+/* ─── Der Kopf ist die Karte ──────────────────────────────────────
+   Dieselben Farben wie die grosse Karte: --pa hell, --pb satter, beide
+   aus der Stufe. Steigt jemand auf, wechselt der Kopf die Farbe — man
+   sieht es beim Oeffnen und nicht erst in einem Kasten weiter unten.
+
+   Der Text steht dunkel darauf. Alle zwoelf Stufenfarben sind pastellig
+   genug dafuer; die dunkle Variante --rf2 kommt nur als Akzent vor. */
+.mausweis{
+  position:relative; overflow:hidden; isolation:isolate;
+  margin:4px 14px 14px; border-radius:var(--r-m);
+  /* Eigene Tinte statt --f-2: das ist ein Kartentoken und in der hellen
+     Fassung fast Weiss — auf dem Pastell waere der Name unsichtbar
+     gewesen. Der Grund hier ist in BEIDEN Fassungen hell (--pa mischt
+     84 % Weiss unter die Stufenfarbe), also passt ein fester dunkler
+     Wert. */
+  --ma-ink:#1A1026;
+  --ma-ink-2:rgba(26,16,38,.62);
+  color:var(--ma-ink); box-shadow:var(--karte-schatten);
+  background:linear-gradient(168deg,var(--pa,#EADFF5) 0%,var(--pb,#D8C4EC) 58%,var(--pa,#EADFF5) 100%);
+  transition:transform .2s var(--ease-out);
+}
+.mausweis.druck{ transform:scale(.978) }
+/* Die Flaeche liegt UNTER dem Inhalt und faengt jeden Druck ab, der
+   nicht auf Bild oder Postfach geht. */
+.ma-flaeche{ position:absolute; inset:0; z-index:0; border:0; background:none; padding:0;
+  cursor:pointer; border-radius:inherit }
+.ma-flaeche:focus-visible{ outline:2px solid var(--ma-ink); outline-offset:-4px }
+.ma-glanz{ position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(102deg,transparent 38%,rgba(255,255,255,.42) 49%,transparent 60%) }
+.ma-oben{ position:relative; z-index:2; display:flex; align-items:flex-start; gap:12px;
+  padding:14px 14px 0; pointer-events:none }
+.ma-oben .avbig, .ma-oben .mtile{ pointer-events:auto }
+.ma-oben .avbig{ width:64px; height:64px; border-radius:22px }
+.mausweis .mhtext{ flex:1; min-width:0 }
+.mausweis .mhtext b{ display:block; font-size:19px; line-height:1.14; letter-spacing:-.015em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.mausweis .mhtext small{ display:block; font-size:11.5px; margin-top:2px;
+  color:var(--ma-ink-2);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.mausweis .mhrow{ margin-top:10px }
+.mausweis .mtile{ width:34px; height:34px; border-radius:12px;
+  border-color:rgba(26,16,38,.24);
+  background:rgba(255,255,255,.34); color:var(--ma-ink) }
+.ma-lvl{ flex:none; font-size:9.5px; font-weight:800; letter-spacing:.1em; padding:4px 9px;
+  border-radius:99px; white-space:nowrap; color:#fff;
+  background:rgba(26,16,38,.82) }
+.mausweis .ma-oben > .zaehler{ position:absolute; top:8px; right:8px; z-index:3 }
+.ma-leiter{ position:relative; z-index:2; padding:12px 14px 13px; pointer-events:none }
+.ma-rz{ display:flex; align-items:baseline; justify-content:space-between; gap:10px }
+.ma-rz b{ font-size:13.5px; font-weight:700 }
+.ma-rz small{ font-size:10.5px; color:var(--ma-ink-2);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.mausweis .mr-schiene{ margin:8px 0 0; background:rgba(26,16,38,.16) }
+.mausweis .mr-bar{ background:linear-gradient(90deg,var(--rf2,#5C6A94),var(--rf,#8FA0C8)) }
+/* Das dunkle Band: dieselbe Signatur wie unten auf der grossen Karte. */
+.ma-band{ position:relative; z-index:2; display:flex; align-items:center;
+  justify-content:space-between; gap:10px; padding:9px 14px;
+  background:var(--karton-band, #0B0711); pointer-events:none }
+.ma-wort{ height:14px; width:auto; display:block; filter:brightness(0) invert(1) }
+.ma-band span{ font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(255,255,255,.55) }
 
 /* Die Stufenleiste im Menue heisst .mrang — nicht .mbar. .mbar ist die
    Monatsdetails-Zeile im Kalender und hat hier nichts verloren.
@@ -4950,8 +5006,19 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
 <div class="menu" id="menu">
   <div class="menu-bd" data-close="menu"></div>
   <div class="menu-card">
-    <div class="mh avwahl" id="avwahl">
-      <div class="mhtop">
+    <!-- Der Kopf IST die Mitgliedschaftskarte. Vorher standen hier zwei
+         Kaesten — einer mit Name und Bild, einer mit der Stufe — und die
+         Karte lag hinter einem eigenen Menuepunkt: dreimal dieselbe
+         Person, drei Kanten, drei Rundungen.
+
+         Gedrueckt wird die ganze Flaeche; sie liegt als eigener Knopf
+         DARUNTER, damit Profilbild und Postfach ihre eigenen Knoepfe
+         behalten. Knoepfe ineinander gibt es in HTML nicht. -->
+    <div class="mausweis" id="mausweis">
+      <button class="ma-flaeche" id="ma-auf" aria-label="Mitgliedschaftskarte ansehen"></button>
+      <span class="ma-glanz" aria-hidden="true"></span>
+      <div class="ma-oben">
+        <button class="avbig" id="avbig" aria-label="Profilbild ändern" aria-expanded="false"></button>
         <div class="mhtext">
           <b id="me-name">—</b>
           <small id="me-sub">Miller Optik GmbH</small>
@@ -4964,8 +5031,14 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
             <span class="sync" id="sync" title="Sicherungsstand"></span>
           </div>
         </div>
-        <button class="avbig" id="avbig" aria-label="Profilbild ändern" aria-expanded="false"></button>
+        <span class="ma-lvl" id="mr-lvl">LVL 1</span>
+        <span class="zaehler" id="mr-zaehler" hidden></span>
       </div>
+      <div class="ma-leiter">
+        <div class="ma-rz"><b id="mr-name">—</b><small id="mr-rest">—</small></div>
+        <span class="mr-schiene"><span class="mr-bar" id="mr-bar"></span></span>
+      </div>
+      <div class="ma-band"><img class="ma-wort" id="ma-wort" alt="MOJI"><span id="ma-stand">—</span></div>
     </div>
     <!-- Alles unter dem Kopf. Die Bildauswahl legt sich als blaue Fläche
          darüber, damit das Menü beim Öffnen nicht in die Länge wächst. -->
@@ -5069,12 +5142,6 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         <button class="btn btn-g dlb-weg" id="dl-abbruch">Behalten</button>
       </div>
     <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge darunter. -->
-    <button class="mrang" id="mrang" data-act="raenge" aria-label="Stufen ansehen">
-      <span class="zaehler" id="mr-zaehler" hidden></span>
-      <span class="mr-kopf"><span class="mr-lvl" id="mr-lvl">LVL 1</span><b id="mr-name">—</b></span>
-      <span class="mr-schiene"><span class="mr-bar" id="mr-bar"></span></span>
-      <small id="mr-rest">—</small>
-    </button>
     <div class="mrows">
       <!-- Die Stufen legen sich unter die aktuelle Stufe, bis zur Linie,
            und lassen sich dort rollen. -->
@@ -5091,7 +5158,6 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       Meine Firma
       <span class="zaehler tee" id="fi-zaehler" hidden></span>
     </button>
-    <button class="mi" data-act="karte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.6"/><path d="M3 10h18M7 14.5h4"/></svg>Mitgliedschaftskarte</button>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
     <button class="mi" data-act="konten">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/></svg>
@@ -5276,6 +5342,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v4.5A1.5 1.5 0 006.5 20h11a1.5 1.5 0 001.5-1.5V14"/></svg>
       Karte teilen
     </button>
+    <button class="btn btn-out" id="mk-stufen">Alle Stufen</button>
     <button class="btn btn-out" id="mk-zu">Schließen</button>
   </nav>
 </div>
@@ -5625,7 +5692,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-1615';
+const APP_STAND = '2026-09-20-1720';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9298,9 +9365,9 @@ $('#fi-back').addEventListener('click', firmaZu);
 wireWischRaus('v-firma', firmaZu);
 
 function malRang(){
-  const zeile = $('#mrang'); if(!zeile) return;
+  const kopf = $('#mausweis'); if(!kopf) return;
   const nr = stufe(), r = rang(nr);
-  faerbe(zeile, nr);
+  faerbe(kopf, nr);
   $('#mr-lvl').textContent = 'LVL ' + nr;
   $('#mr-name').textContent = r.n;
   $('#mr-bar').style.width = Math.round(stufeAnteil() * 100) + '%';
@@ -9308,6 +9375,11 @@ function malRang(){
   $('#mr-rest').textContent = rest
     ? 'noch ' + rest + (rest === 1 ? ' Monat' : ' Monate') + ' bis ' + rang(nr + 1).n
     : 'höchste Stufe erreicht';
+  /* Im Band steht, wie weit die Sammlung ist — das ist die Zeile, die
+     zum Weiterdruecken einlaedt. */
+  $('#ma-stand').textContent = nr + ' von ' + RAENGE.length + ' Karten';
+  const w = $('#ma-wort');
+  if(w && !w.getAttribute('src')) w.src = LOGO_WORD;
   malVerlaufKnopf();
   malZaehler();
 }
@@ -10116,6 +10188,19 @@ $('#mk-zu').addEventListener('click', karteZu);
 $('#mk-dreh').addEventListener('click', karteDreh);
 $('#mk-dreh').addEventListener('keydown', e => {
   if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); karteDreh(); }
+});
+$('#ma-auf').addEventListener('click', () => { _vonMenu = true; karteAuf(); });
+/* Die Liste aller Stufen hing frueher an der Stufenleiste im Menue. Die
+   gibt es nicht mehr — sie steht jetzt im Kopf, und der oeffnet die
+   Karte. Also haengt die Liste an der Karte. */
+$('#mk-stufen').addEventListener('click', rangAuf);
+$('#mausweis').addEventListener('pointerdown', e => {
+  /* Nur die Flaeche gibt nach — nicht, wenn Bild oder Postfach gedrueckt
+     werden, die haben ihre eigene Bewegung. */
+  if(e.target.closest('.avbig, .mtile')) return;
+  const k = $('#mausweis');
+  k.classList.add('druck');
+  setTimeout(() => k.classList.remove('druck'), 220);
 });
 $('#mk-teilen').addEventListener('click', teileKarte);
 $('#rsheet').addEventListener('click', e => { if(e.target.dataset.close === 'rsheet') rangZu(); });

@@ -865,6 +865,30 @@ werden in `normalize()` **einmalig** umgerechnet, so dass am Tag der Umstellung 
 läuft wie vorher. Bereits exportierte Monate werden nicht rückwirkend verändert — ein
 abgegebenes Blatt nachträglich umzurechnen hilft niemandem.
 
+### Der Kopf ist die Karte
+
+Seit 20. September 2026 beginnt das Profilmenü mit der **Mitgliedschaftskarte**. Davor standen
+dort zwei Kästen — einer mit Name und Bild, einer mit der Stufe — und die Karte lag hinter einem
+eigenen Menüpunkt: dreimal dieselbe Person, drei Kanten, drei Rundungen.
+
+Jetzt ist es ein Stück: Bild, Name, Firma, Adresse, Postfach und Sicherungsstand, rechts die
+Plakette, darunter die Leiter und unten das **dunkle Band** mit der Wortmarke und dem Stand der
+Sammlung (*10 von 12 Karten*). Ein Druck darauf öffnet die Karte.
+
+**Die Farbe kommt aus der Stufe** (`--pa`/`--pb`, dieselben Pastelltöne wie die große Karte).
+Wer aufsteigt, sieht es beim Öffnen des Menüs und nicht erst in einem Kasten weiter unten.
+
+**Die Tinte ist eine eigene** (`--ma-ink`), nicht `--f-2`. Das ist ein Kartentoken und in der
+hellen Fassung fast Weiß — der Name wäre unsichtbar gewesen. Der Grund ist in beiden Fassungen
+hell, weil `--pa` 84 % Weiß unter die Stufenfarbe mischt; ein fester dunkler Wert passt also.
+
+**Gedrückt wird die ganze Fläche**, und die liegt als eigener Knopf *unter* dem Inhalt
+(`.ma-flaeche`, `z-index:0`). Profilbild und Postfach behalten ihre eigenen Knöpfe und holen sich
+`pointer-events:auto` zurück — Knöpfe ineinander gibt es in HTML nicht.
+
+Mitgegangen ist die **Liste aller Stufen**: Sie hing an der Stufenleiste, die es nicht mehr gibt,
+und öffnet sich jetzt aus der Karte heraus (*Alle Stufen*).
+
 ### Die Profilbilder
 
 **116 Motive**, seit 15. September 2026. Vorher waren es zwölf. 104 kommen aus sechs Bögen mit
