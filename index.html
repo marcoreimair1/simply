@@ -2701,10 +2701,29 @@ body.sigmodus .fb-s{display:inline-flex}
 .mkv{position:fixed;inset:0;z-index:58;display:none;place-items:center;
   background:radial-gradient(circle at 50% 30%,rgba(var(--s-hoch),.96),rgba(var(--s-tief),.99) 70%);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.mkv.on{display:grid;animation:mkvRein .42s var(--ease-out)}
+/* Das Aufschlagen war ein reines Aufblenden — die Karten standen
+   schlagartig in voller Groesse da. Jetzt zwei Ebenen: der Grund blendet
+   auf, und der Stapel steigt darunter hervor, leicht kleiner und tiefer
+   beginnend. Das ist dieselbe Bewegung wie ueberall in der App, wo etwas
+   aus einer Flaeche kommt — sie kommt von dort, wo sie gedrueckt wurde.
+
+   Die Kurve ist --ease-out (Expo): nach einem Sechstel der Zeit ist fast
+   alles passiert, der Rest legt sich nur noch hin. Linear oder ease
+   wirkt daneben hart. */
+.mkv.on{display:grid;animation:mkvRein .46s var(--ease-out)}
 .mkv.weg{animation:mkvWeg .3s var(--ease) forwards}
 @keyframes mkvRein{from{opacity:0}}
 @keyframes mkvWeg{to{opacity:0}}
+.mkv.on .mkv-in{ animation:mkvAuf .64s var(--ease-out) both }
+@keyframes mkvAuf{
+  from{ opacity:0; transform:translateY(30px) scale(.93) }
+  to{ opacity:1; transform:none }
+}
+.mkv.weg .mkv-in{ animation:mkvAb .3s var(--ease) forwards }
+@keyframes mkvAb{ to{ opacity:0; transform:translateY(18px) scale(.96) } }
+@media (prefers-reduced-motion:reduce){
+  .mkv.on .mkv-in, .mkv.weg .mkv-in{ animation:none }
+}
 /* Drei weiche Farbwolken im Hintergrund, die sehr langsam wandern. */
 .mkv-luft{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .mkv-luft i{position:absolute;display:block;border-radius:50%;filter:blur(46px);opacity:.5}
@@ -5856,7 +5875,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-2310';
+const APP_STAND = '2026-09-20-2355';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;

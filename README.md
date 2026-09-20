@@ -979,6 +979,13 @@ Arbeit für nichts — elf davon sieht niemand.
 Wischens wird `--nah` bei *jedem Bild* neu gesetzt; der Übergang fing bei jedem dieser Werte von
 vorne an und lief dem Finger hinterher. Ohne ihn folgt die Größe dem Scrollen unmittelbar.
 
+**Das Aufschlagen war zu hart.** Der Stapel stand mit einem reinen Aufblenden schlagartig in
+voller Größe da. Jetzt sind es zwei Ebenen: der Grund blendet auf, und der Stapel **steigt
+darunter hervor** — 30 px tiefer und auf 93 % beginnend, in 0,64 s auf der Expo-Kurve
+(`--ease-out`). Das ist dieselbe Bewegung wie überall sonst in der App, wo etwas aus einer Fläche
+kommt: es kommt von dort, wo gedrückt wurde. Beim Schließen sinkt es die kürzere Strecke zurück.
+Wer Bewegung abgestellt hat (`prefers-reduced-motion`), bekommt nur das Aufblenden.
+
 ### Das Bild zum Weitergeben
 
 `karteBild()` zeichnet die Sammelkarte auf eine Leinwand in **1080 × 1350** und reicht sie an das

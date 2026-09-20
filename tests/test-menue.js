@@ -946,6 +946,13 @@ setTimeout(() => {
    ['Waehrend des Wischens ohne Uebergang',
     /\.kt-bahn\.wischt \.kt-dreh\{ transition:none \}/.test(roh)
     && /bahn\.classList\.add\('wischt'\);/.test(roh)],
+   /* Das Aufschlagen war ein reines Aufblenden — die Karten standen
+      schlagartig in voller Groesse da. */
+   ['Der Stapel steigt beim Aufschlagen hervor',
+    /\.mkv\.on \.mkv-in\{ animation:mkvAuf \.64s var\(--ease-out\) both \}/.test(roh)
+    && /@keyframes mkvAuf\{[\s\S]{0,140}translateY\(30px\) scale\(\.93\)/.test(roh)],
+   ['Und sinkt beim Schliessen zurueck',
+    /\.mkv\.weg \.mkv-in\{ animation:mkvAb/.test(roh)],
    ['Beim Aufschlagen stupst die vordere Karte an',
     /\.kt\.stups \.kt-dreh\{ animation:ktStups/.test(roh) && /@keyframes ktStups\{/.test(roh)],
    ['Die Obergrenze in normalize steht nicht als Zahl da',
