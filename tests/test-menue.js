@@ -1313,6 +1313,25 @@ setTimeout(() => {
     roh.includes('box-shadow:inset 0 0 0 1px rgba(255,255,255,.13), 0 26px 56px -24px rgba(var(--s-schatten),.8) }')],
    ['Der Satz unten sitzt an einer Linie',
     roh.includes('.kt-hinweis{ margin-top:0; border-top:1px solid rgba(255,255,255,.16);')],
+   /* Wer die Karten aufmacht, faehrt von der ersten bis zu der, die
+      gerade gilt — das zeigt in einer Bewegung, dass es ein Stapel
+      ist und wo man darin steht. */
+   ['Der Stapel faehrt von der ersten bis zur aktuellen',
+    roh.includes('function ktFlug(vonNr, bisNr, fertig){')
+    && roh.includes('else ktFlug(1, _ktZeig, stups);')],
+   ['Gerechnet, damit die Dauer an der Strecke haengt',
+    roh.includes('const dauer = Math.min(1250, 280 + weit * 95);')
+    && roh.includes('const kurve = t => 1 - Math.pow(1 - t, 3);')],
+   ['Aus einem Brief heraus steht die Karte sofort da',
+    roh.includes('if(nr){ ktZeige(_ktZeig, false); stups(); }')],
+   /* Im Hintergrund feuert requestAnimationFrame nicht — dort bliebe
+      der Stapel sonst auf der ersten Karte stehen. */
+   ['Wer Bewegung abgestellt hat oder wegsieht, kommt gleich an',
+    roh.includes('if(!weit || still || !bahn.clientWidth || document.hidden){')],
+   ['Und am Ziel wackelt sie gleich, nicht erst nach einer halben Sekunde',
+    roh.includes('animation:ktStups 1.5s .18s var(--ease-out) 1 }')],
+   ['Die Stufenkachel ist zweizeilig wie die anderen',
+    roh.includes('<u>Profil<br>Level</u>')],
    ['Beim Aufschlagen stupst die vordere Karte an',
     /\.kt\.stups \.kt-dreh\{ animation:ktStups/.test(roh) && /@keyframes ktStups\{/.test(roh)],
    ['Die Obergrenze in normalize steht nicht als Zahl da',

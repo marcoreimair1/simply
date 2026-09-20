@@ -1075,7 +1075,8 @@ Breite sind es nachgemessen **103 px** je Feld.
 - **Tage in Folge** zählt, an wie vielen Tagen hintereinander die App offen war. Einmal am Tag,
   beim Betreten: war gestern der letzte, geht es eins hinauf; liegt mehr dazwischen, fängt die
   Reihe neu an. Wer mehrmals am Tag kommt, bekommt nichts extra — es sind Tage, keine Besuche.
-- **Level** ist die Stufe, die vorher als Pille in der Ecke stand.
+- **Profil Level** ist die Stufe, die vorher als Pille in der Ecke stand — zweizeilig
+  beschriftet wie die beiden anderen, damit die Reihe eine Reihe bleibt.
 
 **Jedes Feld ist ein Knopf**, weil jedes auf einen Tipp antwortet: der Becher wackelt und funkelt
 wie in der Firmenansicht (dieselben Keyframes), die Krone wirft ihre Funken weiter hinaus, und die
@@ -1135,6 +1136,21 @@ liest sich wie ein Fehler.
 Die Regel steht auch **in der Datenbank** (`20260921060000_tee_wechselspiel.sql`) — im Fenster
 allein wäre sie nur eine Bitte. `tee_senden()` gibt dafür ein Feld `wartet` zurück, damit die App
 den Grund nennen kann; weil sich der Rückgabetyp ändert, musste die alte Fassung erst weg.
+
+**Beim Aufschlagen fährt der Stapel durch.** Wer die Karten aufmacht, sieht zuerst die erste und
+fliegt dann an allen vorbei bis zu der, die gerade gilt; dort angekommen wackelt sie einmal, damit
+man merkt, dass sie eine Rückseite hat. Das zeigt in einer Bewegung, was sonst niemand sieht: dass
+es ein Stapel ist, dass er wächst, und wo man darin steht.
+
+Gerechnet statt `scrollTo({behavior:'smooth'})` — der Browser nimmt sich dafür dieselbe kurze Zeit,
+egal ob eine Karte oder elf dazwischenliegen, und über elf Karten wäre das ein Zucken. Hier dauert
+es je Karte ein Stück länger, höchstens 1,25 s, und die Kurve läuft sanft aus, damit die letzte
+Karte sich hinlegt statt anzuschlagen. Nachgemessen von Stufe 1 auf 10: nach 0,15 s Karte 2, nach
+0,43 s Karte 7, nach 0,86 s am Ziel.
+
+Drei Fälle fahren nicht: wer Bewegung abgestellt hat, wer aus einem Brief kommt (dort gilt die
+Karte, von der der Brief handelt), und **eine Seite im Hintergrund** — dort feuert
+`requestAnimationFrame` nicht, und der Stapel bliebe auf der ersten Karte stehen.
 
 ### Der Brief zum Aufstieg
 
