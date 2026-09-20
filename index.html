@@ -1989,7 +1989,13 @@ body.zrmodus .fb-z{display:inline-flex}
 .fb-s{display:none}
 body.sigmodus .fb-z{display:none}
 body.sigmodus .fb-s{display:inline-flex}
-body.zrmodus #tabbar, body.sigmodus #tabbar{
+body.zrmodus #tabbar, body.sigmodus #tabbar,
+/* Und wann immer etwas die Seite festhaelt: Vorspann, Gruss, Blaetter,
+   der Kartenstapel. Der Vorspann traegt absichtlich keinen eigenen
+   Grund — er laesst die Farbwolken der App durch —, und damit liess er
+   auch die Leiste durchscheinen. Ein Ladebild mit einer Navigation
+   darin ist kein Ladebild mehr. */
+body.locked #tabbar{
   opacity:0; transform:translateY(8px); pointer-events:none }
 .fabbar .fb-s{max-width:430px}
 /* Fast deckend: waehrend gearbeitet wird, soll die Kachel darunter nicht
@@ -6333,7 +6339,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-1635';
+const APP_STAND = '2026-09-21-1705';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;

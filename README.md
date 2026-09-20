@@ -1110,6 +1110,11 @@ war sie beim Verdrahten noch nicht da, und `addEventListener` lief auf `null`.
 **Das Hüpfen hatte noch eine zweite Quelle:** den Gummiband-Effekt beim Überscrollen, der eine
 festgesetzte Leiste mitzieht. `overscroll-behavior-y: none` auf `html, body` nimmt ihn weg.
 
+**Bei Ladebildern ist sie weg.** Der Vorspann trägt absichtlich keinen eigenen Grund — er lässt
+die Farbwolken der App durch —, und damit ließ er auch die Leiste durchscheinen. Ein Ladebild mit
+einer Navigation darin ist kein Ladebild mehr. Sie weicht jetzt bei allem, was die Seite festhält
+(`body.locked`): Vorspann, Gruß, Blätter, Kartenstapel.
+
 **Unten steht entweder die Navigation oder eine Entscheidung, nie beides.** Sobald ein Zeitraum
 markiert ist, stehen dort *Eintragen* und *Eintrag verwerfen*, beim Unterschreiben *Signieren* —
 dann weicht die Leiste, als Kreuzblende, nicht als Sprung. Solange etwas zu entscheiden ist, ist

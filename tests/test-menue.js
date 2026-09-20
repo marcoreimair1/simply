@@ -1125,8 +1125,12 @@ setTimeout(() => {
     roh.includes("$('#tab-pro').addEventListener('click', () => {")
     && !roh.includes("$('#avatar').addEventListener")],
    ['Bei einer Entscheidung weicht sie',
-    roh.includes('body.zrmodus #tabbar, body.sigmodus #tabbar{')
+    roh.includes('body.zrmodus #tabbar, body.sigmodus #tabbar,')
     && roh.includes('opacity:0; transform:translateY(8px); pointer-events:none }')],
+   /* Der Vorspann traegt absichtlich keinen eigenen Grund und liess
+      die Leiste durchscheinen. */
+   ['Und bei allem, was die Seite festhaelt, auch',
+    roh.includes('body.locked #tabbar{')],
    ['Und die beiden alten Ansichtsknoepfe sind weg',
     !roh.includes('class="btn btn-p fb-n"') && !roh.includes('fb-n{display:none}')],
    ['Die drei Ziele lassen Platz fuer die Leiste',
