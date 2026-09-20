@@ -947,12 +947,42 @@ setTimeout(() => {
     /\.kt-bahn\.wischt \.kt-dreh\{ transition:none \}/.test(roh)
     && /bahn\.classList\.add\('wischt'\);/.test(roh)],
    /* Das Aufschlagen war ein reines Aufblenden — die Karten standen
-      schlagartig in voller Groesse da. */
-   ['Der Stapel steigt beim Aufschlagen hervor',
-    /\.mkv\.on \.mkv-in\{ animation:mkvAuf \.64s var\(--ease-out\) both \}/.test(roh)
-    && /@keyframes mkvAuf\{[\s\S]{0,140}translateY\(30px\) scale\(\.93\)/.test(roh)],
-   ['Und sinkt beim Schliessen zurueck',
-    /\.mkv\.weg \.mkv-in\{ animation:mkvAb/.test(roh)],
+      schlagartig in voller Groesse da. Jetzt fahren sie aus der Karte
+      im Menue heraus, gemessen aus beiden Rechtecken. */
+   ['Der Stapel faehrt aus der Menuekarte heraus',
+    roh.includes('function mkvFlug(auf){')
+    && roh.includes("const von = _vonMenu ? $('#mausweis') : null;")
+    && roh.includes('gr = Math.max(.55, Math.min(.96, q.width / z.width * .96));')],
+   ['Aufschlagen mit Expo-Kurve, Schliessen kuerzer',
+    roh.includes('const dauer = auf ? 620 : 300;')
+    && roh.includes("easing: auf ? 'cubic-bezier(.16,1,.3,1)' : 'cubic-bezier(.4,0,.72,.2)'")],
+   ['Wer Bewegung abgestellt hat, bekommt keine',
+    roh.includes("matchMedia('(prefers-reduced-motion: reduce)').matches")],
+   ['Beide Wege benutzen denselben Flug',
+    roh.includes('  mkvFlug(true);\n  ktBahnHorchen();')
+    && roh.includes('const dauer = mkvFlug(false);')
+    && roh.includes("}, dauer + 20);")],
+   ['Der Stapel blendet nicht mehr nur auf',
+    !roh.includes('@keyframes mkvAuf')],
+   /* Die Plakette sortierte sich mit z-index in den Kontext der
+      Drehbuehne ein und stand dort als eigenes Objekt im Raum. */
+   ['Jede Kartenseite hat ihren eigenen Stapelkontext',
+    roh.includes('.kt-vorn, .kt-rueck{ border-radius:26px; overflow:hidden; color:#fff; isolation:isolate;')],
+   ['Die Plakette sitzt im Fenster, nicht ueber dem Band',
+    roh.includes('.kt-stempel{ position:absolute; top:10px; right:10px;')
+    && !roh.includes('.kt-stempel{ position:absolute; top:17px; right:17px; z-index:4;')],
+   ['Und steht im Markup hinter dem Schloss',
+    roh.includes("+   (frei && !ist ? '<span class=\"kt-stempel\">Erreicht</span>' : '')")],
+   /* Auf der Rueckseite klebte alles oben, darunter blieb ein Loch. */
+   ['Der Datenblock fuellt die Rueckseite',
+    roh.includes('.kt-zeilen{ flex:1; display:flex; flex-direction:column; justify-content:stretch;')
+    && roh.includes('.kt-zeilen div{ flex:1; min-height:0; display:flex; align-items:center;')],
+   ['Die letzte Zeile schwebt nicht mehr',
+    roh.includes('.kt-zeilen div:last-child{ border-bottom:0 }')],
+   ['Die Karten haben eine Kante',
+    roh.includes('box-shadow:inset 0 0 0 1px rgba(255,255,255,.13), 0 26px 56px -24px rgba(var(--s-schatten),.8) }')],
+   ['Der Satz unten sitzt an einer Linie',
+    roh.includes('.kt-hinweis{ margin-top:0; border-top:1px solid rgba(255,255,255,.16);')],
    ['Beim Aufschlagen stupst die vordere Karte an',
     /\.kt\.stups \.kt-dreh\{ animation:ktStups/.test(roh) && /@keyframes ktStups\{/.test(roh)],
    ['Die Obergrenze in normalize steht nicht als Zahl da',

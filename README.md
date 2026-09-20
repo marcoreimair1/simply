@@ -979,12 +979,33 @@ Arbeit für nichts — elf davon sieht niemand.
 Wischens wird `--nah` bei *jedem Bild* neu gesetzt; der Übergang fing bei jedem dieser Werte von
 vorne an und lief dem Finger hinterher. Ohne ihn folgt die Größe dem Scrollen unmittelbar.
 
-**Das Aufschlagen war zu hart.** Der Stapel stand mit einem reinen Aufblenden schlagartig in
-voller Größe da. Jetzt sind es zwei Ebenen: der Grund blendet auf, und der Stapel **steigt
-darunter hervor** — 30 px tiefer und auf 93 % beginnend, in 0,64 s auf der Expo-Kurve
-(`--ease-out`). Das ist dieselbe Bewegung wie überall sonst in der App, wo etwas aus einer Fläche
-kommt: es kommt von dort, wo gedrückt wurde. Beim Schließen sinkt es die kürzere Strecke zurück.
-Wer Bewegung abgestellt hat (`prefers-reduced-motion`), bekommt nur das Aufblenden.
+**Das Aufschlagen kommt aus der Karte im Menü.** Vorher blendete der Stapel nur auf und stand
+schlagartig da. Jetzt misst `mkvFlug()` beide Rechtecke — die Karte im Menükopf und den Stapel an
+seinem Platz — und fährt die Strecke dazwischen ab: nachgemessen 299 px nach oben, Start auf 96 %,
+620 ms auf einer Expo-Kurve. Nach 90 ms ist der Weg schon zu zwei Dritteln gemacht, den Rest legt
+sich die Bewegung nur noch hin. Es ist dieselbe Karte, also ist es dieselbe Bewegung. Zurück geht
+es in 300 ms und wieder auf das Menü zu. Kommt der Aufruf nicht aus dem Menü, sondern von der
+Aufstiegsfeier, gibt es keine Fläche, aus der etwas kommen könnte — dann nur ein kurzes
+Aufsteigen. Wer Bewegung abgestellt hat, bekommt keine.
+
+**Die Plakette schlug durch die Karte.** *Erreicht* stand beim Umdrehen spiegelverkehrt auf der
+Rückseite. `.kt-vorn` erzeugte keinen Stapelkontext — `position:relative` allein reicht dafür
+nicht —, also sortierte sich jedes Kind mit `z-index` in den Kontext der Drehbühne ein, und die
+trägt `preserve-3d`. Dort stand die Plakette als eigenes Objekt im Raum, mit eigener Rückseite.
+`isolation:isolate` auf beiden Seiten hält die Kinder in der Ebene ihrer Seite.
+
+**Und sie lag auf dem Zähler.** Oben rechts steht im Band die Nummer der Karte; die Plakette saß
+17 px daneben. Jetzt sitzt sie **im Fenster**, wo oben Platz ist, weil das Tier tief im Bild
+steht — als Glasplakette statt als weißer Fleck.
+
+**Die Rückseite war nach oben gedrückt.** Prägung, Titel und die vier Zeilen standen dicht
+gedrängt unter dem Rand, darunter blieb ein Loch, und ganz unten hing der Satz. Die Rückseite ist
+so hoch wie die Vorderseite — der Platz war da, nur nicht verteilt. Jetzt nimmt der Datenblock
+(`flex:1`) den Rest ein und teilt ihn gleichmäßig auf: nachgemessen **61, 61, 61, 60 px**. Das ist
+die Ordnung, die ein Ausweis hat, ein Feld pro Zeile. Die Werte stehen in der Display-Schrift mit
+gleich breiten Ziffern, die letzte Linie schwebt nicht mehr frei, und der Satz unten sitzt an
+einer eigenen Kante. Dazu hat jede Karte jetzt **eine Haarlinie innen** — gedruckte Karten haben
+eine Kante, Flächen auf dem Schirm nicht.
 
 ### Das Bild zum Weitergeben
 

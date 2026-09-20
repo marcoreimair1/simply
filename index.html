@@ -2714,16 +2714,10 @@ body.sigmodus .fb-s{display:inline-flex}
 .mkv.weg{animation:mkvWeg .3s var(--ease) forwards}
 @keyframes mkvRein{from{opacity:0}}
 @keyframes mkvWeg{to{opacity:0}}
-.mkv.on .mkv-in{ animation:mkvAuf .64s var(--ease-out) both }
-@keyframes mkvAuf{
-  from{ opacity:0; transform:translateY(30px) scale(.93) }
-  to{ opacity:1; transform:none }
-}
-.mkv.weg .mkv-in{ animation:mkvAb .3s var(--ease) forwards }
-@keyframes mkvAb{ to{ opacity:0; transform:translateY(18px) scale(.96) } }
-@media (prefers-reduced-motion:reduce){
-  .mkv.on .mkv-in, .mkv.weg .mkv-in{ animation:none }
-}
+/* Die Bewegung der Karten selbst macht mkvFlug() im Skript: sie faehrt
+   aus der Karte im Menue heraus, also aus genau der Flaeche, die
+   gedrueckt wurde. Die Strecke steht erst fest, wenn beide Rechtecke
+   gemessen sind — deshalb im Skript und nicht hier. */
 /* Drei weiche Farbwolken im Hintergrund, die sehr langsam wandern. */
 .mkv-luft{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .mkv-luft i{position:absolute;display:block;border-radius:50%;filter:blur(46px);opacity:.5}
@@ -2838,10 +2832,21 @@ body.sigmodus .fb-s{display:inline-flex}
   0%{ transform:rotateY(0) } 26%{ transform:rotateY(-19deg) }
   58%{ transform:rotateY(6deg) } 100%{ transform:rotateY(0) }
 }
-.kt-vorn, .kt-rueck{ border-radius:26px; overflow:hidden; color:#fff;
+ /* isolation:isolate ist hier kein Schnoerkel, sondern der Grund, warum
+   die Plakette nicht mehr durch die Karte scheint. .kt-vorn erzeugte
+   keinen Stapelkontext (position:relative allein reicht nicht), also
+   sortierte sich jedes Kind mit z-index in den Kontext der Drehbuehne
+   ein — und die traegt preserve-3d. Dort steht es als eigenes Objekt
+   im Raum, mit eigener Rueckseite, und war beim Umdrehen spiegel-
+   verkehrt zu sehen. Mit einem eigenen Kontext bleiben die Kinder in
+   der Ebene ihrer Seite und verschwinden mit ihr. */
+.kt-vorn, .kt-rueck{ border-radius:26px; overflow:hidden; color:#fff; isolation:isolate;
   backface-visibility:hidden; -webkit-backface-visibility:hidden;
   background:linear-gradient(170deg, var(--rf2,#5C6A94), var(--rtief,#1D2438) 92%);
-  box-shadow:0 26px 56px -24px rgba(var(--s-schatten),.8) }
+  /* Eine Haarlinie innen: gedruckte Karten haben eine Kante, Flaechen
+     auf dem Schirm nicht. Ein Pixel reicht, damit die Karte wie ein
+     Gegenstand aussieht und nicht wie ein farbiger Bereich. */
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.13), 0 26px 56px -24px rgba(var(--s-schatten),.8) }
 /* flex:1 und width:100%: die Karten werden alle so hoch wie die
    hoechste. Ohne das blieb unter dem Band ein Streifen blanke Karte
    stehen — und weil das Band durchscheinend ist, sah es aus, als lege
@@ -2862,7 +2867,7 @@ body.sigmodus .fb-s{display:inline-flex}
 @keyframes ktGlanz{ from{ transform:translateX(-80%) } to{ transform:translateX(80%) } }
 /* Rueckseite: das Zeichen als Praegung und die Angaben, fuer die vorne
    kein Platz ist. */
-.kt-praege{ position:relative; width:96px; height:96px; margin:6px auto 4px }
+.kt-praege{ position:relative; width:88px; height:88px; margin:10px auto 2px }
 .kt-praege i{ position:absolute; inset:0; display:block;
   -webkit-mask-image:var(--marke); mask-image:var(--marke);
   -webkit-mask-size:contain; mask-size:contain;
@@ -2871,19 +2876,34 @@ body.sigmodus .fb-s{display:inline-flex}
 .kt-praege i:nth-child(1){ background:rgba(0,0,0,.32); transform:translate(-2.5px,-2.5px) }
 .kt-praege i:nth-child(2){ background:rgba(255,255,255,.28); transform:translate(2.5px,2.5px) }
 .kt-praege i:nth-child(3){ background:rgba(255,255,255,.8) }
-.kt-rt{ text-align:center; padding:2px 0 12px }
-.kt-rt u{ display:block; text-decoration:none; font-size:9px; letter-spacing:.2em;
-  text-transform:uppercase; color:rgba(255,255,255,.5) }
-.kt-rt b{ display:block; margin-top:5px; font-family:var(--font-dis); font-weight:400;
-  font-size:19px; letter-spacing:-.01em }
-.kt-zeilen{ border-top:1px solid rgba(255,255,255,.18) }
-.kt-zeilen div{ display:flex; justify-content:space-between; gap:12px; padding:9px 0;
-  border-bottom:1px solid rgba(255,255,255,.1); font-size:12.5px }
-.kt-zeilen u{ text-decoration:none; font-size:9px; letter-spacing:.16em; text-transform:uppercase;
-  color:rgba(255,255,255,.5); align-self:center }
-.kt-zeilen b{ font-weight:600 }
-.kt-hinweis{ margin-top:auto; padding:12px 0 16px; text-align:center; font-size:10.5px;
-  letter-spacing:.06em; color:rgba(255,255,255,.45) }
+/* Auf der Rueckseite klebte alles oben: Praegung, Titel und die vier
+   Zeilen standen dicht gedraengt unter dem Rand, darunter blieb ein
+   grosses Loch, und ganz unten hing der Satz. Die Rueckseite ist so
+   hoch wie die Vorderseite, also gibt es Platz — er war nur nicht
+   verteilt. Jetzt nimmt der Datenblock (flex:1) den Rest ein und teilt
+   ihn gleichmaessig auf die vier Zeilen auf. Das ist die Ordnung, die
+   ein Ausweis hat: ein Feld pro Zeile, alle gleich hoch. */
+.kt-rt{ text-align:center; padding:4px 0 14px }
+.kt-rt u{ display:block; text-decoration:none; font-size:8.5px; letter-spacing:.24em;
+  text-transform:uppercase; color:rgba(255,255,255,.52) }
+.kt-rt b{ display:block; margin-top:6px; font-family:var(--font-dis); font-weight:400;
+  font-size:20px; letter-spacing:-.01em }
+.kt-zeilen{ flex:1; display:flex; flex-direction:column; justify-content:stretch;
+  border-top:1px solid rgba(255,255,255,.16) }
+.kt-zeilen div{ flex:1; min-height:0; display:flex; align-items:center;
+  justify-content:space-between; gap:12px;
+  border-bottom:1px solid rgba(255,255,255,.09) }
+/* Die letzte Linie schwebte frei ueber dem Loch — der Block darunter
+   traegt jetzt selbst eine. */
+.kt-zeilen div:last-child{ border-bottom:0 }
+.kt-zeilen u{ text-decoration:none; font-size:8.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:rgba(255,255,255,.52) }
+.kt-zeilen b{ font-family:var(--font-dis); font-weight:400; font-size:16px; letter-spacing:-.01em;
+  text-align:right; font-variant-numeric:tabular-nums;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.kt-hinweis{ margin-top:0; border-top:1px solid rgba(255,255,255,.16);
+  padding:13px 2px 15px; text-align:center; font-size:10.5px; line-height:1.45;
+  letter-spacing:.05em; color:rgba(255,255,255,.5) }
 .kt-band{ display:flex; align-items:baseline; justify-content:space-between; gap:10px;
   padding:5px 8px 10px }
 .kt-band b{ font-family:var(--font-dis); font-weight:400; font-size:17px; letter-spacing:.01em }
@@ -2903,9 +2923,15 @@ body.sigmodus .fb-s{display:inline-flex}
   display:grid; place-items:center; width:58px; height:58px; border-radius:20px;
   background:rgba(12,8,20,.62); color:#fff; box-shadow:0 10px 24px -12px rgba(0,0,0,.8) }
 .kt-schloss svg{ width:26px; height:26px }
-.kt-stempel{ position:absolute; top:17px; right:17px; z-index:4; font-size:9px; font-weight:800;
+/* Die Plakette sass oben rechts auf der Karte — genau dort, wo im Band
+   der Zaehler steht. Bei laengeren Rangnamen lagen beide uebereinander.
+   Jetzt sitzt sie im Fenster: dort ist oben Platz, weil das Tier tief
+   im Bild steht. Als Glasplakette statt als weisser Fleck. */
+.kt-stempel{ position:absolute; top:10px; right:10px; font-size:8.5px; font-weight:800;
   letter-spacing:.14em; text-transform:uppercase; padding:4px 9px; border-radius:99px;
-  background:rgba(255,255,255,.22); color:#fff }
+  background:rgba(14,9,24,.34); color:#fff;
+  -webkit-backdrop-filter:blur(9px) saturate(1.2); backdrop-filter:blur(9px) saturate(1.2);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.38), 0 6px 16px -8px rgba(0,0,0,.7) }
 .kt-wer{ padding:14px 9px 0; text-align:center }
 .kt-wer b{ display:block; font-family:var(--font-dis); font-weight:400; font-size:22px;
   letter-spacing:-.015em; line-height:1.12;
@@ -5875,7 +5901,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-2355';
+const APP_STAND = '2026-09-21-0040';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9674,11 +9700,11 @@ function ktKarte(n, echt, anzahl){
     + '<div class="kt-dreh">'
     + '<div class="kt-vorn">'
     + (frei ? '<span class="kt-glanz" aria-hidden="true"></span>' : '')
-    + (frei && !ist ? '<span class="kt-stempel">Erreicht</span>' : '')
     + '<div class="kt-band"><b>' + esc(r.n) + '</b><span>' + n + ' / ' + RAENGE.length + '</span></div>'
     + '<div class="kt-fenster"><img src="' + avDatei(avNummer()) + '" alt="">'
     +   '<span class="schein" aria-hidden="true"></span>'
     +   (frei ? '' : '<span class="kt-schloss" aria-hidden="true">' + KT_SCHLOSS + '</span>')
+    +   (frei && !ist ? '<span class="kt-stempel">Erreicht</span>' : '')
     + '</div>'
     + '<div class="kt-wer"><b>' + esc(ME.vorname + ' ' + ME.nachname) + '</b>'
     +   '<small>' + esc(frei ? EMPLOYER : r.w) + '</small></div>'
@@ -9773,6 +9799,45 @@ function ktZeige(n, weich){
   else bahn.scrollLeft = ziel;
   kartenTiefe();
 }
+/* ── Das Aufschlagen ──────────────────────────────────────────────
+   Vorher blendete der Stapel nur auf und stand schlagartig da. Jetzt
+   faehrt er aus der Karte im Menue heraus: beide Rechtecke werden
+   gemessen, daraus ergeben sich Weg und Groesse, und die Karten
+   wachsen von dort auf ihren Platz. Das ist dieselbe Karte, also soll
+   es auch dieselbe Bewegung sein.
+
+   Die Kurve ist Expo: nach einem Sechstel der Zeit ist fast alles
+   passiert, der Rest legt sich nur noch hin. Zurueck geht es kuerzer
+   und wieder auf die Menuekarte zu. */
+function mkvFlug(auf){
+  const kiste = $('.mkv-in');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const dauer = auf ? 620 : 300;
+  if(!kiste || !kiste.animate || still) return still ? 0 : dauer;
+  const z = kiste.getBoundingClientRect();
+  /* Kommt der Aufruf nicht aus dem Menue (Aufstiegsfeier), gibt es
+     keine Flaeche, aus der etwas kommen koennte — dann nur ein
+     kurzes Aufsteigen. */
+  const von = _vonMenu ? $('#mausweis') : null;
+  const q = von ? von.getBoundingClientRect() : null;
+  let dx = 0, dy = 34, gr = .93;
+  if(q && q.width > 60 && z.width > 60){
+    /* Obergrenze .96, nicht 1: die Karte im Menue ist genauso breit wie
+       der Stapel, ohne den Abschlag gaebe es gar kein Wachsen — nur ein
+       Gleiten. Ein Rest davon gehoert dazu. */
+    gr = Math.max(.55, Math.min(.96, q.width / z.width * .96));
+    dx = (q.left + q.width / 2) - (z.left + z.width / 2);
+    dy = (q.top + q.height / 2) - (z.top + z.height / 2);
+  }
+  const klein = { opacity:0, transform:'translate(' + dx + 'px,' + dy + 'px) scale(' + gr + ')' };
+  const gross = { opacity:1, transform:'none' };
+  kiste.animate(auf ? [klein, gross] : [gross, klein], {
+    duration: dauer,
+    easing: auf ? 'cubic-bezier(.16,1,.3,1)' : 'cubic-bezier(.4,0,.72,.2)',
+    fill: auf ? 'backwards' : 'both'
+  });
+  return dauer;
+}
 function karteAuf(){
   const b = $('#mkv');
   if(b.classList.contains('on')) return;
@@ -9782,6 +9847,7 @@ function karteAuf(){
   b.classList.remove('weg');
   b.classList.add('on');
   document.body.classList.add('locked');
+  mkvFlug(true);
   ktBahnHorchen();
   /* Erst stellen, wenn die Bahn wirklich eine Breite hat — vorher waere
      offsetLeft null und alles landete ganz links. */
@@ -9797,8 +9863,9 @@ function karteZu(){
   const b = $('#mkv');
   if(!b.classList.contains('on')) return;
   clearTimeout(_aufT);
+  const dauer = mkvFlug(false);
   b.classList.add('weg');
-  setTimeout(() => { b.classList.remove('on','weg'); $('#auf-kopf').hidden = true; }, 310);
+  setTimeout(() => { b.classList.remove('on','weg'); $('#auf-kopf').hidden = true; }, dauer + 20);
   document.body.classList.remove('locked');
   /* Die Feier gilt als gesehen, sobald man sie schließt. */
   aufQuittiert();
@@ -9848,6 +9915,7 @@ async function aufFeier(){
   b.classList.remove('weg');
   b.classList.add('on');
   document.body.classList.add('locked');
+  mkvFlug(true);
   ktBahnHorchen();
   faerbe($('#auf-kopf'), bis);
   setTimeout(() => ktZeige(von + 1, false), 60);
