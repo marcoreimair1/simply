@@ -74,8 +74,14 @@ zurueckInsMenu();
 ok('Menue steht im selben Zug wieder', m.classList.contains('on'));
 ok('Und ist als "sofort" gekennzeichnet', m.classList.contains('sofort'));
 
-/* ── 3 · Schieberegler an allen drei Zeilen ── */
-['erscheinung','erinnerung','passkey'].forEach(function(a){
+/* ── 3 · Schieberegler an den Zeilen, die einen Zustand haben ──
+   Erscheinungsbild ist seit dem 21. September 2026 keine Zeile mehr,
+   sondern eine Kachel unter der Karte. */
+ok('Erscheinungsbild ist keine Menuezeile mehr',
+   !m.querySelector('.mi[data-act="erscheinung"]'));
+ok('Sondern eine Kachel unter der Karte',
+   !!document.querySelector('#ik-mode[data-act="erscheinung"]'));
+['erinnerung','passkey'].forEach(function(a){
   var z = m.querySelector('[data-act="' + a + '"]');
   ok('Zeile ' + a + ' hat einen Schieberegler', !!(z && z.querySelector('.mischalter')));
   ok('Zeile ' + a + ' hat KEINEN Pfeil daneben', !!z && !z.querySelector('.michev'));
@@ -397,6 +403,73 @@ window.__WEITER = function(){
   ok('Und er sitzt im Fenster, nicht ueber dem Band',
      [].every.call(document.querySelectorAll('#kt-bahn .kt-stempel'),
                    function(p){ return !!p.closest('.kt-fenster'); }));
+
+  /* ── Die Karte traegt nur noch, was sie zeigt ──
+     Mail und Geburtsdatum sind in eine eigene Flaeche gewandert,
+     Postfach und Sicherungsstand in die Kachelreihe darunter. */
+  ok('Keine Mail mehr in der Karte', !document.getElementById('me-mail'));
+  ok('Das Bild ist gross und traegt einen Stift',
+     !!document.querySelector('#mausweis .avplatz .avstift'));
+  ok('Postfach steht in der Kachelreihe, nicht in der Karte',
+     !!document.querySelector('#ikonleiste #postfach')
+     && !document.querySelector('#mausweis #postfach'));
+  ok('Vier Kacheln, nicht mehr',
+     document.querySelectorAll('#ikonleiste .ikon').length === 4);
+  ok('Und zwar diese vier',
+     [...document.querySelectorAll('#ikonleiste .ikon')]
+       .map(function(k){ return k.id || k.dataset.act; }).join(',')
+       === 'postfach,ik-sync,daten,ik-mode',
+     [...document.querySelectorAll('#ikonleiste .ikon')].map(function(k){ return k.id || k.dataset.act; }).join(','));
+
+  /* ── Die Becher-Plakette ──
+     Summe aller Bubble Teas, Farbe der am weitesten freigeschalteten
+     Sorte. Manuela 5, Luis 5, Marlene 3 macht 13. */
+  TEE_PAARE = { a:{punkte:5}, b:{punkte:5}, c:{punkte:3} };
+  malTeeBadge();
+  var tb = document.getElementById('ma-tee');
+  ok('Die Plakette zaehlt alle Becher zusammen',
+     !tb.hidden && document.getElementById('ma-tee-n').textContent === '13',
+     document.getElementById('ma-tee-n').textContent);
+  ok('Und traegt die Farbe der hoechsten Sorte',
+     tb.style.getPropertyValue('--tf') === TEE[teeLevel(5) - 1].f,
+     tb.style.getPropertyValue('--tf'));
+  TEE_PAARE = {};
+  malTeeBadge();
+  ok('Ohne Becher bleibt sie weg', tb.hidden);
+
+  /* ── Persoenliche Daten ── */
+  MAIL = 'marco@studiomaru.at';
+  dtAuf(true);
+  ok('Die Flaeche geht auf', dtOffen());
+  ok('Und bringt die heutigen Werte mit',
+     document.getElementById('dt-vn').value === ME.vorname
+     && readDob('dt').y === (ME.dob || '').slice(0, 4)
+     && document.getElementById('dt-mail').textContent === MAIL);
+  document.getElementById('dt-vn').value = 'Marko';
+  document.getElementById('dt-ok').click();
+  ok('Speichern uebernimmt den Namen', ME.vorname === 'Marko', ME.vorname);
+  ok('Und schliesst die Flaeche', !dtOffen());
+  dtAuf(true);
+  document.getElementById('dt-vn').value = '';
+  document.getElementById('dt-ok').click();
+  ok('Ohne Vornamen wird nicht gespeichert',
+     dtOffen() && !document.getElementById('dt-hinweis').hidden);
+  dtAuf(false);
+  ME.vorname = 'Marco';
+
+  /* ── Der Becher ist ein Wechselspiel ──
+     Nach dem eigenen Becher ist die andere Seite dran. Wer nicht
+     zurueckschickt, bleibt ausgegraut — und die Zeile sagt, warum. */
+  var wer = { user_id:'x', vorname:'Luis', kuerzel:'B', stufe:3 };
+  var knopf = function(p){ return teeKnopf(wer, p); };
+  ok('Frei, wenn die andere Seite zuletzt geschickt hat',
+     knopf({ punkte:4, heuteSchon:false, wartet:false }).indexOf('data-tee=') > 0);
+  ok('Gesperrt, solange der Gegenzug aussteht',
+     knopf({ punkte:4, heuteSchon:false, wartet:true }).indexOf('Am Zug') > 0);
+  ok('Und die Tagesregel gilt weiter',
+     knopf({ punkte:4, heuteSchon:true, wartet:true }).indexOf('Heute') > 0);
+  ok('Der gesperrte Knopf nennt seinen Grund',
+     knopf({ punkte:4, heuteSchon:false, wartet:true }).indexOf('Erst wenn zurückgeschickt') > 0);
 
   /* ── Der Brief zum Aufstieg ──
      Jede erreichte Stufe kommt als Nachricht ins Postfach, mit der
@@ -837,7 +910,7 @@ setTimeout(() => {
     ['Karte laesst sich nicht seitlich schieben', /overflow-y:auto;\s*overflow-x:hidden/],
     ['Zeilen fahren nicht mehr von der Seite herein', /@keyframes miInVoll\{\s*from\{\s*opacity:0\s*\}\s*\}/],
     ['Karte skaliert beim Oeffnen nicht mehr', /@keyframes menuBlende\{\s*from\{\s*opacity:0\s*\}\s*\}/],
-    ['Untermenues sind fest am Fenster', /\.avgrid, \.konten, \.uabox, \.rangbox, \.dlbox, #konten, #uabox\{\s*\n\s*position:fixed; inset:0/],
+    ['Untermenues sind fest am Fenster', /\.avgrid, \.konten, \.datenbox, \.uabox, \.rangbox, \.dlbox, #konten, #uabox\{\s*\n\s*position:fixed; inset:0/],
     ['mbody hebt sich ueber die Fusszeile', /\.menu-card\.dlauf \.mbody\{ z-index:6 \}/],
     ['Zurueck-Pfeil sitzt fest', /\.rangbox \.zurueckbtn, \.dlbox \.zurueckbtn\{\s*\n\s*position:fixed/],
     ['Profilbild ohne Fuge zwischen Rahmen und Bild', /\.avbig::after\{content:'';position:absolute;inset:0/],
@@ -971,8 +1044,10 @@ setTimeout(() => {
    ['Die Flaeche liegt unter dem Inhalt',
     /\.ma-flaeche\{ position:absolute; inset:0; z-index:0;/.test(roh)
     && /\.ma-oben\{[\s\S]{0,160}pointer-events:none \}/.test(roh)],
-   ['Bild und Postfach bleiben anfassbar',
-    /\.ma-oben \.avbig, \.ma-oben \.mtile\{ pointer-events:auto \}/.test(roh)],
+   ['Das Bild bleibt anfassbar',
+    /\.ma-oben \.avbig, \.ma-oben \.avplatz\{ pointer-events:auto \}/.test(roh)],
+   ['Und der Druck auf die Karte laesst es aus',
+    roh.includes("if(e.target.closest('.avplatz')) return;")],
    /* Der Einlauf des Menues belegt transform — eine Animation schlaegt
       jede normale Regel. Der Druck muss darum ueber scale gehen. */
    ['Der Druck geht ueber scale, nicht ueber transform',
@@ -1013,6 +1088,29 @@ setTimeout(() => {
       Breite seines Inhalts erzwingt (das Fach bricht nicht um). */
    /* Die Karte stand gross und mittig im Brief und liess sich
       andruecken — beim Lesen und Rollen landete man im Stapel. */
+   /* Die Regel steht auch in der Datenbank — im Fenster allein waere
+      sie nur eine Bitte. */
+   ['Der Server kennt den Gegenzug',
+    /dran\s*:=\s*\(meins is not null and \(seins is null or seins < meins\)\);/.test(sql)],
+   ['Und zaehlt dann nichts',
+    /if not war and not dran then/.test(sql)],
+   ['Er sagt der App auch, dass gewartet wird',
+    /returns table \(punkte integer, level integer, schon_heute boolean, wartet boolean\)/.test(sql)],
+   ['Die App nennt den Grund weiter',
+    roh.includes("toast('Erst wenn du einen zurückbekommst')")],
+   /* Die Kachelreihe ersetzt zwei Bedienelemente in der Karte. */
+   ['Die Kachelreihe steht zwischen Karte und Gruppen',
+    roh.indexOf('<div class="ikonleiste" id="ikonleiste">') > roh.indexOf('id="mausweis"')
+    && roh.indexOf('<div class="ikonleiste" id="ikonleiste">') < roh.indexOf('<div class="mbody" id="mbody">')],
+   ['Vier gleich breite Felder',
+    roh.includes('grid-template-columns:repeat(4,minmax(0,1fr))')],
+   ['Das Bild ist 88 px und traegt einen Stift',
+    roh.includes('.ma-oben .avbig{ width:88px; height:88px; border-radius:24px }')
+    && roh.includes('.avstift{ position:absolute; right:-5px; bottom:-5px;')],
+   ['Die Becher-Plakette nimmt die Farbe der Sorte',
+    roh.includes("b.style.setProperty('--tf', sorte.f);")],
+   ['Die Gruppierung greift nur nach Menuezeilen',
+    roh.includes(".mi[data-act=\"' + a + '\"]")],
    ['Die Karte im Brief ist ein Banner',
     roh.includes('.pfk{ display:flex; align-items:center; gap:14px;')
     && roh.includes('.pfk-k{ zoom:.4; flex:none; display:block }')],

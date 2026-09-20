@@ -913,15 +913,10 @@ body.menuauf #avatar{transform:scale(.92)}
 .menu-card .mh{padding:11px 13px 8px;margin-bottom:4px;text-align:left}
 .mhtop{display:flex;align-items:center;gap:14px}
 .mhtext{flex:1;min-width:0}
-/* Postfach und Status stehen zusammen unter den Angaben. */
-.mhrow{display:flex;align-items:center;gap:9px;margin-top:12px}
-.mtile{position:relative;width:38px;height:38px;flex:none;border-radius:13px;
-  display:grid;place-items:center;border:1px solid var(--line-2);
-  background:rgba(var(--s-tief),.42);color:var(--tx-2);transition:.22s var(--ease)}
-.mtile:hover{border-color:var(--butter-dim);color:var(--butter);background:rgba(var(--marke-rgb),.07)}
-.mtile:active{transform:scale(.95)}
-.mtile svg{width:19px;height:19px}
-.mhrow .sync{display:inline-flex}
+/* Hier standen .mhrow und .mtile: Postfach und Sicherungsstand als
+   kleine Felder in der Karte. Beide sind am 21. September 2026 in die
+   Kachelreihe unter der Karte gewandert — die Karte berichtet, die
+   Kacheln fuehren irgendwohin. Die Regeln sind mitgegangen. */
 .menu-card .mh b{display:block;font-size:17.5px;line-height:1.2}
 .menu-card .mh small{display:block;color:var(--tx-3);font-size:12px;margin-top:4px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1007,6 +1002,7 @@ body.menuauf #avatar{transform:scale(.92)}
    sonst scheinen sie zwischen den Bildern durch. */
 .menu-card.avauf .mbody > :not(.avgrid),
 .menu-card.kauf  .mbody > :not(.konten){opacity:0;pointer-events:none}
+.menu-card.dtauf .mbody > :not(.datenbox){opacity:0;pointer-events:none}
 .mbody > *{transition:opacity .26s var(--ease)}
 
 /* ─── Zeitausgleich und Urlaubstage ───────────────────────────────────
@@ -1018,6 +1014,29 @@ body.menuauf #avatar{transform:scale(.92)}
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
 .menu-card.kauf #konten{opacity:1;visibility:visible;transform:none}
+/* Dieselbe Flaeche wie bei Bildern und Staenden — eine Form, die man
+   im Menue nur einmal lernen muss. */
+.datenbox{position:absolute;inset:-4px -6px;z-index:3;display:flex;flex-direction:column;
+  padding:10px 5px 2px;border-radius:var(--r-s);overflow:auto;
+  background:rgba(var(--s-hoch),.97);
+  opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
+  transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
+.menu-card.dtauf #datenbox{opacity:1;visibility:visible;transform:none}
+.dt-inhalt{display:flex;flex-direction:column;gap:12px;padding:40px 12px 16px;
+  margin-top:auto}
+.dt-h{margin:0 2px 2px;font-family:var(--font-dis);font-weight:400;font-size:21px;
+  letter-spacing:-.015em}
+.dt-lab{margin:4px 2px -4px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--tx-3)}
+.datenbox .dob{margin:0}
+.dt-mail{display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:16px;
+  background:rgba(var(--s-auf),.05);box-shadow:inset 0 0 0 1px var(--line-2)}
+.dt-mail u{text-decoration:none;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--tx-3)}
+.dt-mail b{font-size:14px;font-weight:600;word-break:break-all}
+.dt-mail small{font-size:11px;line-height:1.5;color:var(--tx-2)}
+.dt-hinweis{margin:0 2px;font-size:12px;color:var(--coral)}
+.dt-ok{margin-top:2px}
 /* Ein Pfeil führt aus jeder Fläche zurück ins Menü — oben links, wo er
    niemandem im Weg ist. */
 .zurueckbtn{position:absolute;left:7px;top:6px;z-index:5;width:30px;height:30px;
@@ -3774,18 +3793,34 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 }
 .ma-oben{ position:relative; z-index:2; display:flex; align-items:flex-start; gap:12px;
   padding:14px 14px 0; pointer-events:none }
-.ma-oben .avbig, .ma-oben .mtile{ pointer-events:auto }
-.ma-oben .avbig{ width:64px; height:64px; border-radius:22px }
+.ma-oben .avbig, .ma-oben .avplatz{ pointer-events:auto }
+/* Das Bild ist der Grund, warum man die Karte anschaut — und es ist
+   das Einzige, was man daran aendern kann. Beides spricht dafuer, es
+   gross zu zeigen: 88 statt 64, mit einem Stift in der Ecke, damit
+   niemand raten muss, dass man es antippen kann. */
+.avplatz{ position:relative; display:block; flex:none; pointer-events:auto }
+.ma-oben .avbig{ width:88px; height:88px; border-radius:24px }
+.avstift{ position:absolute; right:-5px; bottom:-5px; width:28px; height:28px;
+  border-radius:50%; display:grid; place-items:center; pointer-events:none;
+  background:var(--butter); color:#fff;
+  box-shadow:0 6px 16px -6px rgba(26,16,38,.55), 0 0 0 3px var(--pa,#EADFF5) }
+.avstift svg{ width:15px; height:15px }
+/* Die Plakette mit allen verschickten Bubble Teas. Ihre Farbe ist die
+   Sorte, die man mit irgendjemandem am weitesten freigeschaltet hat —
+   der Becher ist ja das, was man dabei sammelt. */
+.teebadge{ display:inline-flex; align-items:center; gap:5px; margin-top:9px;
+  padding:4px 10px 4px 7px; border-radius:99px; pointer-events:none;
+  background:color-mix(in oklab, var(--tf,#B85CE8) 24%, #fff);
+  box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--tf,#B85CE8) 50%, transparent);
+  color:var(--ma-ink); font-size:12px; font-weight:700 }
+.teebadge svg{ width:15px; height:15px; color:var(--tf,#B85CE8) }
+.teebadge b{ font-size:13px; font-weight:800 }
 .mausweis .mhtext{ flex:1; min-width:0 }
 .mausweis .mhtext b{ display:block; font-size:19px; line-height:1.14; letter-spacing:-.015em;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .mausweis .mhtext small{ display:block; font-size:11.5px; margin-top:2px;
   color:var(--ma-ink-2);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-.mausweis .mhrow{ margin-top:10px }
-.mausweis .mtile{ width:34px; height:34px; border-radius:12px;
-  border-color:rgba(26,16,38,.24);
-  background:rgba(255,255,255,.34); color:var(--ma-ink) }
 /* Die Plakette sass mit 82 % Tinte wie ein schwarzer Fleck in der Ecke.
    Jetzt die Farbe der Stufe selbst — sie gehoert ja zu ihr — und nur so
    kraeftig, dass die Schrift darauf steht. */
@@ -3813,6 +3848,44 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 .ma-band span{ font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
   color:rgba(255,255,255,.55) }
 
+/* ─── Die Kachelreihe unter der Karte ────────────────────────────
+   Eckig, gleich breit, mit Beschriftung: ein Symbol allein muss man
+   raten. minmax(0,1fr), weil ein Gitterfeld sonst mindestens so breit
+   wird wie sein Inhalt und die Reihe ueber den Rand liefe. */
+.ikonleiste{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px;
+  margin:0 14px 16px }
+.ikon{ position:relative; display:flex; flex-direction:column; align-items:center; gap:6px;
+  min-width:0; padding:11px 3px 9px; border:0; border-radius:17px; cursor:pointer;
+  background:var(--f-1, rgba(255,255,255,.06)); box-shadow:inset 0 0 0 1px var(--line-2);
+  color:var(--tx); font-family:inherit; font-size:9.5px;
+  transition:scale .14s var(--ease-out), background .14s }
+.ikon:active{ scale:.955 }
+.ikon:focus-visible{ outline:2px solid var(--butter); outline-offset:2px }
+.ikon .ik{ display:grid; place-items:center; width:22px; height:22px }
+.ikon .ik svg{ width:22px; height:22px; display:block }
+.ikon em{ font-style:normal; color:var(--tx-2); font-size:9.5px; letter-spacing:.02em;
+  max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.ikon .zaehler{ position:absolute; top:6px; right:8px; z-index:2 }
+/* Der Sicherungsstand bringt sein eigenes Zeichen mit (Wolke, Punkt,
+   Kreisel) — es wird ins Feld gesetzt, nicht danebengestellt. */
+/* Der Sicherungsstand war eine Pille mit Wort und Punkt. In der Kachel
+   steht das Wort ohnehin darunter — hier bleibt nur der Punkt, oben an
+   der Wolke. Seine Farbe kommt weiter aus denselben Klassen. */
+.ikon .ik{ position:relative }
+.ikon .sync{ display:block; position:absolute; top:-3px; right:-5px;
+  width:9px; height:9px; padding:0; border-radius:50%; border:0;
+  background:currentColor; animation:statuspuls 2.3s ease-in-out infinite }
+.ikon .sync::after{ content:none }
+.ikon .sync.saving{ animation:blink 1s infinite }
+/* Sonne oder Mond, je nach Fassung. Die Regeln brauchen dieselbe
+   Staerke wie .ikon .ik{display:grid}, sonst standen beide da. */
+.ikon .ik-dunkel{ display:none }
+:root[data-theme="dark"] .ikon .ik-hell{ display:none }
+:root[data-theme="dark"] .ikon .ik-dunkel{ display:grid }
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .ikon .ik-hell{ display:none }
+  :root:not([data-theme="light"]) .ikon .ik-dunkel{ display:grid }
+}
 /* Die Stufenleiste im Menue heisst .mrang — nicht .mbar. .mbar ist die
    Monatsdetails-Zeile im Kalender und hat hier nichts verloren.
    Sie lief mit 353 px breiter als die Gruppen mit 326 und begann
@@ -3848,7 +3921,7 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
    ID-Regel — die schlaegt jede Klasse. Deshalb tragen sie hier ihre
    eigene Auswahl mit, sonst begaenne ihr Inhalt 16 px zu hoch und der
    Zurueck-Pfeil laege auf der ersten Zeile. */
-.avgrid, .konten, .uabox, .rangbox, .dlbox, #konten, #uabox{
+.avgrid, .konten, .datenbox, .uabox, .rangbox, .dlbox, #konten, #uabox{
   position:fixed; inset:0; z-index:6;
   width:auto; height:auto; max-height:none;
   margin:0; border:none; border-radius:0;
@@ -3862,10 +3935,11 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
    an der Fläche würde ausserdem den Zurück-Pfeil mitnehmen: er ist fest
    am Fenster, und ein transform am Vorfahren macht daraus wieder ein
    absolutes Element. */
-.avgrid, .konten, .uabox, .rangbox, .dlbox, #konten, #uabox{
+.avgrid, .konten, .datenbox, .uabox, .rangbox, .dlbox, #konten, #uabox{
   transform:none; transition:opacity .28s var(--ease-blend), visibility .28s;
 }
-.menu-card.avauf .avgrid, .menu-card.kauf #konten, .menu-card.uaauf #uabox,
+.menu-card.avauf .avgrid, .menu-card.kauf #konten, .menu-card.dtauf #datenbox,
+.menu-card.uaauf #uabox,
 .menu-card.rauf .rangbox, .menu-card.dlauf .dlbox{ transform:none }
 
 /* Ein z-index wirkt nur innerhalb des eigenen Stapels. Die Flaechen
@@ -3875,13 +3949,14 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
    im Quelltext NACH .mbody und lag damit obenauf: sie schien mitten
    durch das Loeschen-Fenster. Solange eine Flaeche offen ist, hebt
    sich deshalb .mbody als Ganzes. */
-.menu-card.avauf .mbody, .menu-card.kauf .mbody, .menu-card.uaauf .mbody,
+.menu-card.avauf .mbody, .menu-card.kauf .mbody, .menu-card.dtauf .mbody,
+.menu-card.uaauf .mbody,
 .menu-card.rauf .mbody, .menu-card.dlauf .mbody{ z-index:6 }
 
 /* Der Zurück-Pfeil sass im Nichts. Jetzt sitzt er dort, wo im Menü der
    Schliessen-Knopf sitzt — nur auf der anderen Seite, weil er zurück
    führt und nicht hinaus. Gleiche Grösse, gleiche Form. */
-.avgrid .zurueckbtn, .konten .zurueckbtn, .uabox .zurueckbtn,
+.avgrid .zurueckbtn, .konten .zurueckbtn, .datenbox .zurueckbtn, .uabox .zurueckbtn,
 .rangbox .zurueckbtn, .dlbox .zurueckbtn{
   position:fixed; left:14px; top:calc(12px + env(safe-area-inset-top));
   width:38px; height:38px; border-radius:13px; z-index:8;
@@ -5363,18 +5438,17 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <button class="ma-flaeche" id="ma-auf" aria-label="Mitgliedschaftskarte ansehen"></button>
       <span class="ma-glanz" aria-hidden="true"></span>
       <div class="ma-oben">
-        <button class="avbig" id="avbig" aria-label="Profilbild ändern" aria-expanded="false"></button>
+        <span class="avplatz">
+          <button class="avbig" id="avbig" aria-label="Profilbild ändern" aria-expanded="false"></button>
+          <span class="avstift" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.5 2.5 0 0 0-3.5-3.5L4.5 16.5z"/><path d="M14.5 6.5 17.5 9.5"/></svg></span>
+        </span>
         <div class="mhtext">
           <b id="me-name">—</b>
           <small id="me-sub">Miller Optik GmbH</small>
-          <small id="me-mail"></small>
-          <div class="mhrow">
-            <button class="mtile" id="postfach" aria-label="Postfach öffnen">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.4 12 14l9-5.6"/><rect x="3" y="5" width="18" height="14" rx="2.6"/></svg>
-              <span class="zaehler" id="pf-zaehler" hidden></span>
-            </button>
-            <span class="sync" id="sync" title="Sicherungsstand"></span>
-          </div>
+          <span class="teebadge" id="ma-tee" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 8h10.8l-1.2 11.2A2 2 0 0 1 14.2 21H9.8a2 2 0 0 1-2-1.8z"/><path d="M5.2 8h13.6M13.7 8 16.1 3.4"/><circle cx="10.2" cy="16.8" r=".9"/><circle cx="13.7" cy="17.6" r=".9"/><circle cx="12" cy="14.2" r=".9"/></svg>
+            <b id="ma-tee-n">0</b>
+          </span>
         </div>
         <span class="ma-lvl" id="mr-lvl">LVL 1</span>
         <span class="zaehler" id="mr-zaehler" hidden></span>
@@ -5385,10 +5459,61 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       </div>
       <div class="ma-band"><img class="ma-wort" id="ma-wort" alt="MOJI"><span id="ma-stand">—</span></div>
     </div>
+    <!-- Vier eckige Kacheln unter der Karte. Postfach und Sicherungs-
+         stand standen bis jetzt IN der Karte, zwischen Name und Stufe —
+         zwei Bedienelemente in einem Ausweis, der sonst nur berichtet.
+         Hier stehen sie als das, was sie sind: Wege irgendwohin. Vier
+         und nicht fuenf, damit die Reihe in der Breite aufgeht. -->
+    <div class="ikonleiste" id="ikonleiste">
+      <button class="ikon" id="postfach" aria-label="Postfach öffnen">
+        <span class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.4 12 14l9-5.6"/><rect x="3" y="5" width="18" height="14" rx="2.6"/></svg></span><em>Postfach</em>
+        <span class="zaehler" id="pf-zaehler" hidden></span>
+      </button>
+      <button class="ikon" id="ik-sync" aria-label="Sicherungsstand">
+        <span class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18.5a4 4 0 0 1-.3-8A5.5 5.5 0 0 1 17.4 9a3.8 3.8 0 0 1 .3 7.6"/><path d="M12 12v6.5M9.6 16.2 12 18.6l2.4-2.4"/></svg><span class="sync" id="sync" title="Sicherungsstand"></span></span>
+        <em id="ik-sync-t">Gesichert</em>
+      </button>
+      <button class="ikon" data-act="daten" aria-label="Persönliche Daten">
+        <span class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.4" r="3.8"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg></span><em>Daten</em>
+      </button>
+      <button class="ikon" id="ik-mode" data-act="erscheinung" aria-label="Hell oder dunkel">
+        <span class="ik ik-hell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg></span>
+        <span class="ik ik-dunkel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8.2 8.2 0 1 0 10.5 10.5z"/></svg></span>
+        <em id="ik-mode-t">Hell</em>
+      </button>
+    </div>
     <!-- Alles unter dem Kopf. Die Bildauswahl legt sich als blaue Fläche
          darüber, damit das Menü beim Öffnen nicht in die Länge wächst. -->
     <div class="mbody" id="mbody">
       <div class="avgrid" id="avgrid" role="group" aria-label="Profilbild wählen"></div>
+      <!-- Persoenliche Daten. Name und Geburtsdatum standen bisher
+           nirgends zum Aendern, die Mail nur klein in der Karte. Jetzt
+           an einem Ort, und die Karte traegt nur noch das, was sie
+           zeigt: Name, Firma, Stufe, Becher. -->
+      <div class="datenbox" id="datenbox" role="group" aria-label="Persönliche Daten">
+        <button class="zurueckbtn" data-zurueck aria-label="Zurück zum Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <div class="dt-inhalt">
+          <h3 class="dt-h">Persönliche Daten</h3>
+          <div class="field"><input id="dt-vn" autocomplete="given-name" enterkeyhint="next" placeholder=" "><label for="dt-vn">Vorname</label></div>
+          <div class="field"><input id="dt-nn" autocomplete="family-name" enterkeyhint="next" placeholder=" "><label for="dt-nn">Nachname</label></div>
+          <div class="dt-lab">Geburtsdatum</div>
+          <div class="dob" data-dob="dt">
+            <div class="g"><input inputmode="numeric" maxlength="2" data-p="d" placeholder="TT"><small>Tag</small></div>
+            <span class="sep">/</span>
+            <div class="g"><input inputmode="numeric" maxlength="2" data-p="m" placeholder="MM"><small>Monat</small></div>
+            <span class="sep">/</span>
+            <div class="g y"><input inputmode="numeric" maxlength="4" data-p="y" placeholder="JJJJ"><small>Jahr</small></div>
+          </div>
+          <div class="dt-mail">
+            <u>E-Mail</u>
+            <b id="dt-mail">—</b>
+            <small>Damit meldest du dich an. Zum Wechseln meldest du dich mit der
+              neuen Adresse neu an — dein Profil wandert mit.</small>
+          </div>
+          <p class="dt-hinweis" id="dt-hinweis" hidden></p>
+          <button class="btn btn-p dt-ok" id="dt-ok">Speichern</button>
+        </div>
+      </div>
       <!-- Zweite Fläche im selben Blau: die beiden Stände. -->
       <div class="konten" id="konten" role="group" aria-label="Zeitausgleich und Urlaubstage">
         <button class="zurueckbtn" data-zurueck aria-label="Zurück zum Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
@@ -5992,7 +6117,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-0450';
+const APP_STAND = '2026-09-21-0620';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -6579,8 +6704,15 @@ function setSync(state, note){
   };
   const m = map[state] || map.local;
   el.className = 'sync ' + m[1];
-  /* Immer nur das Wort — der Zustand steckt in der Farbe des Punkts. */
-  el.textContent = 'Status';
+  /* In der Kachel steht das Wort darunter; der Punkt sagt nur noch die
+     Farbe. Kurz halten — unter einem Symbol ist keine Zeile Platz. */
+  const kurz = { ok:'Gesichert', saving:'Sichert', offline:'Offline',
+                 error:'Fehler', local:'Nur hier' };
+  const t = $('#ik-sync-t');
+  if(t) t.textContent = kurz[state] || kurz.local;
+  const k = $('#ik-sync');
+  if(k) k.setAttribute('aria-label', 'Sicherung: ' + (note || m[0]));
+  el.textContent = '';
   el.title = 'Status: ' + (note || m[0]);
   el.setAttribute('aria-label', 'Status: ' + (note || m[0]));
   el.style.display = 'inline-flex';
@@ -8916,8 +9048,7 @@ function enterApp(){
   stufenPostNachziehen();
   zaehlerAnlauf();
   $('#me-name').textContent = ME.vorname + ' ' + ME.nachname;
-  $('#me-sub').textContent = EMPLOYER + ' · ' + fmtDate(ME.dob);
-  $('#me-mail').textContent = MAIL || '';
+  $('#me-sub').textContent = EMPLOYER;
   if(!CLOUD_ON) setSync('local');
   EX.set = new Set((ME.months || []).map(o => o.y + '-' + o.m));
   EX.year = ME.months && ME.months.length ? ME.months[ME.months.length-1].y : PREV.getFullYear();
@@ -9354,8 +9485,18 @@ async function teamLaden(){
   const heute = heuteIso();
   ((t.error ? [] : t.data) || []).forEach(z => {
     const anderer = z.a === UID ? z.b : z.a;
-    const meins = z.a === UID ? z.letzt_a : z.letzt_b;
-    TEE_PAARE[anderer] = { punkte:z.punkte || 0, heuteSchon: !!meins && meins >= heute };
+    const meins  = z.a === UID ? z.letzt_a : z.letzt_b;
+    const seins  = z.a === UID ? z.letzt_b : z.letzt_a;
+    /* Wer zuletzt geschickt hat, ist nicht wieder dran. Der Becher ist
+       ein Zuruf, keine Einbahn: liegt mein Datum vor dem der anderen
+       Seite — oder steht dort gar keins —, warte ich auf die Antwort.
+       Gleiches Datum heisst, wir haben uns heute beide gemeldet; dann
+       greift ohnehin die Tagesregel. */
+    TEE_PAARE[anderer] = {
+      punkte: z.punkte || 0,
+      heuteSchon: !!meins && meins >= heute,
+      wartet: !!meins && (!seins || seins < meins)
+    };
   });
   TEE_OFFEN = teeOffenAus(t.error ? [] : t.data);
   TEAM = (r.data || []).sort(teamReihung);
@@ -9425,15 +9566,23 @@ function malTeam(){
       unten = '<div class="tm-tee">'
         + becherHtml(1, ' leer')
         + '<span class="txt"><b style="color:var(--tx-3)">Noch kein Bubble Tea</b>'
-        + '<small>Der erste bringt euch sofort auf Level 1</small></span>'
+        + '<small>' + (paar.wartet && !paar.heuteSchon
+            ? esc((m.vorname || '').trim() || 'Sie') + ' ist am Zug'
+            : 'Der erste bringt euch sofort auf Level 1') + '</small></span>'
         + teeKnopf(m, paar) + '</div>';
     } else {
+      /* Solange der Gegenzug aussteht, steht das anstelle des
+         Fortschritts: es ist die Auskunft, die man in dem Moment
+         braucht. */
+      const wartetxt = paar.wartet && !paar.heuteSchon
+        ? esc((m.vorname || '').trim() || 'Sie') + ' ist am Zug — dann geht wieder einer'
+        : null;
       unten = '<div class="tm-tee">'
         + becherHtml(lvl, '')
         + '<span class="txt"><b>' + esc(tee.n) + '</b>'
-        + '<small>' + (rest
+        + '<small>' + (wartetxt ? wartetxt : (rest
             ? rest.hat + ' von ' + rest.braucht + ' bis ' + esc(rest.name)
-            : 'Die höchste Stufe — mehr geht nicht.') + '</small>'
+            : 'Die höchste Stufe — mehr geht nicht.')) + '</small>'
         + (rest ? '<span class="tm-balken"><i style="width:'
             + Math.round(rest.hat / rest.braucht * 100) + '%"></i></span>' : '')
         + '</span>' + teeKnopf(m, paar) + '</div>';
@@ -9507,7 +9656,15 @@ function becherHtml(lvl, zusatz){
     + '<img class="becher' + zusatz + '" src="tee-' + lvl + '.webp" alt="" loading="lazy">'
     + '<i></i><i></i><i></i></button>';
 }
+/* Zwei Gruende, warum der Knopf grau ist — und beide muessen dastehen.
+   Ein graues Feld ohne Grund liest sich wie ein Fehler. */
 function teeKnopf(m, paar){
+  /* Die staerkere Sperre zuerst: an der Tagesregel ist morgen wieder
+     etwas zu holen, am Gegenzug nicht. */
+  if(paar.wartet && !paar.heuteSchon){
+    return '<button class="tm-send aus" disabled title="Erst wenn zurückgeschickt wird">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="8.5"/></svg>Am Zug</button>';
+  }
   if(paar.heuteSchon){
     return '<button class="tm-send aus" disabled>'
       + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5 9.6 17 4 11.4"/></svg>Heute</button>';
@@ -9557,7 +9714,7 @@ $('#fi-team').addEventListener('click', async e => {
     const r = await sb.rpc('tee_senden', { an: an });
     if(r.error) throw r.error;
     const z = Array.isArray(r.data) ? r.data[0] : r.data;
-    TEE_PAARE[an] = { punkte:(z && z.punkte) || 0, heuteSchon:true };
+    TEE_PAARE[an] = { punkte:(z && z.punkte) || 0, heuteSchon:true, wartet:true };
     /* Zurueckgeschickt heisst: der Ball liegt wieder drueben. Die Karte
        verliert den violetten Rand, sortiert sich aber erst beim naechsten
        Oeffnen um — sonst spraenge sie unter dem Finger weg. */
@@ -9569,7 +9726,15 @@ $('#fi-team').addEventListener('click', async e => {
     const jetzt = teeLevel(TEE_PAARE[an].punkte);
     /* schon_heute heisst: der Server hat nichts gezaehlt. Dann hat sich
        auch nichts freigeschaltet, egal was die Zahl sagt. */
-    if(z && z.schon_heute) toast('Heute hast du schon einen geschickt');
+    /* wartet heisst: die andere Seite ist am Zug, der Server hat nichts
+       gezaehlt. Das kann nur passieren, wenn die Liste veraltet ist —
+       dann muss die Zeile nachziehen. */
+    if(z && z.wartet && !z.schon_heute){
+      TEE_PAARE[an].heuteSchon = false;
+      malTeam();
+      toast('Erst wenn du einen zurückbekommst');
+    }
+    else if(z && z.schon_heute) toast('Heute hast du schon einen geschickt');
     else if(jetzt > vorher) toast('Level ' + jetzt + ' · ' + TEE[jetzt - 1].n + ' freigeschaltet');
     else toast('Bubble Tea unterwegs');
   }catch(err){
@@ -9665,6 +9830,34 @@ function firmaZu(){
 $('#fi-back').addEventListener('click', firmaZu);
 wireWischRaus('v-firma', firmaZu);
 
+/* ─── Die Becher-Plakette in der Karte ────────────────────────────
+   Die Summe aller Bubble Teas, die zwischen mir und den anderen
+   gelaufen sind — Manuela 5, Luis 5, Marlene 3 macht 13. Die Farbe
+   ist die Sorte, die ich mit irgendjemandem am weitesten
+   freigeschaltet habe: der hoechste Stand zaehlt, nicht der Schnitt.
+
+   Ohne Cloud oder ohne einen einzigen Becher bleibt sie weg. Eine
+   Null ist keine Auszeichnung. */
+function teeGesamt(){
+  let summe = 0, hoch = 0;
+  Object.keys(TEE_PAARE || {}).forEach(k => {
+    const p = (TEE_PAARE[k] || {}).punkte || 0;
+    summe += p;
+    const l = teeLevel(p);
+    if(l > hoch) hoch = l;
+  });
+  return { summe:summe, level:hoch };
+}
+function malTeeBadge(){
+  const b = $('#ma-tee'); if(!b) return;
+  const g = teeGesamt();
+  b.hidden = g.summe <= 0;
+  if(g.summe <= 0) return;
+  $('#ma-tee-n').textContent = g.summe;
+  const sorte = TEE[Math.max(1, g.level) - 1];
+  b.style.setProperty('--tf', sorte.f);
+  b.setAttribute('title', g.summe + ' Bubble Teas · ' + sorte.n);
+}
 function malRang(){
   const kopf = $('#mausweis'); if(!kopf) return;
   const nr = stufe(), r = rang(nr);
@@ -9679,6 +9872,7 @@ function malRang(){
   /* Im Band steht, wie weit die Sammlung ist — das ist die Zeile, die
      zum Weiterdruecken einlaedt. */
   $('#ma-stand').textContent = nr + ' von ' + RAENGE.length + ' Karten';
+  malTeeBadge();
   const w = $('#ma-wort');
   if(w && !w.getAttribute('src')) w.src = LOGO_WORD;
   malVerlaufKnopf();
@@ -10804,8 +10998,9 @@ $('#ma-auf').addEventListener('click', () => { _vonMenu = true; karteAuf(); });
   const k = $('#mausweis'); if(!k) return;
   const los = () => k.classList.remove('druck');
   k.addEventListener('pointerdown', e => {
-    /* Bild und Postfach haben ihre eigene Bewegung. */
-    if(e.target.closest('.avbig, .mtile')) return;
+    /* Das Bild hat seine eigene Bewegung. Das Postfach stand frueher
+       auch hier; es sitzt jetzt in der Kachelreihe ausserhalb. */
+    if(e.target.closest('.avplatz')) return;
     k.classList.add('druck');
   });
   ['pointerup','pointercancel','pointerleave'].forEach(n => k.addEventListener(n, los));
@@ -11027,14 +11222,66 @@ function kRaeder(auf){
   hUr.appendChild(_kRad.ur);
   raederRichten($('#konten'));
 }
+$('#dt-ok').addEventListener('click', dtSichern);
 function kontenOffen(){
   const k = $('#menu .menu-card');
   return !!(k && k.classList.contains('kauf'));
+}
+/* ─── Persoenliche Daten ──────────────────────────────────────────
+   Name und Geburtsdatum liessen sich nach dem Anlegen nirgends mehr
+   aendern, und die Mail stand nur klein in der Karte. Beides hat hier
+   seinen Platz — und die Karte traegt dafuer nur noch das, was sie
+   zeigen soll. */
+function dtOffen(){
+  const k = $('#menu .menu-card');
+  return !!(k && k.classList.contains('dtauf'));
+}
+function dtAuf(an){
+  const k = $('#menu .menu-card'); if(!k || !ME) return;
+  const auf = (an === undefined) ? !dtOffen() : !!an;
+  if(auf && avOffen()) avWahl(false);
+  if(auf && kontenOffen()) kontenAuf(false);
+  if(auf && uaOffen()) uaAuf(false);
+  if(auf && dlOffen()) dlZu(false);
+  k.classList.toggle('dtauf', auf);
+  if(auf) malDaten();
+}
+function malDaten(){
+  if(!ME) return;
+  $('#dt-vn').value = ME.vorname || '';
+  $('#dt-nn').value = ME.nachname || '';
+  const t = (ME.dob || '').split('-');
+  const box = $('[data-dob="dt"]');
+  if(box && t.length === 3){
+    $('input[data-p="d"]', box).value = t[2];
+    $('input[data-p="m"]', box).value = t[1];
+    $('input[data-p="y"]', box).value = t[0];
+  }
+  $('#dt-mail').textContent = MAIL || 'keine hinterlegt';
+  $('#dt-hinweis').hidden = true;
+}
+function dtSichern(){
+  if(!ME) return;
+  const vn = $('#dt-vn').value.trim(), nn = $('#dt-nn').value.trim();
+  const iso = dobIso(readDob('dt'));
+  const meck = t => { const h = $('#dt-hinweis'); h.textContent = t; h.hidden = false; };
+  if(!vn){ meck('Ohne Vornamen geht es nicht.'); $('#dt-vn').focus(); return; }
+  if(!nn){ meck('Ohne Nachnamen geht es nicht.'); $('#dt-nn').focus(); return; }
+  if(!iso){ meck('Das Geburtsdatum stimmt so nicht.'); return; }
+  ME.vorname = vn; ME.nachname = nn; ME.dob = iso;
+  save();
+  /* Der Name steht an drei Stellen gleichzeitig: im Kopf, auf jeder
+     Karte im Stapel und in der Firmenliste. */
+  $('#me-name').textContent = ME.vorname + ' ' + ME.nachname;
+  if(typeof cloudQueue === 'function') cloudQueue();
+  dtAuf(false);
+  toast('Gespeichert');
 }
 function kontenAuf(an){
   const k = $('#menu .menu-card'); if(!k || !ME) return;
   const auf = (an === undefined) ? !kontenOffen() : !!an;
   if(auf && avOffen()) avWahl(false);
+  if(auf && dtOffen()) dtAuf(false);
   if(auf && uaOffen()) uaAuf(false);
   if(auf && dlOffen()) dlZu(false);
   k.classList.toggle('kauf', auf);
@@ -11046,6 +11293,7 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-zurueck]'); if(!b) return;
   e.stopPropagation();
   if(avOffen()) avWahl(false);
+  else if(dtOffen()) dtAuf(false);
   else if(kontenOffen()) kontenAuf(false);
   else if(uaOffen()) uaAuf(false);
   else if(dlOffen()) dlZu();
@@ -13257,6 +13505,7 @@ $('#menu').addEventListener('click', e => {
   /* Nach dem Tippen die Auswahl abgeben, sonst bleibt der Knopf hell. */
   try{ b.blur(); }catch(_e){}
   /* Diese drei bleiben im Menü — dafür wird es nicht geschlossen. */
+  if(b.dataset.act === 'daten'){ dtAuf(); return; }
   if(b.dataset.act === 'konten'){ kontenAuf(); return; }
   if(b.dataset.act === 'anspruch'){ uaAuf(); return; }
   if(b.dataset.act === 'erinnerung'){ erinUmschalten(); return; }
@@ -13913,7 +14162,7 @@ function fassungsdeckelWeg(){
   setTimeout(() => { if(d.parentNode) d.parentNode.removeChild(d); }, 340);
 }
 
-wireDob('ob'); wireDob('lg');
+wireDob('ob'); wireDob('lg'); wireDob('dt');
 if(AM_HANDY){
   if(FASSUNG_NEU) vorspannUeberspringen();
   else try{ playIntro(); }catch(e){ console.warn(e); endIntro(); }
@@ -14143,11 +14392,13 @@ $('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
     setTimeout(neuLaden, 1400);
   };
 
+  /* Beschriftet die Kachel unter der Karte. Frueher war das eine
+     Menuezeile mit Schalter; die Kachel sagt dasselbe mit einem Wort. */
   function zeileMalen(){
-    var z = document.querySelector('.mi[data-act="erscheinung"]');
+    var z = document.getElementById('ik-mode');
     if (!z) return;
     var dunkel = document.documentElement.dataset.theme === 'dark';
-    var s = z.querySelector('.mitxt small');
+    var s = document.getElementById('ik-mode-t');
     if (s) s.textContent = dunkel ? 'Dunkel' : 'Hell';
     z.setAttribute('aria-pressed', String(dunkel));
   }
@@ -14199,29 +14450,21 @@ $('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
     /* ─── Erscheinungsbild ───
        Eine eigene Zeile mit Schalter, wie in der Referenz. Sie liegt bei
        den Einstellungen, nicht bei den Zeiten. */
-    if (!menu.querySelector('[data-act="erscheinung"]')) {
-      var eb = document.createElement('button');
-      eb.className = 'mi';
-      eb.dataset.act = 'erscheinung';
-      eb.type = 'button';
-      eb.innerHTML =
-        '<span class="miico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-        + 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-        + '<circle cx="12" cy="12" r="4"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22'
-        + 'M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg></span>'
-        + '<span class="mitxt"><b>Erscheinungsbild</b><small>Hell</small></span>'
-        + '<span class="mischalter" aria-hidden="true"></span>';
-      var nach = menu.querySelector('[data-act="anspruch"]');
-      if (nach && nach.parentNode) nach.parentNode.insertBefore(eb, nach.nextSibling);
-    }
+    /* Hier wurde bis zum 21. September 2026 eine Menuezeile
+       "Erscheinungsbild" mit Schalter erzeugt. Seit die Kachelreihe
+       unter der Karte steht, sitzt der Wechsel dort — zwei Einstiege
+       fuer dieselbe Sache waeren einer zu viel. Der Klickfaenger fuer
+       data-act="erscheinung" bleibt; er trifft jetzt die Kachel. */
 
     /* ─── Nach Themen gruppieren ─── */
-    const GRUPPEN = [{"titel":"Konto","punkte":["firma","karte"]},{"titel":"Arbeitszeit","punkte":["hours","konten","anspruch"]},{"titel":"Einstellungen","punkte":["erscheinung","erinnerung","passkey"]},{"titel":"Sitzung","punkte":["logout","delete"]}];
-    const anker = menu.querySelector('[data-act="firma"]');
+    const GRUPPEN = [{"titel":"Konto","punkte":["firma","karte"]},{"titel":"Arbeitszeit","punkte":["hours","konten","anspruch"]},{"titel":"Einstellungen","punkte":["erinnerung","passkey"]},{"titel":"Sitzung","punkte":["logout","delete"]}];
+    const anker = menu.querySelector('.mi[data-act="firma"]');
     if (anker) {
       const heim = anker.parentNode;
       GRUPPEN.forEach(g => {
-        const punkte = g.punkte.map(a => menu.querySelector('[data-act="' + a + '"]')).filter(Boolean);
+        /* .mi davor: sonst sammelt die Gruppierung auch die Kacheln
+           unter der Karte ein — sie tragen dieselben data-act. */
+        const punkte = g.punkte.map(a => menu.querySelector('.mi[data-act="' + a + '"]')).filter(Boolean);
         if (!punkte.length) return;
         const kopf = document.createElement('div');
         kopf.className = 'msek'; kopf.textContent = g.titel;

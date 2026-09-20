@@ -1050,6 +1050,58 @@ Karte, darunter blieb ein Loch bis zu den Knöpfen. Jetzt nimmt die Kiste die ga
 Punktreihe. Nachgemessen auf dem Telefon: **63 px** Luft unter der Karte, **29 px** über der
 Leiste.
 
+### Die Karte berichtet, die Kacheln führen
+
+Seit 21. September 2026 steht in der Karte nur noch, was sie **zeigt**: Bild, Name, Firma, Stufe,
+Becher, Leiste. Was irgendwohin **führt**, steht darunter.
+
+**Das Bild ist 88 px statt 64** und trägt unten rechts einen violetten Stift. Es ist der Grund,
+warum man die Karte anschaut, und das Einzige, was man daran ändern kann — beides spricht dafür,
+es groß zu zeigen und zu sagen, dass es antippbar ist.
+
+**Die Becher-Plakette** zählt alle Bubble Teas zusammen, die zwischen einem selbst und den anderen
+gelaufen sind — Manuela 5, Luis 5, Marlene 3 macht 13. Ihre Farbe ist die Sorte, die man mit
+irgendjemandem am weitesten freigeschaltet hat: der höchste Stand zählt, nicht der Schnitt. Ohne
+einen einzigen Becher bleibt sie weg; eine Null ist keine Auszeichnung.
+
+**Vier eckige Kacheln** stehen zwischen Karte und den Menügruppen: Postfach mit roter Zahl,
+Sicherungsstand mit farbigem Punkt an der Wolke, Persönliche Daten, Hell/Dunkel. Vier und nicht
+fünf, damit die Reihe in der Breite aufgeht — nachgemessen 81 px je Feld auf einem 375er Schirm.
+Jede trägt ihre Beschriftung: ein Symbol allein muss man raten. `minmax(0,1fr)`, weil ein
+Gitterfeld sonst mindestens so breit wird wie sein Inhalt und die Reihe über den Rand liefe.
+
+Zwei Dinge sind dafür weggefallen. **Postfach und Sicherungsstand** standen als kleine Felder *in*
+der Karte, zwischen Name und Stufe — zwei Bedienelemente in einem Ausweis, der sonst nur
+berichtet. Und die Menüzeile **Erscheinungsbild** mit ihrem Schalter: die Kachel macht dasselbe,
+zwei Einstiege wären einer zu viel.
+
+**Persönliche Daten** ist neu. Name und Geburtsdatum ließen sich nach dem Anlegen nirgends mehr
+ändern, und die Mail stand nur klein in der Karte. Jetzt liegen sie auf derselben Fläche, die im
+Menü auch die Bilder und die Stände tragen. Die Mail wird gezeigt, nicht geändert: sie ist die
+Anmeldung, und ein Wechsel läuft über eine neue Anmeldung.
+
+Eine Falle steckte in der Gruppierung: sie sammelt Menüpunkte über `[data-act]` ein — und griff
+damit auch nach den Kacheln, die dieselben Namen tragen. Der Selektor heißt jetzt `.mi[data-act]`.
+
+### Der Becher wird ein Wechselspiel
+
+Bisher galt nur: einer pro Tag und Person. Wer wollte, konnte damit jeden Tag in dieselbe Richtung
+schicken, ohne je eine Antwort zu bekommen — aus dem Zuruf wurde eine Einbahn. **Nach dem eigenen
+Becher ist die andere Seite dran.** Erst wenn sie geschickt hat, geht wieder einer hinaus; die
+Tagesregel bleibt daneben bestehen.
+
+Erkennbar ist das an den beiden Datumsspalten, die es schon gab: steht mein Datum und das der
+anderen Seite fehlt oder ist älter, dann warte ich. Gleicher Tag heißt, wir haben beide
+geschickt — dann greift die Tagesregel.
+
+**Der graue Knopf nennt seinen Grund.** *Am Zug* statt *Heute*, und in der Zeile steht
+*Luis ist am Zug — dann geht wieder einer* anstelle des Fortschritts. Ein graues Feld ohne Grund
+liest sich wie ein Fehler.
+
+Die Regel steht auch **in der Datenbank** (`20260921060000_tee_wechselspiel.sql`) — im Fenster
+allein wäre sie nur eine Bitte. `tee_senden()` gibt dafür ein Feld `wartet` zurück, damit die App
+den Grund nennen kann; weil sich der Rückgabetyp ändert, musste die alte Fassung erst weg.
+
 ### Der Brief zum Aufstieg
 
 Eine Stufe zu erreichen war bis jetzt ein Moment: die Feier ging auf, man tippte sie weg, und
