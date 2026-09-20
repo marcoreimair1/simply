@@ -988,6 +988,15 @@ es in 300 ms und wieder auf das Menü zu. Kommt der Aufruf nicht aus dem Menü, 
 Aufstiegsfeier, gibt es keine Fläche, aus der etwas kommen könnte — dann nur ein kurzes
 Aufsteigen. Wer Bewegung abgestellt hat, bekommt keine.
 
+**Und beim zweiten Öffnen waren die Karten weg.** Der Rückflug hält seinen Endzustand fest
+(`fill:both`), sonst blitzten die Karten beim Schließen noch einmal auf — aber er blieb danach als
+fertige Animation am Element hängen. Der Hinflug hält nichts fest, also gewann nach seinem Ende
+wieder der alte Endzustand: Deckkraft 0. Nachgemessen trat es ab der zweiten Runde auf, jedes Mal.
+`mkvRuhe()` bricht deshalb vor jedem Flug ab, was noch am Element liegt, und der Timer beim
+Schließen räumt ebenfalls auf. Der erste Riegel ist der wichtige: wer gleich wieder aufmacht,
+kommt dem Timer zuvor. Fünf Runden im Browser nachgeprüft, eine davon hastig mitten in der
+Schließbewegung — jedes Mal volle Deckkraft.
+
 **Die Plakette schlug durch die Karte.** *Erreicht* stand beim Umdrehen spiegelverkehrt auf der
 Rückseite. `.kt-vorn` erzeugte keinen Stapelkontext — `position:relative` allein reicht dafür
 nicht —, also sortierte sich jedes Kind mit `z-index` in den Kontext der Drehbühne ein, und die

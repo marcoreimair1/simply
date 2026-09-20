@@ -394,6 +394,45 @@ window.__WEITER = function(){
      }));
   ok('Die erreichten tragen einen Stempel, die aktuelle nicht',
      document.querySelectorAll('#kt-bahn .kt-stempel').length === st - 1);
+  ok('Und er sitzt im Fenster, nicht ueber dem Band',
+     [].every.call(document.querySelectorAll('#kt-bahn .kt-stempel'),
+                   function(p){ return !!p.closest('.kt-fenster'); }));
+
+  /* ── Auf, zu, auf ──
+     Der Rueckflug haelt seinen Endzustand fest, sonst blitzten die
+     Karten beim Schliessen wieder auf. Blieb er danach liegen, gewann
+     er nach dem naechsten Hinflug wieder — Deckkraft 0, die Karten
+     waren beim zweiten Oeffnen weg. jsdom rechnet keine Animationen,
+     also wird animate() hier nachgebaut: geprueft wird, dass vor jedem
+     Flug abgeraeumt wird und am Ende nichts Fertiges liegen bleibt. */
+  (function(){
+    var alle = [];
+    Element.prototype.animate = function(kf, opt){
+      var a = { weg:false, fill:(opt && opt.fill) || 'none',
+                cancel:function(){ this.weg = true; } };
+      this.__an = (this.__an || []).concat(a);
+      alle.push(a);
+      return a;
+    };
+    Element.prototype.getAnimations = function(){
+      return (this.__an || []).filter(function(a){ return !a.weg; });
+    };
+    var kiste = document.querySelector('.mkv-in');
+    var b = document.querySelector('#mkv');
+    /* Der Timer beim Schliessen raeumt selbst auf — hier wird der
+       haertere Fall gespielt: gleich wieder aufgemacht, bevor er
+       feuert. Genau so kam es vor. */
+    for(var runde = 0; runde < 3; runde++){
+      karteAuf(); karteZu(); b.classList.remove('on', 'weg');
+    }
+    karteAuf();
+    var offen = kiste.getAnimations();
+    ok('Vier Fluege, jeder raeumt den vorigen ab', alle.length === 7, alle.length);
+    ok('Nach dem Oeffnen laeuft genau einer', offen.length === 1, offen.length);
+    ok('Und keiner haelt mehr einen alten Endzustand fest',
+       offen.every(function(a){ return a.fill !== 'both'; }));
+    karteZu();
+  })();
   /* Im Fach steht bei jeder etwas anderes — das ist der einzige Teil,
      der wechselt. */
   ok('Im Fach der aktuellen steht die gesparte Zeit',
@@ -957,7 +996,7 @@ setTimeout(() => {
     roh.includes('const dauer = auf ? 620 : 300;')
     && roh.includes("easing: auf ? 'cubic-bezier(.16,1,.3,1)' : 'cubic-bezier(.4,0,.72,.2)'")],
    ['Wer Bewegung abgestellt hat, bekommt keine',
-    roh.includes("matchMedia('(prefers-reduced-motion: reduce)').matches")],
+    roh.includes("try{ still = matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}")],
    ['Beide Wege benutzen denselben Flug',
     roh.includes('  mkvFlug(true);\n  ktBahnHorchen();')
     && roh.includes('const dauer = mkvFlug(false);')
