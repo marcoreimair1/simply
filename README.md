@@ -1071,6 +1071,18 @@ darf man sehen.
 **Alle vier Wörter stehen da.** Das kostet nichts, und *Meine Firma* ist als Symbol allein nicht
 erratbar. Im ersten Anlauf trug nur der aktive Punkt sein Wort; das war hübscher und sagte weniger.
 
+**Unter dem Profilbild steht kein Wort.** Die drei anderen Punkte brauchen eines — ein Symbol
+allein muss man raten —, das Bild ist sein eigener Name. Dafür sitzt es mittig in der Leiste statt
+auf der Grundlinie der anderen und ist 48 statt 42 px groß.
+
+**Alle Zahlen sind violett.** Rot sagt *etwas ist schiefgegangen*; hier wartet nur etwas — eine
+Nachricht, ein Aufstieg, ein Bubble Tea. Damit fielen zwei Sonderfälle weg: die violette Variante
+für Becher und der halb-halb-Verlauf, wenn beides zusammenkam.
+
+**Und die Becher zählen nicht mehr am Profilbild mit.** Dort stehen Nachrichten und Stufenaufstiege
+— Sachen, die im Menü warten. Die wartenden Bubble Teas stehen an *Meine Firma*, wo man sie
+beantwortet. Eine Zahl gehört an die Stelle, an die sie schickt.
+
 **Das Profilbild ist von oben rechts heruntergewandert** und sitzt als vierter Punkt rechts außen,
 mit seinem roten Zähler. Ein Eingang ins Menü genügt; oben wird dafür Platz frei. Verschoben wurde
 das Element selbst, nicht nachgebaut — so gelten `malAvatar()`, der Zähler und sein Anlauf

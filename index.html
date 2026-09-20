@@ -832,19 +832,21 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
   78%{transform:scale(.94)}
   100%{opacity:1;transform:none}
 }
+/* Violett, nicht Rot. Rot sagt "etwas ist schiefgegangen"; hier wartet
+   nur etwas — eine Nachricht, ein Aufstieg, ein Bubble Tea. Und es ist
+   die Farbe der App, nicht die Warnfarbe des Systems. */
 .zaehler{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;
-  border-radius:999px;background:#FF453A;color:#fff;font-size:11px;font-weight:700;
+  border-radius:999px;background:var(--butter);color:var(--on-primary);
+  font-size:11px;font-weight:700;
   display:grid;place-items:center;line-height:1;box-sizing:border-box;
   border:2px solid rgba(var(--s-tief),.95);font-variant-numeric:tabular-nums;
   animation:zaehlerRein .42s var(--ease-out) both}
 @keyframes zaehlerRein{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
 .zaehler[hidden]{display:none}
-/* Rot sind Nachrichten, Violett ist ein Bubble Tea. Kommt beides
-   zusammen, wird der Kreis halb und halb — und die Zahl ist die Summe.
-   Zwei Punkte nebeneinander waeren an einem 20-px-Kreis nicht mehr zu
-   unterscheiden. */
-.zaehler.tee{background:var(--butter)}
-.zaehler.beides{background:linear-gradient(90deg,#FF453A 0 50%,var(--butter) 50% 100%)}
+/* Hier standen zwei Sonderfaelle: Violett fuer Bubble Teas und ein
+   halb-halb-Verlauf, wenn beides zusammenkam. Beides ist hinfaellig,
+   seit alle Zahlen violett sind und die Becher an ihrem eigenen Punkt
+   stehen. */
 /* Im Menue sitzt er an der Ecke der Symbolkachel — genau wie der rote
    am Briefsymbol im Profilkopf. Frei in der Zeile war er ein fremder
    Punkt zwischen Bild und Text. */
@@ -3546,9 +3548,11 @@ body.zrmodus #tabbar, body.sigmodus #tabbar{
 .tab.an{ color:var(--butter) }
 .tab.an em{ font-weight:700 }
 /* Das Profilbild ist der Anker: groesser als die Symbole, mit hellem
-   Ring und Schatten, und es ragt oben heraus. */
-.tab-pro .avwrap{ margin-top:-8px }
-.tabbar .avatar{ width:42px; height:42px; border-radius:15px; border:0;
+   Ring und Schatten. Ohne Wort darunter sitzt es mittig in der Leiste
+   statt unten auf der Grundlinie der drei anderen — und darf dafuer
+   noch etwas groesser sein. Das Bild ist sein eigener Name. */
+.tab-pro{ align-self:center; padding:0 }
+.tabbar .avatar{ width:48px; height:48px; border-radius:17px; border:0;
   box-shadow:0 0 0 2.5px rgba(var(--s-hoch),.95), 0 7px 16px -6px rgba(var(--s-schatten),.55) }
 .tabbar .avatar:hover{ transform:none }
 .tabbar .zaehler{ top:-4px; right:-6px }
@@ -6173,7 +6177,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <em>Export</em>
     </button>
     <button class="tab" data-go="v-firma" aria-label="Meine Firma">
-      <span class="tabi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9.5 21v-6h5v6"/></svg><span class="zaehler tee" id="fi-zaehler" hidden></span></span>
+      <span class="tabi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9.5 21v-6h5v6"/></svg><span class="zaehler" id="fi-zaehler" hidden></span></span>
       <em>Meine Firma</em>
     </button>
     <!-- Das Profil ist der vierte Punkt. Das Bild ist das Einzige in
@@ -6186,7 +6190,6 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         <span class="avatar" id="avatar"></span>
         <span class="zaehler" id="av-zaehler" hidden></span>
       </span>
-      <em>Profil</em>
     </button>
   </nav>
 
@@ -6330,7 +6333,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-1550';
+const APP_STAND = '2026-09-21-1635';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -11175,10 +11178,11 @@ function malZaehler(){
     if(n > 0){ el.textContent = n > 99 ? '99+' : String(n); el.hidden = false; }
     else el.hidden = true;
   };
-  /* Am Profilbild steht alles zusammen, wie am Telefon: Nachrichten,
-     Stufenaufstiege und wartende Bubble Teas in einer Zahl. Welche Art
-     dahintersteckt, sagt die Farbe. */
-  const rot = post + stufen, oben = rot + tee;
+  /* Am Profilbild stehen Nachrichten und Stufenaufstiege — Sachen, die
+     im Menue warten. Die Bubble Teas standen frueher mit dazu; sie
+     stehen jetzt dort, wo man sie beantwortet: am Punkt "Meine Firma".
+     Eine Zahl gehoert an die Stelle, an die sie schickt. */
+  const oben = post + stufen;
   setz('#av-zaehler', _zaehlerFrei ? oben : 0);
   setz('#pf-zaehler', post);
   setz('#mr-zaehler', stufen);
@@ -11186,11 +11190,6 @@ function malZaehler(){
      Leiste — dorthin fuehrt er ja. Frueher hing die Zahl an der
      Menuezeile, die es nicht mehr gibt. */
   setz('#fi-zaehler', tee);
-  const z = $('#av-zaehler');
-  if(z){
-    z.classList.toggle('tee',    tee > 0 && rot === 0);
-    z.classList.toggle('beides', tee > 0 && rot > 0);
-  }
   const w = $('#avwrap');
   if(w) w.classList.toggle('meldung', _zaehlerFrei && oben > 0);
 }

@@ -1040,7 +1040,7 @@ setTimeout(() => {
    ['Der Zaehler haengt an der Symbolkachel',
     /\.mi \.miico > \.zaehler\{position:absolute;top:-7px;right:-7px/.test(roh)],
    ['Die wartenden Becher stehen am Punkt in der Leiste',
-    roh.includes('<span class="zaehler tee" id="fi-zaehler" hidden></span></span>')
+    roh.includes('<span class="zaehler" id="fi-zaehler" hidden></span></span>')
     && roh.includes('.tabi{position:relative; display:grid; place-items:center;')],
    ['Der Zaehler liegt ueber dem Logo',
     /\.mi \.miico > \.zaehler\{[^}]*z-index:2\}/.test(roh)],
@@ -1113,10 +1113,14 @@ setTimeout(() => {
    ['Alle vier Woerter stehen da',
     roh.includes(".tab em{font-style:normal; font-size:10px; font-weight:600;")
     && !roh.includes('.tab.an em{max-width:140px; opacity:1}')],
-   ['Das Profilbild ist der Anker: groesser, mit Ring, herausragend',
-    roh.includes('.tab-pro .avwrap{ margin-top:-8px }')
-    && roh.includes('.tabbar .avatar{ width:42px; height:42px; border-radius:15px;')
+   /* Ohne Wort darunter sitzt das Bild mittig statt auf der Grundlinie
+      der drei anderen — und darf dafuer groesser sein. */
+   ['Das Profilbild ist der Anker: 48 px, mittig, mit Ring',
+    roh.includes('.tab-pro{ align-self:center; padding:0 }')
+    && roh.includes('.tabbar .avatar{ width:48px; height:48px; border-radius:17px;')
     && roh.includes('box-shadow:0 0 0 2.5px rgba(var(--s-hoch),.95),')],
+   ['Kein Wort unter dem Bild — es ist sein eigener Name',
+    !roh.includes('</span>\n      <em>Profil</em>')],
    ['Der ganze Punkt ist der Knopf, nicht nur das Bild',
     roh.includes("$('#tab-pro').addEventListener('click', () => {")
     && !roh.includes("$('#avatar').addEventListener")],
@@ -1444,8 +1448,13 @@ setTimeout(() => {
     /avDatei\(i\) \+ '" alt="" '\s*\n\s*\+ 'loading="lazy" decoding="async"/.test(roh)],
    ['Die Stunden gehen den Tagen vor',
     /if\(std === 1\) return 'vor 1 Stunde';\s*\n\s*if\(std <= 4\) return 'vor ' \+ std \+ ' Stunden';\s*\n\s*const h = new Date\(\)/.test(roh)],
-   ['Halb rot, halb violett gibt es wirklich',
-    /\.zaehler\.beides\{background:linear-gradient\(90deg,#FF453A 0 50%,var\(--butter\) 50% 100%\)\}/.test(roh)]
+   /* Rot sagt "etwas ist schiefgegangen"; hier wartet nur etwas. Alle
+      Zahlen tragen jetzt die Farbe der App. */
+   ['Alle Zahlen sind violett',
+    roh.includes('border-radius:999px;background:var(--butter);color:var(--on-primary);')
+    && !roh.includes('#FF453A')],
+   ['Und es gibt keine Sonderfaelle mehr',
+    !roh.includes('.zaehler.tee{') && !roh.includes('.zaehler.beides{')]
   ];
   /* Jedes Motiv braucht seine Datei — ohne diese Pruefung faende man
      eine vergessene erst als leeren Rahmen auf dem Telefon. */
