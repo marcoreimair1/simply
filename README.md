@@ -1033,6 +1033,52 @@ gleich breiten Ziffern, die letzte Linie schwebt nicht mehr frei, und der Satz u
 einer eigenen Kante. Dazu hat jede Karte jetzt **eine Haarlinie innen** — gedruckte Karten haben
 eine Kante, Flächen auf dem Schirm nicht.
 
+**Das Fach saß auf der Kante.** Auf der aktuellen Karte — der höchsten der Reihe — bleibt für das
+`margin-top:auto` am Fußband nichts übrig, also stand *Zeit gespart* genau auf dem Band. Die 15 px
+stehen jetzt fest am Fach.
+
+**Und der Block unter der Karte hing an ihr.** Punktreihe und Hinweis klebten 12 px unter der
+Karte, darunter blieb ein Loch bis zu den Knöpfen. Jetzt nimmt die Kiste die ganze Höhe und zwei
+`auto`-Abstände teilen den freien Raum: einer über der Titelzeile, einer zwischen Karte und
+Punktreihe. Nachgemessen auf dem Telefon: **63 px** Luft unter der Karte, **29 px** über der
+Leiste.
+
+### Der Brief zum Aufstieg
+
+Eine Stufe zu erreichen war bis jetzt ein Moment: die Feier ging auf, man tippte sie weg, und
+danach war sie weg. Seit 21. September 2026 **bleibt sie liegen** — als Nachricht im Postfach, mit
+der Karte darin.
+
+Die Karte im Brief ist keine Abbildung, sondern dieselbe `ktKarte()` wie im Stapel, nur ohne
+Nachbarn. Sie klappt mit dem Brief auf und **führt in den Stapel**: ein Tipp macht ihn bei genau
+dieser Stufe auf, nicht bei der aktuellen. Der Tipp darf dabei nicht bis zum Kopf der Nachricht
+durchschlagen, sonst klappte der Brief zu.
+
+**Eine Falle steckte in der Breite.** Ein Flex-Kind nimmt mindestens die Breite seines Inhalts,
+und das Fach bricht nicht um — die Karte war damit 256 px breit, egal was in der Regel stand, und
+lief über den Brief hinaus. `min-width:0` auf Bühne und Seite macht sie schrumpffähig; ihre
+natürliche Breite ist die Obergrenze.
+
+**Im Brief steht auch, was dabei herausgekommen ist**: wie viel Zeit MOJI erspart hat, und wofür
+die reichen würde — *Dafür könntest du ein halbes Buch lesen.* Die Leiter dieser Vergleiche
+(`VERGLEICHE`, zwanzig Stufen von einer Kugel Eis bis zu zwei Wochen Urlaub) stand seit Langem in
+der Datei und **wurde von niemandem aufgerufen**. Jetzt steht sie im Brief und unter der Karte bei
+der Aufstiegsfeier.
+
+Der Rahmen dafür ist *„Dafür könntest du …"*, nicht *„Das reicht, um …"*: die Einträge sind bloße
+Infinitive, und bei *um* gehört ein *zu* vor das Verb — das steht am Ende der Phrase, nicht am
+Anfang. *„Das reicht, um ein halbes Buch lesen."* war falsches Deutsch.
+
+**Ein Brief je Ereignis**, für die höchste erreichte Stufe. Bei drei Stufen auf einmal wären drei
+Briefe drei Mal dieselbe Nachricht — die Karten liegen ohnehin alle im Stapel. Wer schon weiter
+oben steht, hat seine Aufstiege erlebt, als es die Briefe noch nicht gab: **einer kommt nach**,
+nicht neun.
+
+**Die Feier selbst trägt jetzt die Stufenfarbe.** Die BOOST-Plakette lag im violetten
+Markenverlauf — bei einem Aufstieg auf *Zeitmeister* stand also Violett über einer violetten
+Karte. Und die Titelzeile des Stapels sagte dasselbe wie die Überschrift darüber noch einmal; sie
+schob die Karte um 84 px nach unten und ist während der Feier ausgeblendet.
+
 ### Das Bild zum Weitergeben
 
 `karteBild()` zeichnet die Sammelkarte auf eine Leinwand in **1080 × 1350** und reicht sie an das

@@ -2735,10 +2735,15 @@ body.sigmodus .fb-s{display:inline-flex}
 #mkkanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
 /* Der Kopf über der Karte gehört zur Aufstiegsfeier. */
 .auf-kopf{position:relative;text-align:center;padding:2px 6px 2px}
+/* Die Plakette traegt die Farbe der erreichten Stufe, wie die Pille im
+   Menuekopf und der Tag in der Firmenkarte. Vorher lag hier der
+   violette Markenverlauf — bei einem Aufstieg auf Zeitmeister stand
+   also Violett ueber einer violetten Karte, und bei Gold sah man den
+   Unterschied gar nicht. */
 .auf-boost{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.28em;
-  padding:4px 12px 4px 14px;border-radius:99px;color:#2A1C00;
-  background:linear-gradient(100deg,var(--g-1),var(--rf,#F7D774));
-  box-shadow:0 0 22px -4px var(--rf,#F7D774);
+  padding:4px 12px 4px 14px;border-radius:99px;color:#fff;
+  background:var(--rd,#5C6A94);
+  box-shadow:0 0 24px -5px var(--rf,#8FA0C8);
   animation:boostRein .6s var(--ease-out) both}
 .auf-kopf b{display:block;margin-top:9px;font-family:var(--font-dis);font-weight:400;
   font-size:clamp(24px,7vw,33px);line-height:1.08;letter-spacing:-.02em;
@@ -2755,6 +2760,52 @@ body.sigmodus .fb-s{display:inline-flex}
   65%{opacity:1;transform:translateY(0) scale(1.05)}
   100%{opacity:1;transform:none}
 }
+/* ─── Die Karte im Brief ──────────────────────────────────────────
+   Im Stapel steht die Karte in einer Bahn und bekommt ihre Groesse von
+   dort. Im Brief steht sie allein: eine feste Breite, mittig, und die
+   Bahnregeln (Schnappen, Tiefe, Drehung) gelten hier nicht.
+
+   Sie klappt mit dem Brief auf — aus dem Nichts erscheinen waere hart,
+   und der Brief ist ohnehin schon eine Bewegung. Dieselbe Expo-Kurve
+   wie ueberall, nur kuerzer, weil der Weg kurz ist. */
+.pfk{ display:flex; justify-content:center; margin:16px 0 18px; cursor:pointer;
+  perspective:1400px }
+/* min-width:0 auf der Buehne und der Seite: ohne das nimmt ein
+   Flex-Kind mindestens die Breite seines Inhalts, und das Fach traegt
+   "ZEIT GESPART  4 Std 7 Min" ohne Umbruch. Die Karte war damit 256 px
+   breit, egal was hier steht — sie lief ueber den Brief hinaus.
+   Ihre natuerliche Breite ist jetzt die Obergrenze, darunter schrumpft
+   sie mit und das Fach kuerzt seine Beschriftung. */
+.pfk .kt{ width:min(256px,100%); flex:none; scroll-snap-align:none;
+  scale:1; opacity:1;
+  animation:pfkAuf .62s .12s var(--ease-out) both }
+.pfk .kt-dreh, .pfk .kt-vorn{ min-width:0 }
+.pfk .kt-dreh{ transform:none; transition:none }
+.pfk .kt-glanz{ animation:ktGlanz 5.4s 1.4s linear infinite }
+.pfk .kt-rueck{ display:none }          /* im Brief wird nicht gedreht */
+@keyframes pfkAuf{
+  from{ opacity:0; transform:translateY(16px) scale(.9) rotate(-2.4deg) }
+  to{ opacity:1; transform:none }
+}
+/* Andruecken wie ueberall: spuerbar und gehalten, ueber scale, weil
+   die Einlaufanimation transform besitzt. */
+.pfk:active .kt{ scale:.97 }
+@media (prefers-reduced-motion:reduce){
+  .pfk .kt{ animation:none }
+  .pfk .kt-glanz{ animation:none }
+}
+/* Waehrend der Feier steht oben schon, welche Stufe erreicht ist —
+   die Titelzeile des Stapels sagte dasselbe noch einmal und schob die
+   Karte um 84 px nach unten. */
+.mkv.feier .kt-zeile{ display:none }
+/* Der Lohn unter der Karte: wie viel Zeit zusammengekommen ist und
+   was sich damit anfangen liesse. VERGLEICHE stand seit Langem in der
+   Datei, wurde aber von niemandem aufgerufen. */
+.mk-lohn{ display:flex; align-items:center; justify-content:center; gap:9px;
+  text-align:left; color:var(--tx-2); font-size:12.5px; line-height:1.35;
+  animation:fadeUp .5s .44s var(--ease-out) both }
+.mk-lohn svg{ width:19px; height:19px; flex:none; color:var(--rd,#5C6A94) }
+.mk-lohn b{ display:block; color:var(--tx); font-weight:700 }
 /* Karussell: jede Stufe schiebt von rechts herein. */
 .mk.schub{animation:mkSchub .52s var(--ease-out) both}
 @keyframes mkSchub{
@@ -2955,7 +3006,10 @@ body.sigmodus .fb-s{display:inline-flex}
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .kt-wer small{ display:block; font-size:11px; color:rgba(255,255,255,.62); margin-top:2px;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-.kt-fach{ margin:13px 9px 0; padding:11px 14px; border-radius:15px;
+/* margin-bottom: auf der aktuellen Karte — der hoechsten der Reihe —
+   bleibt fuer margin-top:auto am Fuss nichts uebrig, das Fach sass
+   also genau auf der Kante des Bandes. Die 15 px stehen immer. */
+.kt-fach{ margin:13px 9px 15px; padding:11px 14px; border-radius:15px;
   background:rgba(255,255,255,.12); min-height:54px;
   display:flex; align-items:center; justify-content:space-between; gap:10px }
 /* Nichts umbrechen: bei "Geschafft mit 20 Monaten" rutschte der Wert in
@@ -3001,9 +3055,19 @@ body.sigmodus .fb-s{display:inline-flex}
 
 /* Seitlich 16 px Luft für Schatten und die Drehung, die Karte selbst bleibt
    dadurch gleich breit wie vorher. */
-.mkv-in{position:relative;z-index:4;width:min(94vw,424px);max-height:100vh;overflow-y:auto;
-  padding:14px 16px calc(96px + env(safe-area-inset-bottom));
+/* Die Kiste nimmt die ganze Hoehe, und zwei auto-Abstaende teilen den
+   freien Raum: einer ueber der Titelzeile, einer zwischen Karte und
+   Punktreihe. Die Karte steht damit oben in ihrem Raum, die Punkte und
+   der Hinweis sitzen unten bei der Leiste. Vorher hing alles dicht
+   unter der Karte und darunter blieb ein Loch bis zu den Knoepfen.
+   Nachgemessen auf dem Telefon: 63 px Luft unter der Karte, 29 px ueber
+   der Leiste. */
+.mkv-in{position:relative;z-index:4;width:min(94vw,424px);align-self:stretch;
+  max-height:100%;overflow-y:auto;
+  padding:14px 16px calc(112px + env(safe-area-inset-bottom));
   display:flex;flex-direction:column;gap:12px}
+.mkv-in > .kt-zeile{margin-top:auto}
+.mkv-in > .kt-punkte{margin-top:auto}
 /* Drehbühne. Beide Seiten liegen übereinander, die Höhe gibt die
    Vorderseite vor. */
 /* Schwächere Perspektive und reichlich Luft ringsum: beim Drehen wird die
@@ -5918,7 +5982,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-0215';
+const APP_STAND = '2026-09-21-0330';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -8839,6 +8903,7 @@ function enterApp(){
     if(ME.konten && ME.konten.gutJahr !== vor) save(); else kontenRechnen(ME);
   }catch(e){ console.warn('[MOJI] Urlaub gutschreiben', e); }
   malAvatar();
+  stufenPostNachziehen();
   zaehlerAnlauf();
   $('#me-name').textContent = ME.vorname + ' ' + ME.nachname;
   $('#me-sub').textContent = EMPLOYER + ' · ' + fmtDate(ME.dob);
@@ -9663,6 +9728,22 @@ function vergleich(min){
   for(let i = 0; i < VERGLEICHE.length; i++) if(min >= VERGLEICHE[i][0]) v = VERGLEICHE[i];
   return { ico:v[1], text:v[2] };
 }
+/* Der erste Eintrag ist ein ganzer Satz ("Der erste Export wartet noch
+   auf dich."), alle anderen sind blosse Infinitive ("vier Kugeln Eis
+   essen"). Deshalb zwei Formen — und der Rahmen muss "Dafuer koenntest
+   du ..." sein, nicht "Das reicht, um ...": bei "um" gehoert ein "zu"
+   vor das Verb, und das steht am Ende der Phrase, nicht am Anfang.
+   "Das reicht, um ein halbes Buch lesen." war falsches Deutsch. */
+function lohnSatz(min){
+  const v = vergleich(min);
+  return min > 0 ? 'Dafür könntest du ' + v.text + '.' : v.text;
+}
+function lohnHtml(min){
+  const v = vergleich(min);
+  return '<span class="mk-lohn">' + vsIco(v.ico) + '<span>'
+    + (min > 0 ? '<b>' + esc(fmtDauer(min)) + ' gespart</b>' : '<b>Noch nichts gespart</b>')
+    + esc(lohnSatz(min)) + '</span></span>';
+}
 
 /* Die Karte */
 /* nrZeig: nur für die Aufstiegsfeier — dann zeigt die Karte eine
@@ -9735,9 +9816,19 @@ function malKarte(nrZeig){
   const echt = stufe(), anzahl = expAnzahl();
   const bahn = $('#kt-bahn'); if(!bahn) return;
   bahn.innerHTML = RAENGE.map((r, i) => ktKarte(i + 1, echt, anzahl)).join('');
-  /* Jede Karte traegt ihre eigenen Stufenfarben — und eine dunklere
-     Variante fuer den Verlauf nach unten. */
-  $$('.kt', bahn).forEach(k => {
+  ktFaerben(bahn);
+  $('#kt-punkte').innerHTML = RAENGE.map((r, i) =>
+    '<i class="' + (i + 1 <= echt ? 'frei' : '') + '" style="--pf:' + r.a + '"></i>').join('');
+  faerbe($('#mkv'), nrZeig || echt);        /* die Farbwolken im Hintergrund */
+  _ktZeig = nrZeig || echt;
+}
+/* Jede Karte traegt ihre eigenen Stufenfarben — eine hellere fuer oben
+   und eine tiefere fuer unten — und die beiden Bilder, die nicht im
+   Markup stehen koennen, weil sie als Datenzeile in Variablen liegen.
+   Eine Funktion fuer alle Orte, an denen Karten stehen: der Stapel und
+   die Briefe im Postfach. */
+function ktFaerben(wurzel){
+  $$('.kt', wurzel).forEach(k => {
     const n = +k.dataset.n;
     faerbe(k, n);
     k.style.setProperty('--rhoch', mischWeiss(rang(n).b, .12));
@@ -9746,10 +9837,6 @@ function malKarte(nrZeig){
     const w = $('img', $('.kt-fuss', k));
     if(w) w.src = LOGO_WORD;
   });
-  $('#kt-punkte').innerHTML = RAENGE.map((r, i) =>
-    '<i class="' + (i + 1 <= echt ? 'frei' : '') + '" style="--pf:' + r.a + '"></i>').join('');
-  faerbe($('#mkv'), nrZeig || echt);        /* die Farbwolken im Hintergrund */
-  _ktZeig = nrZeig || echt;
 }
 /* Aus der Stufenfarbe eine dunklere fuer den Verlauf. mischWeiss gibt es
    schon, das Gegenstueck fehlte. */
@@ -9873,12 +9960,16 @@ function mkvFlug(auf){
   });
   return dauer;
 }
-function karteAuf(){
+/* nr: welche Karte vorne liegen soll. Ohne Angabe die aktuelle Stufe.
+   Aus einem Brief heraus ist es die Stufe, von der der Brief handelt —
+   sonst macht der Stapel woanders auf als dort, wo man getippt hat. */
+function karteAuf(nr){
   const b = $('#mkv');
   if(b.classList.contains('on')) return;
+  b.classList.remove('feier');
   $('#auf-kopf').hidden = true;
   $('#mk-tipp').textContent = 'Wischen für die anderen Stufen · Tippen dreht um';
-  malKarte();
+  malKarte(nr);
   b.classList.remove('weg');
   b.classList.add('on');
   document.body.classList.add('locked');
@@ -9901,7 +9992,7 @@ function karteZu(){
   const dauer = mkvFlug(false);
   b.classList.add('weg');
   setTimeout(() => {
-    b.classList.remove('on','weg');
+    b.classList.remove('on','weg','feier');
     $('#auf-kopf').hidden = true;
     mkvRuhe();                            /* nichts liegen lassen */
   }, dauer + 20);
@@ -9920,11 +10011,65 @@ function aufOffen(){
   const a = ME && ME.auf;
   return (a && a.bis > a.von) ? (a.bis - a.von) : 0;
 }
+/* ─── Der Brief zum Aufstieg ──────────────────────────────────────
+   Jede erreichte Stufe kommt als eigene Nachricht ins Postfach, mit
+   der Karte darin. Sie bleibt liegen, auch wenn die Feier weggetippt
+   wird — und sie sagt, was dabei herausgekommen ist: wie viel Zeit
+   MOJI erspart hat und wofuer die reichen wuerde.
+
+   Die Zeit steht als fester Text im Brief, nicht als Rechnung. Ein
+   Brief berichtet, was an dem Tag galt; naechsten Monat ist es mehr,
+   aber das gehoert dann in den naechsten Brief. */
+function stufenPost(n, anzahl){
+  const r = rang(n), min = gespartMin();
+  const h = new Date();
+  const iso = h.getFullYear() + '-' + p2(h.getMonth() + 1) + '-' + p2(h.getDate());
+  const vorwort = anzahl > 1
+    ? 'Gleich ' + anzahl + ' Stufen auf einmal. ' + r.w
+    : r.w;
+  return {
+    id: 'stufe-' + n,
+    datum: iso,
+    art: 'stufe',
+    titel: 'LVL ' + n + ' — ' + r.n,
+    text: vorwort + '\n\n'
+        + '[[karte:' + n + ']]\n\n'
+        + 'Bis hierher hat dir MOJI *' + fmtDauer(min) + '* erspart — Zeit, die sonst '
+        + 'in Zettel, Taschenrechner und Suchen gegangen wäre.\n\n'
+        + lohnSatz(min) + '\n\n'
+        + 'Die Karte liegt ab jetzt in deinem Stapel. Tipp sie an, dann siehst du '
+        + 'den ganzen Stapel — auch die Stufen, die noch kommen.',
+    von: 'MOJI'
+  };
+}
+function postStufe(n, anzahl){
+  if(!ME || !(n > 1)) return false;
+  if(!Array.isArray(ME.post)) ME.post = [];
+  if(ME.post.some(m => m.id === 'stufe-' + n)) return false;
+  ME.post.push(stufenPost(n, anzahl || 1));
+  return true;
+}
+/* Wer schon weiter oben steht, hat seine Aufstiege erlebt, als es die
+   Briefe noch nicht gab. Einmalig kommt deshalb die aktuelle Stufe als
+   Brief nach — einer, nicht neun: neun Briefe auf einmal waeren keine
+   Freude, sondern eine Liste. Die Karten liegen ohnehin alle im
+   Stapel. */
+function stufenPostNachziehen(){
+  if(!ME) return;
+  if(Array.isArray(ME.post) && ME.post.some(m => /^stufe-/.test(m.id))) return;
+  const n = stufe();
+  if(n < 2) return;
+  if(postStufe(n, 1)) save();
+}
 function aufMelde(von, bis){
   if(!ME || !(bis > von)) return;
   /* Liegt schon einer, wird er zusammengefasst — sonst ginge einer verloren. */
   const alt = ME.auf;
   ME.auf = { von: alt && alt.von < von ? alt.von : von, bis: bis, ts: Date.now() };
+  /* Nur ein Brief je Ereignis, fuer die hoechste erreichte Stufe. Bei
+     drei Stufen auf einmal waeren drei Briefe drei Mal dieselbe
+     Nachricht — die Karten liegen ja ohnehin alle im Stapel. */
+  postStufe(bis, bis - von);
   save();
   malZaehler();
 }
@@ -9941,6 +10086,7 @@ async function aufFeier(){
   const von = a.von, bis = a.bis, anzahl = bis - von;
   const b = $('#mkv');
 
+  b.classList.add('feier');
   $('#auf-kopf').hidden = false;
   $('#auf-boost').hidden = anzahl < 2;
   $('#auf-t').textContent = anzahl < 2
@@ -9950,6 +10096,9 @@ async function aufFeier(){
     ? 'Du bist jetzt auf Stufe ' + bis + ' — ' + rang(bis).n + '.'
     : anzahl + ' Stufen auf einmal — von ' + rang(von).n + ' zu ' + rang(bis).n + '.';
 
+  /* Unter der Karte steht, was dabei herausgekommen ist — nicht der
+     Wisch-Hinweis, den man in diesem Moment nicht braucht. */
+  $('#mk-tipp').innerHTML = lohnHtml(gespartMin());
   malKarte(von + 1);
   b.classList.remove('weg');
   b.classList.add('on');
@@ -10521,6 +10670,15 @@ function malPostfach(){
         : '')
       + '</article>';
   }).join('');
+  ktFaerben($('#pf-liste'));
+}
+/* Die Karte im Brief. Sie ist echt, nicht abgebildet: dasselbe
+   ktKarte() wie im Stapel, nur ohne Nachbarn. Ein Tipp darauf macht
+   den Stapel bei dieser Stufe auf. */
+function pfKarteHtml(n){
+  if(!ME || !(n >= 1 && n <= RAENGE.length)) return '';
+  return '<div class="pfk" data-ktauf="' + n + '" role="button" tabindex="0"'
+    + ' aria-label="Karte ansehen">' + ktKarte(n, stufe(), expAnzahl()) + '</div>';
 }
 /* Absaetze als eigene <p>, Zeilen mit • als Liste — so liest sich eine
    Aufzaehlung auch wie eine. */
@@ -10529,6 +10687,12 @@ function postText(roh){
     /* Ein Absatz, der nur aus der Marke besteht, wird zum Becher-Gitter.
        So steht es mitten im Text und nicht angeklebt am Ende. */
     if(block.trim() === '[[teekunde]]') return teeGitterHtml();
+    /* [[karte:7]] wird zur Sammelkarte der siebten Stufe. Gebaut wird
+       sie mit ktKarte(), derselben Funktion wie im Stapel — eine
+       zweite Karte, die nur anders aussieht, waere eine zweite Karte
+       zum Pflegen. Gefaerbt wird nach dem Einsetzen. */
+    const kt = block.trim().match(/^\[\[karte:(\d+)\]\]$/);
+    if(kt) return pfKarteHtml(+kt[1]);
     const zeilen = block.split('\n');
     if(zeilen.every(z => /^\s*•\s/.test(z))){
       return '<ul>' + zeilen.map(z => '<li>'
@@ -10557,7 +10721,25 @@ function pfMerke(ids){
 /* Welche Nachricht offen steht. undefined heisst: noch nicht entschieden,
    dann sucht malPostfach() die neueste ungelesene. */
 let _pfOffen;
+/* Ein Tipp auf die Karte im Brief macht den Stapel auf, und zwar bei
+   genau dieser Stufe. Er darf nicht bis zum Kopf der Nachricht
+   durchschlagen, sonst klappte der Brief dabei zu. */
+$('#pf-liste').addEventListener('keydown', e => {
+  if(e.key !== 'Enter' && e.key !== ' ') return;
+  const kt = e.target.closest('[data-ktauf]');
+  if(!kt) return;
+  e.preventDefault();
+  kt.click();
+});
 $('#pf-liste').addEventListener('click', e => {
+  const kt = e.target.closest('[data-ktauf]');
+  if(kt){
+    e.stopPropagation();
+    const nr = +kt.dataset.ktauf;
+    pfZu();
+    setTimeout(() => { _vonMenu = true; karteAuf(nr); }, 60);
+    return;
+  }
   const k = e.target.closest('[data-pf]'); if(!k) return;
   const id = k.dataset.pf;
   _pfOffen = (_pfOffen === id) ? null : id;

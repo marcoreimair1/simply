@@ -398,6 +398,53 @@ window.__WEITER = function(){
      [].every.call(document.querySelectorAll('#kt-bahn .kt-stempel'),
                    function(p){ return !!p.closest('.kt-fenster'); }));
 
+  /* ── Der Brief zum Aufstieg ──
+     Jede erreichte Stufe kommt als Nachricht ins Postfach, mit der
+     Karte darin und dem, was die gesparte Zeit hergibt. VERGLEICHE
+     stand seit Langem in der Datei und wurde von niemandem benutzt. */
+  ME.post = []; ME.gelesen = [];
+  aufMelde(7, 10);
+  var brief = ME.post.filter(function(m){ return /^stufe-/.test(m.id); });
+  ok('Ein Brief je Aufstieg, fuer die hoechste Stufe',
+     brief.length === 1 && brief[0].id === 'stufe-10', brief.length);
+  ok('Er nennt Stufe und Namen',
+     brief[0].titel === 'LVL 10 — Zeitmeister', brief[0].titel);
+  ok('Mehrere Stufen auf einmal stehen drin',
+     brief[0].text.indexOf('Gleich 3 Stufen auf einmal') === 0);
+  ok('Die Karte steckt als Platzhalter im Text',
+     brief[0].text.indexOf('[[karte:10]]') > 0);
+  ok('Und die gesparte Zeit als fester Text, nicht als Rechnung',
+     brief[0].text.indexOf('erspart') > 0 && brief[0].text.indexOf('Dafür könntest du ') > 0,
+     brief[0].text.slice(-220, -120));
+  aufMelde(9, 10);
+  ok('Zweimal dieselbe Stufe gibt keinen zweiten Brief',
+     ME.post.filter(function(m){ return m.id === 'stufe-10'; }).length === 1);
+  /* Der Rahmen muss "Dafuer koenntest du ..." sein: bei "um" gehoert ein
+     "zu" vor das Verb, und das steht am Ende der Phrase. */
+  ok('Der Lohnsatz ist ganzes Deutsch',
+     lohnSatz(240) === 'Dafür könntest du ein halbes Buch lesen.', lohnSatz(240));
+  ok('Ohne Export ein eigener Satz',
+     lohnSatz(0) === 'Der erste Export wartet noch auf dich.', lohnSatz(0));
+
+  malPostfach();
+  var pk = document.querySelector('#pf-liste .pfk .kt');
+  ok('Im offenen Brief steht eine echte Karte', !!pk);
+  ok('Es ist die Karte der erreichten Stufe', pk && +pk.dataset.n === 10, pk && pk.dataset.n);
+  ok('Sie traegt ihre Stufenfarben',
+     pk && pk.style.getPropertyValue('--rf') === RAENGE[9].a, pk && pk.style.getPropertyValue('--rf'));
+  ok('Und fuehrt in den Stapel',
+     pk && pk.closest('[data-ktauf]') && pk.closest('[data-ktauf]').dataset.ktauf === '10');
+  /* Wer schon oben steht, hat seine Aufstiege erlebt, bevor es die
+     Briefe gab — einer kommt nach, nicht neun. */
+  ME.post = [];
+  stufenPostNachziehen();
+  ok('Nachgezogen wird genau ein Brief',
+     ME.post.filter(function(m){ return /^stufe-/.test(m.id); }).length === 1);
+  stufenPostNachziehen();
+  ok('Und beim naechsten Start keiner mehr',
+     ME.post.filter(function(m){ return /^stufe-/.test(m.id); }).length === 1);
+  ME.post = []; ME.gelesen = []; delete ME.auf;
+
   /* ── Auf, zu, auf ──
      Der Rueckflug haelt seinen Endzustand fest, sonst blitzten die
      Karten beim Schliessen wieder auf. Blieb er danach liegen, gewann
@@ -942,6 +989,40 @@ setTimeout(() => {
     roh.includes('background:linear-gradient(168deg, var(--rhoch,#6E7CA8) 0%, var(--rf2,#5C6A94) 52%,')
     && roh.includes("k.style.setProperty('--rhoch', mischWeiss(rang(n).b, .12));")
     && roh.includes("k.style.setProperty('--rtief', mischSchwarz(rang(n).b, .26));")],
+   /* Auf der aktuellen Karte bleibt fuer margin-top:auto am Fuss nichts
+      uebrig — das Fach sass auf der Kante des Bandes. */
+   ['Das Fach haelt Abstand zum Band',
+    roh.includes('.kt-fach{ margin:13px 9px 15px;')],
+   ['Die Punktreihe sitzt unten, nicht dicht unter der Karte',
+    roh.includes('.mkv-in > .kt-zeile{margin-top:auto}')
+    && roh.includes('.mkv-in > .kt-punkte{margin-top:auto}')
+    && roh.includes('align-self:stretch;\n  max-height:100%;overflow-y:auto;')],
+   /* Die Karte im Brief: dieselbe ktKarte() wie im Stapel, nur ohne
+      Nachbarn — und mit min-width:0, weil ein Flex-Kind sonst die
+      Breite seines Inhalts erzwingt (das Fach bricht nicht um). */
+   ['Die Karte im Brief klappt mit auf',
+    roh.includes('animation:pfkAuf .62s .12s var(--ease-out) both }')
+    && roh.includes('@keyframes pfkAuf{')],
+   ['Sie sprengt den Brief nicht',
+    roh.includes('.pfk .kt-dreh, .pfk .kt-vorn{ min-width:0 }')
+    && roh.includes('.pfk .kt{ width:min(256px,100%);')],
+   ['Im Brief wird nicht gedreht',
+    roh.includes('.pfk .kt-rueck{ display:none }')],
+   ['Andruecken ueber scale, nicht transform',
+    roh.includes('.pfk:active .kt{ scale:.97 }')],
+   ['Ein Tipp fuehrt in den Stapel, ohne den Brief zuzuklappen',
+    roh.includes("const kt = e.target.closest('[data-ktauf]');")
+    && roh.includes('e.stopPropagation();')
+    && roh.includes('setTimeout(() => { _vonMenu = true; karteAuf(nr); }, 60);')],
+   /* Waehrend der Feier sagte die Titelzeile des Stapels dasselbe noch
+      einmal und schob die Karte um 84 px nach unten. */
+   ['Die Feier zeigt die Titelzeile nicht doppelt',
+    roh.includes('.mkv.feier .kt-zeile{ display:none }')
+    && roh.includes("b.classList.add('feier');")],
+   ['Die Plakette traegt die Stufenfarbe, nicht Violett',
+    roh.includes('background:var(--rd,#5C6A94);\n  box-shadow:0 0 24px -5px var(--rf,#8FA0C8);')],
+   ['Unter der Karte steht, was die Zeit hergibt',
+    roh.includes("$('#mk-tipp').innerHTML = lohnHtml(gespartMin());")],
    ['Ein zarter Schatten traegt die weisse Schrift',
     roh.includes('text-shadow:0 1px 2px rgba(10,6,18,.30);')],
    ['Unten saeuft die Farbe nicht mehr ab',
