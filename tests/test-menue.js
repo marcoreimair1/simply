@@ -337,13 +337,12 @@ window.__WEITER = function(){
      document.querySelector('#fi-karte .fk-logo img').getAttribute('src')
        .indexOf('firma-miller-wort') === 0,
      document.querySelector('#fi-karte .fk-logo img').getAttribute('src'));
-  /* Das Bild statt des Hauses. Ein svg gibt es in der Zeile weiterhin —
-     das ist der Pfeil am rechten Rand, den das Menue selbst anhaengt. */
-  ok('Und die Menuezeile die Marke selbst',
-     (document.querySelector('.mi[data-act="firma"] img') || {}).getAttribute
-       && document.querySelector('.mi[data-act="firma"] img')
-            .getAttribute('src').indexOf('firma-miller.png') === 0,
-     document.querySelector('.mi[data-act="firma"]').innerHTML.slice(0, 80));
+  /* Die Menuezeile "Meine Firma" gibt es nicht mehr — seit es ein Ziel
+     in der Leiste unten ist, waere sie ein zweiter Eingang. */
+  ok('Keine Menuezeile mehr fuer Meine Firma',
+     !document.querySelector('.mi[data-act="firma"]'));
+  ok('Aber ein Ziel in der Leiste',
+     !!document.querySelector('#tabbar .tab[data-go="v-firma"]'));
   /* ── Der Kopf ist die Karte ──
      Seit 20.09.2026 stehen Name, Bild, Stufe und das dunkle Band in
      einem Stueck. Vorher waren es zwei Kaesten und ein eigener
@@ -922,11 +921,9 @@ window.__WEITER = function(){
   ok('Und im Menue steht es auch',
      document.getElementById('fi-zaehler').textContent === '1'
      && !document.getElementById('fi-zaehler').hidden);
-  /* An der Ecke der Symbolkachel, wie der rote am Briefsymbol — frei in
-     der Zeile war er ein fremder Punkt zwischen Bild und Text. */
-  ok('Er sitzt an der Ecke des Symbols',
-     document.getElementById('fi-zaehler').parentNode.classList.contains('miico'),
-     document.getElementById('fi-zaehler').parentNode.className);
+  /* Er sitzt am Punkt in der Leiste, der dorthin fuehrt. */
+  ok('Er sitzt am Symbol in der Leiste',
+     document.getElementById('fi-zaehler').closest('.tab[data-go="v-firma"]') !== null);
   ME.gelesen = []; malZaehler();
   var summe = pfNeu().length + aufOffen() + 1;
   ok('Beides: halb und halb, Zahl zusammengezaehlt',
@@ -1036,18 +1033,15 @@ setTimeout(() => {
       Seite breiter als den Schirm. */
    ['Die Firmenansicht laeuft nicht ueber', /#v-firma\{ overflow-x:hidden \}/.test(roh)
     && /#v-firma \.fi-sek\{ margin-top:26px/.test(roh)],
-   /* Die spaetere Regel .mi > .miico gewaenne bei gleicher Spezifitaet. */
-   ['Die Firmenkachel im Menue setzt sich durch',
-    /\.mi\.mi-firma > \.miico\{ padding:0; background:#030B21/.test(roh)],
+   ['Keine Menuezeile mehr fuer Meine Firma',
+    !roh.includes('<button class="mi mi-firma" data-act="firma">')],
    ['Die Getraenkeleiste kann schmaler werden als ihr laengstes Wort',
     /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/.test(roh)],
    ['Der Zaehler haengt an der Symbolkachel',
     /\.mi \.miico > \.zaehler\{position:absolute;top:-7px;right:-7px/.test(roh)],
-   /* overflow:hidden auf der Kachel schnitt den Zaehler an der Ecke ab —
-      ueber dem Firmenlogo blieb nur eine violette Sichel ohne Zahl. */
-   ['Die Firmenkachel schneidet den Zaehler nicht ab',
-    !/\.mi\.mi-firma > \.miico\{[^}]*overflow:hidden/.test(roh)
-    && /\.mi\.mi-firma > \.miico img\{[^}]*border-radius:inherit/.test(roh)],
+   ['Die wartenden Becher stehen am Punkt in der Leiste',
+    roh.includes('<span class="zaehler tee" id="fi-zaehler" hidden></span></span>')
+    && roh.includes('.tabi{position:relative; display:grid; place-items:center;')],
    ['Der Zaehler liegt ueber dem Logo',
     /\.mi \.miico > \.zaehler\{[^}]*z-index:2\}/.test(roh)],
    /* ─── 15.09.2026: Schweben, Wackeln, Funkeln ─────────────────── */

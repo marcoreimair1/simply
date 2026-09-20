@@ -3535,7 +3535,9 @@ body.zrmodus #tabbar, body.sigmodus #tabbar{
   transition:color .2s var(--ease), scale .14s var(--ease-out) }
 .tab:active{ scale:.93 }
 .tab:focus-visible{ outline:2px solid var(--butter); outline-offset:2px; border-radius:14px }
-.tabi{display:grid; place-items:center; width:28px; height:28px}
+/* position:relative, weil der Becher-Zaehler an der Ecke des Symbols
+   sitzt — ohne das haengt er am naechsten gesetzten Vorfahren. */
+.tabi{position:relative; display:grid; place-items:center; width:28px; height:28px}
 .tabi svg{width:26px; height:26px; display:block}
 /* Alle vier Woerter stehen da. Das kostet nichts, und "Meine Firma"
    ist als Symbol allein nicht erratbar. */
@@ -5523,9 +5525,8 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
          stand hier eine Seite mit Augenbraue, Fliesstext und fuenf
          Zeilen, die alle gleich schwer wogen. -->
     <section class="view" id="v-firma">
-      <div class="za-kopf">
-        <button class="obzurueck" id="fi-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Zurück</button>
-      </div>
+      <!-- Kein Zurueck mehr: Meine Firma ist ein Ziel in der Leiste
+           wie der Kalender, und Ziele haben kein Zurueck. -->
       <h1 class="obh fi-h">Meine Firma</h1>
 
       <div class="fk" id="fi-karte">
@@ -5792,11 +5793,10 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
     <div class="mrows">
     <!-- Statt des Haussymbols die Marke des Dienstgebers. Das Aufbauskript
          legt die Kachel um das erste Kind — hier also um das Bild. -->
-    <button class="mi mi-firma" data-act="firma">
-      <img src="firma-miller.png?v=1" alt="" aria-hidden="true">
-      Meine Firma
-      <span class="zaehler tee" id="fi-zaehler" hidden></span>
-    </button>
+    <!-- "Meine Firma" stand hier als Menuezeile, mit dem Firmenzeichen
+         und der Zahl der wartenden Bubble Teas. Seit es ein Ziel in der
+         Leiste unten ist, waere die Zeile ein zweiter Eingang fuer
+         dasselbe. Die Zahl steht jetzt am Punkt in der Leiste. -->
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
     <button class="mi" data-act="konten">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/></svg>
@@ -6173,7 +6173,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <em>Export</em>
     </button>
     <button class="tab" data-go="v-firma" aria-label="Meine Firma">
-      <span class="tabi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9.5 21v-6h5v6"/></svg></span>
+      <span class="tabi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9.5 21v-6h5v6"/></svg><span class="zaehler tee" id="fi-zaehler" hidden></span></span>
       <em>Meine Firma</em>
     </button>
     <!-- Das Profil ist der vierte Punkt. Das Bild ist das Einzige in
@@ -6330,7 +6330,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-1510';
+const APP_STAND = '2026-09-21-1550';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -10044,11 +10044,6 @@ $('#fi-auf').addEventListener('click', () => {
 /* Ganze Seite statt Blatt — wie die Dienstzeiten. Der Zurück-Knopf unten
    führt in das Menü zurück, das dabei wieder aufgeht. */
 function firmaAuf(){
-  /* Der Zurueck-Pfeil gilt nur, wenn man aus dem Menue kommt. Ueber
-     die Leiste unten ist Meine Firma ein Ziel wie der Kalender — und
-     Ziele haben kein Zurueck. */
-  const zur = $('#fi-back');
-  if(zur) zur.hidden = !_vonMenu;
   TEAM = null;
   $('#fi-karte').classList.remove('auf');
   $('#fi-zeilen').hidden = true;
@@ -10081,7 +10076,6 @@ function firmaZu(){
   go('v-cal');
   zurueckInsMenu();
 }
-$('#fi-back').addEventListener('click', firmaZu);
 wireWischRaus('v-firma', firmaZu);
 
 /* ─── Die Becher-Plakette in der Karte ────────────────────────────
@@ -11188,10 +11182,9 @@ function malZaehler(){
   setz('#av-zaehler', _zaehlerFrei ? oben : 0);
   setz('#pf-zaehler', post);
   setz('#mr-zaehler', stufen);
-  /* Die Symbolkachel wird beim Aufbau des Menues um das SVG gelegt; der
-     Zaehler muss danach hineinwandern. */
-  const fz = $('#fi-zaehler'), fico = $('.mi[data-act="firma"] .miico');
-  if(fz && fico && fz.parentNode !== fico) fico.appendChild(fz);
+  /* Die wartenden Bubble Teas stehen am Punkt "Meine Firma" in der
+     Leiste — dorthin fuehrt er ja. Frueher hing die Zahl an der
+     Menuezeile, die es nicht mehr gibt. */
   setz('#fi-zaehler', tee);
   const z = $('#av-zaehler');
   if(z){
@@ -14905,8 +14898,8 @@ $('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
        data-act="erscheinung" bleibt; er trifft jetzt die Kachel. */
 
     /* ─── Nach Themen gruppieren ─── */
-    const GRUPPEN = [{"titel":"Konto","punkte":["firma","karte"]},{"titel":"Arbeitszeit","punkte":["hours","konten","anspruch"]},{"titel":"Einstellungen","punkte":["erinnerung","passkey"]},{"titel":"Sitzung","punkte":["logout","delete"]}];
-    const anker = menu.querySelector('.mi[data-act="firma"]');
+    const GRUPPEN = [{"titel":"Konto","punkte":["karte"]},{"titel":"Arbeitszeit","punkte":["hours","konten","anspruch"]},{"titel":"Einstellungen","punkte":["erinnerung","passkey"]},{"titel":"Sitzung","punkte":["logout","delete"]}];
+    const anker = menu.querySelector('.mi[data-act="hours"]');
     if (anker) {
       const heim = anker.parentNode;
       GRUPPEN.forEach(g => {

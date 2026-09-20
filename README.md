@@ -1104,8 +1104,11 @@ dann weicht die Leiste, als Kreuzblende, nicht als Sprung. Solange etwas zu ents
 die Navigation ohnehin nicht gemeint. Die beiden alten Knöpfe *Kalender* und *Export*, die dort
 bisher standen, sind damit weggefallen.
 
-**Meine Firma hat über die Leiste kein Zurück mehr.** Es ist jetzt ein Ziel wie der Kalender, und
-Ziele haben kein Zurück; kommt man aus dem Menü, steht der Pfeil weiterhin da.
+**Meine Firma hat kein Zurück mehr** — es ist ein Ziel wie der Kalender, und Ziele haben kein
+Zurück. Und die **Menüzeile dazu ist weggefallen**: Sie stand mit Firmenzeichen und der Zahl der
+wartenden Bubble Teas unter *Konto* und wäre neben dem Punkt in der Leiste ein zweiter Eingang für
+dasselbe. **Die Zahl steht jetzt am Punkt**, der dorthin führt. Die Gruppe *Konto* blieb damit leer
+und blendet sich selbst aus.
 
 ### Die Karte berichtet, die Kacheln führen
 
