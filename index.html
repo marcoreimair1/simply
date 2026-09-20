@@ -759,7 +759,16 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
   background:rgba(var(--s-tief),.78);
   border-bottom:1px solid var(--line-2)}
 .topbar-in{max-width:1080px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:14px}
-.topbar{padding-top:env(safe-area-inset-top)}
+/* Die Scheibe reicht unter die Statusleiste hinauf. Auf dem
+   installierten Symbol liefert env(safe-area-inset-top) dafuer den
+   Platz — 62 px auf einem grossen iPhone. Im Browser ist derselbe Wert
+   0: dort sass die Leiste danach oben am Rand und war nur halb so hoch,
+   also dieselbe App mit zwei verschiedenen Koepfen.
+
+   Der Mindestwert macht sie ueberall gleich tief: 62 px, wo nichts
+   gemeldet wird, und auf Geraeten mit kleinerer Statusleiste ebenfalls
+   62 statt 20. Wo mehr gemeldet wird, gewinnt der gemeldete Wert. */
+.topbar{padding-top:max(62px, env(safe-area-inset-top))}
 .brand{display:flex;align-items:baseline;gap:9px;text-decoration:none;color:inherit}
 .brand{align-items:flex-end;gap:12px}
 .brand .bword{height:23px;width:auto;display:block;flex:none}
@@ -5625,7 +5634,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-1500';
+const APP_STAND = '2026-09-20-1545';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
