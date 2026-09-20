@@ -3425,9 +3425,12 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   --ma-ink-2:rgba(26,16,38,.62);
   color:var(--ma-ink); box-shadow:var(--karte-schatten);
   background:linear-gradient(168deg,var(--pa,#EADFF5) 0%,var(--pb,#D8C4EC) 58%,var(--pa,#EADFF5) 100%);
-  transition:transform .2s var(--ease-out);
+  /* scale und nicht transform: der Einlauf des Menues laeuft ueber
+     transform, und eine Animation schlaegt jede normale Regel. Die
+     eigene Eigenschaft scale kommt ihr nicht in die Quere. */
+  transition:scale .14s var(--ease-out), box-shadow .14s var(--ease-out);
 }
-.mausweis.druck{ transform:scale(.978) }
+.mausweis.druck{ scale:.965; box-shadow:0 2px 10px -6px rgba(var(--s-schatten),.5) }
 /* Die Flaeche liegt UNTER dem Inhalt und faengt jeden Druck ab, der
    nicht auf Bild oder Postfach geht. */
 .ma-flaeche{ position:absolute; inset:0; z-index:0; border:0; background:none; padding:0;
@@ -5158,6 +5161,7 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       Meine Firma
       <span class="zaehler tee" id="fi-zaehler" hidden></span>
     </button>
+    <button class="mi" data-act="raenge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4v-6H4zM10 20h4V9h-4zM16 20h4V4h-4z"/></svg>Alle Stufen</button>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
     <button class="mi" data-act="konten">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/></svg>
@@ -5342,7 +5346,6 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v4.5A1.5 1.5 0 006.5 20h11a1.5 1.5 0 001.5-1.5V14"/></svg>
       Karte teilen
     </button>
-    <button class="btn btn-out" id="mk-stufen">Alle Stufen</button>
     <button class="btn btn-out" id="mk-zu">Schließen</button>
   </nav>
 </div>
@@ -5692,7 +5695,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-1720';
+const APP_STAND = '2026-09-20-1810';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -10190,18 +10193,18 @@ $('#mk-dreh').addEventListener('keydown', e => {
   if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); karteDreh(); }
 });
 $('#ma-auf').addEventListener('click', () => { _vonMenu = true; karteAuf(); });
-/* Die Liste aller Stufen hing frueher an der Stufenleiste im Menue. Die
-   gibt es nicht mehr — sie steht jetzt im Kopf, und der oeffnet die
-   Karte. Also haengt die Liste an der Karte. */
-$('#mk-stufen').addEventListener('click', rangAuf);
-$('#mausweis').addEventListener('pointerdown', e => {
-  /* Nur die Flaeche gibt nach — nicht, wenn Bild oder Postfach gedrueckt
-     werden, die haben ihre eigene Bewegung. */
-  if(e.target.closest('.avbig, .mtile')) return;
-  const k = $('#mausweis');
-  k.classList.add('druck');
-  setTimeout(() => k.classList.remove('druck'), 220);
-});
+/* Der Kopf gibt nach, solange der Finger liegt — nicht nach fester Uhr.
+   Ein Stups von 220 ms war beim Tippen schon vorbei, bevor man ihn sah. */
+(function(){
+  const k = $('#mausweis'); if(!k) return;
+  const los = () => k.classList.remove('druck');
+  k.addEventListener('pointerdown', e => {
+    /* Bild und Postfach haben ihre eigene Bewegung. */
+    if(e.target.closest('.avbig, .mtile')) return;
+    k.classList.add('druck');
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(n => k.addEventListener(n, los));
+})();
 $('#mk-teilen').addEventListener('click', teileKarte);
 $('#rsheet').addEventListener('click', e => { if(e.target.dataset.close === 'rsheet') rangZu(); });
 $('#vsheet').addEventListener('click', e => { if(e.target.dataset.close === 'vsheet') verlaufZu(); });

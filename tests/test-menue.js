@@ -356,7 +356,12 @@ window.__WEITER = function(){
      document.getElementById('avbig').tagName === 'BUTTON'
      && document.getElementById('postfach').tagName === 'BUTTON'
      && !document.getElementById('ma-auf').contains(document.getElementById('avbig')));
-  ok('Die Stufenliste haengt jetzt an der Karte', !!document.getElementById('mk-stufen'));
+  /* Die Stufenliste war kurz ein dritter Knopf in der Kartenleiste —
+     ein Blatt, das aus einem Blatt aufgeht. Jetzt eine gewoehnliche
+     Zeile im Menue, die dieselbe Flaeche aufzieht wie Zeitausgleich. */
+  ok('Die Stufenliste ist eine Menuezeile',
+     !!document.querySelector('#menu .mi[data-act="raenge"]'));
+  ok('Und kein Knopf mehr in der Karte', !document.getElementById('mk-stufen'));
 
   /* ── Die Profilbilder ──
      Seit 15.09.2026 sind es 117 statt 12, als WebP in 288 x 384. */
@@ -826,6 +831,13 @@ setTimeout(() => {
     && /\.ma-oben\{[\s\S]{0,160}pointer-events:none \}/.test(roh)],
    ['Bild und Postfach bleiben anfassbar',
     /\.ma-oben \.avbig, \.ma-oben \.mtile\{ pointer-events:auto \}/.test(roh)],
+   /* Der Einlauf des Menues belegt transform — eine Animation schlaegt
+      jede normale Regel. Der Druck muss darum ueber scale gehen. */
+   ['Der Druck geht ueber scale, nicht ueber transform',
+    /\.mausweis\.druck\{ scale:\.965;/.test(roh)
+    && /transition:scale \.14s var\(--ease-out\)/.test(roh)],
+   ['Und haelt, solange der Finger liegt',
+    /\['pointerup','pointercancel','pointerleave'\]\.forEach/.test(roh)],
    ['Das dunkle Band traegt die Wortmarke',
     /\.ma-band\{[\s\S]{0,200}background:var\(--karton-band, #0B0711\)/.test(roh)],
    ['Die Obergrenze in normalize steht nicht als Zahl da',

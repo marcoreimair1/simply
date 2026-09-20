@@ -886,8 +886,16 @@ hell, weil `--pa` 84 % Weiß unter die Stufenfarbe mischt; ein fester dunkler We
 (`.ma-flaeche`, `z-index:0`). Profilbild und Postfach behalten ihre eigenen Knöpfe und holen sich
 `pointer-events:auto` zurück — Knöpfe ineinander gibt es in HTML nicht.
 
-Mitgegangen ist die **Liste aller Stufen**: Sie hing an der Stufenleiste, die es nicht mehr gibt,
-und öffnet sich jetzt aus der Karte heraus (*Alle Stufen*).
+**Der Druck geht über `scale`, nicht über `transform`.** Der Einlauf des Menüs
+(`miInVoll`) läuft als Animation über `transform` — und eine Animation schlägt jede normale
+Regel. Ein `transform:scale()` beim Andrücken kam deshalb nie an. Die eigenständige Eigenschaft
+`scale` kommt ihr nicht in die Quere. Und gedrückt bleibt er, **solange der Finger liegt**: ein
+Stups nach fester Uhr (220 ms) war beim Tippen vorbei, bevor man ihn sah.
+
+Mitgegangen ist die **Liste aller Stufen**: Sie hing an der Stufenleiste, die es nicht mehr gibt.
+Sie war kurz ein dritter Knopf in der Kartenleiste — ein Blatt, das aus einem Blatt aufgeht, und
+in einer Zeile für zwei Knöpfe. Jetzt ist sie eine **gewöhnliche Menüzeile** (*Alle Stufen*) und
+zieht dieselbe Fläche auf wie *Zeitausgleich*: im Menü, nicht darüber.
 
 ### Die Profilbilder
 
