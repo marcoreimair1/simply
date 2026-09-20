@@ -967,6 +967,10 @@ setTimeout(() => {
     ['Zeilen fahren nicht mehr von der Seite herein', /@keyframes miInVoll\{\s*from\{\s*opacity:0\s*\}\s*\}/],
     ['Karte skaliert beim Oeffnen nicht mehr', /@keyframes menuBlende\{\s*from\{\s*opacity:0\s*\}\s*\}/],
     ['Untermenues sind fest am Fenster', /\.avgrid, \.konten, \.datenbox, \.uabox, \.rangbox, \.dlbox, #konten, #uabox\{\s*\n\s*position:fixed; inset:0/],
+    /* Die Leiste liegt ueber diesen Flaechen. Was darunter geriet, war
+       nicht mehr zu treffen: die letzte Bilderreihe, der Speichern-Knopf. */
+    ['Und lassen unten Platz fuer die Leiste',
+     /padding:calc\(58px \+ env\(safe-area-inset-top\)\) 14px calc\(96px \+ env\(safe-area-inset-bottom\)\)/],
     ['mbody hebt sich ueber die Fusszeile', /\.menu-card\.dlauf \.mbody\{ z-index:6 \}/],
     ['Zurueck-Pfeil sitzt fest', /\.rangbox \.zurueckbtn, \.dlbox \.zurueckbtn\{\s*\n\s*position:fixed/],
     ['Profilbild ohne Fuge zwischen Rahmen und Bild', /\.avbig::after\{content:'';position:absolute;inset:0/],

@@ -1028,8 +1028,10 @@ body.menuauf #avatar{transform:scale(.92)}
   opacity:0;visibility:hidden;transform:scale(.97) translateY(-8px);
   transition:opacity .26s var(--ease),transform .32s var(--ease-out),visibility .32s}
 .menu-card.dtauf #datenbox{opacity:1;visibility:visible;transform:none}
-.dt-inhalt{display:flex;flex-direction:column;gap:12px;padding:40px 12px 16px;
-  margin-top:auto}
+/* Von oben, nicht von unten: die anderen Flaechen im Menue zeigen
+   Staende, dieses Blatt will ausgefuellt werden. Wenn die Tastatur
+   aufgeht, soll das erste Feld dort bleiben, wo es war. */
+.dt-inhalt{display:flex;flex-direction:column;gap:12px;padding:58px 12px 16px}
 .dt-h{margin:0 2px 2px;font-family:var(--font-dis);font-weight:400;font-size:21px;
   letter-spacing:-.015em}
 .dt-lab{margin:4px 2px -4px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
@@ -4101,7 +4103,11 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   width:auto; height:auto; max-height:none;
   margin:0; border:none; border-radius:0;
   background:var(--ink);
-  padding:calc(58px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom));
+  /* Unten die Hoehe der Leiste dazu: sie liegt ueber diesen Flaechen,
+     und was darunter geriet, war nicht mehr zu treffen — in der
+     Bildauswahl die letzte Reihe, in den persoenlichen Daten der
+     Speichern-Knopf. */
+  padding:calc(58px + env(safe-area-inset-top)) 14px calc(96px + env(safe-area-inset-bottom));
   overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
   justify-content:flex-start; align-content:start; gap:12px;
@@ -6339,7 +6345,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-1705';
+const APP_STAND = '2026-09-21-1800';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;

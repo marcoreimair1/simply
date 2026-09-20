@@ -1177,6 +1177,16 @@ der Karte, zwischen Name und Stufe — zwei Bedienelemente in einem Ausweis, der
 berichtet. Und die Menüzeile **Erscheinungsbild** mit ihrem Schalter: die Kachel macht dasselbe,
 zwei Einstiege wären einer zu viel.
 
+**Die Leiste lag über den Flächen im Menü.** Sie liegt über allem, was eine Seite ist — also auch
+über der Bildauswahl, den Ständen und den persönlichen Daten. Was dort unten stand, war nicht mehr
+zu treffen: in der Bildauswahl die letzte Reihe, bei den Daten der **Speichern-Knopf**
+(nachgemessen bei 725, die Leiste ab 733 — man sah ihn zur Hälfte). Alle diese Flächen tragen jetzt
+96 px Polster unten statt 24.
+
+**Und das Formular beginnt oben.** Die anderen Flächen im Menü zeigen Stände und füllen von unten;
+dieses Blatt will ausgefüllt werden, und wenn die Tastatur aufgeht, soll das erste Feld dort
+bleiben, wo es war.
+
 **Persönliche Daten** ist neu. Name und Geburtsdatum ließen sich nach dem Anlegen nirgends mehr
 ändern, und die Mail stand nur klein in der Karte. Jetzt liegen sie auf derselben Fläche, die im
 Menü auch die Bilder und die Stände tragen. Die Mail wird gezeigt, nicht geändert: sie ist die
