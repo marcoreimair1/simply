@@ -1059,25 +1059,30 @@ Becher, Leiste. Was irgendwohin **führt**, steht darunter.
 warum man die Karte anschaut, und das Einzige, was man daran ändern kann — beides spricht dafür,
 es groß zu zeigen und zu sagen, dass es antippbar ist.
 
-**Der Becherstand** zählt alle Bubble Teas zusammen, die zwischen einem selbst und den anderen
-gelaufen sind — Manuela 5, Luis 5, Marlene 3 macht 13. Der höchste Stand bestimmt die Sorte, nicht
-der Schnitt. Ohne einen einzigen Becher bleibt er weg; eine Null ist keine Auszeichnung.
+**Drei Stände stehen in einer Reihe** über die ganze Kartenbreite: Bubble Teas, Tage in Folge,
+Level. Gleiche Form, gleiche Größe, jeweils Bild, Zahl und Beschriftung — vorher war die Stufe eine
+Pille in der Ecke und der Becher eine Zeile darunter, zwei Sprachen für dieselbe Art Auskunft.
+Neben dem Profilbild blieben je 39 px übrig und die Beschriftungen liefen über; über die volle
+Breite sind es nachgemessen **103 px** je Feld.
 
-Er war erst eine Pille mit einer Strichzeichnung, dann eine kleine Plakette neben der Stufe —
-beides blieb ein Kasten neben einem Kasten. **Jetzt steht der Becher frei**: das Getränk selbst mit
-38 px groß genug, um die Sorte zu erkennen, daneben die Zahl in der Anzeigeschrift und darunter,
-was sie zählt. Kein Rahmen, kein Grund; das Bild trägt die Farbe, und ein weicher Schein in
-derselben Farbe hebt es von der Karte ab. Es sitzt **unten bündig mit dem Profilbild** — dafür
-bekommt die Textspalte über `align-items: stretch` erst eine Höhe, in der `margin-top: auto` etwas
-zu tun hat. Nachgemessen hält die Zeile auch dreistellige Zahlen neben einem langen Namen, ohne
-über die Karte zu laufen.
+- **Bubble Teas** zählt alles, was zwischen einem selbst und den anderen gelaufen ist. Das Bild ist
+  der echte Becher der Sorte, die man am weitesten freigeschaltet hat — der höchste Stand zählt,
+  nicht der Schnitt. Ohne einen einzigen Becher fehlt das Feld.
+- **Tage in Folge** zählt, an wie vielen Tagen hintereinander die App offen war. Einmal am Tag,
+  beim Betreten: war gestern der letzte, geht es eins hinauf; liegt mehr dazwischen, fängt die
+  Reihe neu an. Wer mehrmals am Tag kommt, bekommt nichts extra — es sind Tage, keine Besuche.
+- **Level** ist die Stufe, die vorher als Pille in der Ecke stand.
 
-**Sie stand anfangs leer.** Die Zahl kam erst, wenn man einmal *Meine Firma* geöffnet oder selbst
-einen Becher geschickt hatte — bis dahin war `TEE_PAARE` leer, weil die Tabelle nur dort geladen
-wurde. Zwei Änderungen: `teeOffenLaden()` läuft ohnehin beim Betreten der App und holt jetzt eine
-Spalte mehr (`punkte`), und der Stand wandert ins Profil. Beim nächsten Start steht die Plakette
-damit schon im ersten Bild richtig — auch ohne Netz —, und die Abfrage korrigiert sie Sekunden
-später, falls sich etwas geändert hat. Beide Ladewege werten dieselbe Funktion aus.
+**Jedes Feld ist ein Knopf**, weil jedes auf einen Tipp antwortet: der Becher wackelt und funkelt
+wie in der Firmenansicht (dieselben Keyframes), die Krone wirft ihre Funken weiter hinaus, und die
+Flamme lodert ohnehin von selbst — zwei Bewegungen unterschiedlicher Länge überlagern sich, damit
+sie nie im Gleichtakt mit sich selbst zappelt. Das ist Spielerei und soll es sein; die Zahlen
+ändern sich dadurch nicht.
+
+**Über der ganzen Karte lag eine unsichtbare Fläche**, die jeden Druck abfing und den Stapel
+aufmachte. Sie stand jedem Knopf im Weg, den die Karte sonst tragen soll. Jetzt führt **genau ein
+Knopf** dorthin — oben rechts, wo vorher die Stufenpille saß. Der Kopf gibt dafür auch nicht mehr
+nach: etwas, das nachgibt und dann nichts tut, ist ein Versprechen ohne Folge.
 
 **Vier eckige Kacheln** stehen zwischen Karte und den Menügruppen: Postfach mit roter Zahl,
 Sicherungsstand mit farbigem Punkt an der Wolke, Persönliche Daten, Hell/Dunkel. Vier und nicht

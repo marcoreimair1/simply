@@ -1054,20 +1054,27 @@ setTimeout(() => {
     /\.mausweis\{[\s\S]{0,700}background:linear-gradient\(168deg,var\(--pa[\s\S]{0,80}var\(--pb/.test(roh)],
    ['Und eine eigene Tinte, nicht --f-2',
     /--ma-ink:#1A1026;/.test(roh) && !/\.mausweis\{[\s\S]{0,700}color:var\(--f-2\)/.test(roh)],
-   ['Die Flaeche liegt unter dem Inhalt',
-    /\.ma-flaeche\{ position:absolute; inset:0; z-index:0;/.test(roh)
-    && /\.ma-oben\{[\s\S]{0,160}pointer-events:none \}/.test(roh)],
+   /* Die unsichtbare Flaeche ueber der ganzen Karte ist weg — sie
+      stand jedem Knopf im Weg, den die Karte sonst tragen soll. */
+   ['Keine Druckflaeche mehr ueber der Karte',
+    !roh.includes('class="ma-flaeche"') && !roh.includes('.ma-flaeche{')],
+   ['Ein Knopf fuehrt zu den Karten, oben rechts',
+    roh.includes('<button class="ma-karten" id="ma-auf"')
+    && roh.includes('.ma-karten{ flex:none; align-self:flex-start;')],
+   ['Die Karte selbst nimmt keine Tipps',
+    /\.ma-oben\{[\s\S]{0,200}pointer-events:none \}/.test(roh)],
    ['Das Bild bleibt anfassbar',
     /\.ma-oben \.avbig, \.ma-oben \.avplatz\{ pointer-events:auto \}/.test(roh)],
-   ['Und der Druck auf die Karte laesst es aus',
-    roh.includes("if(e.target.closest('.avplatz')) return;")],
+   /* Der ganze Kopf gab nach, solange der Finger auf ihm lag — er war
+      ja ein einziger grosser Knopf. Seit die Karte nur noch berichtet,
+      waere das ein Versprechen ohne Folge. */
+   ['Die Karte gibt selbst nicht mehr nach',
+    !roh.includes('.mausweis.druck{') && !roh.includes("k.classList.add('druck')")],
    /* Der Einlauf des Menues belegt transform — eine Animation schlaegt
-      jede normale Regel. Der Druck muss darum ueber scale gehen. */
-   ['Der Druck geht ueber scale, nicht ueber transform',
-    /\.mausweis\.druck\{ scale:\.965;/.test(roh)
-    && /transition:scale \.14s var\(--ease-out\)/.test(roh)],
-   ['Und haelt, solange der Finger liegt',
-    /\['pointerup','pointercancel','pointerleave'\]\.forEach/.test(roh)],
+      jede normale Regel. Jeder Druck muss darum ueber scale gehen. */
+   ['Die Knoepfe darin drucken ueber scale',
+    roh.includes('.mw:active{ scale:.955 }')
+    && roh.includes('.ma-karten:active{ scale:.94 }')],
    /* ─── Der Stapel: Bewegung und Zustaende ───────────────────────── */
    ['Gewischt wird mit Einrasten',
     /\.kt-bahn\{[\s\S]{0,400}scroll-snap-type:x mandatory;/.test(roh)
@@ -1130,40 +1137,49 @@ setTimeout(() => {
    ['Das Bild ist 88 px und traegt einen Stift',
     roh.includes('.ma-oben .avbig{ width:88px; height:88px; border-radius:24px }')
     && roh.includes('.avstift{ position:absolute; right:-5px; bottom:-5px;')],
-   /* display:flex schlaegt das eingebaute [hidden]{display:none} —
-      ohne eigene Regel stand der Stand mit einer Null da. Im Browser
-      gesehen, hier festgehalten. */
-   ['Der leere Becherstand verschwindet auch wirklich',
-    roh.includes('.teestand[hidden]{ display:none }')],
-   /* Die Zahl kam erst, wenn man "Meine Firma" geoeffnet hatte: bis
-      dahin war TEE_PAARE leer. Jetzt bringt der Start sie mit. */
-   ['Der Start holt die Becher gleich mit',
-    roh.includes("const r = await sb.from('tee').select('a,b,punkte,letzt_a,letzt_b');")
-    && roh.includes('teePaareAus(r.data);\n    malZaehler();\n    malTeeBadge();')],
-   ['Beide Ladewege werten gleich aus',
-    roh.includes('function teePaareAus(zeilen){')
-    && roh.includes('teePaareAus(t.error ? [] : t.data);')],
-   ['Und der Stand wird gemerkt',
-    roh.includes('ME.teeSum = g.summe; ME.teeLvl = g.level;')
-    && roh.includes('else if(ME && ME.teeSum > 0) g = { summe:ME.teeSum, level:ME.teeLvl || 1 };')],
+   /* Drei Felder statt Pille und Zeile: Becher, Serie und Stufe in
+      derselben Form, jedes ein Knopf mit eigener Spielerei. */
+   /* Neben dem Bild blieben je 39 px uebrig und die Beschriftungen
+      liefen ueber — die Reihe laeuft jetzt ueber die ganze Karte. */
+   ['Drei gleich grosse Felder ueber die Kartenbreite',
+    roh.includes('.ma-werte{ position:relative; z-index:2; display:grid;')
+    && roh.includes('grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px;')],
+   ['Das leere Becherfeld verschwindet wirklich',
+    roh.includes('.mw[hidden]{ display:none }')],
+   ['Der Becher wackelt und funkelt wie in der Firmenansicht',
+    roh.includes('.mw.glitzer .mw-bild img, .mw.glitzer .mw-ico{ animation:teeWackel .62s var(--ease-out) }')
+    && roh.includes('.mw.glitzer .mw-bild i{ animation:teeFunke .62s var(--ease-out) }')],
+   ['Die Krone wirft ihre Funken weiter hinaus',
+    roh.includes('@keyframes kroneFunke{')
+    && roh.includes('.mw.konfetti .mw-bild i{ animation:kroneFunke .82s var(--ease-out) }')],
+   ['Die Flamme lodert von selbst, in zwei Takten',
+    roh.includes('.mw-flamme{ animation:flammeLodern 2.6s ease-in-out infinite,')
+    && roh.includes('flammeGlut 1.7s ease-in-out infinite alternate }')],
+   ['Und alles steht still, wer Bewegung abgestellt hat',
+    /@media \(prefers-reduced-motion:reduce\)\{\s*\n\s*\.mw-flamme\{ animation:none \}/.test(roh)],
+   ['Ein Tipp trifft das Feld, nicht die Karte',
+    roh.includes("const f = e.target.closest('.mw'); if(!f) return;")
+    && roh.includes("const art = f.id === 'mw-lvl' ? 'konfetti' : 'glitzer';")],
+   /* Tage in Folge: gezaehlt werden Tage, nicht Besuche. */
+   ['Die Serie zaehlt einmal am Tag',
+    roh.includes('if(s.letzt === h) return;')
+    && roh.includes('s.tage = (s.letzt === gestern) ? (s.tage || 0) + 1 : 1;')],
+   ['Und faengt neu an, wenn ein Tag fehlt',
+    roh.includes('g.setDate(g.getDate() - 1);')],
+   ['Sie wird beim Betreten fortgeschrieben',
+    roh.includes('  serieZaehlen();\n  stufenPostNachziehen();')],
    ['Der Stand zeigt den echten Becher',
     roh.includes("bild.src = 'tee-' + Math.max(1, Math.min(TEE.length, g.level)) + '.webp';")],
    /* Kein Kasten mehr: der Becher steht frei, unten buendig mit dem
       Profilbild, und die Beschriftung sagt, was die Zahl zaehlt. */
-   ['Der Becher steht frei, ohne Rahmen',
-    roh.includes('.teestand{ margin-top:auto; display:flex; align-items:center; gap:9px;')
-    && !roh.includes('.teebadge{')],
-   ['Er ist gross genug fuer die Sorte',
-    roh.includes('.teestand img{ width:38px; height:38px;')],
-   ['Und traegt einen weichen Schein in seiner Farbe',
-    roh.includes('filter:drop-shadow(0 5px 11px color-mix(in oklab, var(--tf,#B85CE8) 46%, transparent))')],
-   ['Die Zahl steht in der Anzeigeschrift',
-    roh.includes('.teestand b{ font-family:var(--font-dis); font-weight:400; font-size:25px;')],
-   ['Und daneben, was sie zaehlt',
-    roh.includes('<u>insgesamt<br>versendet</u>')],
-   ['Er sitzt unten, auf Hoehe des Bildes',
-    roh.includes('.ma-oben{ position:relative; z-index:2; display:flex; align-items:stretch; gap:12px;')
-    && roh.includes('.mausweis .mhtext{ flex:1; min-width:0; display:flex; flex-direction:column }')],
+   ['Der Becher steht in einem Feld, nicht mehr frei in der Zeile',
+    roh.includes('<u>Bubble Teas<br>versendet</u>')
+    && !roh.includes('.teestand{') && !roh.includes('.teebadge{')],
+   ['Die Zahlen stehen in der Anzeigeschrift',
+    roh.includes('.mw b{ font-family:var(--font-dis); font-weight:400; font-size:19px;')],
+   ['Sie stehen unter dem Kopf, nicht darin',
+    roh.indexOf('<div class="ma-werte">') > roh.indexOf('id="mr-zaehler"')
+    && roh.indexOf('<div class="ma-werte">') < roh.indexOf('<div class="ma-leiter">')],
    ['Die Becher-Plakette nimmt die Farbe der Sorte',
     roh.includes("b.style.setProperty('--tf', sorte.f);")],
    ['Die Gruppierung greift nur nach Menuezeilen',
