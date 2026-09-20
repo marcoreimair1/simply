@@ -1083,6 +1083,16 @@ Anmeldung, und ein Wechsel läuft über eine neue Anmeldung.
 Eine Falle steckte in der Gruppierung: sie sammelt Menüpunkte über `[data-act]` ein — und griff
 damit auch nach den Kacheln, die dieselben Namen tragen. Der Selektor heißt jetzt `.mi[data-act]`.
 
+**Nach dem Umschalten steht man wieder im Menü.** Der Fassungswechsel lädt die Seite neu (die
+Statusleiste des Systems übernimmt `theme-color` nur beim Laden), und danach landete man im
+Kalender — obwohl man im Menü umgeschaltet hatte und sich zurückklicken musste. Ein zweiter
+Vermerk in `sessionStorage` merkt sich, dass das Menü offen stand; beim Start geht es wieder auf,
+ohne Einlaufbewegung. Es war ja schon da, und der Schnitt ist der Wechsel, nicht das Menü.
+
+**Und eine Null stand da, wo nichts stehen sollte.** Die Becher-Plakette setzt `hidden`, wenn noch
+kein Becher gelaufen ist — aber `display:inline-flex` schlägt das eingebaute
+`[hidden]{display:none}`. Sie braucht ihre eigene Regel.
+
 ### Der Becher wird ein Wechselspiel
 
 Bisher galt nur: einer pro Tag und Person. Wer wollte, konnte damit jeden Tag in dieselbe Richtung

@@ -3814,6 +3814,10 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--tf,#B85CE8) 50%, transparent);
   color:var(--ma-ink); font-size:12px; font-weight:700 }
 .teebadge svg{ width:15px; height:15px; color:var(--tf,#B85CE8) }
+/* display:inline-flex schlaegt das eingebaute [hidden]{display:none} —
+   ohne diese Zeile stand die Plakette mit einer Null da, wo noch kein
+   einziger Becher gelaufen ist. */
+.teebadge[hidden]{ display:none }
 .teebadge b{ font-size:13px; font-weight:800 }
 .mausweis .mhtext{ flex:1; min-width:0 }
 .mausweis .mhtext b{ display:block; font-size:19px; line-height:1.14; letter-spacing:-.015em;
@@ -6117,7 +6121,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-0620';
+const APP_STAND = '2026-09-21-0705';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9064,6 +9068,17 @@ function enterApp(){
   exYear(); renderCal();
   setTimeout(pruefeStand, 3500);
   go('v-cal');
+  /* Nach einem Fassungswechsel geht das Menue wieder auf — dort wurde
+     ja umgeschaltet. Ohne Einlaufbewegung: es war schon da, und der
+     Wechsel ist der Schnitt, nicht das Menue. */
+  if(FASSUNG_MENU){
+    menuAuf();
+    const m = $('#menu');
+    if(m){
+      m.classList.add('sofort');
+      setTimeout(() => m.classList.remove('sofort'), 60);
+    }
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -14127,6 +14142,14 @@ const FASSUNG_NEU = (function(){
     return ja;
   }catch(e){ return false; }
 })();
+/* Und stand dabei das Menue offen? Dann geht es danach wieder auf. */
+const FASSUNG_MENU = (function(){
+  try{
+    const ja = sessionStorage.getItem('moji.fassung.menu') === '1';
+    if(ja) sessionStorage.removeItem('moji.fassung.menu');
+    return ja;
+  }catch(e){ return false; }
+})();
 
 /* Kein Vorspann nach einem Fassungswechsel. Die App blendet kurz auf,
    das war es — es soll sich wie ein Umschalten anfuehlen.
@@ -14377,6 +14400,14 @@ $('#erin-ask-no').addEventListener('click', () => erinAskFertig(false));
     document.body.appendChild(deckel);
     requestAnimationFrame(function(){ deckel.classList.add('da'); });
     try { sessionStorage.setItem('moji.fassung', '1'); } catch(e){}
+    /* Umgeschaltet wird aus dem Menue heraus — dann soll man danach
+       auch wieder dort stehen. Ohne diesen Vermerk landete man nach
+       dem Neuladen im Kalender und musste sich zurueckklicken. */
+    try {
+      var mo = document.getElementById('menu');
+      if (mo && mo.classList.contains('on') && !mo.classList.contains('zu'))
+        sessionStorage.setItem('moji.fassung.menu', '1');
+    } catch(e){}
 
     /* Erst hochladen, dann neu laden: die Sammelroutine sendet
        verzoegert, sonst faende ein zweites Geraet die alte Fassung vor.

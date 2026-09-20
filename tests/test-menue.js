@@ -1098,6 +1098,16 @@ setTimeout(() => {
     /returns table \(punkte integer, level integer, schon_heute boolean, wartet boolean\)/.test(sql)],
    ['Die App nennt den Grund weiter',
     roh.includes("toast('Erst wenn du einen zurückbekommst')")],
+   /* Umgeschaltet wird aus dem Menue heraus — also soll man danach
+      auch wieder dort stehen. */
+   ['Der Fassungswechsel merkt sich das offene Menue',
+    roh.includes("sessionStorage.setItem('moji.fassung.menu', '1');")
+    && roh.includes("mo.classList.contains('on') && !mo.classList.contains('zu')")],
+   ['Und macht es danach wieder auf',
+    roh.includes("const ja = sessionStorage.getItem('moji.fassung.menu') === '1';")
+    && roh.includes('if(FASSUNG_MENU){\n    menuAuf();')],
+   ['Ohne Einlaufbewegung — es war ja schon da',
+    /if\(FASSUNG_MENU\)\{[\s\S]{0,220}classList\.add\('sofort'\)/.test(roh)],
    /* Die Kachelreihe ersetzt zwei Bedienelemente in der Karte. */
    ['Die Kachelreihe steht zwischen Karte und Gruppen',
     roh.indexOf('<div class="ikonleiste" id="ikonleiste">') > roh.indexOf('id="mausweis"')
@@ -1107,6 +1117,11 @@ setTimeout(() => {
    ['Das Bild ist 88 px und traegt einen Stift',
     roh.includes('.ma-oben .avbig{ width:88px; height:88px; border-radius:24px }')
     && roh.includes('.avstift{ position:absolute; right:-5px; bottom:-5px;')],
+   /* display:inline-flex schlaegt das eingebaute [hidden]{display:none}
+      — ohne eigene Regel stand die Plakette mit einer Null da. Im
+      Browser gesehen, hier festgehalten. */
+   ['Die leere Plakette verschwindet auch wirklich',
+    roh.includes('.teebadge[hidden]{ display:none }')],
    ['Die Becher-Plakette nimmt die Farbe der Sorte',
     roh.includes("b.style.setProperty('--tf', sorte.f);")],
    ['Die Gruppierung greift nur nach Menuezeilen',
