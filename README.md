@@ -936,9 +936,38 @@ Angewendet wird es über `scale`, nicht `transform` — sonst fahren Einlauf-Ani
 eigenes Blatt (`rsheet`) und kurz als Knopf in der Karte. Der Stapel ist alle drei: er zeigt jede
 Stufe, ihren Namen, ihren Satz und was sie kostet.
 
-**Was noch aussteht:** Das Bild fürs Teilen (`karteBild()`, 1080 × 1350) zeichnet noch die alte
-Karte — es entsteht Strich für Strich auf einer Leinwand und muss für die Sammelkarte neu
-gezeichnet werden.
+**Umdrehen gibt es weiterhin.** Ein Tipp dreht die Karte, die vorne liegt — hinten das Zeichen
+als Prägung, darunter *Mitglied seit*, *Abgegeben*, *Zuletzt* und *Dafür nötig*, und ganz unten
+der Satz der Stufe. Ein Tipp auf eine halb sichtbare Karte daneben **holt sie erst in die
+Mitte**: sonst dreht man Karten um, die man gar nicht anschaut.
+
+**Der Glanz wandert nur auf der vorderen Karte** (`.kt.vorn`). Zwölf laufende Lichtbänder wären
+Arbeit für nichts — elf davon sieht niemand.
+
+**Und das Ruckeln kam vom Übergang.** Auf `.kt` lag ein `transition:scale .18s`. Während des
+Wischens wird `--nah` bei *jedem Bild* neu gesetzt; der Übergang fing bei jedem dieser Werte von
+vorne an und lief dem Finger hinterher. Ohne ihn folgt die Größe dem Scrollen unmittelbar.
+
+### Das Bild zum Weitergeben
+
+`karteBild()` zeichnet die Sammelkarte auf eine Leinwand in **1080 × 1350** und reicht sie an das
+Teilen-Blatt weiter.
+
+**Auf eine Leinwand gehören echte Farben.** Bis 20. September 2026 stand dort durchgehend
+`var(--f-2)` und `rgba(var(--s-hoch),.5)` — CSS-Variablen, die eine Leinwand nicht versteht.
+`addColorStop` wirft damit einen Fehler, und `fillStyle` nimmt den Wert *stillschweigend nicht
+an* und malt in der vorigen Farbe weiter. Das Bild entstand also **nie**; das Teilen fiel jedes
+Mal stumm auf den Textweg zurück, ohne dass etwas darauf hindeutete. Jetzt werden die Werte
+einmal am Anfang aus dem lebenden Element nachgeschlagen.
+
+**Das Fenster ist quadratisch — daran hängt die ganze Rechnung.** 720 breit minus zweimal 36 Rand
+ergibt 648, und das ist dann auch die Höhe. Dazu Band (120), Name (130), Fach (166), Fußband (96)
+und etwas Luft: 1180. Beim ersten Versuch war die Karte 888 breit; das Fenster wurde damit 816
+hoch und alles darunter lief aus der Karte.
+
+**Die Wortmarke wird auf einer eigenen kleinen Leinwand eingefärbt.** Sie ist dunkel gezeichnet,
+das Fußband ist schwarz. `source-atop` direkt auf der großen Leinwand trifft alles, was schon
+darauf steht, und hinterlässt ein weißes Rechteck.
 
 ### Die Profilbilder
 

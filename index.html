@@ -2783,18 +2783,58 @@ body.sigmodus .fb-s{display:inline-flex}
 .mkv-in > .kt-bahn{ width:calc(100% + 32px) }
 .kt{
   scroll-snap-align:center; scroll-snap-stop:always;
-  flex:none; width:var(--kb); border-radius:26px; position:relative; overflow:hidden;
-  display:flex; flex-direction:column; padding:9px 9px 0; color:#fff;
-  background:linear-gradient(170deg, var(--rf2,#5C6A94), var(--rtief,#1D2438) 92%);
-  box-shadow:0 26px 56px -24px rgba(var(--s-schatten),.8);
+  flex:none; width:var(--kb); position:relative; perspective:1600px; cursor:pointer;
+  /* KEIN transition auf scale: --nah wird bei jedem Bild neu gesetzt,
+     waehrend gewischt wird. Ein Uebergang wuerde bei jedem dieser Werte
+     von vorne anfangen und dem Finger hinterherlaufen — genau das war
+     das Ruckeln. Ohne ihn folgt die Groesse dem Scrollen unmittelbar. */
   scale:calc(.9 + .1 * var(--nah, 1));
-  opacity:calc(.5 + .5 * var(--nah, 1));
-  transition:scale .18s linear, opacity .18s linear;
-  will-change:scale, opacity;
+  opacity:calc(.55 + .45 * var(--nah, 1));
 }
-.kt.zu{ background:linear-gradient(170deg,#6E667E,#2E2838 92%); color:rgba(255,255,255,.74) }
+.kt-dreh{ position:relative; transform-style:preserve-3d;
+  transition:transform .62s cubic-bezier(.22,1,.28,1) }
+.kt.um .kt-dreh{ transform:rotateY(180deg) }
+.kt-vorn, .kt-rueck{ border-radius:26px; overflow:hidden; color:#fff;
+  backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  background:linear-gradient(170deg, var(--rf2,#5C6A94), var(--rtief,#1D2438) 92%);
+  box-shadow:0 26px 56px -24px rgba(var(--s-schatten),.8) }
+.kt-vorn{ position:relative; display:flex; flex-direction:column; padding:9px 9px 0 }
+.kt-rueck{ position:absolute; inset:0; transform:rotateY(180deg);
+  display:flex; flex-direction:column; padding:22px 22px 0 }
+.kt.zu .kt-vorn, .kt.zu .kt-rueck{
+  background:linear-gradient(170deg,#6E667E,#2E2838 92%); color:rgba(255,255,255,.74) }
 .kt-glanz{ position:absolute; inset:0; z-index:3; pointer-events:none;
-  background:linear-gradient(102deg,transparent 40%,rgba(255,255,255,.22) 50%,transparent 60%) }
+  background:linear-gradient(102deg,transparent 40%,rgba(255,255,255,.22) 50%,transparent 60%);
+  transform:translateX(-80%) }
+/* Der Glanz wandert — aber nur ueber die Karte, die vorne liegt. Zwoelf
+   laufende Lichtbaender auf einmal waeren Arbeit fuer nichts: elf davon
+   sieht man gar nicht. */
+.kt.vorn .kt-glanz{ animation:ktGlanz 5.4s 1.1s linear infinite }
+@keyframes ktGlanz{ from{ transform:translateX(-80%) } to{ transform:translateX(80%) } }
+/* Rueckseite: das Zeichen als Praegung und die Angaben, fuer die vorne
+   kein Platz ist. */
+.kt-praege{ position:relative; width:96px; height:96px; margin:6px auto 4px }
+.kt-praege i{ position:absolute; inset:0; display:block;
+  -webkit-mask-image:var(--marke); mask-image:var(--marke);
+  -webkit-mask-size:contain; mask-size:contain;
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  -webkit-mask-position:center; mask-position:center }
+.kt-praege i:nth-child(1){ background:rgba(0,0,0,.32); transform:translate(-2.5px,-2.5px) }
+.kt-praege i:nth-child(2){ background:rgba(255,255,255,.28); transform:translate(2.5px,2.5px) }
+.kt-praege i:nth-child(3){ background:rgba(255,255,255,.8) }
+.kt-rt{ text-align:center; padding:2px 0 12px }
+.kt-rt u{ display:block; text-decoration:none; font-size:9px; letter-spacing:.2em;
+  text-transform:uppercase; color:rgba(255,255,255,.5) }
+.kt-rt b{ display:block; margin-top:5px; font-family:var(--font-dis); font-weight:400;
+  font-size:19px; letter-spacing:-.01em }
+.kt-zeilen{ border-top:1px solid rgba(255,255,255,.18) }
+.kt-zeilen div{ display:flex; justify-content:space-between; gap:12px; padding:9px 0;
+  border-bottom:1px solid rgba(255,255,255,.1); font-size:12.5px }
+.kt-zeilen u{ text-decoration:none; font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+  color:rgba(255,255,255,.5); align-self:center }
+.kt-zeilen b{ font-weight:600 }
+.kt-hinweis{ margin-top:auto; padding:12px 0 16px; text-align:center; font-size:10.5px;
+  letter-spacing:.06em; color:rgba(255,255,255,.45) }
 .kt-band{ display:flex; align-items:baseline; justify-content:space-between; gap:10px;
   padding:5px 8px 10px }
 .kt-band b{ font-family:var(--font-dis); font-weight:400; font-size:17px; letter-spacing:.01em }
@@ -2845,12 +2885,12 @@ body.sigmodus .fb-s{display:inline-flex}
 .kt-fuss img{ height:14px; width:auto; display:block; filter:brightness(0) invert(1); opacity:.9 }
 .kt-fuss span{ font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
   color:rgba(255,255,255,.52) }
-.kt.gold{ background:linear-gradient(170deg,#C79A18,#6B4E05 92%) }
+.kt.gold .kt-vorn, .kt.gold .kt-rueck{ background:linear-gradient(170deg,#C79A18,#6B4E05 92%) }
 /* Verschlossen schlaegt golden: faerbe() haengt die Goldklasse an jede
    Karte der zwoelften Stufe, auch an die, die noch zu ist. Eine
    verschlossene Legende, die golden leuchtet, waere ein Versprechen,
    das die Karte nicht halten kann. */
-.kt.zu.gold{ background:linear-gradient(170deg,#6E667E,#2E2838 92%) }
+.kt.zu.gold .kt-vorn, .kt.zu.gold .kt-rueck{ background:linear-gradient(170deg,#6E667E,#2E2838 92%) }
 /* Die Punktreihe zeigt die Sammlung als Farbverlauf: jeder Punkt in der
    Farbe seiner Stufe, die vordere als Pille. */
 .kt-punkte{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap; padding:2px 6px 0 }
@@ -2859,7 +2899,9 @@ body.sigmodus .fb-s{display:inline-flex}
 .kt-punkte i.frei{ background:var(--pf) }
 .kt-punkte i.vorne{ width:22px; border-radius:99px }
 @media (prefers-reduced-motion:reduce){
-  .kt{ transition:none; scale:1; opacity:1 }
+  .kt{ scale:1; opacity:1 }
+  .kt-dreh{ transition:none }
+  .kt.vorn .kt-glanz{ animation:none }
   .kt-bahn{ scroll-snap-type:none }
 }
 
@@ -5762,7 +5804,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-1950';
+const APP_STAND = '2026-09-20-2110';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9546,8 +9588,23 @@ function ktKarte(n, echt, anzahl){
     const fehlt = noetig - anzahl;
     fach = '<u>Noch ' + fehlt + (fehlt === 1 ? ' Monat' : ' Monate') + '</u><b>ab ' + noetig + '</b>';
   }
+  const jung = neuesterMonat();
+  const rueck = '<div class="kt-rueck">'
+    + '<div class="kt-praege" aria-hidden="true"><i></i><i></i><i></i></div>'
+    + '<div class="kt-rt"><u>' + esc(r.n) + '</u><b>Stufe ' + n + ' von ' + RAENGE.length + '</b></div>'
+    + '<div class="kt-zeilen">'
+    +   '<div><u>Mitglied seit</u><b>' + esc(seitText()) + '</b></div>'
+    +   '<div><u>Abgegeben</u><b>' + (anzahl ? anzahl + (anzahl === 1 ? ' Monat' : ' Monate') : 'noch nichts') + '</b></div>'
+    +   '<div><u>Zuletzt</u><b>' + esc(jung ? fmtMonatJahr(jung.y, jung.m) : '—') + '</b></div>'
+    +   '<div><u>Dafür nötig</u><b>' + (noetig || 1) + (noetig === 1 ? ' Monat' : ' Monate') + '</b></div>'
+    + '</div>'
+    + '<div class="kt-hinweis">' + esc(r.w) + '</div>'
+    + '</div>';
   return '<article class="kt ' + (frei ? 'frei' : 'zu') + (ist ? ' jetzt' : '')
-    + (n >= RAENGE.length && frei ? ' gold' : '') + '" data-n="' + n + '">'
+    + (n >= RAENGE.length && frei ? ' gold' : '') + '" data-n="' + n + '"'
+    + ' role="button" tabindex="0" aria-label="' + esc(r.n) + ', Karte umdrehen">'
+    + '<div class="kt-dreh">'
+    + '<div class="kt-vorn">'
     + (frei ? '<span class="kt-glanz" aria-hidden="true"></span>' : '')
     + (frei && !ist ? '<span class="kt-stempel">Erreicht</span>' : '')
     + '<div class="kt-band"><b>' + esc(r.n) + '</b><span>' + n + ' / ' + RAENGE.length + '</span></div>'
@@ -9561,7 +9618,7 @@ function ktKarte(n, echt, anzahl){
     + leiter
     + '<div class="kt-fuss"><img alt="MOJI"><span>'
     +   esc(frei ? seitText() : 'Noch nicht freigeschaltet') + '</span></div>'
-    + '</article>';
+    + '</div>' + rueck + '</div></article>';
 }
 
 function malKarte(nrZeig){
@@ -9574,6 +9631,7 @@ function malKarte(nrZeig){
     const n = +k.dataset.n;
     faerbe(k, n);
     k.style.setProperty('--rtief', mischSchwarz(rang(n).b, .58));
+    k.style.setProperty('--marke', 'url("' + LOGO_MARK + '")');
     const w = $('img', $('.kt-fuss', k));
     if(w) w.src = LOGO_WORD;
   });
@@ -9609,6 +9667,7 @@ function kartenTiefe(){
     if(d < bd){ bd = d; vorne = k; }
   });
   if(!vorne) return;
+  $$('.kt', bahn).forEach(k => k.classList.toggle('vorn', k === vorne));
   const n = +vorne.dataset.n, echt = stufe();
   $('#kt-titel').textContent = rang(n).n;
   $('#kt-zaehler').textContent = 'Karte ' + n + ' von ' + RAENGE.length;
@@ -9644,7 +9703,7 @@ function karteAuf(){
   const b = $('#mkv');
   if(b.classList.contains('on')) return;
   $('#auf-kopf').hidden = true;
-  $('#mk-tipp').textContent = 'Seitlich wischen für die anderen Stufen';
+  $('#mk-tipp').textContent = 'Wischen für die anderen Stufen · Tippen dreht um';
   malKarte();
   b.classList.remove('weg');
   b.classList.add('on');
@@ -9755,6 +9814,17 @@ function teilText(){
 }
 /* Zeichnet die Karte auf eine Leinwand. Alles von Hand — so sieht das Bild
    überall gleich aus, egal wie das Gerät die Seite darstellt. */
+/* ─── Das Bild zum Weitergeben ────────────────────────────────────
+   1080 x 1350 — ein Mass, das jeder Dienst mag. Gezeichnet wird die
+   Sammelkarte, die man auch auf dem Schirm sieht.
+
+   WICHTIG: Auf eine Leinwand gehoeren echte Farben. CSS-Variablen
+   versteht sie nicht — addColorStop wirft damit einen Fehler, und
+   fillStyle nimmt den Wert stillschweigend nicht an und malt in der
+   vorigen Farbe weiter. Bis 20.09.2026 stand hier durchgehend
+   var(--f-2) und rgba(var(--s-hoch),.5): das Bild entstand nie, das
+   Teilen fiel jedes Mal stumm auf den Textweg zurueck. Darum werden
+   die Farben einmal am Anfang nachgeschlagen. */
 async function karteBild(){
   const B = 1080, H = 1350, nr = stufe(), r = rang(nr), anzahl = expAnzahl();
   const cv = document.createElement('canvas');
@@ -9763,134 +9833,129 @@ async function karteBild(){
   if(!c) return null;
   try{ if(document.fonts && document.fonts.ready) await document.fonts.ready; }catch(e){}
 
-  const pa = mischWeiss(r.a, .84), pb = mischWeiss(r.a, .58);
-  /* Hintergrund */
-  const g = c.createLinearGradient(0, 0, B, H);
-  g.addColorStop(0, mischWeiss(r.b, .22)); g.addColorStop(1, 'var(--f-1)');
-  c.fillStyle = g; c.fillRect(0, 0, B, H);
-  const wolke = (x, y, rad, farbe, a) => {
-    const rg = c.createRadialGradient(x, y, 0, x, y, rad);
-    rg.addColorStop(0, rgba(farbe, a)); rg.addColorStop(1, rgba(farbe, 0));
-    c.fillStyle = rg; c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.fill();
+  /* Echte Werte statt Variablen. */
+  const stil = getComputedStyle($('#mkv') || document.documentElement);
+  const tok = (n, ersatz) => (stil.getPropertyValue(n) || '').trim() || ersatz;
+  const DIS = tok('--font-dis', "'Bricolage Grotesque',Georgia,serif");
+  const UI  = tok('--font-ui',  "'Plus Jakarta Sans',sans-serif");
+  const GRUND = tok('--ink', '#0B0711');
+  const AUF   = tok('--s-auf', '255,255,255');
+  const dunkel = (hex, teil) => {
+    const n = parseInt(String(hex).slice(1), 16), m = v => Math.round(v * (1 - teil));
+    return '#' + [m(n >> 16 & 255), m(n >> 8 & 255), m(n & 255)]
+      .map(v => v.toString(16).padStart(2, '0')).join('');
   };
-  wolke(150, 190, 460, r.a, .5); wolke(950, 560, 420, r.b, .45); wolke(560, 1240, 500, r.a, .3);
-
-  /* Karte */
-  const kx = 84, ky = 150, kb = B - 168, kh = 1010, rad = 58;
   const rrect = (x, y, w, h, rr) => {
     c.beginPath();
-    c.moveTo(x + rr, y); c.lineTo(x + w - rr, y); c.quadraticCurveTo(x + w, y, x + w, y + rr);
-    c.lineTo(x + w, y + h - rr); c.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
-    c.lineTo(x + rr, y + h); c.quadraticCurveTo(x, y + h, x, y + h - rr);
-    c.lineTo(x, y + rr); c.quadraticCurveTo(x, y, x + rr, y); c.closePath();
+    c.moveTo(x + rr, y);
+    c.arcTo(x + w, y, x + w, y + h, rr); c.arcTo(x + w, y + h, x, y + h, rr);
+    c.arcTo(x, y + h, x, y, rr);         c.arcTo(x, y, x + w, y, rr);
+    c.closePath();
   };
+
+  /* Hintergrund: die Farbwolken der Stufe. */
+  c.fillStyle = GRUND; c.fillRect(0, 0, B, H);
+  const wolke = (x, y, rad, farbe, al) => {
+    const rg = c.createRadialGradient(x, y, 0, x, y, rad);
+    rg.addColorStop(0, rgba(farbe, al)); rg.addColorStop(1, rgba(farbe, 0));
+    c.fillStyle = rg; c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.fill();
+  };
+  wolke(170, 210, 520, r.a, .55); wolke(930, 620, 470, r.b, .5); wolke(540, 1260, 540, r.a, .3);
+
+  /* Die Karte. Das Fenster ist quadratisch — daran haengt die ganze
+     Rechnung: 720 breit minus zweimal 36 Rand ergibt 648, und das ist
+     dann auch die Hoehe. Dazu Band (120), Name (130), Fach (166),
+     Fussband (96) und ein wenig Luft: 1180. Bei 888 Breite, wie zuerst
+     gerechnet, waere das Fenster 816 hoch geworden und alles darunter
+     aus der Karte gelaufen. */
+  const kb = 720, kx = (B - kb) / 2, kh = 1180, ky = 46, rad = 58;
   c.save();
-  c.shadowColor = 'rgba(var(--s-schatten),.55)'; c.shadowBlur = 90; c.shadowOffsetY = 36;
-  const kg = c.createLinearGradient(kx, ky, kx + kb, ky + kh);
-  kg.addColorStop(0, pa); kg.addColorStop(.58, pb); kg.addColorStop(1, pa);
+  c.shadowColor = 'rgba(0,0,0,.55)'; c.shadowBlur = 90; c.shadowOffsetY = 34;
+  const kg = c.createLinearGradient(kx, ky, kx + kb * .3, ky + kh);
+  kg.addColorStop(0, r.b); kg.addColorStop(1, dunkel(r.b, .58));
   c.fillStyle = kg; rrect(kx, ky, kb, kh, rad); c.fill();
   c.restore();
+  c.save(); rrect(kx, ky, kb, kh, rad); c.clip();
 
-  /* Profilbild */
+  /* Band: Name der Stufe und die Zahl */
+  const rand = 36;
+  c.fillStyle = '#fff'; c.font = '400 46px ' + DIS; c.textAlign = 'left';
+  c.fillText(r.n, kx + rand + 8, ky + rand + 52);
+  c.fillStyle = 'rgba(255,255,255,.62)'; c.font = '700 26px ' + UI;
+  c.textAlign = 'right';
+  c.fillText(nr + ' / ' + RAENGE.length, kx + kb - rand - 8, ky + rand + 50);
+  c.textAlign = 'left';
+
+  /* Fenster mit dem Tier */
+  const fx = kx + rand, fy = ky + rand + 84, fb = kb - rand * 2;
+  c.save(); rrect(fx, fy, fb, fb, 54); c.clip();
+  c.fillStyle = mischWeiss(r.a, .84); c.fillRect(fx, fy, fb, fb);
   const bild = await new Promise(res => {
-    const i = new Image();
-    i.onload = () => res(i); i.onerror = () => res(null);
+    const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null);
     i.src = avDatei(avNummer());
   });
-  const bx = kx + 56, by = ky + 62, bs = 200;
-  c.save(); rrect(bx, by, bs, bs, 62); c.clip();
-  c.fillStyle = '#fff'; c.fillRect(bx, by, bs, bs);
   if(bild){
-    /* derselbe Ausschnitt wie überall: Breite füllt, senkrecht bei 86 % */
-    const f = bs / bild.width, hh = bild.height * f;
-    c.drawImage(bild, bx, by - (hh - bs) * .86, bs, hh);
+    /* Wie im Rahmen: auf die Breite passen, senkrecht bei 86 % schneiden. */
+    const sw = bild.width, sh = sw, sy = (bild.height - sh) * .86;
+    c.drawImage(bild, 0, sy > 0 ? sy : 0, sw, Math.min(sh, bild.height), fx, fy, fb, fb);
   }
+  const schein = c.createLinearGradient(fx, fy, fx + fb * .3, fy + fb);
+  schein.addColorStop(0, 'rgba(255,255,255,.28)'); schein.addColorStop(.46, 'rgba(255,255,255,0)');
+  c.fillStyle = schein; c.fillRect(fx, fy, fb, fb);
   c.restore();
-  c.lineWidth = 9; c.strokeStyle = r.a; rrect(bx - 5, by - 5, bs + 10, bs + 10, 66); c.stroke();
 
-  /* Kopftexte — wie auf der Karte: Name, Dienstgeber, Stufe als Plakette. */
-  const tx = bx + bs + 34;
-  c.textBaseline = 'alphabetic';
-  c.fillStyle = 'var(--f-2)'; c.font = '400 62px Fraunces, Georgia, serif';
-  c.fillText(ME.vorname + ' ' + ME.nachname, tx, by + 84);
-  c.fillStyle = 'rgba(var(--s-hoch),.55)'; c.font = '400 28px Inter, sans-serif';
-  c.fillText(EMPLOYER, tx, by + 130);
-  /* Plakette rechts oben */
-  const pl = 'LVL ' + nr;
-  c.font = '800 26px Inter, sans-serif';
-  const pw = c.measureText(pl).width + 44, px = kx + kb - 56 - pw;
-  c.fillStyle = r.b; rrect(px, by + 6, pw, 52, 16); c.fill();
-  c.fillStyle = '#fff'; c.textAlign = 'center';
-  c.fillText(pl, px + pw / 2, by + 41);
+  /* Name und Firma */
+  c.textAlign = 'center';
+  c.fillStyle = '#fff'; c.font = '400 62px ' + DIS;
+  c.fillText(ME.vorname + ' ' + ME.nachname, B / 2, fy + fb + 80);
+  c.fillStyle = 'rgba(255,255,255,.62)'; c.font = '500 27px ' + UI;
+  c.fillText(EMPLOYER, B / 2, fy + fb + 120);
   c.textAlign = 'left';
-  /* Stufe mit Namen darunter */
-  c.fillStyle = r.b; c.font = '700 30px Inter, sans-serif';
-  c.fillText(r.n, tx, by + 182);
-  c.fillStyle = 'rgba(var(--s-hoch),.42)'; c.font = '700 22px Inter, sans-serif';
-  c.fillText(('Stufe ' + nr + ' von ' + RAENGE.length).toUpperCase(), tx, by + 214);
 
-  /* Zeitersparnis */
-  const hx = kx + 56, hy = by + bs + 56, hb = kb - 112, hh2 = 210;
-  c.fillStyle = 'rgba(var(--s-auf),.7)'; rrect(hx, hy, hb, hh2, 44); c.fill();
-  c.fillStyle = 'rgba(var(--s-hoch),.45)'; c.font = '600 22px Inter, sans-serif';
-  c.fillText('ZEIT GESPART', hx + 40, hy + 56);
-  c.fillStyle = 'var(--f-2)'; c.font = '400 68px Fraunces, Georgia, serif';
-  c.fillText(anzahl ? fmtDauer(gespartMin()) : 'noch nichts', hx + 40, hy + 126);
-  const v = vergleich(gespartMin());
-  c.fillStyle = 'rgba(var(--s-hoch),.72)'; c.font = 'italic 400 30px Fraunces, Georgia, serif';
-  const satz = anzahl ? 'Damit könntest du ' + v.text + '.' : v.text;
-  /* Umbruch von Hand, damit nichts über den Rand läuft */
-  const worte = satz.split(' ');
-  let zeile = '', zy = hy + 176;
-  worte.forEach(wo => {
-    const probe = zeile ? zeile + ' ' + wo : wo;
-    if(c.measureText(probe).width > hb - 80 && zeile){
-      c.fillText(zeile, hx + 40, zy); zeile = wo; zy += 38;
-    } else zeile = probe;
-  });
-  if(zeile) c.fillText(zeile, hx + 40, zy);
-
-  /* Kennzahlen */
-  const jung = neuesterMonat();
-  const zeilen = [
-    ['MITGLIED SEIT', seitText()],
-    ['ABGEGEBEN', anzahl ? anzahl + (anzahl === 1 ? ' Monat' : ' Monate') : 'noch nichts'],
-    ['ZULETZT', jung ? fmtMonatJahr(jung.y, jung.m) : '—']
-  ];
-  let zy2 = Math.max(zy + 96, hy + hh2 + 84);
-  zeilen.forEach(z => {
-    c.fillStyle = 'rgba(var(--s-hoch),.45)'; c.font = '600 21px Inter, sans-serif';
-    c.fillText(z[0], hx + 4, zy2);
-    c.fillStyle = 'var(--f-2)'; c.font = '600 30px Inter, sans-serif';
-    c.fillText(z[1], hx + 300, zy2);
-    c.strokeStyle = 'rgba(var(--s-hoch),.1)'; c.lineWidth = 2;
-    c.beginPath(); c.moveTo(hx + 4, zy2 + 24); c.lineTo(hx + hb - 4, zy2 + 24); c.stroke();
-    zy2 += 74;
-  });
+  /* Fach mit der gesparten Zeit */
+  const hx = kx + rand, hy = fy + fb + 152, hb = kb - rand * 2, hh = 112;
+  c.fillStyle = 'rgba(255,255,255,.12)'; rrect(hx, hy, hb, hh, 34); c.fill();
+  c.fillStyle = 'rgba(255,255,255,.62)'; c.font = '700 22px ' + UI;
+  c.fillText('ZEIT GESPART', hx + 34, hy + hh / 2 + 8);
+  c.fillStyle = '#fff'; c.font = '400 56px ' + DIS; c.textAlign = 'right';
+  c.fillText(anzahl ? fmtDauer(gespartMin()) : 'noch nichts', hx + hb - 34, hy + hh / 2 + 19);
+  c.textAlign = 'left';
 
   /* Band unten mit der Wortmarke */
   const band = 96, byy = ky + kh - band;
-  c.save(); rrect(kx, ky, kb, kh, rad); c.clip();
-  c.fillStyle = '#0C1228'; c.fillRect(kx, byy, kb, band);
+  c.fillStyle = 'rgba(0,0,0,.34)'; c.fillRect(kx, byy, kb, band);
   const wort = await new Promise(res => {
     const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = LOGO_WORD;
   });
   if(wort){
-    const wh = 40, ww = wort.width / wort.height * wh;
-    c.drawImage(wort, kx + 44, byy + (band - wh) / 2, ww, wh);
+    const wh = 36, ww = wort.width / wort.height * wh;
+    /* Die Wortmarke ist dunkel gezeichnet, das Band ist schwarz — sie
+       muss also hell werden. Eingefaerbt wird auf einer eigenen kleinen
+       Leinwand: source-atop wuerde sonst alles treffen, was schon auf
+       der grossen steht, und ein weisses Rechteck hinterlassen. */
+    const tc = document.createElement('canvas');
+    tc.width = Math.max(1, Math.round(ww)); tc.height = Math.max(1, Math.round(wh));
+    const t2 = tc.getContext('2d');
+    if(t2){
+      t2.drawImage(wort, 0, 0, tc.width, tc.height);
+      t2.globalCompositeOperation = 'source-in';
+      t2.fillStyle = '#fff'; t2.fillRect(0, 0, tc.width, tc.height);
+      c.drawImage(tc, kx + 48, byy + (band - wh) / 2);
+    }
   }
-  c.fillStyle = 'rgba(var(--tx-rgb),.5)'; c.font = '600 20px Inter, sans-serif';
+  c.fillStyle = 'rgba(255,255,255,.52)'; c.font = '700 21px ' + UI;
   c.textAlign = 'right';
-  c.fillText('MEHR ZEIT FÜRS WESENTLICHE', kx + kb - 44, byy + band / 2 + 8);
+  c.fillText(anzahl + (anzahl === 1 ? ' MONAT ABGEGEBEN' : ' MONATE ABGEGEBEN'),
+             kx + kb - 52, byy + band / 2 + 8);
   c.textAlign = 'left';
   c.restore();
 
   /* Einladung unter der Karte */
-  c.fillStyle = 'rgba(var(--s-auf),.92)'; c.font = '600 34px Inter, sans-serif';
   c.textAlign = 'center';
-  c.fillText('Auch mitmachen? Gratis unter', B / 2, ky + kh + 76);
-  c.fillStyle = r.a; c.font = '700 34px Inter, sans-serif';
-  c.fillText('moji-app.at', B / 2, ky + kh + 126);
+  c.fillStyle = 'rgba(' + AUF + ',.9)'; c.font = '600 32px ' + UI;
+  c.fillText('Auch mitmachen? Gratis unter', B / 2, ky + kh + 58);
+  c.fillStyle = r.a; c.font = '700 34px ' + UI;
+  c.fillText('moji-app.at', B / 2, ky + kh + 104);
   c.textAlign = 'left';
 
   return await new Promise(res => {
@@ -10337,8 +10402,25 @@ function pfZu(){
 $('#postfach').addEventListener('click', () => { _vonMenu = true; pfAuf(); });
 $('#pf-zu').addEventListener('click', pfZu);
 $('#mk-zu').addEventListener('click', karteZu);
+/* Ein Tipp dreht die Karte um — wie bisher. Vorne steht, wer und wie
+   weit; hinten die Angaben, fuer die vorne kein Platz ist.
+
+   Nur die Karte, die vorne liegt: ein Tipp auf eine halb sichtbare
+   daneben holt sie erst in die Mitte. Sonst dreht man Karten um, die
+   man gar nicht anschaut. */
+$('#kt-bahn').addEventListener('click', e => {
+  const k = e.target.closest('.kt'); if(!k) return;
+  const n = +k.dataset.n;
+  if(n !== _ktVorne){ ktZeige(n, true); return; }
+  k.classList.toggle('um');
+});
 /* Mit der Tastatur blaettert man mit den Pfeilen durch den Stapel. */
 $('#kt-bahn').addEventListener('keydown', e => {
+  if(e.key === 'Enter' || e.key === ' '){
+    const k = e.target.closest('.kt');
+    if(k){ e.preventDefault(); k.classList.toggle('um'); }
+    return;
+  }
   if(e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
   e.preventDefault();
   ktZeige(_ktVorne + (e.key === 'ArrowRight' ? 1 : -1), true);
