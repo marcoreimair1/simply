@@ -1078,6 +1078,26 @@ unverändert weiter. Der Klick hing dabei am Bild; jetzt ist der ganze Punkt der
 Wort gehören zusammen. Dafür ist das Bild vom `<button>` zum `<span>` geworden — ein Knopf im Knopf
 geht in HTML nicht.
 
+**Sie steht auf jeder Seite** — auch in den Unteransichten und **im Profilmenü**. Nur der Einstieg
+kennt sie nicht: dort gibt es noch kein Profil, zu dem sie führen könnte, und der Zeit-Assistent
+hat seine eigene Führung unten. Steht das Menü offen, ist **Profil** der Punkt, auf dem man steht —
+es liegt ja über der Seite.
+
+**Das Kreuz oben rechts im Menü ist damit weggefallen.** Jeder Weg hinaus führt über die Leiste:
+Kalender, Export, Meine Firma — oder noch einmal auf das Profilbild. Ein Kreuz daneben wäre ein
+zweiter Ausgang für dasselbe. Wer von dort ein Ziel wählt, schließt das Menü **ohne Nachlauf**:
+die Seite wechselt gleichzeitig, und eine ausblendende Fläche darüber ließe den Wechsel
+durchscheinen.
+
+**Zwei Dinge mussten dafür weichen.** Die Leiste lag im Quelltext in `#app`, und `#app` trägt
+`z-index: 2` mit `position: relative` — ein eigener Stapelkontext. Ihr `z-index: 46` zählte damit
+nur *innerhalb* von `#app`, und das Menü daneben (45) legte sich darüber. Als Geschwister des
+Menüs gilt er wieder. Und sie muss **vor** dem großen Skript stehen: hinter `</body>` verschoben
+war sie beim Verdrahten noch nicht da, und `addEventListener` lief auf `null`.
+
+**Das Hüpfen hatte noch eine zweite Quelle:** den Gummiband-Effekt beim Überscrollen, der eine
+festgesetzte Leiste mitzieht. `overscroll-behavior-y: none` auf `html, body` nimmt ihn weg.
+
 **Unten steht entweder die Navigation oder eine Entscheidung, nie beides.** Sobald ein Zeitraum
 markiert ist, stehen dort *Eintragen* und *Eintrag verwerfen*, beim Unterschreiben *Signieren* —
 dann weicht die Leiste, als Kreuzblende, nicht als Sprung. Solange etwas zu entscheiden ist, ist

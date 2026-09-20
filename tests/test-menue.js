@@ -47,25 +47,32 @@ ok('Abgemeldet (UID === null)', UID === null, 'UID=' + UID);
 
 ME = normalize({ id:'t', vorname:'Marco', nachname:'Reimair', dob:'1990-05-04', av:3 });
 var m = document.querySelector('#menu');
+go('v-cal');            /* die Seite unter dem Menue, samt Leiste */
 menuAuf();
 ok('Menue ist offen', m.classList.contains('on'));
 ok('Menue ist im Vollbild gebaut', m.dataset.vollbild === '1');
 
-/* ── 1 · Schliessen-Knopf: auch das Symbol darin trifft ── */
-var zu = m.querySelector('.mzurueck');
-ok('Schliessen-Knopf da', !!zu);
-var pfad = zu.querySelector('path');
-ok('Er traegt ein SVG mit Pfad', !!pfad);
-pfad.dispatchEvent(new window.MouseEvent('click', { bubbles:true }));
-ok('Tipp auf den Pfad schliesst', m.classList.contains('zu'));
-
-m.classList.remove('on','zu'); menuAuf();
-zu.querySelector('svg').dispatchEvent(new window.MouseEvent('click', { bubbles:true }));
-ok('Tipp auf das SVG schliesst', m.classList.contains('zu'));
-
-m.classList.remove('on','zu'); menuAuf();
-zu.dispatchEvent(new window.MouseEvent('click', { bubbles:true }));
-ok('Tipp auf den Knopf selbst schliesst', m.classList.contains('zu'));
+/* ── 1 · Hinaus geht es ueber die Leiste ──
+   Das Kreuz oben rechts ist weg: seit die Leiste unten auch im Menue
+   steht, fuehrt jeder Weg hinaus ueber sie. Ein Kreuz daneben waere
+   ein zweiter Ausgang fuer dasselbe. */
+ok('Kein Schliessen-Kreuz mehr', !m.querySelector('.mzurueck'));
+ok('Die Leiste steht auch im Menue',
+   document.getElementById('tabbar').style.display === 'grid');
+ok('Und das Profil ist der Punkt, auf dem man steht',
+   document.getElementById('tab-pro').classList.contains('an')
+   && document.querySelectorAll('#tabbar .tab[data-go].an').length === 0);
+document.querySelector('#tabbar .tab[data-go="v-cal"]')
+  .dispatchEvent(new window.MouseEvent('click', { bubbles:true }));
+ok('Ein Ziel aus der Leiste schliesst das Menue', !m.classList.contains('on'));
+ok('Und zwar ohne Nachlauf, weil die Seite gleichzeitig wechselt',
+   !m.classList.contains('zu'));
+ok('Die Seite ist gewechselt',
+   document.querySelector('#v-cal').classList.contains('on'));
+menuAuf();
+document.getElementById('tab-pro').dispatchEvent(new window.MouseEvent('click', { bubbles:true }));
+ok('Noch einmal aufs Profilbild schliesst es auch', m.classList.contains('zu'));
+m.classList.remove('on','zu','sofort'); menuAuf();
 
 /* ── 2 · Ruecksprung aus einem Untermenue: ohne Pause ── */
 m.classList.remove('on','zu','sofort');
@@ -422,8 +429,15 @@ window.__WEITER = function(){
   ok('Nach dem Wechsel traegt Export es',
      document.querySelector('.tab[data-go="v-export"]').classList.contains('an')
      && !document.querySelector('.tab[data-go="v-cal"]').classList.contains('an'));
+  /* Auf jeder Seite, auch in den Unteransichten — nur der Einstieg
+     kennt sie nicht. */
   go('v-hours');
-  ok('In Unteransichten steht sie nicht',
+  ok('Auch in Unteransichten steht sie',
+     document.getElementById('tabbar').style.display === 'grid');
+  ok('Und kein Punkt ist dort aktiv',
+     document.querySelectorAll('#tabbar .tab.an').length === 0);
+  go('v-login');
+  ok('Beim Einstieg nicht',
      document.getElementById('tabbar').style.display === 'none');
   /* Meine Firma ist ueber die Leiste ein Ziel wie der Kalender — und
      Ziele haben kein Zurueck. */
@@ -1090,8 +1104,14 @@ setTimeout(() => {
       beides — waehrend eines Zeitraums weicht die Leiste. */
    /* Schwebend wanderte sie in Safari mit der Adressleiste mit und
       huepfte dabei. Am Rand klebend faellt dasselbe nicht auf. */
+   /* Sie stand zuerst in #app und lag damit in dessen Stapelkontext
+      (z-index 2) — ihr eigener z-index zaehlte nur dort drin, und das
+      Menue daneben legte sich darueber. */
+   ['Die Leiste ist ein Geschwister des Menues, nicht ein Kind von #app',
+    roh.indexOf('<nav class="tabbar"') > roh.indexOf('<div class="menu" id="menu">')
+    && roh.indexOf('<nav class="tabbar"') > roh.indexOf('<div id="app"')],
    ['Die Leiste klebt am unteren Rand',
-    roh.includes('.tabbar{position:fixed; left:0; right:0; bottom:0; z-index:35;')
+    roh.includes('.tabbar{position:fixed; left:0; right:0; bottom:0; z-index:46;')
     && roh.includes('padding:11px 6px calc(15px + env(safe-area-inset-bottom));')],
    ['Vier gleich breite Felder aus Milchglas',
     roh.includes('grid-template-columns:repeat(4,1fr); align-items:end; gap:2px;')
