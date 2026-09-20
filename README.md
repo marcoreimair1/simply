@@ -706,6 +706,18 @@ zwar *oft, aber nicht immer*, je nach Verbindung. `vorspannUeberspringen()` legt
 Deckel des Wechsels gleich wieder an, in der **neuen** Farbe; `go()` nimmt ihn weg, sobald etwas
 dasteht. Eine Notbremse nach vier Sekunden sorgt dafür, dass er nie liegen bleibt.
 
+**Milchglas braucht eine gleichmäßige Tönung.** Die Kopfleiste hatte einen Verlauf im Grund —
+am Handy von 66 auf 26 Prozent hinunter — bei überall gleich starkem Weichzeichner. Unten sah
+man dadurch durch eine fast ungetönte, aber kräftig verwaschene Schicht, und direkt darunter war
+der Inhalt wieder gestochen scharf. Das las sich als **Schliere quer über den Kopf**, und was
+dort sitzt — ein Zurück-Knopf etwa — stand zur Hälfte darin. Seit 20. September 2026 ist die
+Tönung flach (`.78`, am Handy `.72`), der Weichzeichner bleibt. Eine Scheibe, kein Schmierer.
+
+Die beiden Leisten, die **absichtlich auslaufen** — die Fußzeile mit *Kalender/Export* und die
+klebende Knopfzeile im Funnel —, tragen dafür **gar keinen Weichzeichner mehr**. Ihr Verlauf
+beginnt bei null; ein gleich starker Weichzeichner darüber erzeugte oben dieselbe Schliere. Der
+Verlauf allein reicht, er endet ohnehin bei 94 Prozent.
+
 **Wer vor der Anmeldung umlegt, dessen Wahl wandert mit.** Am Einstieg ist noch kein Profil da,
 die Wahl liegt also nur im Gerät. `erscheinungUmschalten()` legt sie in diesem Fall zusätzlich
 unter `moji.fassung.wahl` in den `sessionStorage`; `erscheinungAusProfil()` holt sie beim ersten

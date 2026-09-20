@@ -246,12 +246,33 @@ setTimeout(() => {
    ['Das Zeichen ist erst mit dem Vermerk zu sehen',
     /\.mark-wrap\{[\s\S]{0,220}opacity:0[\s\S]{0,220}\.mark-wrap\.da\{opacity:1/],
    ['Und es wartet auf das dekodierte Bild', /bild\.decode \? bild\.decode\(\)/],
+   /* ─── 20.09.2026: Milchglas ohne Schliere ──────────────────────
+      Ein Verlauf im Grund und ein ueberall gleich starker
+      Weichzeichner passen nicht zusammen: unten sieht man durch eine
+      fast ungetoente, aber kraeftig verwaschene Schicht, darunter ist
+      der Inhalt gestochen scharf. Die Leiste liest sich dann als
+      Schliere, und was darin sitzt, steht halb drin. */
+   ['Die Kopfleiste traegt eine gleichmaessige Toenung',
+    /\.topbar\{position:sticky[\s\S]{0,240}background:rgba\(var\(--s-tief\),\.78\);/],
+   ['Auch am Handy, wo sie duenner ist',
+    /\.topbar\{background:rgba\(var\(--s-tief\),\.72\)\}/],
+   ['Und nirgends mehr einen Verlauf', (roh) => !/\.topbar\{[^}]*linear-gradient/.test(roh)],
+   /* Die beiden Leisten, die absichtlich auslaufen, tragen dafuer gar
+      keinen Weichzeichner mehr — der Verlauf allein reicht. */
+   ['Die Fusszeile laeuft aus, ohne zu verwaschen',
+    (roh) => /\.fabbar\{[\s\S]{0,400}rgba\(var\(--s-tief\),\.94\) 42%\)\}/.test(roh)
+             && !/\.fabbar\{[\s\S]{0,400}backdrop-filter/.test(roh)],
+   ['Und die klebende Knopfzeile auch',
+    (roh) => /\.navrow\.sticky\.solid\{background:linear-gradient\(180deg,rgba\(var\(--s-tief\),0\),rgba\(var\(--s-tief\),\.94\) 42%\)\}/.test(roh)],
    /* Am 15.09.2026 war das lebende Maennchen kurz hier. Es steht jetzt
       im Ladekreis beim Export — siehe test-export.js. Der Vorspann
       zeigt wieder nur das Standbild aus dem Quelltext. */
    ['Der Vorspann nimmt nur das Standbild',
     /bild\.src = LOGO_MOJI;\s*\n\s*const glanz = \$\('#mark-glanz'\);/]
-  ].forEach(([n, re]) => E.push({ n, ok: re.test(roh), z: re.test(roh) ? '' : 'fehlt' }));
+  ].forEach(([n, re]) => {
+    const gut = (typeof re === 'function') ? re(roh) : re.test(roh);
+    E.push({ n, ok: gut, z: gut ? '' : 'fehlt' });
+  });
   [['Und holt sich dafuer keine Datei', roh.indexOf('lebenHolen') < 0],
    ['Keine zweite Kachelgroesse im Vorspann', roh.indexOf('.mark-logo.lebt') < 0],
    ['Und kein preload im Kopf', roh.indexOf('rel="preload"') < 0]

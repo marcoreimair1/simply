@@ -746,7 +746,17 @@ body.nurhandy #splash,body.nurhandy #app,body.nurhandy .bg,body.nurhandy .grain{
 /* Platz für die Tab-Leiste nur dort, wo sie auch steht */
 #v-cal, #v-export{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
 
-.topbar{position:sticky;top:0;z-index:30;backdrop-filter:blur(22px);background:linear-gradient(180deg,rgba(var(--s-tief),.74),rgba(var(--s-tief),.34));
+/* Eine Flaeche, kein Verlauf. Vorher lief der Grund von 74 auf 34
+   Prozent hinunter, waehrend der Weichzeichner ueber die ganze Leiste
+   gleich stark blieb: unten sah man dann durch eine fast ungetoente,
+   aber kraeftig verwaschene Schicht, und direkt darunter war der Inhalt
+   wieder gestochen scharf. Das las sich als Schliere quer ueber den
+   Kopf — und was dort sitzt, ein Zurueck-Knopf etwa, stand zur Haelfte
+   darin. Milchglas braucht eine gleichmaessige Toenung, sonst ist es
+   keine Scheibe, sondern ein Schmierer. */
+.topbar{position:sticky;top:0;z-index:30;
+  backdrop-filter:blur(22px) saturate(1.1);-webkit-backdrop-filter:blur(22px) saturate(1.1);
+  background:rgba(var(--s-tief),.78);
   border-bottom:1px solid var(--line-2)}
 .topbar-in{max-width:1080px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:14px}
 .topbar{padding-top:env(safe-area-inset-top)}
@@ -1322,7 +1332,11 @@ h1.dis i{font-style:italic;color:var(--butter)}
 .autonext .dots i:nth-child(2){animation-delay:.16s}
 .autonext .dots i:nth-child(3){animation-delay:.32s}
 @keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
-.navrow.sticky.solid{background:linear-gradient(180deg,rgba(var(--s-tief),0),rgba(var(--s-tief),.94) 42%);backdrop-filter:blur(10px)}
+/* Ohne Weichzeichner: der Verlauf faengt bei null an, der Weichzeichner
+   aber wirkt ueberall gleich — oben entstuende dieselbe Schliere wie
+   frueher am Kopf. Der Verlauf allein reicht, er endet ohnehin bei
+   94 Prozent. */
+.navrow.sticky.solid{background:linear-gradient(180deg,rgba(var(--s-tief),0),rgba(var(--s-tief),.94) 42%)}
 
 /* Monatsgitter */
 .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
@@ -3125,8 +3139,8 @@ body.sigmodus .fb-s{display:inline-flex}
 .fabbar{position:fixed;left:0;right:0;bottom:0;z-index:35;
   display:flex;align-items:center;justify-content:center;gap:10px;
   padding:16px 20px calc(16px + env(safe-area-inset-bottom));
-  background:linear-gradient(180deg,rgba(var(--s-tief),0),rgba(var(--s-tief),.94) 42%);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  /* Wie bei .navrow.sticky.solid: Verlauf ja, Weichzeichner nein. */
+  background:linear-gradient(180deg,rgba(var(--s-tief),0),rgba(var(--s-tief),.94) 42%)}
 .fabbar .btn{flex:1 1 0;max-width:210px;justify-content:center;padding:16px 14px;font-size:14px}
 .fabbar .btn svg{width:17px;height:17px}
 
@@ -3162,7 +3176,11 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
   .cell{background:rgba(var(--s-tief),.20)}
   .mx{background:rgba(var(--s-tief),.18)}
   .qcal{background:rgba(var(--s-tief),.16)}
-  .topbar{background:linear-gradient(180deg,rgba(var(--s-tief),.66),rgba(var(--s-tief),.26))}
+  /* Am Handy duenner, aber weiterhin gleichmaessig — der Verlauf war
+     hier noch magerer als in der Basisregel und die Schliere darum umso
+     deutlicher. Genau diese Leiste steht auf dem Telefon hinter dem
+     Zeichen und dem Profilbild. */
+  .topbar{background:rgba(var(--s-tief),.72)}
 }
 
 /* ─── Hintergrund am Handy ───
@@ -5607,7 +5625,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-0910';
+const APP_STAND = '2026-09-20-1500';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
