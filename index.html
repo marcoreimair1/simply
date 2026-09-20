@@ -2751,6 +2751,118 @@ body.sigmodus .fb-s{display:inline-flex}
   100%{transform:none}
 }
 
+/* ─── Der Stapel ──────────────────────────────────────────────────
+   Eine Karte je Stufe, nebeneinander in einer Bahn. Das Wischen macht
+   der Browser selbst (scroll-snap) — das ist auf dem Telefon fluessiger,
+   als es eine gerechnete Bewegung je waere, weil es am Finger klebt und
+   mit dem Schwung weiterlaeuft.
+
+   Was dazukommt, ist die Tiefe: die Karte in der Mitte steht voll da,
+   die Nachbarn treten zurueck. Den Wert dafuer setzt kartenTiefe() bei
+   jedem Bild als --nah (0 bis 1). Ueber scale und nicht transform,
+   damit Einlauf-Animationen nicht dazwischenfunken. */
+.kt-zeile{ display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  padding:0 4px }
+.kt-zeile b{ font-family:var(--font-dis); font-weight:400; font-size:21px;
+  letter-spacing:-.01em; color:var(--tx) }
+.kt-zeile span{ font-size:11.5px; color:var(--tx-3); font-variant-numeric:tabular-nums;
+  white-space:nowrap }
+.kt-bahn{
+  --kb:min(74vw, 286px);
+  display:flex; gap:16px; overflow-x:auto; overflow-y:hidden;
+  scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+  padding:10px calc((100% - var(--kb)) / 2) 4px;
+  margin:0 -16px; padding-left:calc((100vw - var(--kb)) / 2 - 0px);
+  scrollbar-width:none;
+}
+.kt-bahn::-webkit-scrollbar{ display:none }
+/* Die Bahn laeuft ueber die ganze Breite der Ansicht, damit die Nachbarn
+   herausschauen. Links und rechts so viel Polster, dass die erste und die
+   letzte Karte trotzdem in die Mitte rasten koennen. */
+.mkv-in > .kt-bahn{ width:calc(100% + 32px) }
+.kt{
+  scroll-snap-align:center; scroll-snap-stop:always;
+  flex:none; width:var(--kb); border-radius:26px; position:relative; overflow:hidden;
+  display:flex; flex-direction:column; padding:9px 9px 0; color:#fff;
+  background:linear-gradient(170deg, var(--rf2,#5C6A94), var(--rtief,#1D2438) 92%);
+  box-shadow:0 26px 56px -24px rgba(var(--s-schatten),.8);
+  scale:calc(.9 + .1 * var(--nah, 1));
+  opacity:calc(.5 + .5 * var(--nah, 1));
+  transition:scale .18s linear, opacity .18s linear;
+  will-change:scale, opacity;
+}
+.kt.zu{ background:linear-gradient(170deg,#6E667E,#2E2838 92%); color:rgba(255,255,255,.74) }
+.kt-glanz{ position:absolute; inset:0; z-index:3; pointer-events:none;
+  background:linear-gradient(102deg,transparent 40%,rgba(255,255,255,.22) 50%,transparent 60%) }
+.kt-band{ display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  padding:5px 8px 10px }
+.kt-band b{ font-family:var(--font-dis); font-weight:400; font-size:17px; letter-spacing:.01em }
+.kt-band span{ font-size:10px; font-weight:700; letter-spacing:.14em;
+  color:rgba(255,255,255,.62); font-variant-numeric:tabular-nums }
+.kt-fenster{ position:relative; border-radius:19px; overflow:hidden; aspect-ratio:1;
+  background:var(--pa,#e6ecfa);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.35), 0 10px 26px -14px rgba(0,0,0,.7) }
+.kt-fenster img{ width:100%; height:100%; object-fit:cover; object-position:center 86%;
+  display:block }
+.kt-fenster .schein{ position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(190deg,rgba(255,255,255,.28),transparent 46%) }
+.kt.zu .kt-fenster{ background:#4A4356 }
+.kt.zu .kt-fenster img{ filter:grayscale(1) contrast(.78) brightness(.72) }
+.kt.zu .kt-fenster::after{ content:""; position:absolute; inset:0; background:rgba(20,16,30,.42) }
+.kt-schloss{ position:absolute; left:50%; top:50%; translate:-50% -50%; z-index:2;
+  display:grid; place-items:center; width:58px; height:58px; border-radius:20px;
+  background:rgba(12,8,20,.62); color:#fff; box-shadow:0 10px 24px -12px rgba(0,0,0,.8) }
+.kt-schloss svg{ width:26px; height:26px }
+.kt-stempel{ position:absolute; top:17px; right:17px; z-index:4; font-size:9px; font-weight:800;
+  letter-spacing:.14em; text-transform:uppercase; padding:4px 9px; border-radius:99px;
+  background:rgba(255,255,255,.22); color:#fff }
+.kt-wer{ padding:14px 9px 0; text-align:center }
+.kt-wer b{ display:block; font-family:var(--font-dis); font-weight:400; font-size:22px;
+  letter-spacing:-.015em; line-height:1.12;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.kt-wer small{ display:block; font-size:11px; color:rgba(255,255,255,.62); margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.kt-fach{ margin:13px 9px 0; padding:11px 14px; border-radius:15px;
+  background:rgba(255,255,255,.12); min-height:54px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px }
+.kt-fach u{ text-decoration:none; font-size:9px; letter-spacing:.18em; text-transform:uppercase;
+  color:rgba(255,255,255,.62) }
+.kt-fach b{ font-family:var(--font-dis); font-weight:400; font-size:21px; letter-spacing:-.01em;
+  text-align:right }
+.kt-leiter{ margin:11px 9px 0 }
+.kt-leiter .rz{ display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  font-size:10.5px; color:rgba(255,255,255,.64) }
+.kt-schiene{ display:block; height:6px; border-radius:99px; background:rgba(255,255,255,.18);
+  margin:6px 0 0; overflow:hidden }
+.kt-schiene i{ display:block; height:100%; width:0; border-radius:99px; background:var(--rf,#8FA0C8);
+  transition:width .9s var(--ease-out) }
+/* margin-top:auto: die Karten stehen nebeneinander und werden alle so
+   hoch wie die hoechste — nur die aktuelle traegt ja die Leiter. Ohne
+   das klebte das Band bei den anderen mitten in der Karte. */
+.kt-fuss{ display:flex; align-items:center; justify-content:space-between; gap:10px;
+  margin:13px -9px 0; padding:10px 18px; background:rgba(0,0,0,.34); margin-top:auto }
+.kt-fuss img{ height:14px; width:auto; display:block; filter:brightness(0) invert(1); opacity:.9 }
+.kt-fuss span{ font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(255,255,255,.52) }
+.kt.gold{ background:linear-gradient(170deg,#C79A18,#6B4E05 92%) }
+/* Verschlossen schlaegt golden: faerbe() haengt die Goldklasse an jede
+   Karte der zwoelften Stufe, auch an die, die noch zu ist. Eine
+   verschlossene Legende, die golden leuchtet, waere ein Versprechen,
+   das die Karte nicht halten kann. */
+.kt.zu.gold{ background:linear-gradient(170deg,#6E667E,#2E2838 92%) }
+/* Die Punktreihe zeigt die Sammlung als Farbverlauf: jeder Punkt in der
+   Farbe seiner Stufe, die vordere als Pille. */
+.kt-punkte{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap; padding:2px 6px 0 }
+.kt-punkte i{ width:7px; height:7px; border-radius:50%; background:rgba(var(--tx-rgb),.18);
+  transition:width .22s var(--ease-out), background .22s }
+.kt-punkte i.frei{ background:var(--pf) }
+.kt-punkte i.vorne{ width:22px; border-radius:99px }
+@media (prefers-reduced-motion:reduce){
+  .kt{ transition:none; scale:1; opacity:1 }
+  .kt-bahn{ scroll-snap-type:none }
+}
+
 /* Seitlich 16 px Luft für Schatten und die Drehung, die Karte selbst bleibt
    dadurch gleich breit wie vorher. */
 .mkv-in{position:relative;z-index:4;width:min(94vw,424px);max-height:100vh;overflow-y:auto;
@@ -5144,16 +5256,10 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         </div>
         <button class="btn btn-g dlb-weg" id="dl-abbruch">Behalten</button>
       </div>
-    <!-- Eigene Zeile für die Stufe: Antippen zeigt alle Ränge darunter. -->
+    <!-- Die Liste aller Stufen stand frueher hier als eigene Flaeche und
+         noch einmal als Blatt. Beides ist weg: der Stapel in der Karte
+         zeigt alle zwoelf, die erreichten und die verschlossenen. -->
     <div class="mrows">
-      <!-- Die Stufen legen sich unter die aktuelle Stufe, bis zur Linie,
-           und lassen sich dort rollen. -->
-      <div class="rangbox" id="rangbox" role="group" aria-label="Alle Stufen">
-        <button class="zurueckbtn" data-zurueck aria-label="Zurück zum Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
-        <p class="rb-sub" id="rb-sub">—</p>
-        <div id="rb-liste"></div>
-        <p class="rb-fuss">Jeder exportierte Monat zählt einmal. Alle vier Monate geht es eine Stufe hoch.</p>
-      </div>
     <!-- Statt des Haussymbols die Marke des Dienstgebers. Das Aufbauskript
          legt die Kachel um das erste Kind — hier also um das Bild. -->
     <button class="mi mi-firma" data-act="firma">
@@ -5161,7 +5267,6 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       Meine Firma
       <span class="zaehler tee" id="fi-zaehler" hidden></span>
     </button>
-    <button class="mi" data-act="raenge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4v-6H4zM10 20h4V9h-4zM16 20h4V4h-4z"/></svg>Alle Stufen</button>
     <button class="mi" data-act="hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Dienstzeiten bearbeiten</button>
     <button class="mi" data-act="konten">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/></svg>
@@ -5285,58 +5390,20 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
       <b id="auf-t">Stufenaufstieg</b>
       <small id="auf-s">—</small>
     </div>
-    <div class="mk-buehne">
-      <div class="mk-dreh" id="mk-dreh" role="button" tabindex="0" aria-label="Karte umdrehen">
-    <div class="mk" id="mk">
-      <div class="mk-glanz" aria-hidden="true"></div>
-      <div class="mk-funken" aria-hidden="true"><i></i><i></i><i></i></div>
-      <!-- Oben steht, wer das ist. Die Stufe stand vorher zweimal da —
-           als "Stufe 2 · Warmgelaufen" und als Plakette. Jetzt trägt sie
-           nur die Plakette, der Name der Stufe sitzt bei der Leiste. -->
-      <div class="mk-kopf">
-        <span class="mk-bild"><img id="mk-img" alt=""></span>
-        <span class="mk-txt">
-          <b id="mk-name">—</b>
-          <small id="mk-firma">—</small>
-        </span>
-        <span class="mk-lvl" id="mk-lvl">LVL 1</span>
-      </div>
+    <!-- Der Stapel. Fuer jede Stufe eine Karte: die erreichten in ihrer
+         Farbe, die kommenden hinter einem Schloss. Gewischt wird seitlich,
+         eingerastet auf jeder Karte.
 
-      <div class="mk-held">
-        <span class="mk-ico" id="mk-ico"></span>
-        <span class="mk-held-t">
-          <u>Zeit gespart</u>
-          <b id="mk-zeit">—</b>
-          <em id="mk-verg">—</em>
-        </span>
-      </div>
-
-      <div class="mk-leiter">
-        <div class="mk-stufe">
-          <b id="mk-rang">—</b>
-          <i id="mk-von">—</i>
-        </div>
-        <span class="mk-schiene"><span class="mk-bar" id="mk-bar"></span></span>
-        <small id="mk-rest">—</small>
-      </div>
-
-      <div class="mk-zeilen" id="mk-zeilen"></div>
-
-      <div class="mk-band">
-        <img class="mk-wort" id="mk-wort" alt="MOJI">
-        <span>Mehr Zeit fürs Wesentliche.</span>
-      </div>
+         Vorher lag hier eine einzige Karte, die sich umdrehen liess. Die
+         Rueckseite trug die Angaben, fuer die vorne kein Platz war — und
+         die Liste aller Stufen lag noch einmal woanders. Jetzt ist beides
+         dasselbe: durchwischen. -->
+    <div class="kt-zeile">
+      <b id="kt-titel">—</b><span id="kt-zaehler">—</span>
     </div>
-
-    <!-- Rückseite: das quadratische Zeichen als Prägung im Karton. -->
-    <div class="mk-rueck" id="mk-rueck">
-      <div class="mk-glanz" aria-hidden="true"></div>
-      <div class="mk-praege" id="mk-praege" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="mk-rt"><u>Eine App entwickelt von</u><b>Studio MARU 丸</b></div>
-    </div>
-      </div>
-    </div>
-    <small class="mk-tipp" id="mk-tipp">Antippen, um die Karte zu drehen</small>
+    <div class="kt-bahn" id="kt-bahn" role="group" aria-label="Deine Karten"></div>
+    <div class="kt-punkte" id="kt-punkte" aria-hidden="true"></div>
+    <small class="mk-tipp" id="mk-tipp">Seitlich wischen für die anderen Stufen</small>
   </div>
 
   <!-- Dieselbe Leiste wie Kalender und Export: unten festgemacht, bis an
@@ -5695,7 +5762,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-1810';
+const APP_STAND = '2026-09-20-1950';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9444,74 +9511,154 @@ function vergleich(min){
 /* Die Karte */
 /* nrZeig: nur für die Aufstiegsfeier — dann zeigt die Karte eine
    vergangene Stufe, damit man den Weg nach oben sieht. */
+/* ─── Der Stapel bauen ────────────────────────────────────────────
+   Fuer jede Stufe eine Karte. Drei Zustaende, immer derselbe Aufbau —
+   Band, Fenster, Name, Fach —, damit beim Wischen nichts springt. Nur
+   was im Fach steht, wechselt:
+
+     erreicht      das Datum und der Satz der Stufe
+     aktuell       die gesparte Zeit, dazu als einzige die Leiter
+     verschlossen  wie viel noch fehlt, und ein Schloss ueber dem Tier
+
+   Erreicht-Daten rechnet die App nicht mit: sie weiss, WIE VIELE Monate
+   abgegeben sind, aber nicht wann welcher. Darum steht dort die
+   Bedingung, die erfuellt wurde, und nicht ein erfundenes Datum. */
+const KT_SCHLOSS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+  + 'stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="3"/>'
+  + '<path d="M8 10.5V7.4a4 4 0 0 1 8 0v3.1"/></svg>';
+
+function ktKarte(n, echt, anzahl){
+  const r = rang(n), noetig = (n - 1) * PRO_STUFE;
+  const frei = n <= echt, ist = n === echt;
+  let fach, leiter = '';
+  if(ist){
+    const min = gespartMin();
+    fach = '<u>Zeit gespart</u><b>' + esc(anzahl ? fmtDauer(min) : 'noch nichts') + '</b>';
+    const rest = nochBis();
+    leiter = '<div class="kt-leiter"><div class="rz"><span>'
+      + (rest ? 'noch ' + rest + (rest === 1 ? ' Monat' : ' Monate') + ' bis ' + esc(rang(n + 1).n)
+              : 'höchste Stufe erreicht')
+      + '</span><span>' + anzahl + ' / ' + (rest ? n * PRO_STUFE : anzahl) + '</span></div>'
+      + '<span class="kt-schiene"><i></i></span></div>';
+  } else if(frei){
+    fach = '<u>Geschafft mit</u><b>' + (noetig || 1) + ' Monaten</b>';
+  } else {
+    const fehlt = noetig - anzahl;
+    fach = '<u>Noch ' + fehlt + (fehlt === 1 ? ' Monat' : ' Monate') + '</u><b>ab ' + noetig + '</b>';
+  }
+  return '<article class="kt ' + (frei ? 'frei' : 'zu') + (ist ? ' jetzt' : '')
+    + (n >= RAENGE.length && frei ? ' gold' : '') + '" data-n="' + n + '">'
+    + (frei ? '<span class="kt-glanz" aria-hidden="true"></span>' : '')
+    + (frei && !ist ? '<span class="kt-stempel">Erreicht</span>' : '')
+    + '<div class="kt-band"><b>' + esc(r.n) + '</b><span>' + n + ' / ' + RAENGE.length + '</span></div>'
+    + '<div class="kt-fenster"><img src="' + avDatei(avNummer()) + '" alt="">'
+    +   '<span class="schein" aria-hidden="true"></span>'
+    +   (frei ? '' : '<span class="kt-schloss" aria-hidden="true">' + KT_SCHLOSS + '</span>')
+    + '</div>'
+    + '<div class="kt-wer"><b>' + esc(ME.vorname + ' ' + ME.nachname) + '</b>'
+    +   '<small>' + esc(frei ? EMPLOYER : r.w) + '</small></div>'
+    + '<div class="kt-fach">' + fach + '</div>'
+    + leiter
+    + '<div class="kt-fuss"><img alt="MOJI"><span>'
+    +   esc(frei ? seitText() : 'Noch nicht freigeschaltet') + '</span></div>'
+    + '</article>';
+}
+
 function malKarte(nrZeig){
-  const echt = stufe();
-  const nr = nrZeig || echt, r = rang(nr), anzahl = expAnzahl();
-  const karte = $('#mk'), buehne = $('#mkv');
-  faerbe(karte, nr);
-  faerbe(buehne, nr);                      /* die Farbwolken im Hintergrund */
-  faerbe($('#mk-rueck'), nr);              /* die Rückseite trägt dieselbe Stufe */
-  /* Die Prägung braucht das Zeichen als Maske — einmal setzen genügt. */
-  const pr = $('#mk-praege');
-  if(pr && !pr.style.getPropertyValue('--marke')) pr.style.setProperty('--marke', 'url("' + LOGO_MARK + '")');
-  $('#mk-img').src = avDatei(avNummer());
-  $('#mk-name').textContent = ME.vorname + ' ' + ME.nachname;
-  $('#mk-firma').textContent = EMPLOYER;
-  $('#mk-lvl').textContent = 'LVL ' + nr;
-  $('#mk-rang').textContent = r.n;
-  $('#mk-von').textContent = 'Stufe ' + nr + ' von ' + RAENGE.length;
-  if(!$('#mk-wort').getAttribute('src')) $('#mk-wort').src = LOGO_WORD;
+  const echt = stufe(), anzahl = expAnzahl();
+  const bahn = $('#kt-bahn'); if(!bahn) return;
+  bahn.innerHTML = RAENGE.map((r, i) => ktKarte(i + 1, echt, anzahl)).join('');
+  /* Jede Karte traegt ihre eigenen Stufenfarben — und eine dunklere
+     Variante fuer den Verlauf nach unten. */
+  $$('.kt', bahn).forEach(k => {
+    const n = +k.dataset.n;
+    faerbe(k, n);
+    k.style.setProperty('--rtief', mischSchwarz(rang(n).b, .58));
+    const w = $('img', $('.kt-fuss', k));
+    if(w) w.src = LOGO_WORD;
+  });
+  $('#kt-punkte').innerHTML = RAENGE.map((r, i) =>
+    '<i class="' + (i + 1 <= echt ? 'frei' : '') + '" style="--pf:' + r.a + '"></i>').join('');
+  faerbe($('#mkv'), nrZeig || echt);        /* die Farbwolken im Hintergrund */
+  _mkAnteil = stufeAnteil();
+  _ktZeig = nrZeig || echt;
+}
+/* Aus der Stufenfarbe eine dunklere fuer den Verlauf. mischWeiss gibt es
+   schon, das Gegenstueck fehlte. */
+function mischSchwarz(hex, anteil){
+  const n = parseInt(String(hex).slice(1), 16);
+  const m = v => Math.round(v * (1 - anteil));
+  return '#' + [m(n >> 16 & 255), m(n >> 8 & 255), m(n & 255)]
+    .map(v => v.toString(16).padStart(2, '0')).join('');
+}
+let _ktZeig = 1;
 
-  const min = gespartMin(), v = vergleich(min);
-  $('#mk-zeit').textContent = anzahl ? fmtDauer(min) : 'noch nichts';
-  $('#mk-verg').textContent = anzahl ? 'Damit könntest du ' + v.text + '.' : v.text;
-  $('#mk-ico').innerHTML = vsIco(v.ico);
-
-  $('#mk-bar').style.width = '0%';
-  /* Eine schon abgeschlossene Stufe zeigt die Leiste voll. */
-  const fertig = nr < echt;
-  const rest = fertig ? 0 : nochBis();
-  $('#mk-rest').textContent = fertig
-    ? 'Stufe ' + nr + ' abgeschlossen'
-    : (rest
-        ? 'noch ' + rest + (rest === 1 ? ' Monat' : ' Monate') + ' bis ' + rang(nr + 1).n
-        : 'höchste Stufe erreicht — mehr geht nicht');
-  _mkAnteil = fertig ? 1 : stufeAnteil();
-
-  /* Drei Angaben, die etwas aussagen. Die Zeile "Rang" trug vorher den
-     Spruch der Stufe — als Wert unter der Überschrift "Rang" war das
-     irreführend, und der Name der Stufe steht jetzt ohnehin an der Leiste.
-     "Zuletzt" zeigt den jüngsten abgegebenen Monat, nicht die letzte
-     Handlung: wer im August den Juni nachreicht, will trotzdem Juli sehen. */
-  const jung = neuesterMonat();
-  $('#mk-zeilen').innerHTML = [
-    ['Mitglied seit', seitText()],
-    ['Abgegeben', anzahl ? anzahl + (anzahl === 1 ? ' Monat' : ' Monate') : 'noch nichts'],
-    ['Zuletzt', jung ? fmtMonatJahr(jung.y, jung.m) : '—']
-  ].map(z => '<div class="mkz"><u>' + z[0] + '</u><b>' + esc(z[1]) + '</b></div>').join('');
+/* Welche Karte vorne liegt — und wie nah die Nachbarn dran sind.
+   Gerechnet wird bei jedem Bild waehrend des Wischens, aber nur einmal
+   je Bild: ein Scroll-Ereignis feuert oefter als der Schirm zeichnet. */
+let _ktRaf = 0;
+function kartenTiefe(){
+  const bahn = $('#kt-bahn'); if(!bahn) return;
+  const mitte = bahn.scrollLeft + bahn.clientWidth / 2;
+  let vorne = null, bd = Infinity;
+  $$('.kt', bahn).forEach(k => {
+    const m = k.offsetLeft + k.offsetWidth / 2;
+    const d = Math.abs(m - mitte);
+    /* 0 in der Mitte, 1 eine ganze Kartenbreite daneben. */
+    k.style.setProperty('--nah', String(Math.max(0, 1 - d / (k.offsetWidth + 16))));
+    if(d < bd){ bd = d; vorne = k; }
+  });
+  if(!vorne) return;
+  const n = +vorne.dataset.n, echt = stufe();
+  $('#kt-titel').textContent = rang(n).n;
+  $('#kt-zaehler').textContent = 'Karte ' + n + ' von ' + RAENGE.length;
+  $$('#kt-punkte i').forEach((p, i) => p.classList.toggle('vorne', i + 1 === n));
+  /* Teilen gilt fuer die Karte, die vorne liegt. Bei einer verschlossenen
+     gibt es nichts herzuzeigen. */
+  const t = $('#mk-teilen');
+  if(t) t.disabled = n > echt;
+  _ktVorne = n;
+}
+let _ktVorne = 1;
+function ktBahnHorchen(){
+  const bahn = $('#kt-bahn'); if(!bahn || bahn._horcht) return;
+  bahn._horcht = true;
+  bahn.addEventListener('scroll', () => {
+    if(_ktRaf) return;
+    _ktRaf = requestAnimationFrame(() => { _ktRaf = 0; kartenTiefe(); });
+  }, { passive:true });
+}
+/* Eine Karte in die Mitte holen. Ohne Schwung beim Oeffnen, mit Schwung
+   danach. */
+function ktZeige(n, weich){
+  const bahn = $('#kt-bahn'); if(!bahn) return;
+  const k = $$('.kt', bahn)[Math.max(0, Math.min(RAENGE.length, n) - 1)];
+  if(!k) return;
+  const ziel = k.offsetLeft - (bahn.clientWidth - k.offsetWidth) / 2;
+  if(weich && bahn.scrollTo) bahn.scrollTo({ left:ziel, behavior:'smooth' });
+  else bahn.scrollLeft = ziel;
+  kartenTiefe();
 }
 let _mkAnteil = 0;
 function karteAuf(){
   const b = $('#mkv');
   if(b.classList.contains('on')) return;
   $('#auf-kopf').hidden = true;
-  $('#mk-dreh').classList.remove('um');    /* immer mit der Vorderseite beginnen */
-  $('#mk-tipp').textContent = 'Antippen, um die Karte zu drehen';
+  $('#mk-tipp').textContent = 'Seitlich wischen für die anderen Stufen';
   malKarte();
   b.classList.remove('weg');
-  const karte = $('#mk');
-  karte.style.animation = 'none'; void karte.offsetWidth; karte.style.animation = '';
   b.classList.add('on');
   document.body.classList.add('locked');
-  /* Die Leiste füllt sich erst, wenn die Karte steht — dann sieht man es
-     laufen. Ein kurzer Zeitgeber statt requestAnimationFrame: der läuft
-     auch dann, wenn das Fenster gerade nicht im Vordergrund war. */
-  setTimeout(() => { $('#mk-bar').style.width = Math.round(_mkAnteil * 100) + '%'; }, 90);
-}
-function karteDreh(){
-  const d = $('#mk-dreh');
-  const um = d.classList.toggle('um');
-  $('#mk-tipp').textContent = um ? 'Antippen, um zurückzudrehen' : 'Antippen, um die Karte zu drehen';
+  ktBahnHorchen();
+  /* Erst stellen, wenn die Bahn wirklich eine Breite hat — vorher waere
+     offsetLeft null und alles landete ganz links. */
+  setTimeout(() => {
+    ktZeige(_ktZeig, false);
+    /* Die Leiste faellt sich erst, wenn die Karte steht — dann sieht man
+       es laufen. */
+    const bar = $('.kt.jetzt .kt-schiene i');
+    if(bar) bar.style.width = Math.round(_mkAnteil * 100) + '%';
+  }, 60);
 }
 function karteZu(){
   const b = $('#mkv');
@@ -9553,7 +9700,7 @@ async function aufFeier(){
   const a = ME && ME.auf;
   if(!a) { karteAuf(); return; }
   const von = a.von, bis = a.bis, anzahl = bis - von;
-  const b = $('#mkv'), karte = $('#mk');
+  const b = $('#mkv');
 
   $('#auf-kopf').hidden = false;
   $('#auf-boost').hidden = anzahl < 2;
@@ -9564,29 +9711,31 @@ async function aufFeier(){
     ? 'Du bist jetzt auf Stufe ' + bis + ' — ' + rang(bis).n + '.'
     : anzahl + ' Stufen auf einmal — von ' + rang(von).n + ' zu ' + rang(bis).n + '.';
 
-  $('#mk-dreh').classList.remove('um');
   malKarte(von + 1);
   b.classList.remove('weg');
-  karte.style.animation = 'none'; void karte.offsetWidth; karte.style.animation = '';
   b.classList.add('on');
   document.body.classList.add('locked');
+  ktBahnHorchen();
   faerbe($('#auf-kopf'), bis);
-  setTimeout(() => { $('#mk-bar').style.width = Math.round(_mkAnteil * 100) + '%'; }, 90);
+  setTimeout(() => {
+    ktZeige(von + 1, false);
+    const bar = $('.kt.jetzt .kt-schiene i');
+    if(bar) bar.style.width = Math.round(_mkAnteil * 100) + '%';
+  }, 60);
   konfetti($('#mkkanvas'), () => b.classList.contains('on'),
            { starts: anzahl > 1 ? [120, 520, 1000, 1500, 2100] : [140, 560], regen: 900 + anzahl * 400 });
 
-  /* Karussell: jede weitere Stufe schiebt herein. */
+  /* Bei mehreren Stufen auf einmal wandert der Stapel weiter — eine
+     Karte nach der anderen schiebt sich in die Mitte. Frueher wurde
+     dieselbe Karte immer wieder neu beschriftet; jetzt sieht man, dass
+     es verschiedene sind. */
   for(let nr = von + 2; nr <= bis; nr++){
     await new Promise(r => { _aufT = setTimeout(r, 1150); });
     if(!b.classList.contains('on')) return;          /* zwischendurch geschlossen */
-    malKarte(nr);
-    karte.classList.remove('schub','puls'); void karte.offsetWidth;
-    karte.classList.add('schub','puls');
-    setTimeout(() => { $('#mk-bar').style.width = Math.round(_mkAnteil * 100) + '%'; }, 90);
+    ktZeige(nr, true);
   }
   await new Promise(r => { _aufT = setTimeout(r, 900); });
   if(!b.classList.contains('on')) return;
-  karte.classList.remove('schub','puls');
   aufQuittiert();
 }
 
@@ -10188,9 +10337,11 @@ function pfZu(){
 $('#postfach').addEventListener('click', () => { _vonMenu = true; pfAuf(); });
 $('#pf-zu').addEventListener('click', pfZu);
 $('#mk-zu').addEventListener('click', karteZu);
-$('#mk-dreh').addEventListener('click', karteDreh);
-$('#mk-dreh').addEventListener('keydown', e => {
-  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); karteDreh(); }
+/* Mit der Tastatur blaettert man mit den Pfeilen durch den Stapel. */
+$('#kt-bahn').addEventListener('keydown', e => {
+  if(e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  e.preventDefault();
+  ktZeige(_ktVorne + (e.key === 'ArrowRight' ? 1 : -1), true);
 });
 $('#ma-auf').addEventListener('click', () => { _vonMenu = true; karteAuf(); });
 /* Der Kopf gibt nach, solange der Finger liegt — nicht nach fester Uhr.
@@ -10325,7 +10476,6 @@ function avWahl(an){
   const k = $('#menu .menu-card'); if(!k) return;
   const auf = (an === undefined) ? !avOffen() : !!an;
   if(auf && typeof kontenOffen === 'function' && kontenOffen()) kontenAuf(false);
-  if(auf && typeof rangboxOffen === 'function' && rangboxOffen()) rangboxAuf(false);
   if(auf && typeof uaOffen === 'function' && uaOffen()) uaAuf(false);
   k.classList.toggle('avauf', auf);
   const b = $('#avbig'); if(b) b.setAttribute('aria-expanded', auf ? 'true' : 'false');
@@ -10423,48 +10573,6 @@ function kRaeder(auf){
   hUr.appendChild(_kRad.ur);
   raederRichten($('#konten'));
 }
-/* Ein Rad rastet beim Ziehen ein Dutzend Mal ein — einmal sichern am
-   Ende genuegt. Der Knopf "Speichern" sichert ohnehin noch einmal. */
-let _kBaldT = null;
-function kBaldSichern(){
-  clearTimeout(_kBaldT);
-  _kBaldT = setTimeout(() => { _kBaldT = null; save(); }, 420);
-}
-/* Die Stufen im Menü: dieselbe Liste wie im Blatt, nur unter der aktuellen
-   Stufe und rollbar bis zur Linie. Ein zweiter Tipp schließt wieder. */
-function rangboxOffen(){
-  const k = $('#menu .menu-card');
-  return !!(k && k.classList.contains('rauf'));
-}
-function malRangbox(){
-  const nr = stufe();
-  $('#rb-sub').textContent = 'Stufe ' + nr + ' von ' + RAENGE.length
-    + ' · ' + expAnzahl() + (expAnzahl() === 1 ? ' Monat' : ' Monate') + ' exportiert';
-  $('#rb-liste').innerHTML = RAENGE.map((r, i) => {
-    const n = i + 1, hier = n === nr, offen = n > nr;
-    const v = rangVars(r);
-    const stil = Object.keys(v).map(k => k + ':' + v[k]).join(';');
-    return '<div class="rl' + (hier ? ' hier' : '') + (offen ? ' zu' : '')
-      + '" style="' + stil + '">'
-      + '<span class="rl-nr">' + n + '</span>'
-      + '<span class="rl-t"><b>' + r.n + '</b><small>ab ' + stufeAb(n)
-      + (stufeAb(n) === 1 ? ' Monat' : ' Monaten') + '</small></span>'
-      + (hier ? '<span class="rl-hier">hier</span>' : '')
-      + '</div>';
-  }).join('');
-}
-function rangboxAuf(an){
-  const k = $('#menu .menu-card'); if(!k || !ME) return;
-  const auf = (an === undefined) ? !rangboxOffen() : !!an;
-  if(auf){
-    if(avOffen()) avWahl(false);
-    if(kontenOffen()) kontenAuf(false);
-    if(uaOffen()) uaAuf(false);
-    malRangbox();
-    $('#rangbox').scrollTop = 0;
-  }
-  k.classList.toggle('rauf', auf);
-}
 function kontenOffen(){
   const k = $('#menu .menu-card');
   return !!(k && k.classList.contains('kauf'));
@@ -10473,7 +10581,6 @@ function kontenAuf(an){
   const k = $('#menu .menu-card'); if(!k || !ME) return;
   const auf = (an === undefined) ? !kontenOffen() : !!an;
   if(auf && avOffen()) avWahl(false);
-  if(auf && rangboxOffen()) rangboxAuf(false);
   if(auf && uaOffen()) uaAuf(false);
   if(auf && dlOffen()) dlZu(false);
   k.classList.toggle('kauf', auf);
@@ -10487,7 +10594,6 @@ document.addEventListener('click', e => {
   if(avOffen()) avWahl(false);
   else if(kontenOffen()) kontenAuf(false);
   else if(uaOffen()) uaAuf(false);
-  else if(rangboxOffen()) rangboxAuf(false);
   else if(dlOffen()) dlZu();
 }, true);
 
@@ -10513,7 +10619,6 @@ document.addEventListener('click', e => {
     if(avOffen())      return { el: $('#avgrid'),  tun: () => avWahl(false) };
     if(kontenOffen())  return { el: $('#konten'),  tun: () => kontenAuf(false) };
     if(uaOffen())      return { el: $('#uabox'),   tun: () => uaAuf(false) };
-    if(rangboxOffen()) return { el: $('#rangbox'), tun: () => rangboxAuf(false) };
     if(dlOffen())      return { el: $('#dlbox'),   tun: () => dlZu() };
     const k = $('#menu .menu-card');
     return k ? { el: k, tun: menuZu } : null;
@@ -10615,7 +10720,6 @@ function uaAuf(an){
   if(auf){
     if(avOffen()) avWahl(false);
     if(kontenOffen()) kontenAuf(false);
-    if(rangboxOffen()) rangboxAuf(false);
     if(dlOffen()) dlZu(false);
   }
   k.classList.toggle('uaauf', auf);
@@ -12597,7 +12701,6 @@ function menuZu(){
   /* Bildauswahl und Stände beginnen beim nächsten Öffnen wieder geschlossen. */
   if(avOffen()) avWahl(false);
   if(kontenOffen()) kontenAuf(false);
-  if(rangboxOffen()) rangboxAuf(false);
   if(uaOffen()) uaAuf(false);
   if(dlOffen()) dlZu(false);
   m.classList.add('zu');
@@ -12709,7 +12812,6 @@ $('#menu').addEventListener('click', e => {
      ohnehin über dem Menü (45); früher ging das Menü zu und die Frage
      kam 180 ms später vor einem leeren Kalender. */
   if(b.dataset.act === 'passkey'){ pkBarAuf(); return; }
-  if(b.dataset.act === 'raenge' && !aufOffen()){ rangboxAuf(); return; }
   if(b.dataset.act === 'delete'){ doDelete(); return; }
   menuZu();
   const a = b.dataset.act;
@@ -12726,7 +12828,6 @@ $('#menu').addEventListener('click', e => {
   }
   if(a === 'firma'){ _vonMenu = true; firmaAuf(); }
   if(a === 'karte'){ _vonMenu = true; karteAuf(); }
-  if(a === 'raenge'){ _vonMenu = true; if(aufOffen()) aufFeier(); else rangAuf(); }
   if(a === 'logout') doLogout();
   if(a === 'delete') doDelete();
 });
@@ -12799,7 +12900,6 @@ function dlAuf(){
   const k = $('#menu .menu-card'); if(!k || dlOffen()) return;
   if(avOffen()) avWahl(false);
   if(kontenOffen()) kontenAuf(false);
-  if(rangboxOffen()) rangboxAuf(false);
   if(uaOffen()) uaAuf(false);
   $('#dl-liste').innerHTML = dlZeilen();
   dlZurueck();

@@ -897,6 +897,49 @@ Sie war kurz ein dritter Knopf in der Kartenleiste — ein Blatt, das aus einem 
 in einer Zeile für zwei Knöpfe. Jetzt ist sie eine **gewöhnliche Menüzeile** (*Alle Stufen*) und
 zieht dieselbe Fläche auf wie *Zeitausgleich*: im Menü, nicht darüber.
 
+### Der Stapel
+
+Hinter dem Kopf liegt seit 20. September 2026 kein einzelnes Blatt mehr, sondern **zwölf
+Karten — eine je Stufe**. Die erreichten in ihrer Farbe, die kommenden hinter einem Schloss.
+Gewischt wird seitlich, eingerastet auf jeder Karte.
+
+**Drei Zustände, immer derselbe Aufbau** — Band, Fenster, Name, ein Fach —, damit beim Wischen
+nichts springt. Nur was im Fach steht, wechselt:
+
+| | Fach | dazu |
+|---|---|---|
+| **erreicht** | *Geschafft mit 36 Monaten* | ein Stempel oben rechts |
+| **aktuell** | die gesparte Zeit | als einzige die Leiter darunter |
+| **verschlossen** | *noch 1 Monat · ab 40* | ein Schloss über dem Tier, grau statt farbig |
+
+**Das Tier ist groß.** Von allem, was MOJI hat, erkennt man die Tiere am schnellsten wieder —
+116 Stück, jedes ein eigenes. Eine Karte, auf der das Tier klein in der Ecke sitzt, verschenkt
+das.
+
+**Das Wischen macht der Browser** (`scroll-snap-type: x mandatory`). Das ist auf dem Telefon
+flüssiger, als es eine gerechnete Bewegung je wäre: es klebt am Finger und läuft mit dem Schwung
+weiter. Dazu kommt nur die **Tiefe** — die Karte in der Mitte steht voll da, die Nachbarn treten
+zurück. `kartenTiefe()` setzt dafür `--nah` (0 bis 1) je Karte, und zwar **einmal je Bild**
+(`requestAnimationFrame`), weil ein Scroll-Ereignis öfter feuert als der Schirm zeichnet.
+Angewendet wird es über `scale`, nicht `transform` — sonst fahren Einlauf-Animationen dazwischen.
+
+**Zwei Fallen, beide nachgemessen:**
+
+- `faerbe()` hängt die Goldklasse an **jede** Karte der zwölften Stufe, auch an die verschlossene.
+  Eine verschlossene Legende, die golden leuchtet, wäre ein Versprechen, das die Karte nicht
+  halten kann — `.kt.zu.gold` setzt sie wieder auf Grau.
+- Die Karten stehen nebeneinander und werden alle so hoch wie die höchste, denn nur die aktuelle
+  trägt die Leiter. Ohne `margin-top:auto` klebte das dunkle Band bei den anderen mitten in der
+  Karte.
+
+**Dreimal dieselbe Liste ist weggefallen.** Die Stufen gab es als Fläche im Menü (`rangbox`), als
+eigenes Blatt (`rsheet`) und kurz als Knopf in der Karte. Der Stapel ist alle drei: er zeigt jede
+Stufe, ihren Namen, ihren Satz und was sie kostet.
+
+**Was noch aussteht:** Das Bild fürs Teilen (`karteBild()`, 1080 × 1350) zeichnet noch die alte
+Karte — es entsteht Strich für Strich auf einer Leinwand und muss für die Sammelkarte neu
+gezeichnet werden.
+
 ### Die Profilbilder
 
 **116 Motive**, seit 15. September 2026. Vorher waren es zwölf. 104 kommen aus sechs Bögen mit

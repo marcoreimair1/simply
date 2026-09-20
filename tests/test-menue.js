@@ -356,12 +356,55 @@ window.__WEITER = function(){
      document.getElementById('avbig').tagName === 'BUTTON'
      && document.getElementById('postfach').tagName === 'BUTTON'
      && !document.getElementById('ma-auf').contains(document.getElementById('avbig')));
-  /* Die Stufenliste war kurz ein dritter Knopf in der Kartenleiste —
-     ein Blatt, das aus einem Blatt aufgeht. Jetzt eine gewoehnliche
-     Zeile im Menue, die dieselbe Flaeche aufzieht wie Zeitausgleich. */
-  ok('Die Stufenliste ist eine Menuezeile',
-     !!document.querySelector('#menu .mi[data-act="raenge"]'));
-  ok('Und kein Knopf mehr in der Karte', !document.getElementById('mk-stufen'));
+  /* Die Liste aller Stufen gab es dreimal: als Flaeche im Menue, als
+     eigenes Blatt und als Knopf in der Karte. Jetzt gar nicht mehr —
+     der Stapel zeigt alle zwoelf, die erreichten und die verschlossenen. */
+  ok('Keine eigene Zeile fuer die Stufen mehr',
+     !document.querySelector('#menu .mi[data-act="raenge"]'));
+  ok('Keine Flaeche dafuer im Menue',  !document.getElementById('rangbox'));
+  ok('Und kein Knopf in der Karte',    !document.getElementById('mk-stufen'));
+
+  /* ── Der Stapel ──
+     Fuer jede Stufe eine Karte. Drei Zustaende, immer derselbe Aufbau,
+     damit beim Wischen nichts springt. */
+  ME.months = []; for(var mi = 0; mi < 39; mi++) ME.months.push({ y:2026 + (mi/12|0), m:mi%12 });
+  ME.exp = {}; ME.months.forEach(function(o){ ME.exp[o.y + '-' + o.m] = 1; });
+  malKarte();
+  var kt = document.querySelectorAll('#kt-bahn .kt');
+  var st = stufe();
+  ok('Fuer jede Stufe eine Karte',  kt.length === RAENGE.length, kt.length);
+  ok('Und die Stufe stimmt',        st === 10, st);
+  ok('Die erreichten sind frei',
+     [].every.call(kt, function(k, i){ return (i + 1 <= st) === k.classList.contains('frei'); }));
+  ok('Die kommenden sind zu',
+     [].every.call(kt, function(k, i){ return (i + 1 > st) === k.classList.contains('zu'); }));
+  ok('Genau eine ist die aktuelle',
+     document.querySelectorAll('#kt-bahn .kt.jetzt').length === 1
+     && +document.querySelector('#kt-bahn .kt.jetzt').dataset.n === st);
+  ok('Nur die verschlossenen tragen ein Schloss',
+     [].every.call(kt, function(k, i){ return (i + 1 > st) === !!k.querySelector('.kt-schloss'); }));
+  ok('Nur die aktuelle traegt die Leiter',
+     document.querySelectorAll('#kt-bahn .kt .kt-leiter').length === 1
+     && !!document.querySelector('#kt-bahn .kt.jetzt .kt-leiter'));
+  ok('Die erreichten tragen einen Stempel, die aktuelle nicht',
+     document.querySelectorAll('#kt-bahn .kt-stempel').length === st - 1);
+  /* Im Fach steht bei jeder etwas anderes — das ist der einzige Teil,
+     der wechselt. */
+  ok('Im Fach der aktuellen steht die gesparte Zeit',
+     document.querySelector('#kt-bahn .kt.jetzt .kt-fach u').textContent === 'Zeit gespart');
+  ok('Bei einer verschlossenen steht, was fehlt',
+     kt[st].querySelector('.kt-fach u').textContent.indexOf('Noch ') === 0,
+     kt[st].querySelector('.kt-fach u').textContent);
+  ok('Jede Karte traegt ihre Stufenfarbe',
+     kt[0].style.getPropertyValue('--rf') === RAENGE[0].a
+     && kt[11].style.getPropertyValue('--rf') === RAENGE[11].a,
+     kt[11].style.getPropertyValue('--rf'));
+  ok('Und einen dunkleren Grund dazu', /^#[0-9a-f]{6}$/.test(kt[0].style.getPropertyValue('--rtief')),
+     kt[0].style.getPropertyValue('--rtief'));
+  ok('Zwoelf Punkte, so viele wie Karten',
+     document.querySelectorAll('#kt-punkte i').length === RAENGE.length);
+  ok('Die erreichten Punkte sind eingefaerbt',
+     document.querySelectorAll('#kt-punkte i.frei').length === st);
 
   /* ── Die Profilbilder ──
      Seit 15.09.2026 sind es 117 statt 12, als WebP in 288 x 384. */
@@ -838,6 +881,23 @@ setTimeout(() => {
     && /transition:scale \.14s var\(--ease-out\)/.test(roh)],
    ['Und haelt, solange der Finger liegt',
     /\['pointerup','pointercancel','pointerleave'\]\.forEach/.test(roh)],
+   /* ─── Der Stapel: Bewegung und Zustaende ───────────────────────── */
+   ['Gewischt wird mit Einrasten',
+    /\.kt-bahn\{[\s\S]{0,400}scroll-snap-type:x mandatory;/.test(roh)
+    && /\.kt\{[\s\S]{0,120}scroll-snap-align:center; scroll-snap-stop:always;/.test(roh)],
+   ['Die Tiefe kommt aus --nah und geht ueber scale',
+    /scale:calc\(\.9 \+ \.1 \* var\(--nah, 1\)\);/.test(roh)
+    && /k\.style\.setProperty\('--nah'/.test(roh)],
+   ['Gerechnet wird einmal je Bild, nicht je Scroll-Ereignis',
+    /_ktRaf = requestAnimationFrame\(\(\) => \{ _ktRaf = 0; kartenTiefe\(\); \}\);/.test(roh)],
+   ['Verschlossen schlaegt golden',
+    /\.kt\.zu\.gold\{ background:linear-gradient\(170deg,#6E667E,#2E2838 92%\) \}/.test(roh)],
+   ['Das Band sitzt unten, auch wenn die Karte mitwaechst',
+    /\.kt-fuss\{[\s\S]{0,200}margin-top:auto \}/.test(roh)],
+   ['Weniger Bewegung laesst das Einrasten weg',
+    /prefers-reduced-motion:reduce\)\{\s*\n\s*\.kt\{ transition:none; scale:1; opacity:1 \}/.test(roh)],
+   ['Die alte Drehbuehne ist weg',
+    !/id="mk-dreh"/.test(roh) && !/function karteDreh/.test(roh)],
    ['Das dunkle Band traegt die Wortmarke',
     /\.ma-band\{[\s\S]{0,200}background:var\(--karton-band, #0B0711\)/.test(roh)],
    ['Die Obergrenze in normalize steht nicht als Zahl da',
