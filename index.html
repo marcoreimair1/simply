@@ -2846,7 +2846,13 @@ body.sigmodus .fb-s{display:inline-flex}
   display:flex; gap:16px; overflow-x:auto; overflow-y:hidden;
   scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
   overscroll-behavior-x:contain;
-  padding:10px calc((100% - var(--kb)) / 2) 4px;
+  /* Unten 48 px statt 4: der Schatten der Karten reicht 58 px unter
+     ihre Kante (0 26px 56px -24px), die Bahn schnitt ihn mit
+     overflow-y:hidden glatt ab. Das ergab quer ueber die ganze Breite
+     eine harte Kante — darueber der getoente Grund, darunter abrupt
+     hell. Jetzt laeuft der Schatten weich aus, und zwischen Karte und
+     dem hellen Bereich steht Luft. */
+  padding:10px calc((100% - var(--kb)) / 2) 48px;
   margin:0 -16px; padding-left:calc((100vw - var(--kb)) / 2 - 0px);
   scrollbar-width:none;
 }
@@ -5986,7 +5992,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-0415';
+const APP_STAND = '2026-09-21-0450';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;

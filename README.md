@@ -1037,6 +1037,13 @@ eine Kante, Flächen auf dem Schirm nicht.
 `margin-top:auto` am Fußband nichts übrig, also stand *Zeit gespart* genau auf dem Band. Die 15 px
 stehen jetzt fest am Fach.
 
+**Quer über die Ansicht lief eine harte Kante.** Über der Kartenunterkante war der Grund getönt,
+darunter abrupt hell — und das über die ganze Breite, auch neben den Karten. Es war der
+abgeschnittene Schatten: er reicht 58 px unter die Karte (`0 26px 56px -24px`), die Bahn ließ ihm
+aber nur 4 px und schnitt ihn mit `overflow-y: hidden` glatt ab. Jetzt sind es **48 px**, der
+Schatten läuft weich aus, und zwischen Karte und hellem Bereich steht Luft. Die Karten bleiben
+gleich groß.
+
 **Und der Block unter der Karte hing an ihr.** Punktreihe und Hinweis klebten 12 px unter der
 Karte, darunter blieb ein Loch bis zu den Knöpfen. Jetzt nimmt die Kiste die ganze Höhe und zwei
 `auto`-Abstände teilen den freien Raum: einer über der Titelzeile, einer zwischen Karte und

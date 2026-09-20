@@ -1000,6 +1000,10 @@ setTimeout(() => {
       uebrig — das Fach sass auf der Kante des Bandes. */
    ['Das Fach haelt Abstand zum Band',
     roh.includes('.kt-fach{ margin:13px 9px 15px;')],
+   /* Die Bahn schnitt den Kartenschatten mit overflow-y:hidden ab —
+      eine harte Kante quer ueber die Ansicht. */
+   ['Die Bahn laesst dem Schatten Platz',
+    roh.includes('padding:10px calc((100% - var(--kb)) / 2) 48px;')],
    ['Die Punktreihe sitzt unten, nicht dicht unter der Karte',
     roh.includes('.mkv-in > .kt-zeile{margin-top:auto}')
     && roh.includes('.mkv-in > .kt-punkte{margin-top:auto}')
