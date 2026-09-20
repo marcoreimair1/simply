@@ -3791,39 +3791,44 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 @media (prefers-reduced-motion:reduce){
   .menu.on:not(.zu) .mausweis .ma-glanz{ animation:none }
 }
-.ma-oben{ position:relative; z-index:2; display:flex; align-items:flex-start; gap:12px;
+/* align-items:stretch, damit die Textspalte so hoch wird wie das Bild
+   — nur dann kann der Becherstand darin nach unten wandern. */
+.ma-oben{ position:relative; z-index:2; display:flex; align-items:stretch; gap:12px;
   padding:14px 14px 0; pointer-events:none }
 .ma-oben .avbig, .ma-oben .avplatz{ pointer-events:auto }
 /* Das Bild ist der Grund, warum man die Karte anschaut — und es ist
    das Einzige, was man daran aendern kann. Beides spricht dafuer, es
    gross zu zeigen: 88 statt 64, mit einem Stift in der Ecke, damit
    niemand raten muss, dass man es antippen kann. */
-.avplatz{ position:relative; display:block; flex:none; pointer-events:auto }
+.avplatz{ position:relative; display:block; flex:none; align-self:flex-start;
+  pointer-events:auto }
 .ma-oben .avbig{ width:88px; height:88px; border-radius:24px }
 .avstift{ position:absolute; right:-5px; bottom:-5px; width:28px; height:28px;
   border-radius:50%; display:grid; place-items:center; pointer-events:none;
   background:var(--butter); color:#fff;
   box-shadow:0 6px 16px -6px rgba(26,16,38,.55), 0 0 0 3px var(--pa,#EADFF5) }
 .avstift svg{ width:15px; height:15px }
-/* Stufe und Becher stehen untereinander in einer eigenen Spalte: zwei
-   Staende, gleiche Kante, gleiche Ausrichtung. */
-.ma-rechts{ flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:7px }
-/* Die Plakette mit allen verschickten Bubble Teas — mit dem echten
-   Becher darin, nicht mit einer Strichzeichnung. Ihre Farbe ist die
-   Sorte, die man mit irgendjemandem am weitesten freigeschaltet hat.
-   Eckiger als die Stufenpille: die traegt eine Zahl, diese ein Bild. */
-.teebadge{ display:inline-flex; align-items:center; gap:5px;
-  padding:3px 9px 3px 4px; border-radius:11px; pointer-events:none;
-  background:color-mix(in oklab, var(--tf,#B85CE8) 24%, #fff);
-  box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--tf,#B85CE8) 50%, transparent);
-  color:var(--ma-ink); font-size:12px; font-weight:700 }
-.teebadge img{ width:22px; height:22px; display:block; object-fit:contain }
-/* display:inline-flex schlaegt das eingebaute [hidden]{display:none} —
-   ohne diese Zeile stand die Plakette mit einer Null da, wo noch kein
-   einziger Becher gelaufen ist. */
-.teebadge[hidden]{ display:none }
-.teebadge b{ font-size:13px; font-weight:800; font-variant-numeric:tabular-nums }
-.mausweis .mhtext{ flex:1; min-width:0 }
+/* ─── Der Becherstand ─────────────────────────────────────────────
+   Erst war es eine Pille mit einer Strichzeichnung, dann eine kleine
+   Plakette neben der Stufe. Beides blieb ein Kasten neben einem
+   Kasten. Jetzt steht der Becher frei: das Getraenk selbst, gross
+   genug, um die Sorte zu erkennen, daneben die Zahl in der
+   Anzeigeschrift und die Beschriftung, die sagt, was sie zaehlt.
+
+   Kein Rahmen, kein Grund — das Bild traegt die Farbe, und ein
+   weicher Schein darunter hebt es von der Karte ab. Unten buendig mit
+   dem Profilbild, damit die drei Zeilen links eine ruhige Kante
+   bekommen. */
+.teestand{ margin-top:auto; display:flex; align-items:center; gap:9px;
+  pointer-events:none; color:var(--ma-ink) }
+.teestand[hidden]{ display:none }
+.teestand img{ width:38px; height:38px; display:block; object-fit:contain;
+  filter:drop-shadow(0 5px 11px color-mix(in oklab, var(--tf,#B85CE8) 46%, transparent)) }
+.teestand b{ font-family:var(--font-dis); font-weight:400; font-size:25px;
+  line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums }
+.teestand u{ text-decoration:none; font-size:8px; font-weight:700; letter-spacing:.14em;
+  line-height:1.3; text-transform:uppercase; color:var(--ma-ink-2) }
+.mausweis .mhtext{ flex:1; min-width:0; display:flex; flex-direction:column }
 .mausweis .mhtext b{ display:block; font-size:19px; line-height:1.14; letter-spacing:-.015em;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .mausweis .mhtext small{ display:block; font-size:11.5px; margin-top:2px;
@@ -3832,7 +3837,8 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 /* Die Plakette sass mit 82 % Tinte wie ein schwarzer Fleck in der Ecke.
    Jetzt die Farbe der Stufe selbst — sie gehoert ja zu ihr — und nur so
    kraeftig, dass die Schrift darauf steht. */
-.ma-lvl{ flex:none; font-size:9.5px; font-weight:800; letter-spacing:.1em; padding:4px 9px;
+.ma-lvl{ flex:none; align-self:flex-start;
+  font-size:9.5px; font-weight:800; letter-spacing:.1em; padding:4px 9px;
   border-radius:99px; white-space:nowrap; color:#fff;
   background:var(--rd, #5C6A94);
   box-shadow:0 2px 8px -4px rgba(26,16,38,.45) }
@@ -5453,14 +5459,13 @@ body.kalrein #v-cal{ animation:kalRein .78s var(--ease-out) both }
         <div class="mhtext">
           <b id="me-name">—</b>
           <small id="me-sub">Miller Optik GmbH</small>
-        </div>
-        <span class="ma-rechts">
-          <span class="ma-lvl" id="mr-lvl">LVL 1</span>
-          <span class="teebadge" id="ma-tee" hidden>
+          <span class="teestand" id="ma-tee" hidden>
             <img id="ma-tee-b" src="tee-1.webp" alt="" loading="lazy">
             <b id="ma-tee-n">0</b>
+            <u>insgesamt<br>versendet</u>
           </span>
-        </span>
+        </div>
+        <span class="ma-lvl" id="mr-lvl">LVL 1</span>
         <span class="zaehler" id="mr-zaehler" hidden></span>
       </div>
       <div class="ma-leiter">
@@ -6127,7 +6132,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-0805';
+const APP_STAND = '2026-09-21-0850';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;

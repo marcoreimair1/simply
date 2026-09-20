@@ -436,8 +436,8 @@ window.__WEITER = function(){
   ok('Darin steht der echte Becher dieser Sorte',
      /tee-1\.webp$/.test(document.getElementById('ma-tee-b').getAttribute('src')),
      document.getElementById('ma-tee-b').getAttribute('src'));
-  ok('Sie steht unter der Stufenpille',
-     document.getElementById('ma-tee').previousElementSibling === document.getElementById('mr-lvl'));
+  ok('Sie steht in der Textspalte, unter Name und Firma',
+     document.getElementById('ma-tee').parentNode.classList.contains('mhtext'));
   /* Der Stand wandert ins Profil — sonst stand die Plakette beim
      naechsten Start leer da, bis die Tabelle geladen war. */
   ok('Der Stand ist im Profil gemerkt', ME.teeSum === 13 && ME.teeLvl === teeLevel(5),
@@ -1130,11 +1130,11 @@ setTimeout(() => {
    ['Das Bild ist 88 px und traegt einen Stift',
     roh.includes('.ma-oben .avbig{ width:88px; height:88px; border-radius:24px }')
     && roh.includes('.avstift{ position:absolute; right:-5px; bottom:-5px;')],
-   /* display:inline-flex schlaegt das eingebaute [hidden]{display:none}
-      — ohne eigene Regel stand die Plakette mit einer Null da. Im
-      Browser gesehen, hier festgehalten. */
-   ['Die leere Plakette verschwindet auch wirklich',
-    roh.includes('.teebadge[hidden]{ display:none }')],
+   /* display:flex schlaegt das eingebaute [hidden]{display:none} —
+      ohne eigene Regel stand der Stand mit einer Null da. Im Browser
+      gesehen, hier festgehalten. */
+   ['Der leere Becherstand verschwindet auch wirklich',
+    roh.includes('.teestand[hidden]{ display:none }')],
    /* Die Zahl kam erst, wenn man "Meine Firma" geoeffnet hatte: bis
       dahin war TEE_PAARE leer. Jetzt bringt der Start sie mit. */
    ['Der Start holt die Becher gleich mit',
@@ -1146,12 +1146,24 @@ setTimeout(() => {
    ['Und der Stand wird gemerkt',
     roh.includes('ME.teeSum = g.summe; ME.teeLvl = g.level;')
     && roh.includes('else if(ME && ME.teeSum > 0) g = { summe:ME.teeSum, level:ME.teeLvl || 1 };')],
-   ['Die Plakette zeigt den echten Becher',
-    roh.includes("bild.src = 'tee-' + Math.max(1, Math.min(TEE.length, g.level)) + '.webp';")
-    && roh.includes('.teebadge img{ width:22px; height:22px;')],
-   ['Eckiger als die Stufenpille und darunter',
-    roh.includes('padding:3px 9px 3px 4px; border-radius:11px;')
-    && roh.includes('.ma-rechts{ flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:7px }')],
+   ['Der Stand zeigt den echten Becher',
+    roh.includes("bild.src = 'tee-' + Math.max(1, Math.min(TEE.length, g.level)) + '.webp';")],
+   /* Kein Kasten mehr: der Becher steht frei, unten buendig mit dem
+      Profilbild, und die Beschriftung sagt, was die Zahl zaehlt. */
+   ['Der Becher steht frei, ohne Rahmen',
+    roh.includes('.teestand{ margin-top:auto; display:flex; align-items:center; gap:9px;')
+    && !roh.includes('.teebadge{')],
+   ['Er ist gross genug fuer die Sorte',
+    roh.includes('.teestand img{ width:38px; height:38px;')],
+   ['Und traegt einen weichen Schein in seiner Farbe',
+    roh.includes('filter:drop-shadow(0 5px 11px color-mix(in oklab, var(--tf,#B85CE8) 46%, transparent))')],
+   ['Die Zahl steht in der Anzeigeschrift',
+    roh.includes('.teestand b{ font-family:var(--font-dis); font-weight:400; font-size:25px;')],
+   ['Und daneben, was sie zaehlt',
+    roh.includes('<u>insgesamt<br>versendet</u>')],
+   ['Er sitzt unten, auf Hoehe des Bildes',
+    roh.includes('.ma-oben{ position:relative; z-index:2; display:flex; align-items:stretch; gap:12px;')
+    && roh.includes('.mausweis .mhtext{ flex:1; min-width:0; display:flex; flex-direction:column }')],
    ['Die Becher-Plakette nimmt die Farbe der Sorte',
     roh.includes("b.style.setProperty('--tf', sorte.f);")],
    ['Die Gruppierung greift nur nach Menuezeilen',

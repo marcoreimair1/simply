@@ -1059,12 +1059,18 @@ Becher, Leiste. Was irgendwohin **führt**, steht darunter.
 warum man die Karte anschaut, und das Einzige, was man daran ändern kann — beides spricht dafür,
 es groß zu zeigen und zu sagen, dass es antippbar ist.
 
-**Die Becher-Plakette** zählt alle Bubble Teas zusammen, die zwischen einem selbst und den anderen
-gelaufen sind — Manuela 5, Luis 5, Marlene 3 macht 13. Sie steht **unter der Stufenpille**, an
-derselben Kante, und ist eckiger als diese: die Pille trägt eine Zahl, die Plakette ein Bild. Darin
-steht **der echte Becher** der Sorte, die man mit irgendjemandem am weitesten freigeschaltet hat —
-dasselbe `tee-N.webp`, das in der Firmenansicht groß dasteht. Der höchste Stand zählt, nicht der
-Schnitt. Ohne einen einzigen Becher bleibt sie weg; eine Null ist keine Auszeichnung.
+**Der Becherstand** zählt alle Bubble Teas zusammen, die zwischen einem selbst und den anderen
+gelaufen sind — Manuela 5, Luis 5, Marlene 3 macht 13. Der höchste Stand bestimmt die Sorte, nicht
+der Schnitt. Ohne einen einzigen Becher bleibt er weg; eine Null ist keine Auszeichnung.
+
+Er war erst eine Pille mit einer Strichzeichnung, dann eine kleine Plakette neben der Stufe —
+beides blieb ein Kasten neben einem Kasten. **Jetzt steht der Becher frei**: das Getränk selbst mit
+38 px groß genug, um die Sorte zu erkennen, daneben die Zahl in der Anzeigeschrift und darunter,
+was sie zählt. Kein Rahmen, kein Grund; das Bild trägt die Farbe, und ein weicher Schein in
+derselben Farbe hebt es von der Karte ab. Es sitzt **unten bündig mit dem Profilbild** — dafür
+bekommt die Textspalte über `align-items: stretch` erst eine Höhe, in der `margin-top: auto` etwas
+zu tun hat. Nachgemessen hält die Zeile auch dreistellige Zahlen neben einem langen Namen, ohne
+über die Karte zu laufen.
 
 **Sie stand anfangs leer.** Die Zahl kam erst, wenn man einmal *Meine Firma* geöffnet oder selbst
 einen Becher geschickt hatte — bis dahin war `TEE_PAARE` leer, weil die Tabelle nur dort geladen
