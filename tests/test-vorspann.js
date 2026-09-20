@@ -257,10 +257,6 @@ setTimeout(() => {
    ['Auch am Handy, wo sie duenner ist',
     /\.topbar\{background:rgba\(var\(--s-tief\),\.72\)\}/],
    ['Und nirgends mehr einen Verlauf', (roh) => !/\.topbar\{[^}]*linear-gradient/.test(roh)],
-   /* Im Browser meldet env(safe-area-inset-top) null — ohne Mindestwert
-      ist dieselbe App oben einmal 123 px hoch und einmal 61. */
-   ['Die Leiste haengt ueberall gleich tief',
-    /\.topbar\{padding-top:max\(62px, env\(safe-area-inset-top\)\)\}/],
    /* Die beiden Leisten, die absichtlich auslaufen, tragen dafuer gar
       keinen Weichzeichner mehr — der Verlauf allein reicht. */
    ['Die Fusszeile laeuft aus, ohne zu verwaschen',

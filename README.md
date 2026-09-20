@@ -713,13 +713,6 @@ der Inhalt wieder gestochen scharf. Das las sich als **Schliere quer über den K
 dort sitzt — ein Zurück-Knopf etwa — stand zur Hälfte darin. Seit 20. September 2026 ist die
 Tönung flach (`.78`, am Handy `.72`), der Weichzeichner bleibt. Eine Scheibe, kein Schmierer.
 
-**Und sie hängt überall gleich tief.** Die Scheibe reicht unter die Statusleiste hinauf; den
-Platz dafür liefert `env(safe-area-inset-top)` — auf dem installierten Symbol 62 px, im Browser
-**null**. Dieselbe App hatte damit zwei verschiedene Köpfe: 123 px auf dem Telefon, 61 px im
-Browser, wo die Leiste oben am Rand klebte und kaum zu sehen war. `max(62px, env(...))` setzt
-einen Mindestwert: wo nichts gemeldet wird, gelten 62 px, und auf Geräten mit kleinerer
-Statusleiste ebenfalls 62 statt 20. Wo mehr gemeldet wird, gewinnt der gemeldete Wert.
-
 Die beiden Leisten, die **absichtlich auslaufen** — die Fußzeile mit *Kalender/Export* und die
 klebende Knopfzeile im Funnel —, tragen dafür **gar keinen Weichzeichner mehr**. Ihr Verlauf
 beginnt bei null; ein gleich starker Weichzeichner darüber erzeugte oben dieselbe Schliere. Der
