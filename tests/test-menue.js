@@ -432,8 +432,15 @@ window.__WEITER = function(){
   ok('Es ist die Karte der erreichten Stufe', pk && +pk.dataset.n === 10, pk && pk.dataset.n);
   ok('Sie traegt ihre Stufenfarben',
      pk && pk.style.getPropertyValue('--rf') === RAENGE[9].a, pk && pk.style.getPropertyValue('--rf'));
-  ok('Und fuehrt in den Stapel',
-     pk && pk.closest('[data-ktauf]') && pk.closest('[data-ktauf]').dataset.ktauf === '10');
+  ok('Das Banner traegt dieselbe Stufenfarbe',
+     pk && pk.closest('.pfk').style.getPropertyValue('--rft') === rgba(RAENGE[9].a, .16),
+     pk && pk.closest('.pfk').style.getPropertyValue('--rft'));
+  ok('Und nimmt keine Tipps an',
+     pk && !pk.getAttribute('role') && !pk.getAttribute('tabindex')
+     && pk.closest('.pfk').getAttribute('aria-hidden') === 'true',
+     pk && (pk.getAttribute('role') || '-') + '/' + (pk.getAttribute('tabindex') || '-'));
+  ok('Im Stapel bleibt sie ein Knopf',
+     document.querySelector('#kt-bahn .kt').getAttribute('role') === 'button');
   /* Wer schon oben steht, hat seine Aufstiege erlebt, bevor es die
      Briefe gab — einer kommt nach, nicht neun. */
   ME.post = [];
@@ -1000,20 +1007,27 @@ setTimeout(() => {
    /* Die Karte im Brief: dieselbe ktKarte() wie im Stapel, nur ohne
       Nachbarn — und mit min-width:0, weil ein Flex-Kind sonst die
       Breite seines Inhalts erzwingt (das Fach bricht nicht um). */
-   ['Die Karte im Brief klappt mit auf',
-    roh.includes('animation:pfkAuf .62s .12s var(--ease-out) both }')
-    && roh.includes('@keyframes pfkAuf{')],
-   ['Sie sprengt den Brief nicht',
-    roh.includes('.pfk .kt-dreh, .pfk .kt-vorn{ min-width:0 }')
-    && roh.includes('.pfk .kt{ width:min(256px,100%);')],
+   /* Die Karte stand gross und mittig im Brief und liess sich
+      andruecken — beim Lesen und Rollen landete man im Stapel. */
+   ['Die Karte im Brief ist ein Banner',
+    roh.includes('.pfk{ display:flex; align-items:center; gap:14px;')
+    && roh.includes('.pfk-k{ zoom:.4; flex:none; display:block }')],
+   ['Mit getoentem Grund in der Stufenfarbe',
+    roh.includes('background:linear-gradient(104deg, var(--rft2,rgba(140,62,140,.26)),')
+    && roh.includes('$$(\'.pfk\', wurzel).forEach(p => faerbe(p, +p.dataset.kt));')],
+   ['Verkleinert mit zoom, damit die Hoehe mitgeht',
+    roh.includes('zoom:.4')],
+   ['Sie nimmt keine Tipps mehr an',
+    roh.includes('border-radius:20px; pointer-events:none;')
+    && !roh.includes('data-ktauf')
+    && !roh.includes('.pfk:active .kt{ scale:.97 }')],
+   ['Und ist fuer die Vorlesehilfe ein Bild',
+    roh.includes('<div class="pfk" data-kt="\' + n + \'" aria-hidden="true">')],
    ['Im Brief wird nicht gedreht',
     roh.includes('.pfk .kt-rueck{ display:none }')],
-   ['Andruecken ueber scale, nicht transform',
-    roh.includes('.pfk:active .kt{ scale:.97 }')],
-   ['Ein Tipp fuehrt in den Stapel, ohne den Brief zuzuklappen',
-    roh.includes("const kt = e.target.closest('[data-ktauf]');")
-    && roh.includes('e.stopPropagation();')
-    && roh.includes('setTimeout(() => { _vonMenu = true; karteAuf(nr); }, 60);')],
+   ['Das Banner klappt mit auf',
+    roh.includes('animation:pfkAuf .6s .1s var(--ease-out) both }')
+    && roh.includes('@keyframes pfkAuf{')],
    /* Waehrend der Feier sagte die Titelzeile des Stapels dasselbe noch
       einmal und schob die Karte um 84 px nach unten. */
    ['Die Feier zeigt die Titelzeile nicht doppelt',

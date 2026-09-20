@@ -2761,37 +2761,41 @@ body.sigmodus .fb-s{display:inline-flex}
   100%{opacity:1;transform:none}
 }
 /* ─── Die Karte im Brief ──────────────────────────────────────────
-   Im Stapel steht die Karte in einer Bahn und bekommt ihre Groesse von
-   dort. Im Brief steht sie allein: eine feste Breite, mittig, und die
-   Bahnregeln (Schnappen, Tiefe, Drehung) gelten hier nicht.
+   Ein Banner: die Karte klein an der Seite, daneben die Stufe, alles
+   auf einer getoenten Flaeche in der Stufenfarbe.
 
-   Sie klappt mit dem Brief auf — aus dem Nichts erscheinen waere hart,
-   und der Brief ist ohnehin schon eine Bewegung. Dieselbe Expo-Kurve
-   wie ueberall, nur kuerzer, weil der Weg kurz ist. */
-.pfk{ display:flex; justify-content:center; margin:16px 0 18px; cursor:pointer;
-  perspective:1400px }
-/* min-width:0 auf der Buehne und der Seite: ohne das nimmt ein
-   Flex-Kind mindestens die Breite seines Inhalts, und das Fach traegt
-   "ZEIT GESPART  4 Std 7 Min" ohne Umbruch. Die Karte war damit 256 px
-   breit, egal was hier steht — sie lief ueber den Brief hinaus.
-   Ihre natuerliche Breite ist jetzt die Obergrenze, darunter schrumpft
-   sie mit und das Fach kuerzt seine Beschriftung. */
-.pfk .kt{ width:min(256px,100%); flex:none; scroll-snap-align:none;
-  scale:1; opacity:1;
-  animation:pfkAuf .62s .12s var(--ease-out) both }
-.pfk .kt-dreh, .pfk .kt-vorn{ min-width:0 }
+   Vorher stand sie gross und mittig im Brief, fast so hoch wie die
+   Ansicht, und war andrueckbar — beim Lesen und Rollen kam man
+   staendig daran und landete im Stapel. Jetzt ist sie ein Bild im
+   Text: aria-hidden, pointer-events aus, kein Zeiger.
+
+   Verkleinert wird mit zoom und nicht mit transform:scale, weil zoom
+   auch die Hoehe mitnimmt. Bei scale bliebe der Platz der grossen
+   Karte stehen und darunter ein Loch. */
+.pfk{ display:flex; align-items:center; gap:14px; margin:16px 0 18px;
+  padding:13px 16px 13px 13px; border-radius:20px; pointer-events:none;
+  background:linear-gradient(104deg, var(--rft2,rgba(140,62,140,.26)),
+    var(--rft,rgba(140,62,140,.16)) 62%, transparent);
+  box-shadow:inset 0 0 0 1px var(--rft,rgba(140,62,140,.16));
+  animation:pfkAuf .6s .1s var(--ease-out) both }
+.pfk-k{ zoom:.4; flex:none; display:block }
+.pfk-t{ display:flex; flex-direction:column; gap:2px; min-width:0 }
+.pfk-t u{ text-decoration:none; font-size:9px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--tx-2) }
+.pfk-t b{ font-family:var(--font-dis); font-weight:400; font-size:21px;
+  letter-spacing:-.015em; line-height:1.1; color:var(--tx) }
+.pfk-t small{ font-size:11.5px; color:var(--tx-2) }
+.pfk .kt{ width:256px; flex:none; scroll-snap-align:none; cursor:default;
+  scale:1; opacity:1 }
 .pfk .kt-dreh{ transform:none; transition:none }
-.pfk .kt-glanz{ animation:ktGlanz 5.4s 1.4s linear infinite }
 .pfk .kt-rueck{ display:none }          /* im Brief wird nicht gedreht */
+.pfk .kt-glanz{ animation:ktGlanz 5.4s 1.4s linear infinite }
 @keyframes pfkAuf{
-  from{ opacity:0; transform:translateY(16px) scale(.9) rotate(-2.4deg) }
+  from{ opacity:0; transform:translateY(12px) }
   to{ opacity:1; transform:none }
 }
-/* Andruecken wie ueberall: spuerbar und gehalten, ueber scale, weil
-   die Einlaufanimation transform besitzt. */
-.pfk:active .kt{ scale:.97 }
 @media (prefers-reduced-motion:reduce){
-  .pfk .kt{ animation:none }
+  .pfk{ animation:none }
   .pfk .kt-glanz{ animation:none }
 }
 /* Waehrend der Feier steht oben schon, welche Stufe erreicht ist —
@@ -5982,7 +5986,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-21-0330';
+const APP_STAND = '2026-09-21-0415';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
@@ -9828,6 +9832,9 @@ function malKarte(nrZeig){
    Eine Funktion fuer alle Orte, an denen Karten stehen: der Stapel und
    die Briefe im Postfach. */
 function ktFaerben(wurzel){
+  /* Das Banner im Brief traegt dieselben Farben wie die Karte darin —
+     die getoente Flaeche kommt aus --rft. */
+  $$('.pfk', wurzel).forEach(p => faerbe(p, +p.dataset.kt));
   $$('.kt', wurzel).forEach(k => {
     const n = +k.dataset.n;
     faerbe(k, n);
@@ -10037,8 +10044,8 @@ function stufenPost(n, anzahl){
         + 'Bis hierher hat dir MOJI *' + fmtDauer(min) + '* erspart — Zeit, die sonst '
         + 'in Zettel, Taschenrechner und Suchen gegangen wäre.\n\n'
         + lohnSatz(min) + '\n\n'
-        + 'Die Karte liegt ab jetzt in deinem Stapel. Tipp sie an, dann siehst du '
-        + 'den ganzen Stapel — auch die Stufen, die noch kommen.',
+        + 'Die Karte liegt ab jetzt in deinem Stapel — im Profilmenü, hinter deinem '
+        + 'Bild. Dort liegen auch die Stufen, die noch kommen.',
     von: 'MOJI'
   };
 }
@@ -10671,14 +10678,29 @@ function malPostfach(){
       + '</article>';
   }).join('');
   ktFaerben($('#pf-liste'));
+  /* ktKarte() baut jede Karte als Knopf — im Stapel dreht sie sich ja
+     auf einen Tipp. Im Brief ist sie ein Bild, und ein fokussierbarer
+     Knopf in einem aria-hidden-Bereich waere ein Widerspruch. */
+  $$('#pf-liste .pfk .kt').forEach(k => {
+    k.removeAttribute('role'); k.removeAttribute('tabindex'); k.removeAttribute('aria-label');
+  });
 }
 /* Die Karte im Brief. Sie ist echt, nicht abgebildet: dasselbe
    ktKarte() wie im Stapel, nur ohne Nachbarn. Ein Tipp darauf macht
    den Stapel bei dieser Stufe auf. */
+/* Als Banner, nicht als Bildschirmfueller: die Karte klein an der
+   Seite, daneben die Stufe. Sie war vorher fast so hoch wie die
+   Ansicht und liess sich andruecken — beim Lesen und Rollen kam man
+   dauernd daran und landete im Stapel. Jetzt ist sie ein Bild im Text
+   und nimmt keine Tipps mehr an. */
 function pfKarteHtml(n){
   if(!ME || !(n >= 1 && n <= RAENGE.length)) return '';
-  return '<div class="pfk" data-ktauf="' + n + '" role="button" tabindex="0"'
-    + ' aria-label="Karte ansehen">' + ktKarte(n, stufe(), expAnzahl()) + '</div>';
+  const r = rang(n);
+  return '<div class="pfk" data-kt="' + n + '" aria-hidden="true">'
+    + '<span class="pfk-k">' + ktKarte(n, stufe(), expAnzahl()) + '</span>'
+    + '<span class="pfk-t"><u>Neue Karte</u><b>' + esc(r.n) + '</b>'
+    +   '<small>Stufe ' + n + ' von ' + RAENGE.length + '</small></span>'
+    + '</div>';
 }
 /* Absaetze als eigene <p>, Zeilen mit • als Liste — so liest sich eine
    Aufzaehlung auch wie eine. */
@@ -10721,25 +10743,7 @@ function pfMerke(ids){
 /* Welche Nachricht offen steht. undefined heisst: noch nicht entschieden,
    dann sucht malPostfach() die neueste ungelesene. */
 let _pfOffen;
-/* Ein Tipp auf die Karte im Brief macht den Stapel auf, und zwar bei
-   genau dieser Stufe. Er darf nicht bis zum Kopf der Nachricht
-   durchschlagen, sonst klappte der Brief dabei zu. */
-$('#pf-liste').addEventListener('keydown', e => {
-  if(e.key !== 'Enter' && e.key !== ' ') return;
-  const kt = e.target.closest('[data-ktauf]');
-  if(!kt) return;
-  e.preventDefault();
-  kt.click();
-});
 $('#pf-liste').addEventListener('click', e => {
-  const kt = e.target.closest('[data-ktauf]');
-  if(kt){
-    e.stopPropagation();
-    const nr = +kt.dataset.ktauf;
-    pfZu();
-    setTimeout(() => { _vonMenu = true; karteAuf(nr); }, 60);
-    return;
-  }
   const k = e.target.closest('[data-pf]'); if(!k) return;
   const id = k.dataset.pf;
   _pfOffen = (_pfOffen === id) ? null : id;

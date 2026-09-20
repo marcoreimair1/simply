@@ -1049,15 +1049,18 @@ Eine Stufe zu erreichen war bis jetzt ein Moment: die Feier ging auf, man tippte
 danach war sie weg. Seit 21. September 2026 **bleibt sie liegen** — als Nachricht im Postfach, mit
 der Karte darin.
 
-Die Karte im Brief ist keine Abbildung, sondern dieselbe `ktKarte()` wie im Stapel, nur ohne
-Nachbarn. Sie klappt mit dem Brief auf und **führt in den Stapel**: ein Tipp macht ihn bei genau
-dieser Stufe auf, nicht bei der aktuellen. Der Tipp darf dabei nicht bis zum Kopf der Nachricht
-durchschlagen, sonst klappte der Brief zu.
+Die Karte im Brief ist keine Abbildung, sondern dieselbe `ktKarte()` wie im Stapel — aber sie
+steht dort **als Banner**: klein an der Seite, daneben die Stufe, auf einer getönten Fläche in der
+Stufenfarbe. Nachgemessen 299 × 211 px, die Karte darin 102 × 185.
 
-**Eine Falle steckte in der Breite.** Ein Flex-Kind nimmt mindestens die Breite seines Inhalts,
-und das Fach bricht nicht um — die Karte war damit 256 px breit, egal was in der Regel stand, und
-lief über den Brief hinaus. `min-width:0` auf Bühne und Seite macht sie schrumpffähig; ihre
-natürliche Breite ist die Obergrenze.
+Zuerst stand sie groß und mittig im Brief und ließ sich andrücken. Das war beim Lesen im Weg: die
+Karte war fast so hoch wie die Ansicht, und beim Rollen kam man ständig an sie und landete im
+Stapel. Jetzt ist sie ein Bild im Text — `pointer-events:none`, `aria-hidden`, und die Knopfrolle,
+die `ktKarte()` jeder Karte mitgibt, wird im Brief wieder entfernt: ein fokussierbarer Knopf in
+einem versteckten Bereich wäre ein Widerspruch.
+
+**Verkleinert wird mit `zoom`, nicht mit `transform: scale`.** `zoom` nimmt die Höhe mit; bei
+`scale` bliebe der Platz der großen Karte stehen und darunter ein Loch.
 
 **Im Brief steht auch, was dabei herausgekommen ist**: wie viel Zeit MOJI erspart hat, und wofür
 die reichen würde — *Dafür könntest du ein halbes Buch lesen.* Die Leiter dieser Vergleiche
