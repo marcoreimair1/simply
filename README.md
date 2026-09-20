@@ -886,6 +886,11 @@ hell, weil `--pa` 84 % Weiß unter die Stufenfarbe mischt; ein fester dunkler We
 (`.ma-flaeche`, `z-index:0`). Profilbild und Postfach behalten ihre eigenen Knöpfe und holen sich
 `pointer-events:auto` zurück — Knöpfe ineinander gibt es in HTML nicht.
 
+**Und der Glanz wandert auch hier.** Dasselbe schmale Lichtband wie auf der großen Karte zieht
+quer über den Kopf — er *ist* ja die Karte, also soll er sich auch so verhalten. Es lag zuerst
+als fester Verlauf darauf und stand still. Die Bewegung hängt an `.menu.on:not(.zu)`: bei
+geschlossenem Menü liefe sie unsichtbar weiter und kostete bei jedem Bild Arbeit.
+
 **Der Druck geht über `scale`, nicht über `transform`.** Der Einlauf des Menüs
 (`miInVoll`) läuft als Animation über `transform` — und eine Animation schlägt jede normale
 Regel. Ein `transform:scale()` beim Andrücken kam deshalb nie an. Die eigenständige Eigenschaft

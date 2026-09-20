@@ -909,6 +909,16 @@ setTimeout(() => {
     /prefers-reduced-motion:reduce\)\{\s*\n\s*\.kt\{ scale:1; opacity:1 \}[\s\S]{0,200}\.kt-bahn\{ scroll-snap-type:none \}/.test(roh)],
    ['Die alte Drehbuehne ist weg',
     !/id="mk-dreh"/.test(roh) && !/function karteDreh/.test(roh)],
+   /* Der Kopf IST die Karte — also wandert der Glanz auch dort. */
+   ['Der Glanz wandert auch im Menue',
+    /\.menu\.on:not\(\.zu\) \.mausweis \.ma-glanz\{ animation:maGlanz/.test(roh)
+    && /@keyframes maGlanz\{/.test(roh)],
+   /* Die Grundregel darf sie NICHT tragen — sonst liefe sie auch bei
+      geschlossenem Menue weiter. Ein einfaches "kommt nicht vor" reicht
+      als Pruefung nicht: die enge Regel endet selbst auf .ma-glanz{. */
+   ['Aber nur, solange das Menue offen ist',
+    /\.ma-glanz\{ position:absolute;[^}]*transform:translateX\(-85%\) \}/.test(roh)
+    && (roh.match(/animation:maGlanz/g) || []).length === 1],
    ['Das dunkle Band traegt die Wortmarke',
     /\.ma-band\{[\s\S]{0,200}background:var\(--karton-band, #0B0711\)/.test(roh)],
    ['Die Obergrenze in normalize steht nicht als Zahl da',

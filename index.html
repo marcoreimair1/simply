@@ -3590,8 +3590,20 @@ section#v-onboard.on > #ob-nav{margin-top:auto}
 .ma-flaeche{ position:absolute; inset:0; z-index:0; border:0; background:none; padding:0;
   cursor:pointer; border-radius:inherit }
 .ma-flaeche:focus-visible{ outline:2px solid var(--ma-ink); outline-offset:-4px }
+/* Derselbe Glanz wie auf der grossen Karte: ein schmales Lichtband
+   wandert quer darueber. Es lag hier als fester Verlauf und stand
+   still — der Kopf IST die Karte, also soll er sich auch so verhalten.
+
+   Nur waehrend das Menue offen ist: sonst liefe die Bewegung
+   unsichtbar weiter und kostete bei jedem Bild Arbeit. */
 .ma-glanz{ position:absolute; inset:0; z-index:1; pointer-events:none;
-  background:linear-gradient(102deg,transparent 38%,rgba(255,255,255,.42) 49%,transparent 60%) }
+  background:linear-gradient(102deg,transparent 38%,rgba(255,255,255,.42) 49%,transparent 60%);
+  transform:translateX(-85%) }
+.menu.on:not(.zu) .mausweis .ma-glanz{ animation:maGlanz 5.6s 1.2s linear infinite }
+@keyframes maGlanz{ from{ transform:translateX(-85%) } to{ transform:translateX(85%) } }
+@media (prefers-reduced-motion:reduce){
+  .menu.on:not(.zu) .mausweis .ma-glanz{ animation:none }
+}
 .ma-oben{ position:relative; z-index:2; display:flex; align-items:flex-start; gap:12px;
   padding:14px 14px 0; pointer-events:none }
 .ma-oben .avbig, .ma-oben .mtile{ pointer-events:auto }
@@ -5804,7 +5816,7 @@ function toast(msg, bleib){
    Am Handy hieß das: Änderungen sind da, aber man sieht sie nicht. Also
    fragt die App beim Start und beim Zurückkehren selbst nach — ohne
    Zwischenspeicher — und meldet sich, wenn etwas Neues bereitliegt. */
-const APP_STAND = '2026-09-20-2110';
+const APP_STAND = '2026-09-20-2145';
 let _updZeit = 0, _updBereit = false;
 async function pruefeStand(){
   if(_updBereit || Date.now() - _updZeit < 12e4) return;
